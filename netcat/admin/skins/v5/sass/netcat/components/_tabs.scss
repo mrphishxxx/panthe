@@ -1,0 +1,66 @@
+/************* tabs | Вкладки *************/
+//--------------------------------------------------------------------------
+
+.#{$_tabs} {
+	font-size:     $tabs_font_size;
+	border-bottom: 1px solid nc_color(light);
+	@extend %clearfix;
+    @extend %reset-list;
+
+	li {
+		display: block;
+		margin:  0 $tabs_height 0 0;
+		@include float-left;
+
+		a {
+			display:     block;
+			height:      $tabs_height;
+			line-height: $tabs_height;
+			color:       $tabs_text_color;
+
+			// HOVER
+			&:hover {
+				color: $tabs_text_color_active;
+			}
+		}
+
+		// Активная ссылка
+		&.#{$__active} a {
+			position:      relative;
+			z-index:       1;
+			margin-bottom: -1px;
+			height:        $tabs_height - 2;
+			border-bottom: 3px solid $tabs_text_color_active;
+			color:         $tabs_text_color_active;
+		}
+
+        // Отключенная ссылка
+        &.#{$__disabled} a {
+            color: nc_color(grey, +30%);
+        }
+	}
+
+	// маленькие вкладки
+	//--------------------------------------------------------------------------
+	$tabs_font_size: $tabs_font_size - 2;
+	$tabs_height:    ceil($tabs_height / 1.5);
+
+	&.#{$__small} {
+		font-size: $tabs_font_size;
+
+		li {
+			margin: 0 $tabs_height 0 0;
+
+			a {
+				height:      $tabs_height;
+				line-height: $tabs_height;
+			}
+
+			// Активная ссылка
+			&.#{$__active} a {
+				height:              $tabs_height - 1;
+				border-bottom-width: 2px;
+			}
+		}
+	}
+}

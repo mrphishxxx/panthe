@@ -1,0 +1,41 @@
+<?
+if ($_POST['ulogin'])
+{
+   $ulogin = $db->escape($_POST['ulogin']);
+   $email = $db->get_var("SELECT email FROM admins WHERE login='".$ulogin."' OR email='".$ulogin."'");
+   if ($email)
+   {
+      $new_pass = substr(md5(time()), 0, 7);
+      $new_pass_hashed = md5($new_pass);
+      $db->query("UPDATE admins SET pass='".$new_pass_hashed."' WHERE login='".$ulogin."' OR email='".$ulogin."'");
+      echo "<p>Новый пароль был успешно выслан на Ваш E-mail!</p>";
+
+     $text = "Добрый день!<br/><br/>Ваш новый пароль для доступа в систему iForget: ".$new_pass;
+
+      $mailer = new CMIMEMail();
+      $mailer->mailbody(strip_tags($text), $text);
+      $mailer->send( $email, $email, $email, "Восстановление пароля", "robot@iforget.ru");
+   }
+   else
+   {
+      echo "<p>Указанный логин (e-mail) не найден в системе.</p>";
+   }
+}
+?>
+<form method="post" action="/forgot/" class="form">
+					<ul>
+						<li>
+							<span class="title">Введите Ваш логин или E-mail</span>
+							<input name="ulogin" value="" type="text">
+							<span class="hint"></span>
+						</li>
+                                        </ul>
+<br/><input type="submit" value="Восстановить" />
+</form>
+   		      </div>
+		</div>
+	</div>
+	<!-- CONTENT AREA END -->
+
+
+%Footer

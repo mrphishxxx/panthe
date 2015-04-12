@@ -1,0 +1,316 @@
+/* CSS 12.05.12 Titov.V.P. */
+
+body
+{
+  margin: 0px;
+  background: #BFBFBF url(/tmp/img/bg_main.jpg);
+  min-width: 1280px;
+}
+
+p{margin:10px 0;}
+
+a{color:#ed4a14}
+
+.headline
+{
+  width: 1280px;
+  margin: auto;
+}
+
+.logo
+{
+  float: left;
+  margin: 32px 20px 50px 100px;
+}
+
+.kontakt
+{
+  float: left;
+  margin: 30px 20px 50px 40%;
+  font-family: Tahoma;
+  font-style: italic;
+  font-size: 16pt;
+}
+
+.top_menu
+{
+  height: 85px;
+  width: 1280px;
+  margin: auto;
+}
+
+.menu_bg
+{
+  clear: left;
+  margin: 0px 0px 20px 0px;
+  background: #BFBFBF url(/tmp/img/bg_menu.png);
+}
+
+.page
+{
+  float: left;
+  width: 25%;
+  text-align: center;
+  margin: 10px 0px 0px 0px;
+}
+
+.menu_table tr td{
+	width:auto;
+	padding-top:18px;
+	text-align: center;
+}
+
+.banner_bg
+{
+  clear: left;
+  width: 100%;
+  background: url(/tmp/img/bg_banner.jpg);
+  background-repeat: repeat-x;
+  background-position: 0px 30px;
+  height: 500px;
+  margin: 0px 0px 40px 0px;
+}
+
+.banner
+{
+  width: 1280px;
+  margin: auto;
+}
+
+.flag
+{
+  background: url(/tmp/img/bg_flag.png);
+  background-repeat: no-repeat;
+  width: 1060px;
+  height: 156px;
+}
+
+.flag_bg
+{
+  width: 1280px;
+  margin: auto;
+}
+
+.content
+{
+
+}
+
+.content_bg
+{
+  width: 980px;
+  margin: auto;
+}
+
+.blok_top
+{
+   margin: 20px 160px 20px 60px;
+   font-family: Tahoma;
+   font-size: 12pt;
+}
+
+.blok_flip
+{
+  height: 403px;
+  min-width: 100px;
+  position: absolute;
+  right: 0px;
+  margin: 0px 0px 0px 100px;
+}
+
+.blok_unit
+{
+  float: left;
+  width: 40%;
+  margin: 20px 60px 20px 0;
+  font-family: Tahoma;
+  font-size: 12pt;
+}
+
+.cellar
+{
+  width: 1280px;
+  background: url(/tmp/img/bg_cellar.jpg);
+  height: 172px;
+  margin: auto;
+  padding-top:186px;
+}
+
+.cellar_bg
+{
+  clear: left;
+  width: 100%;
+  background: url(/tmp/img/bg_cellar_all.png);
+  background-repeat: repeat-x;
+  height: 358px;
+}
+
+.logo_img
+{
+
+}
+
+.hol
+{
+  margin: 0px 0px 0px 30px;
+}
+
+.link
+{
+  font-family: Tahoma;
+  font-size: 18pt;
+  color: #ed4a14;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link_active
+{
+  color: white;
+  font-family: Tahoma;
+  font-size: 18pt;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link2
+{
+  font-family: Tahoma;
+  font-size: 12pt;
+  color: #ed4a14;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link2_active
+{
+  color: #000;
+  font-family: Tahoma;
+  font-size: 12pt;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.banner_image
+{
+ margin: 0px 0px 0px 0px;
+}
+
+.banner_image_2
+{
+
+}
+
+.call
+{
+  float: left;
+  margin: 20px 20px 20px 80px;
+  text-align: center;
+}
+
+.work
+{
+  float: left;
+  margin: 20px 20px 20px 80px;
+  text-align: center;
+}
+
+.telefon
+{
+  float: left;
+  margin: 15px 0px 20px 0px;
+  text-align: center;
+  font-family: Tahoma;
+  font-size: 26pt;
+  color: white;
+  padding: 0px 20px 0px 180px;
+  background: red;
+  position: relative;
+  z-index: -1000;
+}
+
+.bookmark
+{
+ background: #cf3516;
+ margin: 0px 0px 0px 99px;
+ height: 403px;
+ display: none;
+}
+
+.spacer
+{
+  clear:left;
+  width: 100%;
+  height: 100px;
+}
+
+img{border:0}
+
+.flip_text
+{
+  padding: 10px 150px 30px 50px;
+}
+
+H1
+{
+  font-family: Tahoma;
+  font-size: 16pt;
+	margin:10px 0;
+}
+
+H2
+{
+  font-family: Tahoma;
+  font-size: 14pt;
+	margin:10px 0;
+}
+
+H3
+{
+ font-family: Tahoma;
+  font-size: 12pt;
+	margin:10px 0;
+}
+
+.flip_text H3
+{
+  font-family: Tahoma;
+  font-size: 16pt;
+  color: #fff;
+  text-decoration: underline;
+}
+
+.flip_text
+{
+  font-family: Tahoma;
+  font-size: 12pt;
+  color: #fff;
+}
+
+.flip_text a
+{
+  font-family: Tahoma;
+  font-size: 16pt;
+  color: #fff;
+}
+
+.Red {
+  color: Red;
+}
+
+.footer{
+	margin: 125px 0 0 20px;
+	width:100%;
+}
+
+.footer2{
+	margin-top:-20px;
+	font-family: Tahoma;
+    font-style: italic;
+    font-size: 16pt;
+}
+
+.counters{
+	padding-right:50px;
+	width:200px;
+}

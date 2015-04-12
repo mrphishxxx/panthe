@@ -1,0 +1,38 @@
+/************* tree | Дерево *************/
+//--------------------------------------------------------------------------
+
+.#{$_tree} {
+	ul {
+		@extend %reset-list;
+	}
+
+	// Levels
+	$li: 'li';
+	@for $i from 1 through 10 {
+		#{$li} a {
+			padding-left: $tree_indent * $i;
+		}
+		$li: nest($li, 'li');
+	}
+
+	.#{$_icon} {
+		display:    block;
+		float:      left;
+		margin-top: $padding_small;
+	}
+	a {
+		display:        block;
+		color:          nc_color(darken);
+		padding-top:    $padding_small;
+		padding-bottom: $padding_small;
+
+		.#{$_icon} {
+			margin: 0 5px 0 0;
+		}
+		&:hover {
+			background-color: $hover_bg;
+		}
+	}
+}
+
+//--------------------------------------------------------------------------

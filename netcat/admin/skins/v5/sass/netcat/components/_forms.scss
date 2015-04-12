@@ -1,0 +1,257 @@
+/************* forms | Стили элементов HTML-форм *************/
+//--------------------------------------------------------------------------
+
+
+// placeholders
+//--------------------------------------------------------------------------
+%default-input {
+    display:       inline-block;
+    border:        $input_border;
+    line-height:   $line_height;
+    padding:       $input_padding;
+    font-size:     $font_size;
+    margin-bottom: ceil($line_height / 2);
+    @include box-shadow(0 1px 2px rgba(#000, .03) inset);
+}
+%default-input-focus:focus {
+    border-color: nc_color(blue);
+    outline: none;
+    @include box-shadow(0 0 5px rgba(nc_color(blue), .3));
+}
+
+//--------------------------------------------------------------------------
+
+
+
+// .nc-input
+//--------------------------------------------------------------------------
+.#{$_input} {
+    @extend %default-font;
+    @extend %default-input;
+    @extend %default-input-focus;
+}
+
+// .nc-form-actions
+//--------------------------------------------------------------------------
+.#{$_form_actions} {
+    @extend     %clearfix;
+    background: nc_color(lighten);
+    padding:    $default_padding;
+}
+
+//--------------------------------------------------------------------------
+
+.#{$_form_row} {
+    @extend %clearfix;
+}
+
+// .nc--vertical
+.#{$_form}.#{$__vertical} {
+    label {
+        display: block;
+    }
+}
+// .nc--vertical
+.#{$_form}.#{$__horizontal} {
+    .#{$_form_row} {
+        padding-left: 200px;
+        label {
+            padding-right: 10px;
+            padding-top:   7px;
+        }
+        label:first-child {
+            display:     block;
+            float:       left;
+            margin-left: -200px;
+            width:       180px;
+            text-align:  right;
+        }
+    }
+}
+
+//------------------------------------------------------------------------
+
+.#{$_caret} {
+    display:            inline-block;
+    border-color:       nc_color(grey);
+    vertical-align:     middle;
+    line-height:        20px;
+    margin-top:         -3px;
+    width:              0;
+    height:             0;
+    border-width:       5px;
+    border-style:       solid;
+    border-bottom:      none;
+    border-right-color: transparent $important;
+    border-left-color:  transparent $important;
+}
+
+//--------------------------------------------------------------------------
+
+.#{$_form},
+.#{$_global} form {
+    @extend %default-font;
+
+    textarea, input {
+        @extend  %default-font;
+        @extend  %default-input-focus;
+        @include box-sizing(border-box);
+    }
+
+    textarea,
+    input[type="text"],
+    input[type="password"],
+    input[type="datetime"],
+    input[type="datetime-local"],
+    input[type="date"],
+    input[type="month"],
+    input[type="time"],
+    input[type="week"],
+    input[type="number"],
+    input[type="email"],
+    input[type="url"],
+    input[type="search"],
+    input[type="tel"],
+    input[type="color"] {
+        @extend %default-input;
+        vertical-align: -1px;
+    }
+
+    textarea {
+        display: inherit;
+    }
+
+    //--------------------------------------------------------------------------
+
+    // select
+    select[multiple],
+    select[size] {
+        height: auto;
+    }
+
+    // like .nc-btn.nc-small
+    button,
+    input[type="submit"],
+    input[type="button"] {
+        @extend %btn_defaults;
+        @extend .nc-btn.nc--small;
+        height: auto;
+
+        // fix
+        &.hidden {
+            display:none;
+        }
+    }
+
+    button[type="submit"],
+    input[type="submit"] {
+        background-color: nc-color(blue);
+    }
+
+    select {
+        @extend %default-input;
+        @extend %default-input-focus;
+        height:  $line_height + $input_padding * 2 + 2;
+        // vertical-align: -3px;
+        width:   auto;
+    }
+    .#{$_select} {
+        position:      relative;
+        display:       inline-block;
+        height:        $line_height + $input_padding * 2;
+        margin-bottom: ceil($line_height / 2);
+        background:    nc_color(white);
+
+        .#{$_caret} {
+            position:       absolute;
+            top:            50%;
+            right:          9px;
+            margin-top:     -2px;
+        }
+
+        select {
+            position:      relative;
+            z-index:       1;
+            background:    transparent;
+            margin:        0;
+            display:       block;
+            padding-right: 20px;
+            height:        $line_height + $input_padding * 2;
+            width:         100%;
+            @include border-radius(0);
+            @include appearance(textfield);
+        }
+    }
+
+    //--------------------------------------------------------------------------
+
+    // Label
+    label {
+        // display:   block;
+        font-size: $font_size_small;
+        color:     nc_color(dark);
+    }
+
+    //--------------------------------------------------------------------------
+
+    .#{$_form_row} {
+        margin-bottom: $line_height;
+        select, input, textarea, .#{$_select} {
+            margin-bottom: 0;
+        }
+        label {
+            font-size: $font_size;
+            color:     nc_color(darken);
+        }
+        &>label:first-child {
+            font-size: $font_size_small;
+            color:     nc_color(dark);
+        }
+        &.#{$__horizontal} {
+            label {
+                display: inline;
+                padding-right: ceil($line_height/2)
+            }
+        }
+        &.#{$__vertical} {
+            label {
+                display: block;
+                // padding-right: ceil($line_height/2)
+            }
+        }
+    }
+
+    //--------------------------------------------------------------------------
+
+}
+
+input,select,textarea,.#{$_select} {
+    @include nc-mod-colors($include: grey, $background: false, $border: true);
+    &.#{$__mini} {width: 30px;}
+    &.#{$__small} {width: 60px;}
+    &.#{$__medium} {width: 120px;}
+    &.#{$__large} {width: 260px;}
+    &.#{$__xlarge} {width: 500px;}
+    &.#{$__blocked} {
+        display: block;
+        width:   100%;
+    }
+}
+select,.#{$_select} {
+    &.#{$__mini} {width: 38px;}
+    &.#{$__small} {width: 68px;}
+    &.#{$__medium} {width: 128px;}
+    &.#{$__large} {width: 268px;}
+    &.#{$__xlarge} {width: 508px;}
+}
+
+//--------------------------------------------------------------------------
+// FIXES:
+@include firefox(".#{$_select} .#{$_caret}") {
+    display: none;
+}
+@include firefox(".#{$_select} select") {
+    padding: $input_padding !important;
+}
+
+//--------------------------------------------------------------------------

@@ -1,0 +1,13 @@
+/************* fonts *************/
+//--------------------------------------------------------------------------
+
+@include font-face("SegoeWP", font-files("SegoeWP.ttf"));
+@include font-face("SegoeWP", font-files("SegoeWP-Bold.ttf"), $weight: bold);
+@include font-face("SegoeWP", font-files("SegoeWP-Light.ttf"), $weight: 200);
+
+// @include font-face("SegoeWP-Black", font-files("SegoeWP-Black.ttf"));
+// @include font-face("SegoeWP-Light", font-files("SegoeWP-Light.ttf"));
+// @include font-face("SegoeWP-Semibold", font-files("SegoeWP-Semibold.ttf"));
+// @include font-face("SegoeWP-Semilight", font-files("SegoeWP-Semilight.ttf"));
+
+//--------------------------------------------------------------------------

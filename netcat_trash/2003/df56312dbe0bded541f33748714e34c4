@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<netcatml>
+  <subdivisions>
+    <subdivision subdivision_id="14" catalogue_id="1" parent_sub_id="8">
+      <Subdivision_Name>Вывод денег на кошелёк</Subdivision_Name>
+      <EnglishName>getmoney</EnglishName>
+      <Checked>1</Checked>
+    </subdivision>
+    <subdivision subdivision_id="10" catalogue_id="1" parent_sub_id="8">
+      <Subdivision_Name>Слайдер2</Subdivision_Name>
+      <EnglishName>slider2</EnglishName>
+      <Checked>1</Checked>
+    </subdivision>
+    <subdivision subdivision_id="9" catalogue_id="1" parent_sub_id="8">
+      <Subdivision_Name>Слайдер1</Subdivision_Name>
+      <EnglishName>slider1</EnglishName>
+      <Checked>1</Checked>
+    </subdivision>
+    <subdivision subdivision_id="11" catalogue_id="1" parent_sub_id="8">
+      <Subdivision_Name>Слайдер3</Subdivision_Name>
+      <EnglishName>slider3</EnglishName>
+      <Checked>1</Checked>
+    </subdivision>
+  </subdivisions>
+  <sub_classes>
+    <sub_class sub_class_id="16" subdivision_id="14" class_id="2003">
+      <Sub_Class_Name>Вывод денег на кошелёк</Sub_Class_Name>
+      <EnglishName>getmoney</EnglishName>
+      <Checked>1</Checked>
+    </sub_class>
+    <sub_class sub_class_id="12" subdivision_id="10" class_id="2003">
+      <Sub_Class_Name>Слайдер2</Sub_Class_Name>
+      <EnglishName>slider2</EnglishName>
+      <Checked>1</Checked>
+    </sub_class>
+    <sub_class sub_class_id="11" subdivision_id="9" class_id="2003">
+      <Sub_Class_Name>Слайдер1</Sub_Class_Name>
+      <EnglishName>slider1</EnglishName>
+      <Checked>1</Checked>
+    </sub_class>
+  </sub_classes>
+  <fields>
+    <field field_id="2333" type_of_data_id="1">
+      <Field_Name>Header</Field_Name>
+      <Description>Заглавие</Description>
+    </field>
+    <field field_id="2334" type_of_data_id="3">
+      <Field_Name>Text</Field_Name>
+      <Description>Текст</Description>
+    </field>
+  </fields>
+  <messages>
+    <message message_id="12" class_id="2003" subdivision_id="14" sub_class_id="16">
+      <User_ID>1</User_ID>
+      <Priority>1</Priority>
+      <Checked>1</Checked>
+      <IP>188.168.235.29</IP>
+      <UserAgent>Mozilla/5.0 (Windows NT 6.1; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0</UserAgent>
+      <Parent_Message_ID>0</Parent_Message_ID>
+      <Created>2013-10-04 13:07:11</Created>
+      <LastUpdated>2013-10-04 13:07:11</LastUpdated>
+      <LastUser_ID>0</LastUser_ID>
+      <LastIP/>
+      <LastUserAgent/>
+      <Keyword/>
+      <Header><![CDATA[Вывод денег]]></Header>
+      <Text><![CDATA[<p>Вывод денег текст</p>]]></Text>
+    </message>
+    <message message_id="8" class_id="2003" subdivision_id="10" sub_class_id="12">
+      <User_ID>1</User_ID>
+      <Priority>1</Priority>
+      <Checked>1</Checked>
+      <IP>188.168.235.29</IP>
+      <UserAgent>Mozilla/5.0 (Windows NT 6.1; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0</UserAgent>
+      <Parent_Message_ID>0</Parent_Message_ID>
+      <Created>2013-10-04 12:59:59</Created>
+      <LastUpdated>2013-10-04 12:59:59</LastUpdated>
+      <LastUser_ID>0</LastUser_ID>
+      <LastIP/>
+      <LastUserAgent/>
+      <Keyword/>
+      <Header><![CDATA[Заглавие для слайдера 2]]></Header>
+      <Text><![CDATA[<p>Какой-то текст</p>]]></Text>
+    </message>
+    <message message_id="7" class_id="2003" subdivision_id="9" sub_class_id="11">
+      <User_ID>1</User_ID>
+      <Priority>1</Priority>
+      <Checked>1</Checked>
+      <IP>188.168.235.29</IP>
+      <UserAgent>Mozilla/5.0 (Windows NT 6.1; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0</UserAgent>
+      <Parent_Message_ID>0</Parent_Message_ID>
+      <Created>2013-10-04 12:59:25</Created>
+      <LastUpdated>2013-10-04 12:59:25</LastUpdated>
+      <LastUser_ID>0</LastUser_ID>
+      <LastIP/>
+      <LastUserAgent/>
+      <Keyword/>
+      <Header><![CDATA[Заглавие для слайдера 1]]></Header>
+      <Text><![CDATA[<p>Какой-то текст.</p>]]></Text>
+    </message>
+    <message message_id="9" class_id="2003" subdivision_id="11" sub_class_id="13">
+      <User_ID>1</User_ID>
+      <Priority>1</Priority>
+      <Checked>1</Checked>
+      <IP>188.168.235.29</IP>
+      <UserAgent>Mozilla/5.0 (Windows NT 6.1; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0</UserAgent>
+      <Parent_Message_ID>0</Parent_Message_ID>
+      <Created>2013-10-04 13:00:31</Created>
+      <LastUpdated>2013-10-04 13:00:31</LastUpdated>
+      <LastUser_ID>0</LastUser_ID>
+      <LastIP></LastIP>
+      <LastUserAgent></LastUserAgent>
+      <Keyword></Keyword>
+      <Header><![CDATA[Заглавие для слайдера 3]]></Header>
+      <Text><![CDATA[<p>Какой-то текст</p>]]></Text>
+    </message>
+  </messages>
+  <comments/>
+</netcatml>

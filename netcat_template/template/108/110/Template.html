@@ -1,0 +1,13 @@
+<!-- Header --><? if ( ! $nc_core->input->fetch_get('lsDisplayType')): ?>
+%Header
+<div id='content' class='content' <?=nc_ls_display_container('content'); ?>>
+<? endif ?>
+<h1><?=htmlspecialchars($f_title) ?></h1><!-- /Header -->
+
+<!-- Footer --><? if ( ! $nc_core->input->fetch_get('lsDisplayType')): ?>
+</div>
+<!-- /#content -->
+%Footer
+<? else: ?>
+<!-- -->
+<? endif ?><!-- /Footer -->

@@ -1,0 +1,507 @@
+/************* dashboard | Стили виджетов главной страницы *************/
+//--------------------------------------------------------------------------
+
+// $debug:             true;
+$dasboard_nav_size: 80px;
+
+//--------------------------------------------------------------------------
+
+@mixin widget-style($name, $background, $color:false, $border:false, $dark_icons: false) {
+    &.nc--#{$name} {
+
+        &>* {
+            background: $background;
+        }
+
+        @if $border {
+            border: 1px solid darken($background, 10%);
+        }
+
+        @if $color {
+            &, a, a:hover, th, .nc-alert, .nc-alert * {
+                color: darken($background, $color);
+            }
+        }
+
+        @if $dark_icons {
+            i.nc-icon-x.nc--white {
+                @extend .nc-icon-x.nc--dark;
+            }
+            i.nc-icon-l.nc--white {
+                @extend .nc-icon-l.nc--dark;
+            }
+            i.nc-icon.nc--white {
+                @extend .nc-icon.nc--dark;
+            }
+        }
+
+        hr {
+            background-color: $background - 30;
+        }
+
+        .nc-bg-lighten {
+            background-color: lighten($background, 20%);
+        }
+        .nc-bg-light {
+            background-color: lighten($background, 10%);
+        }
+        .nc-bg-dark {
+            background-color: darken($background, 10%);
+        }
+        .nc-bg-darken {
+            background-color: darken($background, 15%);
+        }
+
+        .nc-btn {
+            background-color: #FFF;
+            color: $background;
+        }
+
+        .nc-alert {
+            border-color:     darken($background, 15%);
+            background-color: lighten($background, 15%);
+        }
+    }
+}
+
+//--------------------------------------------------------------------------
+
+#nc_dashboard_reset_widgets {
+    display: none;
+}
+
+.nc-widget {
+    @extends %default-font;
+
+    height:    100%;
+    width:     100%;
+    overflow:  hidden;
+    position:  relative;
+    font-size: 14px;
+    // font-family: "SegoeWP-Light";
+
+    &.nc--loader {
+        background: nc_color(light) image-url('navbar-loader-dark.gif') no-repeat 50% 50%;
+    }
+
+    td, th {
+        border-color: rgba(0,0,0,.1);
+    }
+
+    small {
+        font-size: 12px;
+    }
+
+    &, body & a, th, .nc-alert {
+        font-weight: 200;
+        color: #FFF;
+    }
+    .nc-alert {
+        width:  auto !important;
+        height: auto !important;
+        a {
+            text-decoration: underline;
+        }
+    }
+    body & a:hover {
+        color: #FFF;
+        @include opacity(.7);
+    }
+    &>* {
+        height: 100%;
+        width:  100%;
+    }
+    .nc-widget-link {
+        cursor: pointer;
+
+        &:hover {
+            @include opacity(.8);
+        }
+    }
+    .nc-widget-grid {
+        height:          100%;
+        width:           100%;
+        border-collapse: collapse;
+        border:          none;
+        &,td,th {
+            padding: 0;
+            margin:  0;
+        }
+        td,th {
+            padding: 10px;
+
+            &.nc-text-center, .nc-text-center & {
+                padding:10px 0;
+            }
+        }
+    }
+    .nc-widget-scrolled {
+        height:   100%;
+        overflow: auto;
+    }
+
+    // @include box-shadow(0 0 80px rgba(0,0,0,.05) inset);
+
+    @include widget-style('lighten', #F7F7F7, 60%, true, true);
+    @include widget-style('light'  , #cacfd2, 60%, false, true);
+    @include widget-style('grey'   , #7f8c8d);
+    @include widget-style('dark'   , #566473);
+    @include widget-style('cyan'   , #16a085);
+    @include widget-style('green'  , #27ae60);
+    @include widget-style('blue'   , #2980b9);
+    @include widget-style('purple' , #9b59b6);
+    @include widget-style('yellow' , #f3cf3f, 40%, false, true);
+    @include widget-style('orange' , #eb974e);
+    @include widget-style('red'    , #e74c3c);
+    @include widget-style('olive'  , #c2c3a8);
+
+    .nc-bg-lighten {
+        background-color: rgba(#FFF, .40);
+    }
+    .nc-bg-light {
+        background-color: rgba(#FFF, .25);
+    }
+    .nc-bg-dark {
+        background-color: rgba(#000, .20);
+    }
+    .nc-bg-darken {
+        background-color: rgba(#000, .4);
+    }
+
+    &.nc--text-dark, .nc--text-dark {
+        &, a {
+            color: rgba(0,0,0,.6);
+            text-shadow: 0 1px 0 rgba(255,255,255,.1);
+        }
+    }
+
+    .nc--gradient {
+        @include background(linear-gradient(center top, rgba(#FFF,0), rgba(#FFF,.2) 100%));
+    }
+
+    .nc-position-tl,
+    .nc-position-tr,
+    .nc-position-bl,
+    .nc-position-br,
+    .nc-position-b,
+    .nc-position-t {
+        padding: 10px;
+        @include box-sizing(border-box);
+    }
+    .nc-position-b,
+    .nc-position-t {
+        &.nc-text-center {
+            padding: 10px 0;
+        }
+    }
+}
+
+
+//--------------------------------------------------------------------------
+
+// Палитра цветов в диалоге ред./изменения
+.nc-widget-color-palette {
+    margin: 0 -2px 0 -3px;
+
+    &>a {
+        float:      left;
+        margin:     0 3px 0 2px;
+        border:     1px solid #DDD;
+        padding:    5px;
+        background: #FFF;
+        display:    block;
+        @extend %border-radius-small;
+
+        &.nc--selected {
+            padding:    0;
+            border:     none;
+            // margin-top: 1px;
+            border:     1px solid #555;
+            @include box-shadow(0 1px 0 #FFF);
+
+            .nc-widget, .nc-widget span {
+                @include box-shadow(0 1px 1px rgba(#000, .15) inset);
+                display:       block;
+                width:         25px;
+                height:        25px;
+                border-radius: 0;
+            }
+            // background: #333
+            // @include box-shadow(0 1px 1px rgba(0,0,0,.1) inset);
+        }
+        .nc-widget, .nc-widget span {
+            display: block;
+            border:  none;
+            // @include box-shadow(0 0 1px rgba(0,0,0,.3) inset);
+            width:  16px;
+            height: 16px;
+            // border-radius:10px;
+        }
+    }
+}
+
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+
+body.nc-dashboard-body {
+    background: #FFF image-url('bg_dashboard.png') no-repeat 100% 100% !important;
+    overflow: hidden;
+    @include box-sizing(border-box);
+    height: 100%;
+    margin-left: 5px;
+}
+
+
+// .nc-dashboard-toolbar {
+//     padding:    0 0 18px 0;
+//     z-index:    3;
+//     position:   relative;
+//     background: #FFF;
+
+//     &.nc-show-border {
+//         @extend %box-shadow-small;
+//         border-bottom: 1px solid nc_color(light);
+//     }
+//     // @extend %box-shadow-small;
+//     // @include box-shadow(0 5px 5px #FFF);
+// }
+.nc-dashboard {
+    // background: #F00;
+    position:      relative;
+    margin:        0 0 0 -12px;
+    padding-left:  2px;
+    overflow:      auto;
+    height:        100%;
+
+    &>* {
+        margin: -8px 0 0 2px;
+        // @include transition(height .4s);
+        padding-bottom: 10px;
+    }
+    &.nc-edit-mode > div {
+        padding-bottom: 200px;
+    }
+
+    // Заглушка для нового места виджета
+    .preview-holder {
+        z-index:    1;
+        position:   absolute;
+        border:     2px dashed #CCC;
+        margin:     -2px 0 0 -2px;
+        list-style: none;
+        display:    block;
+        @include    box-sizing(border-box);
+    }
+}
+
+//--------------------------------------------------------------------------
+
+
+.nc-widget-box {
+    z-index:    2;
+    position:   absolute;
+    background: nc_color(light);
+
+    // &:hover {
+    //     z-index: 12;
+    // }
+
+    // Анимация: позиция
+    .ready &:not(.preview-holder) {
+        @include transition(left .3s, top .3s);
+    }
+
+    // Анимация: изменение размера
+    .ready &:not(.preview-holder) {
+        @include transition(left .3s, top .3s, width .2s, height .2s);
+    }
+
+    // Анимация: возвращения
+    &.player-revert {
+        z-index:            10!important;
+        @include transition(left .3s, top .3s !important);
+    }
+
+    &.dragging,
+    .ui-resizable-resizing {
+        opacity:            0.9;
+        z-index:            11 !important;
+
+        @include box-shadow(0 3px 20px rgba(0,0,0,.3));
+        @include transition(all 0s !important);
+    }
+
+    .nc-widget-overlay {
+        cursor:     move;
+        display:    none;
+        position:   absolute;
+        width:      100%;
+        height:     100%;
+        top:        0;
+        left:       0;
+        background: rgba(255,255,255,.2);
+        border: 5px solid rgba(255,255,255,.4);
+
+        @include box-sizing(border-box);
+
+        .nc-edit-mode & {display: block;}
+    }
+
+    .nc-widget-actions
+    {
+        position: absolute;
+        right:    5px;
+        bottom:   5px;
+
+        .nc-edit-mode & {
+            bottom: inherit;
+            top: 5px;
+        }
+
+        i {
+            display:  none;
+            cursor: pointer;
+            margin-left: 2px;
+            .nc-edit-mode & {display: inline-block;}
+            .nc-edit-mode &.nc--widget-maximize {display: none !important;}
+        }
+    }
+    &:hover .nc-widget-actions i.nc--widget-maximize {
+        display: inline-block;
+    }
+}
+
+//--------------------------------------------------------------------------
+
+
+.nc-dashboard-full {
+    height:   100%;
+    width:    100%;
+    position: fixed;
+    z-index:  2;
+    top:      0;
+    left:     0;
+    padding:  0 (40px + $dasboard_nav_size) 20px 5px;
+
+    // @extend %box-shadow-small;
+    @include box-sizing(border-box);
+
+    @if $debug {background: rgba(#F00,.3)}
+
+    .nc-content {
+        background: nc_color(light) image-url('navbar-loader-dark.gif') no-repeat 50% 50%;
+        position:   relative;
+        overflow:   hidden;
+        height:     100%;
+        border:     1px solid nc_color(light);
+
+        @include box-sizing(border-box);
+
+        @if $debug {background: rgba(#0F0,.3)}
+
+        a.nc-close-fullscreen {
+            background: #FFF;
+            padding:    5px;
+            position:   absolute;
+            right:      5px;
+            top:        5px;
+        }
+    }
+
+    .nc-nav {
+        float:        right;
+        top:          0;
+        right:        20px;
+        height:       100%;
+        padding:      $dasboard_nav_size 0;
+        width:        $dasboard_nav_size;
+        margin-right: -($dasboard_nav_size) - 20;
+        @include box-sizing(border-box);
+
+        @if $debug {background: rgba(#00F,.3)}
+
+        .nc-nav-tabs {
+            height:   100%;
+            overflow: hidden;
+
+            @if $debug {background: rgba(#0FF,.3)}
+
+            > div.nc-widget {
+                @include box-sizing(border-box);
+                margin-top: 10px;
+                width:      $dasboard_nav_size;
+                height:     $dasboard_nav_size;
+
+                @if $debug {background: rgba(#000,.3)}
+
+                &:first-child {
+                    margin-top: 0;
+                }
+                div,a {
+                    display:  block;
+                    overflow: hidden;
+                    width:    100%;
+                    height:   100%;
+                }
+                a:hover {
+                        background: rgba(#FFF, 0.3);
+                }
+
+                i.nc-icon-x {
+                    $offset: ceil( ($dasboard_nav_size - 50)/2 );
+                    margin:  $offset 0 0 $offset;
+                }
+                span {
+                    display:   block;
+                    padding:   10px 0 0 10px;
+                    font-size: $font_size_large * 2;
+                    @include opacity(.3);
+                }
+            }
+
+        }
+    }
+}
+
+//--------------------------------------------------------------------------
+
+
+// Стили областей для изменения размера
+.ui-resizable-handle {
+    position:   absolute;
+    font-size:  0.1px;
+    display:    none !important;
+    z-index:    3 !important;
+    // background: #F00;
+
+    .nc-edit-mode & {display: block !important;}
+}
+.ui-resizable-s {
+    cursor: s-resize;
+    height: 10px;
+    width:  100%;
+    bottom: -5px;
+    left:   0;
+}
+.ui-resizable-e {
+    cursor: e-resize;
+    width:  10px;
+    right:  -5px;
+    top:    0;
+    height: 100%;
+}
+.ui-resizable-se {
+    cursor: se-resize;
+    width:  20px;
+    height: 20px;
+    right:  0;
+    bottom: 0;
+    background: url("../img/resize-handler.png") no-repeat 100% 100%;
+    @include opacity(.5);
+    &:hover {
+        @include opacity(1);
+    }
+}
+.ui-resizable-resizing {
+    z-index: 999 !important;
+}

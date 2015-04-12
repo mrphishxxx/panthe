@@ -1,0 +1,41 @@
+//##########################################################################
+// Custom functions
+//##########################################################################
+
+// Возвращает цвет
+@function nc_color(
+	$color_name, // название цвета
+	$mod: false  // модификация цвета (bool) или (-100% до + 100%)
+)
+{
+	$names:  join($accent_color_names, $bw_color_names);
+	$values: join($accent_color_values, $bw_color_values);
+	$color:  nth($values, index($names, $color_name));
+
+	@if type-of($mod) == bool {
+		@return $color;
+	}
+	@else {
+		@return mix($color, if($mod < 0, #000, #FFF), if($mod < 0, 100% + $mod, 100% - $mod));
+	}
+}
+
+//--------------------------------------------------------------------------
+
+@function negative($values) {
+	@return mod($values, 0, -1);
+}
+
+//--------------------------------------------------------------------------
+
+@function mod($values, $add:0, $multiply:1) {
+	$result: null;
+
+	@each $val in $values {
+		$result: append($result, ($val + $add) * $multiply);
+	}
+
+	@return ($result)
+}
+
+//--------------------------------------------------------------------------

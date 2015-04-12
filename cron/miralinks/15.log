@@ -1,0 +1,1664 @@
+
+
+2014-12-25 08:50:02
+IP - 91.238.82.253
+error<br>exception 'Zend_Http_Client_Adapter_Exception' with message 'Unable to Connect to proxy server 91.238.82.253:8080. Error #111: Connection refused' in /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/Zend/Http/Client/Adapter/Proxy.php:98
+Stack trace:
+#0 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/Zend/Http/Client.php(827): Zend_Http_Client_Adapter_Proxy->connect('www.miralinks.r...', 80, false)
+#1 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(832): Zend_Http_Client->request()
+#2 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#3 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#4 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#5 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#6 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#7 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#8 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#9 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#10 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#11 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#12 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#13 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#14 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#15 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#16 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#17 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#18 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#19 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#20 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#21 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#22 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#23 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#24 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#25 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#26 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#27 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#28 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#29 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#30 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(283): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#31 [internal function]: locationToTasksPlaceTableDone(Object(phpQueryObject))
+#32 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('locationToTasks...', Array)
+#33 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/plugins/WebBrowser.php(83): phpQuery::callbackRun('locationToTasks...', Array)
+#34 [internal function]: phpQueryObjectPlugin_WebBrowser::location(Object(phpQueryObject), 'http://www.mira...')
+#35 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryObject.php(2308): call_user_func_array(Array, Array)
+#36 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(171): phpQueryObject->__call('location', Array)
+#37 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(171): phpQueryObject->location('http://www.mira...')
+#38 [internal function]: loginTryDone1(Object(phpQueryObject))
+#39 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('loginTryDone1', Array)
+#40 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/plugins/WebBrowser.php(317): phpQuery::callbackRun('loginTryDone1', Array)
+#41 [internal function]: phpQueryPlugin_WebBrowser::handleSubmit(Object(DOMEvent))
+#42 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array(Array, Array)
+#43 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryEvents.php(73): phpQuery::callbackRun(Array, Array)
+#44 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryObject.php(1399): phpQueryEvents::trigger('7f1241535aac3f3...', 'submit', Array, Object(DOMElement))
+#45 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryObject.php(1466): phpQueryObject->trigger('submit')
+#46 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(165): phpQueryObject->submit()
+#47 [internal function]: loadMainSuccess1(Object(phpQueryObject))
+#48 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('loadMainSuccess...', Array)
+#49 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/plugins/WebBrowser.php(116): phpQuery::callbackRun('loadMainSuccess...', Array, NULL)
+#50 [internal function]: phpQueryPlugin_WebBrowser::browserGet('http://www.mira...', 'loadMainSuccess...')
+#51 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1333): call_user_func_array(Array, Array)
+#52 [internal function]: phpQueryPlugins->__call('browserGet', Array)
+#53 [internal function]: phpQueryPlugins->browserGet('http://www.mira...', 'loadMainSuccess...')
+#54 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array(Array, Array)
+#55 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1191): phpQuery::callbackRun(Array, Array)
+#56 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(397): phpQuery::browserGet('http://www.mira...', 'loadMainSuccess...')
+#57 /var/www/iforget/data/www/iforget.ru/cron/miralinks/get_tasks_15.php(55): getTasks('zmei116', '1qazwsxiforget')
+#58 {main}exception 'Zend_Http_Client_Adapter_Exception' with message 'Unable to Connect to proxy server 91.238.82.253:8080. Error #111: Connection refused' in /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/Zend/Http/Client/Adapter/Proxy.php:98
+Stack trace:
+#0 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/Zend/Http/Client.php(827): Zend_Http_Client_Adapter_Proxy->connect('www.miralinks.r...', 80, false)
+#1 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(832): Zend_Http_Client->request()
+#2 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/plugins/WebBrowser.php(106): phpQuery::ajax(Array)
+#3 [internal function]: phpQueryPlugin_WebBrowser::browserGet('http://www.mira...', 'loadMainSuccess...')
+#4 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1333): call_user_func_array(Array, Array)
+#5 [internal function]: phpQueryPlugins->__call('browserGet', Array)
+#6 [internal function]: phpQueryPlugins->browserGet('http://www.mira...', 'loadMainSuccess...')
+#7 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array(Array, Array)
+#8 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1191): phpQuery::callbackRun(Array, Array)
+#9 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(399): phpQuery::browserGet('http://www.mira...', 'loadMainSuccess...')
+#10 /var/www/iforget/data/www/iforget.ru/cron/miralinks/get_tasks_15.php(55): getTasks('zmei116', '1qazwsxiforget')
+#11 {main}
+Array
+(
+    [0] => Array
+        (
+            [links] => Array
+                (
+                )
+
+            [id] => 4187206
+            [sid] => 109692
+            [site] => zdepthing.com
+            [tema] => О широкоформатной печати в оформлении помещения
+            [status] => ground_choosed
+            [lay_out] => 1
+            [text] => 
+            [keywords] => 
+            [url_statyi] => 
+            [title] => 
+            [comments] => 
+        )
+
+    [1] => Array
+        (
+            [links] => Array
+                (
+                )
+
+            [id] => 4201386
+            [sid] => 109692
+            [site] => zdepthing.com
+            [tema] => Новости спорта в мире от сайта parventa.lv. Как победить букмекерские конторы?
+            [status] => ground_choosed
+            [lay_out] => 1
+            [text] => 
+            [keywords] => 
+            [url_statyi] => 
+            [title] => 
+            [comments] => 
+        )
+
+    [2] => Array
+        (
+            [links] => Array
+                (
+                )
+
+            [id] => 4186635
+            [sid] => 7161
+            [site] => emiz.kiev.ua
+            [tema] => Оптимизация сайта под поисковики как залог его популярности
+            [status] => ground_choosed
+            [lay_out] => 1
+            [text] => 
+            [keywords] => 
+            [url_statyi] => 
+            [title] => 
+            [comments] => 
+        )
+
+)
+84 sec.
+ 
+
+
+2014-12-25 09:50:01
+IP - 193.0.129.204
+error<br>exception 'Zend_Http_Client_Adapter_Exception' with message 'Unable to Connect to proxy server 193.0.129.204:8080. Error #111: Connection refused' in /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/Zend/Http/Client/Adapter/Proxy.php:98
+Stack trace:
+#0 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/Zend/Http/Client.php(827): Zend_Http_Client_Adapter_Proxy->connect('www.miralinks.r...', 80, false)
+#1 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(832): Zend_Http_Client->request()
+#2 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#3 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#4 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#5 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#6 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#7 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#8 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#9 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#10 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#11 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#12 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#13 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#14 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#15 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#16 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#17 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#18 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#19 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#20 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#21 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#22 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#23 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#24 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#25 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#26 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#27 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#28 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#29 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#30 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#31 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#32 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#33 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#34 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#35 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#36 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#37 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#38 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#39 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#40 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#41 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#42 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#43 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#44 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#45 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#46 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#47 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#48 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#49 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#50 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#51 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#52 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#53 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#54 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#55 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#56 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#57 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#58 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#59 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#60 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#61 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#62 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#63 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#64 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#65 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#66 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#67 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#68 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#69 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#70 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#71 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#72 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#73 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#74 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#75 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#76 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#77 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#78 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#79 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#80 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#81 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#82 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#83 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#84 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#85 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#86 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#87 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#88 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#89 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#90 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#91 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#92 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#93 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#94 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#95 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#96 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#97 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#98 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#99 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#100 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#101 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#102 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#103 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#104 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#105 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#106 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#107 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#108 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#109 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#110 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#111 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#112 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#113 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#114 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#115 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#116 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#117 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#118 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#119 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#120 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#121 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#122 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#123 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#124 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#125 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#126 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#127 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#128 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#129 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#130 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#131 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#132 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#133 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#134 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#135 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#136 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#137 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#138 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#139 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#140 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#141 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#142 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#143 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#144 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#145 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#146 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#147 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#148 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#149 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#150 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#151 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#152 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#153 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#154 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#155 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#156 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#157 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#158 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#159 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#160 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#161 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#162 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#163 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#164 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#165 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#166 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#167 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#168 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#169 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#170 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#171 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#172 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#173 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#174 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#175 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#176 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#177 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#178 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#179 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#180 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#181 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#182 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#183 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#184 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#185 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#186 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#187 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#188 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#189 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#190 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#191 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#192 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#193 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#194 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#195 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#196 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#197 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#198 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#199 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#200 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#201 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#202 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#203 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#204 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#205 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#206 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#207 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#208 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#209 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#210 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#211 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#212 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#213 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#214 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#215 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#216 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#217 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#218 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#219 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#220 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#221 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#222 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#223 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#224 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#225 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#226 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#227 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#228 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#229 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#230 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#231 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#232 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#233 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#234 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#235 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#236 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#237 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#238 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#239 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#240 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#241 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#242 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#243 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#244 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#245 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#246 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#247 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#248 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#249 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#250 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#251 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#252 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#253 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#254 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#255 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#256 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#257 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#258 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#259 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#260 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#261 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#262 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#263 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#264 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#265 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#266 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#267 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#268 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#269 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#270 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#271 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#272 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#273 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#274 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#275 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#276 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#277 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#278 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#279 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#280 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#281 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#282 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#283 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#284 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#285 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#286 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#287 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#288 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#289 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#290 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#291 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#292 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#293 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#294 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#295 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#296 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#297 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#298 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#299 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#300 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#301 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#302 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#303 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#304 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#305 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#306 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#307 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#308 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#309 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#310 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#311 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#312 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#313 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#314 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#315 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#316 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#317 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#318 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#319 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#320 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#321 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#322 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#323 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#324 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#325 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#326 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#327 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#328 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#329 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#330 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#331 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#332 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#333 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#334 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#335 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#336 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#337 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#338 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#339 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#340 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#341 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#342 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#343 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#344 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#345 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#346 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#347 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#348 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#349 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#350 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#351 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#352 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#353 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#354 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#355 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#356 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#357 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#358 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#359 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#360 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#361 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#362 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#363 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#364 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#365 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#366 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#367 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#368 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#369 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#370 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#371 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#372 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#373 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#374 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#375 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#376 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#377 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#378 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#379 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#380 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#381 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#382 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#383 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#384 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#385 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#386 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#387 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#388 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#389 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#390 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#391 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#392 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#393 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#394 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#395 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#396 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#397 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#398 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#399 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#400 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#401 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#402 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#403 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#404 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#405 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#406 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#407 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#408 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#409 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#410 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#411 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#412 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#413 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#414 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#415 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#416 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#417 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#418 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#419 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#420 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#421 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#422 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#423 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#424 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#425 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#426 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#427 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#428 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#429 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#430 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#431 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#432 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#433 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#434 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#435 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#436 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#437 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#438 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#439 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#440 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#441 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#442 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#443 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#444 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#445 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#446 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#447 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#448 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#449 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#450 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#451 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#452 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#453 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#454 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#455 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#456 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#457 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#458 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#459 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#460 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#461 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#462 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#463 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#464 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#465 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#466 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#467 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#468 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#469 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#470 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#471 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#472 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#473 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#474 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#475 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#476 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#477 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#478 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#479 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#480 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#481 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#482 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#483 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#484 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#485 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#486 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#487 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#488 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#489 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#490 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#491 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#492 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#493 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#494 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#495 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#496 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#497 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#498 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#499 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#500 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#501 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#502 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#503 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#504 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#505 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#506 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#507 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#508 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#509 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#510 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#511 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#512 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#513 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#514 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#515 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#516 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#517 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#518 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#519 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#520 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#521 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#522 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#523 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#524 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#525 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#526 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#527 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#528 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#529 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#530 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#531 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#532 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#533 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#534 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#535 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#536 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#537 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#538 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#539 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#540 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#541 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#542 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#543 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#544 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#545 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#546 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#547 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#548 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#549 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#550 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#551 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#552 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#553 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#554 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#555 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#556 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#557 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#558 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#559 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#560 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#561 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#562 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#563 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#564 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#565 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#566 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#567 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#568 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#569 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#570 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#571 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#572 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#573 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#574 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#575 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#576 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#577 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#578 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#579 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#580 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#581 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#582 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#583 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#584 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#585 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#586 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#587 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#588 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#589 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#590 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#591 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#592 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#593 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#594 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#595 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#596 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#597 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#598 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#599 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#600 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#601 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#602 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#603 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#604 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#605 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#606 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#607 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#608 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#609 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#610 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#611 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#612 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#613 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#614 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#615 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#616 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#617 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#618 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#619 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#620 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#621 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#622 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#623 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#624 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#625 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#626 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#627 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#628 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#629 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#630 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#631 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#632 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#633 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#634 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#635 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#636 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#637 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#638 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#639 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#640 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#641 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#642 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#643 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#644 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#645 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#646 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#647 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#648 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#649 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#650 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#651 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#652 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#653 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#654 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#655 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#656 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#657 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#658 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#659 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#660 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#661 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#662 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#663 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#664 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#665 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#666 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#667 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#668 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#669 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#670 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#671 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#672 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#673 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#674 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#675 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#676 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#677 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#678 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#679 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#680 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#681 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#682 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#683 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#684 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#685 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#686 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#687 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#688 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#689 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#690 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#691 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#692 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#693 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#694 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#695 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#696 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#697 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#698 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#699 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#700 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#701 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#702 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#703 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#704 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#705 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#706 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#707 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#708 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#709 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#710 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#711 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#712 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#713 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#714 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#715 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#716 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#717 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#718 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(283): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#719 [internal function]: locationToTasksPlaceTableDone(Object(phpQueryObject))
+#720 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('locationToTasks...', Array)
+#721 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/plugins/WebBrowser.php(83): phpQuery::callbackRun('locationToTasks...', Array)
+#722 [internal function]: phpQueryObjectPlugin_WebBrowser::location(Object(phpQueryObject), 'http://www.mira...')
+#723 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryObject.php(2308): call_user_func_array(Array, Array)
+#724 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(171): phpQueryObject->__call('location', Array)
+#725 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(171): phpQueryObject->location('http://www.mira...')
+#726 [internal function]: loginTryDone1(Object(phpQueryObject))
+#727 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('loginTryDone1', Array)
+#728 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/plugins/WebBrowser.php(317): phpQuery::callbackRun('loginTryDone1', Array)
+#729 [internal function]: phpQueryPlugin_WebBrowser::handleSubmit(Object(DOMEvent))
+#730 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array(Array, Array)
+#731 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryEvents.php(73): phpQuery::callbackRun(Array, Array)
+#732 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryObject.php(1399): phpQueryEvents::trigger('7beaa24aaa7b6a7...', 'submit', Array, Object(DOMElement))
+#733 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryObject.php(1466): phpQueryObject->trigger('submit')
+#734 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(165): phpQueryObject->submit()
+#735 [internal function]: loadMainSuccess1(Object(phpQueryObject))
+#736 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('loadMainSuccess...', Array)
+#737 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/plugins/WebBrowser.php(116): phpQuery::callbackRun('loadMainSuccess...', Array, NULL)
+#738 [internal function]: phpQueryPlugin_WebBrowser::browserGet('http://www.mira...', 'loadMainSuccess...')
+#739 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1333): call_user_func_array(Array, Array)
+#740 [internal function]: phpQueryPlugins->__call('browserGet', Array)
+#741 [internal function]: phpQueryPlugins->browserGet('http://www.mira...', 'loadMainSuccess...')
+#742 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array(Array, Array)
+#743 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1191): phpQuery::callbackRun(Array, Array)
+#744 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(397): phpQuery::browserGet('http://www.mira...', 'loadMainSuccess...')
+#745 /var/www/iforget/data/www/iforget.ru/cron/miralinks/get_tasks_15.php(55): getTasks('zmei116', '1qazwsxiforget')
+#746 {main}exception 'Zend_Http_Client_Adapter_Exception' with message 'Unable to Connect to proxy server 193.0.129.204:8080. Error #111: Connection refused' in /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/Zend/Http/Client/Adapter/Proxy.php:98
+Stack trace:
+#0 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/Zend/Http/Client.php(827): Zend_Http_Client_Adapter_Proxy->connect('www.miralinks.r...', 80, false)
+#1 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(832): Zend_Http_Client->request()
+#2 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/plugins/WebBrowser.php(106): phpQuery::ajax(Array)
+#3 [internal function]: phpQueryPlugin_WebBrowser::browserGet('http://www.mira...', 'loadMainSuccess...')
+#4 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1333): call_user_func_array(Array, Array)
+#5 [internal function]: phpQueryPlugins->__call('browserGet', Array)
+#6 [internal function]: phpQueryPlugins->browserGet('http://www.mira...', 'loadMainSuccess...')
+#7 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array(Array, Array)
+#8 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1191): phpQuery::callbackRun(Array, Array)
+#9 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(399): phpQuery::browserGet('http://www.mira...', 'loadMainSuccess...')
+#10 /var/www/iforget/data/www/iforget.ru/cron/miralinks/get_tasks_15.php(55): getTasks('zmei116', '1qazwsxiforget')
+#11 {main}
+Array
+(
+    [0] => Array
+        (
+            [links] => Array
+                (
+                )
+
+            [id] => 4187206
+            [sid] => 109692
+            [site] => zdepthing.com
+            [tema] => О широкоформатной печати в оформлении помещения
+            [status] => ground_choosed
+            [lay_out] => 1
+            [text] => 
+            [keywords] => 
+            [url_statyi] => 
+            [title] => 
+            [comments] => 
+        )
+
+    [1] => Array
+        (
+            [links] => Array
+                (
+                )
+
+            [id] => 4201386
+            [sid] => 109692
+            [site] => zdepthing.com
+            [tema] => Новости спорта в мире от сайта parventa.lv. Как победить букмекерские конторы?
+            [status] => ground_choosed
+            [lay_out] => 1
+            [text] => 
+            [keywords] => 
+            [url_statyi] => 
+            [title] => 
+            [comments] => 
+        )
+
+    [2] => Array
+        (
+            [links] => Array
+                (
+                )
+
+            [id] => 4186635
+            [sid] => 7161
+            [site] => emiz.kiev.ua
+            [tema] => Оптимизация сайта под поисковики как залог его популярности
+            [status] => ground_choosed
+            [lay_out] => 1
+            [text] => 
+            [keywords] => 
+            [url_statyi] => 
+            [title] => 
+            [comments] => 
+        )
+
+)
+445 sec.
+ 
+
+
+2014-12-25 11:50:01
+IP - 193.0.129.206
+84 sec.
+ 
+
+
+2014-12-25 12:50:01
+IP - 193.0.129.246
+error<br>exception 'Zend_Http_Client_Exception' with message 'Unable to read response, or response is empty' in /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/Zend/Http/Client.php:836
+Stack trace:
+#0 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(832): Zend_Http_Client->request()
+#1 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#2 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#3 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#4 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#5 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#6 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#7 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#8 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#9 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#10 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#11 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#12 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#13 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#14 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#15 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#16 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#17 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#18 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#19 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#20 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#21 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#22 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#23 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#24 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#25 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#26 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#27 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#28 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#29 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#30 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#31 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#32 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#33 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#34 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#35 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#36 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#37 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#38 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#39 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#40 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#41 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#42 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#43 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#44 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#45 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#46 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#47 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#48 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#49 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#50 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#51 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#52 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#53 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#54 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#55 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#56 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#57 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#58 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#59 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#60 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#61 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#62 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#63 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#64 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#65 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#66 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#67 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#68 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#69 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#70 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#71 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#72 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#73 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#74 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#75 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#76 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#77 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#78 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#79 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#80 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#81 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#82 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#83 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#84 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#85 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#86 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#87 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#88 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#89 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#90 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#91 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#92 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#93 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#94 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#95 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#96 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#97 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#98 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#99 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#100 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#101 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#102 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#103 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#104 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#105 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#106 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#107 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#108 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#109 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#110 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#111 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#112 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#113 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#114 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#115 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#116 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#117 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#118 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#119 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#120 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#121 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#122 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#123 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#124 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#125 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#126 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#127 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#128 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#129 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#130 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#131 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#132 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#133 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#134 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#135 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#136 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#137 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#138 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#139 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#140 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#141 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#142 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#143 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#144 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#145 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#146 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#147 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#148 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#149 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#150 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#151 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#152 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#153 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#154 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#155 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#156 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#157 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#158 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#159 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#160 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#161 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#162 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#163 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#164 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#165 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#166 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#167 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#168 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#169 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#170 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#171 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#172 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#173 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#174 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#175 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#176 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#177 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#178 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#179 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#180 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#181 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#182 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#183 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#184 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#185 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#186 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#187 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#188 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#189 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#190 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#191 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#192 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#193 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#194 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#195 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#196 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#197 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#198 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#199 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#200 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#201 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#202 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#203 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#204 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#205 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#206 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#207 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#208 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#209 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#210 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#211 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#212 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#213 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#214 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#215 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#216 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#217 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#218 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#219 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#220 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#221 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#222 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#223 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#224 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#225 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#226 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#227 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#228 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#229 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#230 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#231 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#232 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#233 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#234 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#235 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#236 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#237 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#238 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#239 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#240 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#241 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#242 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#243 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#244 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#245 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#246 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#247 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#248 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#249 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#250 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#251 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#252 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#253 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#254 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#255 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#256 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#257 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#258 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#259 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#260 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#261 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#262 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#263 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#264 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#265 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#266 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#267 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#268 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#269 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#270 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#271 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#272 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#273 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#274 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#275 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#276 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#277 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#278 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#279 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#280 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#281 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(283): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#282 [internal function]: locationToTasksPlaceTableDone(Object(phpQueryObject))
+#283 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('locationToTasks...', Array)
+#284 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/plugins/WebBrowser.php(83): phpQuery::callbackRun('locationToTasks...', Array)
+#285 [internal function]: phpQueryObjectPlugin_WebBrowser::location(Object(phpQueryObject), 'http://www.mira...')
+#286 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryObject.php(2308): call_user_func_array(Array, Array)
+#287 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(171): phpQueryObject->__call('location', Array)
+#288 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(171): phpQueryObject->location('http://www.mira...')
+#289 [internal function]: loginTryDone1(Object(phpQueryObject))
+#290 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('loginTryDone1', Array)
+#291 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/plugins/WebBrowser.php(317): phpQuery::callbackRun('loginTryDone1', Array)
+#292 [internal function]: phpQueryPlugin_WebBrowser::handleSubmit(Object(DOMEvent))
+#293 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array(Array, Array)
+#294 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryEvents.php(73): phpQuery::callbackRun(Array, Array)
+#295 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryObject.php(1399): phpQueryEvents::trigger('d960a5b07853b2b...', 'submit', Array, Object(DOMElement))
+#296 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryObject.php(1466): phpQueryObject->trigger('submit')
+#297 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(165): phpQueryObject->submit()
+#298 [internal function]: loadMainSuccess1(Object(phpQueryObject))
+#299 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('loadMainSuccess...', Array)
+#300 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/plugins/WebBrowser.php(116): phpQuery::callbackRun('loadMainSuccess...', Array, NULL)
+#301 [internal function]: phpQueryPlugin_WebBrowser::browserGet('http://www.mira...', 'loadMainSuccess...')
+#302 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1333): call_user_func_array(Array, Array)
+#303 [internal function]: phpQueryPlugins->__call('browserGet', Array)
+#304 [internal function]: phpQueryPlugins->browserGet('http://www.mira...', 'loadMainSuccess...')
+#305 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array(Array, Array)
+#306 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1191): phpQuery::callbackRun(Array, Array)
+#307 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(397): phpQuery::browserGet('http://www.mira...', 'loadMainSuccess...')
+#308 /var/www/iforget/data/www/iforget.ru/cron/miralinks/get_tasks_15.php(55): getTasks('zmei116', '1qazwsxiforget')
+#309 {main}exception 'Zend_Http_Client_Adapter_Exception' with message 'Unable to Connect to proxy server 193.0.129.246:8080. Error #111: Connection refused' in /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/Zend/Http/Client/Adapter/Proxy.php:98
+Stack trace:
+#0 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/Zend/Http/Client.php(827): Zend_Http_Client_Adapter_Proxy->connect('www.miralinks.r...', 80, false)
+#1 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(832): Zend_Http_Client->request()
+#2 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/plugins/WebBrowser.php(106): phpQuery::ajax(Array)
+#3 [internal function]: phpQueryPlugin_WebBrowser::browserGet('http://www.mira...', 'loadMainSuccess...')
+#4 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1333): call_user_func_array(Array, Array)
+#5 [internal function]: phpQueryPlugins->__call('browserGet', Array)
+#6 [internal function]: phpQueryPlugins->browserGet('http://www.mira...', 'loadMainSuccess...')
+#7 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array(Array, Array)
+#8 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1191): phpQuery::callbackRun(Array, Array)
+#9 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(399): phpQuery::browserGet('http://www.mira...', 'loadMainSuccess...')
+#10 /var/www/iforget/data/www/iforget.ru/cron/miralinks/get_tasks_15.php(55): getTasks('zmei116', '1qazwsxiforget')
+#11 {main}
+Array
+(
+    [0] => Array
+        (
+            [links] => Array
+                (
+                )
+
+            [id] => 4187206
+            [sid] => 109692
+            [site] => zdepthing.com
+            [tema] => О широкоформатной печати в оформлении помещения
+            [status] => ground_choosed
+            [lay_out] => 1
+            [text] => 
+            [keywords] => 
+            [url_statyi] => 
+            [title] => 
+            [comments] => 
+        )
+
+    [1] => Array
+        (
+            [links] => Array
+                (
+                )
+
+            [id] => 4201386
+            [sid] => 109692
+            [site] => zdepthing.com
+            [tema] => Новости спорта в мире от сайта parventa.lv. Как победить букмекерские конторы?
+            [status] => ground_choosed
+            [lay_out] => 1
+            [text] => 
+            [keywords] => 
+            [url_statyi] => 
+            [title] => 
+            [comments] => 
+        )
+
+    [2] => Array
+        (
+            [links] => Array
+                (
+                )
+
+            [id] => 4186635
+            [sid] => 7161
+            [site] => emiz.kiev.ua
+            [tema] => Оптимизация сайта под поисковики как залог его популярности
+            [status] => ground_choosed
+            [lay_out] => 1
+            [text] => 
+            [keywords] => 
+            [url_statyi] => 
+            [title] => 
+            [comments] => 
+        )
+
+)
+204 sec.
+ 
+
+
+2014-12-25 14:50:02
+IP - 91.238.82.226
+error<br>exception 'Zend_Http_Client_Exception' with message 'Unable to read response, or response is empty' in /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/Zend/Http/Client.php:836
+Stack trace:
+#0 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(832): Zend_Http_Client->request()
+#1 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#2 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#3 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#4 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#5 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#6 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#7 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#8 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#9 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#10 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#11 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#12 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#13 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#14 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#15 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#16 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#17 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#18 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#19 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#20 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#21 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(283): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#22 [internal function]: locationToTasksPlaceTableDone(Object(phpQueryObject))
+#23 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('locationToTasks...', Array)
+#24 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/plugins/WebBrowser.php(83): phpQuery::callbackRun('locationToTasks...', Array)
+#25 [internal function]: phpQueryObjectPlugin_WebBrowser::location(Object(phpQueryObject), 'http://www.mira...')
+#26 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryObject.php(2308): call_user_func_array(Array, Array)
+#27 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(171): phpQueryObject->__call('location', Array)
+#28 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(171): phpQueryObject->location('http://www.mira...')
+#29 [internal function]: loginTryDone1(Object(phpQueryObject))
+#30 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('loginTryDone1', Array)
+#31 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/plugins/WebBrowser.php(317): phpQuery::callbackRun('loginTryDone1', Array)
+#32 [internal function]: phpQueryPlugin_WebBrowser::handleSubmit(Object(DOMEvent))
+#33 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array(Array, Array)
+#34 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryEvents.php(73): phpQuery::callbackRun(Array, Array)
+#35 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryObject.php(1399): phpQueryEvents::trigger('73018b8c2d372d2...', 'submit', Array, Object(DOMElement))
+#36 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryObject.php(1466): phpQueryObject->trigger('submit')
+#37 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(165): phpQueryObject->submit()
+#38 [internal function]: loadMainSuccess1(Object(phpQueryObject))
+#39 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('loadMainSuccess...', Array)
+#40 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/plugins/WebBrowser.php(116): phpQuery::callbackRun('loadMainSuccess...', Array, NULL)
+#41 [internal function]: phpQueryPlugin_WebBrowser::browserGet('http://www.mira...', 'loadMainSuccess...')
+#42 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1333): call_user_func_array(Array, Array)
+#43 [internal function]: phpQueryPlugins->__call('browserGet', Array)
+#44 [internal function]: phpQueryPlugins->browserGet('http://www.mira...', 'loadMainSuccess...')
+#45 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array(Array, Array)
+#46 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1191): phpQuery::callbackRun(Array, Array)
+#47 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(397): phpQuery::browserGet('http://www.mira...', 'loadMainSuccess...')
+#48 /var/www/iforget/data/www/iforget.ru/cron/miralinks/get_tasks_15.php(55): getTasks('zmei116', '1qazwsxiforget')
+#49 {main}exception 'Zend_Http_Client_Adapter_Exception' with message 'Unable to Connect to proxy server 91.238.82.226:8080. Error #111: Connection refused' in /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/Zend/Http/Client/Adapter/Proxy.php:98
+Stack trace:
+#0 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/Zend/Http/Client.php(827): Zend_Http_Client_Adapter_Proxy->connect('www.miralinks.r...', 80, false)
+#1 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(832): Zend_Http_Client->request()
+#2 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/plugins/WebBrowser.php(106): phpQuery::ajax(Array)
+#3 [internal function]: phpQueryPlugin_WebBrowser::browserGet('http://www.mira...', 'loadMainSuccess...')
+#4 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1333): call_user_func_array(Array, Array)
+#5 [internal function]: phpQueryPlugins->__call('browserGet', Array)
+#6 [internal function]: phpQueryPlugins->browserGet('http://www.mira...', 'loadMainSuccess...')
+#7 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array(Array, Array)
+#8 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1191): phpQuery::callbackRun(Array, Array)
+#9 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(399): phpQuery::browserGet('http://www.mira...', 'loadMainSuccess...')
+#10 /var/www/iforget/data/www/iforget.ru/cron/miralinks/get_tasks_15.php(55): getTasks('zmei116', '1qazwsxiforget')
+#11 {main}
+Array
+(
+    [0] => Array
+        (
+            [links] => Array
+                (
+                )
+
+            [id] => 4187206
+            [sid] => 109692
+            [site] => zdepthing.com
+            [tema] => О широкоформатной печати в оформлении помещения
+            [status] => ground_choosed
+            [lay_out] => 1
+            [text] => 
+            [keywords] => 
+            [url_statyi] => 
+            [title] => 
+            [comments] => 
+        )
+
+    [1] => Array
+        (
+            [links] => Array
+                (
+                )
+
+            [id] => 4201386
+            [sid] => 109692
+            [site] => zdepthing.com
+            [tema] => Новости спорта в мире от сайта parventa.lv. Как победить букмекерские конторы?
+            [status] => ground_choosed
+            [lay_out] => 1
+            [text] => 
+            [keywords] => 
+            [url_statyi] => 
+            [title] => 
+            [comments] => 
+        )
+
+    [2] => Array
+        (
+            [links] => Array
+                (
+                )
+
+            [id] => 4186635
+            [sid] => 7161
+            [site] => emiz.kiev.ua
+            [tema] => Оптимизация сайта под поисковики как залог его популярности
+            [status] => ground_choosed
+            [lay_out] => 1
+            [text] => 
+            [keywords] => 
+            [url_statyi] => 
+            [title] => 
+            [comments] => 
+        )
+
+)
+85 sec.
+ 
+
+
+2014-12-25 15:50:01
+IP - 194.247.58.223
+error<br>exception 'Zend_Http_Client_Exception' with message 'Unable to read response, or response is empty' in /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/Zend/Http/Client.php:836
+Stack trace:
+#0 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(832): Zend_Http_Client->request()
+#1 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#2 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#3 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#4 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#5 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#6 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#7 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#8 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#9 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#10 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#11 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#12 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#13 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(377): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#14 [internal function]: etJsTaskPlaceCallback('{"sEcho":"2","i...', 200, Array)
+#15 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('etJsTaskPlaceCa...', Array)
+#16 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(843): phpQuery::callbackRun('etJsTaskPlaceCa...', Array)
+#17 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(283): phpQuery::ajax(Array, Object(Zend_Http_Client), true)
+#18 [internal function]: locationToTasksPlaceTableDone(Object(phpQueryObject))
+#19 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('locationToTasks...', Array)
+#20 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/plugins/WebBrowser.php(83): phpQuery::callbackRun('locationToTasks...', Array)
+#21 [internal function]: phpQueryObjectPlugin_WebBrowser::location(Object(phpQueryObject), 'http://www.mira...')
+#22 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryObject.php(2308): call_user_func_array(Array, Array)
+#23 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(171): phpQueryObject->__call('location', Array)
+#24 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(171): phpQueryObject->location('http://www.mira...')
+#25 [internal function]: loginTryDone1(Object(phpQueryObject))
+#26 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('loginTryDone1', Array)
+#27 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/plugins/WebBrowser.php(317): phpQuery::callbackRun('loginTryDone1', Array)
+#28 [internal function]: phpQueryPlugin_WebBrowser::handleSubmit(Object(DOMEvent))
+#29 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array(Array, Array)
+#30 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryEvents.php(73): phpQuery::callbackRun(Array, Array)
+#31 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryObject.php(1399): phpQueryEvents::trigger('7b4c95e8704da2c...', 'submit', Array, Object(DOMElement))
+#32 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/phpQueryObject.php(1466): phpQueryObject->trigger('submit')
+#33 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(165): phpQueryObject->submit()
+#34 [internal function]: loadMainSuccess1(Object(phpQueryObject))
+#35 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array('loadMainSuccess...', Array)
+#36 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery/plugins/WebBrowser.php(116): phpQuery::callbackRun('loadMainSuccess...', Array, NULL)
+#37 [internal function]: phpQueryPlugin_WebBrowser::browserGet('http://www.mira...', 'loadMainSuccess...')
+#38 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1333): call_user_func_array(Array, Array)
+#39 [internal function]: phpQueryPlugins->__call('browserGet', Array)
+#40 [internal function]: phpQueryPlugins->browserGet('http://www.mira...', 'loadMainSuccess...')
+#41 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1113): call_user_func_array(Array, Array)
+#42 /var/www/iforget/data/www/iforget.ru/includes/phpQuery/phpQuery.php(1191): phpQuery::callbackRun(Array, Array)
+#43 /var/www/iforget/data/www/iforget.ru/includes/gt_functions.php(397): phpQuery::browserGet('http://www.mira...', 'loadMainSuccess...')
+#44 /var/www/iforget/data/www/iforget.ru/cron/miralinks/get_tasks_15.php(55): getTasks('zmei116', '1qazwsxiforget')
+#45 {main}
+Array
+(
+    [0] => Array
+        (
+            [links] => Array
+                (
+                    [0] => Array
+                        (
+                            [Широкоформатная печать А1] => http://t-112.ru/uslugi/shirokoformatnaya_pechat/
+                        )
+
+                    [1] => Array
+                        (
+                            [перфорированную пленку] => http://t-112.ru/uslugi/shirokoformatnaya_pechat/perforirovannaya_plenka/
+                        )
+
+                )
+
+            [id] => 4187206
+            [sid] => 109692
+            [site] => zdepthing.com
+            [tema] => О широкоформатной печати в оформлении помещения
+            [status] => ground_choosed
+            [lay_out] => 1
+            [text] => 
+<p><a href="http://t-112.ru/uslugi/shirokoformatnaya_pechat/">Широкоформатная печать А1</a> стала в последнее время одной из самых востребованных  услуг. Причин такой популярности  несколько, начиная от высокого качества получаемых рекламных материалов, их продолжительного срока службы, способности сохранять свои первоначальные цвета без существенных изменений, заканчивая вполне приемлемой стоимостью таких материалов.</p>
+<p>При изготовлении  рекламных материалов путем широкоформатной печати можно брать разные поверхности, например, картон, <a href="http://t-112.ru/uslugi/shirokoformatnaya_pechat/perforirovannaya_plenka/">перфорированную пленку</a>, ПВХ пленку, стекло, металл. Кроме того по желанию клиента полиграфисты могут изготовить рекламные материалы нестандартных размеров, к примеру, допускается сращивание нескольких отдельных кусков поливинилхлоридной пленки, получение «гигантской» рекламной афиши. Печать плакатов, постеров, баннеров, афиш – распространенная услуга многих полиграфических компаний.</p>
+<p>Интерьерная широкоформатная печать все чаще используется представителями малого и среднего бизнеса, так как без особых усилий позволяет получать нужные изображения высокого качества, а также любого размера. Широкоформатная интерьерная печать, выполненная настоящими профессионалами полиграфических компаний, дает возможность в минимальные сроки изготовить изображение нужного размера, как по готовым макетам заказчика, так и по макетам, имеющимся в специальных каталогах полиграфических фирм. Кроме того среди преимуществ нужно упомянуть и возможность  создания единичного (одного экземпляра) нужного изображения. Подобные материалы, защищены специальным лаковым покрытием, либо ламинированной пленкой, будут длительное время без особых проблем служить своему обладателю, показывая стойкость к атмосферным осадкам, а также к прямым солнечным лучам. Применение современного печатного оборудования гарантирует получение рекламных материалов высокого качества. Если заказчик не знает, как именно должен выглядеть его рекламный баннер, специалисты полиграфической компании, помогут ему в создании макета, а также дадут советы по подбору цветовой гаммы для будущего информационного носителя. Среди услуг, которые предлагают полиграфические компании, можно отметить также и прямую печать на металле, пластике, стекле. Применение интерьерной печати позволяет существенно снизить себестоимость производимой рекламной продукции. Получаемые материалы стойки к выцветанию, что также важно для заказчиков, облагораживающих свои офисы, торговые помещения.</p>
+<p>Помимо традиционной бумаги, ПВХ пленки, среди материалов, на которых заказывают интерьерную печать, нужно отметить обои, текстиль, стекло, зеркала, ДВП, ДСП, печать на подвесных материалах. При печати на современном пластике можно воспользоваться УФ интерьерной печатью, к примеру, это подходит для создания стендов, рекламных табличек.  Оформление подвесных потолков с помощью интерьерной печати – прекрасный способ сделать потолок эксклюзивным, например, разместить на нем какую-то важную для семьи фотографию. Все зависит от фантазии заказчика, а также количества материальных средств, которые он готов потратить на интерьерную печать.</p>
+
+            [keywords] => 
+            [url_statyi] => o-shirokoformatnoy-pechati-v-oformlenii-pomeshcheniya
+            [title] => О широкоформатной печати в оформлении помещения
+            [comments] => 
+        )
+
+    [1] => Array
+        (
+            [links] => Array
+                (
+                    [0] => Array
+                        (
+                            [parventa.lv] => http://parventa.lv/
+                        )
+
+                    [1] => Array
+                        (
+                            [по этой ссылке] => http://parventa.lv/publ/novosti_sporta_v_mire/strategija_stavok_na_sportivnye_igry/6-1-0-8
+                        )
+
+                )
+
+            [id] => 4201386
+            [sid] => 109692
+            [site] => zdepthing.com
+            [tema] => Новости спорта в мире от сайта parventa.lv. Как победить букмекерские конторы?
+            [status] => ground_choosed
+            [lay_out] => 1
+            [text] => 
+<h1>Новости спорта в мире от сайта parventa.lv. Как победить букмекерские конторы?</h1>
+<p>
+  <img style="float: left; padding: 8px;" src="http://parventa.lv/_pu/0/34877421.jpg" alt="Фото: как победить букмекерские конторы?" width="200"></p>
+<p>Политика и управление Вентспилса уже давно озадачена вопросом, почему таким серьезным успехом у игроков города пользуются азартные игры. Сегодня в фокусе внимания несколько другой вид игр, нежели онлайн-казино или слоты - поговорим о том, почему так привлекательны букмекерские конторы. Как раз хорошую информацию по этому поводу опубликовали <a href="http://parventa.lv/publ/novosti_sporta_v_mire/strategija_stavok_na_sportivnye_igry/6-1-0-8">по этой ссылке</a>. Надо знать, что простой неподготовленный игрок очень часто проигрывает, делая обычные ставки на привычные футбольные матчи. Дело в другом - если бы выиграть букмекеров было так просто, эти организации попросту прекратили бы своё существование.</p>
+<p>Однако победить можно, хоть и в единичных случаях. Помимо спорта в Вентспилсе, нужно хорошо разбираться в определенных тактиках и стратегиях игры. Если вам интересна такая информация, то знайте - современные новости техники и науки игры в букмекерских конторах насчитывают порядка двадцати абсолютно разных стратегий ставок на спортивные события. Большинство из подобных являются выходцами из столов игорных заведений. Да, именно такой отдых и развлечение, как рулетка, позволило сформировать некоторые аспекты успешных ставок на футбол, баскетбол и другие виды спорта.</p>
+<p>Познавательные новости и в том, что все ныне существующие букмекерские конторы можно условно делить на две группы. В первую группу относятся те, которым не чужды новости спорта в мире - их стратегии основаны на неких сформированных принципах и особенностях в деятельности. А вот во вторую группу можно отнести те организации, которые выделяют специальную часть средств на приз. Читайте познавательные новости и разные другие факты на портале <a href="http://parventa.lv/">parventa.lv</a>. Надо знать, что простой неподготовленный игрок очень часто проигрывает, делая обычные ставки на привычные футбольные матчи. Дело в другом - если бы выиграть букмекеров было так просто, эти организации попросту прекратили бы своё существование. Помимо спорта в Вентспилсе, нужно хорошо разбираться в определенных тактиках и стратегиях игры. Если вам интересна такая информация, то знайте - современные новости техники и науки игры в букмекерских конторах насчитывают порядка двадцати абсолютно разных стратегий ставок на спортивные события.</p>
+<p>Источник новости "Новости спорта в мире от сайта parventa.lv. Как победить букмекерские конторы?" сайт Parventa.lv</p>
+
+            [keywords] => Новости спорта в мире от сайта parventa.lv. Как победить букмекерские конторы?
+            [url_statyi] => novosti-sporta-v-mire-ot-sayta-parventalv-kak-pobedit-bukmekerskie-kontory
+            [title] => Новости спорта в мире от сайта parventa.lv. Как победить букмекерские конторы?
+            [comments] => 
+        )
+
+    [2] => Array
+        (
+            [links] => Array
+                (
+                    [0] => Array
+                        (
+                            [http://trionika.com.ua/] => http://trionika.com.ua/
+                        )
+
+                )
+
+            [id] => 4186635
+            [sid] => 7161
+            [site] => emiz.kiev.ua
+            [tema] => Оптимизация сайта под поисковики как залог его популярности
+            [status] => ground_choosed
+            [lay_out] => 1
+            [text] => 
+<p><img style="float: right;" src="http://monet-a.ru/wp-content/uploads/Vnutrennjaja-optimizacija-sajta.jpg" alt="" width="295" height="118">Среди огромного спектра инструментов по продвижению одно из наиболее важных мест занимает оптимизация сайта под поисковики, так как именно она дает львиную долю полезного трафика <a href="http://trionika.com.ua/">http://trionika.com.ua/</a>. Исследования показывают, что более половины пользователей, а в последствие – целевых клиентов, посещающих ресурс, находят его с помощью поисковых систем. Поэтому присутствие площадки на верхних ступеньках выдачи – это залог успеха.<br><br></p>
+<h2>Основные алгоритмы оптимизации сайта под поисковые машины</h2>
+<p> </p>
+<p><br><strong>Первый шаг</strong> – это регистрация своего детища во всех популярных системах поиска. Их не так уж много, а если пользоваться автоматическими регистраторами, то эта работа отнимет минимум времени. Регистрировать непременно нужно главную страницу, ведь она даст ссылки на все остальные, а так же страницы до третьего уровня иерархии. Последующие страницы отдельные поисковики уже не индексируют, поэтому лучше не тратить силы на них и акцентировать внимание именно на первых. А если ресурс очень вместительный и содержащий десятки или сотни страниц, целесообразно сделать его карту.<br><br><strong>Следующий этап</strong> – работа над повышением рейтинга площадки в поисковых системах. Здесь можно выделить несколько ключевых моментов, которые влияют на результат:</p>
+<ul>
+<li>необходимо создать семантическое ядро и для каждой страницы выбрать слова, под которые она будет оптимизирована;</li>
+<li>желательно не использовать много ключевиков, достаточно двух-трех для каждой отдельной страницы;</li>
+<li>обязательное содержание низко-, средне и высокочастотных запросов на каждой странице. При этом, чем больше первых из них, тем лучше, ведь они узконаправленные и смогут привести целевого потребителя на сайт.</li>
+</ul>
+<p> </p>
+<h2>Качественный контент как один из главных принципов раскрутки сайта под поисковики</h2>
+<p><br><br>
+Поисковые системы очень придирчиво относятся к качеству контента. Для хорошего ранжирования площадки тексты должны быть уникальными, написанными простыми выражениями, без сложных оборотов и специализированных, не всегда понятных простому читателю, терминов. Для оптимизации площадки важны правильно прописанные и уникальные заголовки, хорошая расстановка ключевых слов, и главное – минимальная заспамленность статей. Очень важным моментом является подбор тех ключевиков, которые отражают суть изложенного материала. И чем выше к началу текста они находятся, тем лучшее положение сможет занять страница при выдаче результатов в поисковой системе.<br><br>
+К каждой странице нужно делать короткое описание, то есть маленький анонс, по которому читатель сможет определить, что ему поведает та или иная статья. Еще один значимый фактор – структурированность информации, ее оформление тегами, правильное разделение материала на блоки, абзацы, наличие списков. Все эти штрихи увеличивают шансы площадки занять почетное место в поисковых системах.<br><br>
+И не забывайте следить за результатами выдачи, регулярно делайте мониторинг запросов, чтобы понять, какие из них более эффективные и приводят на сайт посетителей. Все время совершенствуйтесь на этом поприще, анализируйте работу конкурентов, чтобы получать максимально высокие результаты.</p>
+
+            [keywords] => 
+            [url_statyi] => optimizaciya-sayta-pod-poiskoviki-kak-zalog-ego-populyarnosti
+            [title] => Оптимизация сайта под поисковики как залог его популярности
+            [comments] => 
+        )
+
+)
+124 sec.
+ 

@@ -1,0 +1,114 @@
+//##########################################################################
+// Custom mixins
+//##########################################################################
+
+// Добавляет модификаторы цветов
+@mixin nc-mod-colors(
+	$exclude:    false,
+	$include:    false,
+	$background: true,
+	$border:     false,
+	$color:      false,
+	$suffix:     null,
+	$important:  null
+)
+{
+	$color_names: $accent_color_names;
+	
+	@if $important == true {
+		$important: !important;
+	}
+
+	// $exclude to array
+	@if $exclude {
+		$exclude: append($exclude, '');
+	}
+
+	// append include
+	@if $include {
+		$include: append($include, null);
+		@each $c in $include {
+			@if $c {
+				$color_names: append($color_names, $c);
+			}
+		}
+	}
+
+	@each $c in $color_names {
+		@if $exclude==false or index($exclude, $c) == false {
+			&.#{$__mod_prefix}#{$c}#{$suffix} {
+				@if $background {
+					background-color: nc_color($c, $background) $important;
+				}
+				@if $border {
+					border-color: nc_color($c, $border) $important;
+				}
+				@if $color {
+					color: nc_color($c, $color) $important;
+				}
+			}
+		}
+	}
+}
+
+//--------------------------------------------------------------------------
+
+@mixin ie6 {
+	@if $legacy-support-for-ie or $legacy-support-for-ie6 {
+		html.#{$_ie6} & {
+			@content;
+		}
+	}
+}
+
+//--------------------------------------------------------------------------
+
+@mixin ie7 {
+	@if $legacy-support-for-ie or $legacy-support-for-ie7 {
+		html.#{$_ie7} & {
+			@content;
+		}
+	}
+}
+
+//--------------------------------------------------------------------------
+
+@mixin ie8 {
+	@if $legacy-support-for-ie or $legacy-support-for-ie8 {
+		html.#{$_ie8} & {
+			@content;
+		}
+	}
+}
+
+//--------------------------------------------------------------------------
+
+@mixin old-ie {
+	@if ($legacy-support-for-ie or $legacy-support-for-ie6 or $legacy-support-for-ie7 or $legacy-support-for-ie8) {
+		html.#{$_oldie} & {
+			@content;
+		}
+	}
+}
+
+//--------------------------------------------------------------------------
+
+@mixin ie6-7 {
+	@include ie6 {@content};
+	@include ie7 {@content};
+}
+
+//--------------------------------------------------------------------------
+
+@mixin ie7-8 {
+	@include ie7 {@content};
+	@include ie8 {@content};
+}
+
+//--------------------------------------------------------------------------
+
+@mixin firefox($selector) {
+    @-moz-document url-prefix() {
+        #{$selector} {@content}
+    }
+}

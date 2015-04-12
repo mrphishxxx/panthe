@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<netcatml>
+  <subdivisions>
+    <subdivision subdivision_id="6" catalogue_id="1" parent_sub_id="0">
+      <Subdivision_Name>Контакты</Subdivision_Name>
+      <EnglishName>contacts</EnglishName>
+      <Checked>1</Checked>
+    </subdivision>
+  </subdivisions>
+  <sub_classes>
+    <sub_class sub_class_id="21" subdivision_id="6" class_id="2007">
+      <Sub_Class_Name>Обратная связь</Sub_Class_Name>
+      <EnglishName>contact-form</EnglishName>
+      <Checked>1</Checked>
+    </sub_class>
+    <sub_class sub_class_id="21" subdivision_id="6" class_id="2007">
+      <Sub_Class_Name>Обратная связь</Sub_Class_Name>
+      <EnglishName>contact-form</EnglishName>
+      <Checked>1</Checked>
+    </sub_class>
+    <sub_class sub_class_id="21" subdivision_id="6" class_id="2007">
+      <Sub_Class_Name>Обратная связь</Sub_Class_Name>
+      <EnglishName>contact-form</EnglishName>
+      <Checked>1</Checked>
+    </sub_class>
+    <sub_class sub_class_id="21" subdivision_id="6" class_id="2007">
+      <Sub_Class_Name>Обратная связь</Sub_Class_Name>
+      <EnglishName>contact-form</EnglishName>
+      <Checked>1</Checked>
+    </sub_class>
+    <sub_class sub_class_id="21" subdivision_id="6" class_id="2007">
+      <Sub_Class_Name>Обратная связь</Sub_Class_Name>
+      <EnglishName>contact-form</EnglishName>
+      <Checked>1</Checked>
+    </sub_class>
+    <sub_class sub_class_id="21" subdivision_id="6" class_id="2007">
+      <Sub_Class_Name>Обратная связь</Sub_Class_Name>
+      <EnglishName>contact-form</EnglishName>
+      <Checked>1</Checked>
+    </sub_class>
+    <sub_class sub_class_id="21" subdivision_id="6" class_id="2007">
+      <Sub_Class_Name>Обратная связь</Sub_Class_Name>
+      <EnglishName>contact-form</EnglishName>
+      <Checked>1</Checked>
+    </sub_class>
+  </sub_classes>
+  <fields>
+    <field field_id="2338" type_of_data_id="1">
+      <Field_Name>Name</Field_Name>
+      <Description>Имя</Description>
+    </field>
+    <field field_id="2339" type_of_data_id="1">
+      <Field_Name>Email</Field_Name>
+      <Description>Email</Description>
+    </field>
+    <field field_id="2340" type_of_data_id="1">
+      <Field_Name>Subject</Field_Name>
+      <Description>Тема письма</Description>
+    </field>
+    <field field_id="2341" type_of_data_id="3">
+      <Field_Name>Text</Field_Name>
+      <Description>Текст письма</Description>
+    </field>
+  </fields>
+  <messages>
+    <message message_id="1" class_id="2007" subdivision_id="6" sub_class_id="21">
+      <User_ID>0</User_ID>
+      <Priority>1</Priority>
+      <Checked>1</Checked>
+      <IP>188.235.129.87</IP>
+      <UserAgent>Mozilla/5.0 (Windows NT 6.1; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0</UserAgent>
+      <Parent_Message_ID>0</Parent_Message_ID>
+      <Created>2013-10-17 17:48:34</Created>
+      <LastUpdated>2013-10-17 17:48:34</LastUpdated>
+      <LastUser_ID>0</LastUser_ID>
+      <LastIP/>
+      <LastUserAgent/>
+      <Keyword/>
+      <Name><![CDATA[Иван]]></Name>
+      <Email><![CDATA[test@tt.tt]]></Email>
+      <Subject><![CDATA[ХАЛП]]></Subject>
+      <Text><![CDATA[!!!]]></Text>
+    </message>
+    <message message_id="2" class_id="2007" subdivision_id="6" sub_class_id="21">
+      <User_ID>0</User_ID>
+      <Priority>1</Priority>
+      <Checked>1</Checked>
+      <IP>213.33.183.114</IP>
+      <UserAgent>Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)</UserAgent>
+      <Parent_Message_ID>0</Parent_Message_ID>
+      <Created>2013-10-17 18:04:49</Created>
+      <LastUpdated>2013-10-17 18:04:49</LastUpdated>
+      <LastUser_ID>0</LastUser_ID>
+      <LastIP/>
+      <LastUserAgent/>
+      <Keyword/>
+      <Name><![CDATA[rhdhs]]></Name>
+      <Email><![CDATA[26karina@mail.ru]]></Email>
+      <Subject><![CDATA[test]]></Subject>
+      <Text><![CDATA[bdnflbj]]></Text>
+    </message>
+    <message message_id="4" class_id="2007" subdivision_id="6" sub_class_id="21">
+      <User_ID>0</User_ID>
+      <Priority>3</Priority>
+      <Checked>1</Checked>
+      <IP>188.168.235.177</IP>
+      <UserAgent>Mozilla/5.0 (Windows NT 6.1; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0</UserAgent>
+      <Parent_Message_ID>0</Parent_Message_ID>
+      <Created>2013-10-18 12:39:55</Created>
+      <LastUpdated>2013-10-18 12:39:55</LastUpdated>
+      <LastUser_ID>0</LastUser_ID>
+      <LastIP/>
+      <LastUserAgent/>
+      <Keyword/>
+      <Name><![CDATA[Иван]]></Name>
+      <Email><![CDATA[test@tt.tt]]></Email>
+      <Subject><![CDATA[Привет]]></Subject>
+      <Text><![CDATA[Как дела?]]></Text>
+    </message>
+    <message message_id="3" class_id="2007" subdivision_id="6" sub_class_id="21">
+      <User_ID>1</User_ID>
+      <Priority>2</Priority>
+      <Checked>1</Checked>
+      <IP>213.33.183.114</IP>
+      <UserAgent>Mozilla/5.0 (Windows NT 6.1; rv:24.0) Gecko/20100101 Firefox/24.0</UserAgent>
+      <Parent_Message_ID>0</Parent_Message_ID>
+      <Created>2013-10-18 09:42:11</Created>
+      <LastUpdated>2013-10-18 09:42:11</LastUpdated>
+      <LastUser_ID>0</LastUser_ID>
+      <LastIP/>
+      <LastUserAgent/>
+      <Keyword/>
+      <Name><![CDATA[hhhhh]]></Name>
+      <Email><![CDATA[26karina@mail.ru]]></Email>
+      <Subject><![CDATA[gjjn]]></Subject>
+      <Text><![CDATA[gjljgholjgoh]]></Text>
+    </message>
+    <message message_id="5" class_id="2007" subdivision_id="6" sub_class_id="21">
+      <User_ID>1</User_ID>
+      <Priority>1</Priority>
+      <Checked>1</Checked>
+      <IP>213.33.183.114</IP>
+      <UserAgent>Mozilla/5.0 (Windows NT 6.1; rv:24.0) Gecko/20100101 Firefox/24.0</UserAgent>
+      <Parent_Message_ID>0</Parent_Message_ID>
+      <Created>2013-10-18 16:23:43</Created>
+      <LastUpdated>2013-10-18 16:23:43</LastUpdated>
+      <LastUser_ID>0</LastUser_ID>
+      <LastIP/>
+      <LastUserAgent/>
+      <Keyword/>
+      <Name><![CDATA[hhhhh]]></Name>
+      <Email><![CDATA[26karina@mail.ru]]></Email>
+      <Subject><![CDATA[ооо]]></Subject>
+      <Text><![CDATA[оооо]]></Text>
+    </message>
+    <message message_id="6" class_id="2007" subdivision_id="6" sub_class_id="21">
+      <User_ID>1</User_ID>
+      <Priority>1</Priority>
+      <Checked>1</Checked>
+      <IP>213.33.183.114</IP>
+      <UserAgent>Mozilla/5.0 (Windows NT 6.1; rv:24.0) Gecko/20100101 Firefox/24.0</UserAgent>
+      <Parent_Message_ID>0</Parent_Message_ID>
+      <Created>2013-10-18 16:29:58</Created>
+      <LastUpdated>2013-10-18 16:29:58</LastUpdated>
+      <LastUser_ID>0</LastUser_ID>
+      <LastIP/>
+      <LastUserAgent/>
+      <Keyword/>
+      <Name><![CDATA[шш]]></Name>
+      <Email><![CDATA[26karina@mail.ru]]></Email>
+      <Subject><![CDATA[рррр]]></Subject>
+      <Text><![CDATA[ррррррр]]></Text>
+    </message>
+    <message message_id="7" class_id="2007" subdivision_id="6" sub_class_id="21">
+      <User_ID>1</User_ID>
+      <Priority>1</Priority>
+      <Checked>1</Checked>
+      <IP>213.33.183.114</IP>
+      <UserAgent>Mozilla/5.0 (Windows NT 6.1; rv:24.0) Gecko/20100101 Firefox/24.0</UserAgent>
+      <Parent_Message_ID>0</Parent_Message_ID>
+      <Created>2013-10-29 13:18:02</Created>
+      <LastUpdated>2013-10-29 13:18:02</LastUpdated>
+      <LastUser_ID>0</LastUser_ID>
+      <LastIP></LastIP>
+      <LastUserAgent></LastUserAgent>
+      <Keyword></Keyword>
+      <Name><![CDATA[666]]></Name>
+      <Email><![CDATA[26karina@mail.ru]]></Email>
+      <Subject><![CDATA[555]]></Subject>
+      <Text><![CDATA[55555555555555555555555555]]></Text>
+    </message>
+  </messages>
+  <comments/>
+</netcatml>

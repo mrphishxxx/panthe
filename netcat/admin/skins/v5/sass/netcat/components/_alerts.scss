@@ -1,0 +1,18 @@
+/************* alerts | Подсказки и оповещения *************/
+//--------------------------------------------------------------------------
+
+.#{$_alert} {
+	padding:    $alert_padding;
+	border:     2px solid nc_color(grey);
+	background: nc_color(lighten);
+	margin:     $alert_margin;
+
+	.#{$_icon_large} {
+		display:      block;
+		float:        left;
+		margin: ceil(- ($line_height / 2)) 10px 0 ceil(- ($line_height / 2 - 2));
+	}
+
+	// Вариации цветов
+	@include nc-mod-colors($background: +95%, $border: true, $color: -60%);
+}

@@ -1,0 +1,92 @@
+/************* tables | Таблицы *************/
+//--------------------------------------------------------------------------
+
+// Fix form inputs in table
+.#{$_table} td > input,
+.#{$_global} .#{$_table} td > input,
+.#{$_table} td > button,
+.#{$_global} .#{$_table} td > button
+{
+    margin:0;
+}
+
+//--------------------------------------------------------------------------
+
+.#{$_table} {
+	$border: 1px solid nc_color(light);
+	@include reset-table();
+
+	td, th {
+		padding: $table_padding;
+        height: auto;
+
+        &.#{$__compact} {
+            width:         1px;
+            padding-left:  3px !important;
+            padding-right: 3px !important;
+        }
+
+        // td>a.nc--blocked
+        &>a.#{$__blocked},
+        &>label.#{$__blocked} {
+			margin:  negative($table_padding);
+			padding: $table_padding;
+		}
+	}
+	th {
+		font-weight: normal;
+		text-align:  left;
+        text-transform: uppercase;
+        border-bottom:  $border;
+        color:          nc-color(dark, 20%);
+	}
+	td {
+		border-bottom: $border;
+	}
+    $include: grey, white;
+    tr {
+        // Вариации цветов
+        @include nc-mod-colors($include:$include, $background: +90%, $color: -60%, $suffix: " td");
+    }
+    tr td {
+        // Вариации цветов
+        @include nc-mod-colors($include:$include, $background: +90%, $color: -60%);
+    }
+
+    &.#{$__wide} {
+        width: 100%;
+    }
+
+	// nc--small
+	&.#{$__small} {
+		td, th {
+			padding: $table_padding_small;
+			&>a.#{$__blocked} {
+				margin:  negative($table_padding_small);
+				padding: $table_padding_small;
+			}
+		}
+	}
+
+	// nc--bordered
+	&.#{$__bordered} {
+		border: $border;
+	}
+
+	// nc--striped
+	&.#{$__striped} {
+		tr:nth-child(even)>td {
+			background-color: $table_alter_bg;
+		}
+	}
+
+	// nc--hoverd
+	&.#{$__hovered} {
+		tr:hover td {
+			background-color: $hover_bg;
+		}
+		// tr:nth-child(even)>td {
+		// 	background-color: nc_color(lighten);
+		// }
+	}
+}

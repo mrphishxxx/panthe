@@ -1,0 +1,91 @@
+/************* buttons | Стили кнопок *************/
+//--------------------------------------------------------------------------
+
+%btn_defaults {
+    display:           inline-block;
+    // vertical-align: middle;
+    padding:           $btn_padding;
+    margin:            0;
+    background:        nc_color(grey);
+    color:             nc_color(white);
+    font-size:         $btn_font_size;
+    cursor:            pointer;
+    line-height:       $line_height;
+    height:            $line_height;
+    border:            none;
+    text-decoration:   none;
+    @include border-radius(0);
+}
+
+a.#{$_btn},
+.#{$_btn} {
+	@extend %btn_defaults;
+
+	@include box-sizing(content-box);
+
+	.#{$_icon} {
+		margin-top: -3px;
+	}
+	&:hover {
+		color: nc_color(white);
+		@include opacity(.8);
+	}
+
+	// Вариации цветов
+	@include nc-mod-colors($include: $bw_color_names, $important:true);
+
+	&.#{$__mod_prefix}white,
+	&.#{$__mod_prefix}lighten,
+	&.#{$__mod_prefix}light {
+		color: nc_color(darken);
+	}
+
+    // &.nc--left
+    &.#{$__left} {
+        margin-right: 5px;
+    }
+
+    // &.nc--right
+    &.#{$__right} {
+        margin-left: 5px;
+    }
+
+	// nc--large
+	&.#{$__large} {
+		font-size: $btn_font_size_large;
+		padding:   $btn_padding_large;
+
+		@include nc-mod-colors();
+	}
+
+	// nc--small
+	&.#{$__small} {
+		font-size: $btn_font_size_small;
+		padding:   $btn_padding_small;
+	}
+
+    // nc--bordered
+    &.#{$__bordered} {
+        border:     2px solid nc_color(dark);
+		padding:    mod($btn_padding, -2);
+        background: none !important;
+        color:      nc_color(dark);
+
+		&.#{$__small} {
+			padding: mod($btn_padding_small, -2);
+		}
+
+        @include nc-mod-colors($include: $bw_color_names, $background: false, $border: true, $important:true);
+    }
+
+    // nc--blocked
+    &.#{$__blocked} {
+		display:    block;
+		margin:     0;
+		text-align: center;
+    }
+
+    &.#{$__disabled} {
+    	@include opacity(0.3);
+    }
+}

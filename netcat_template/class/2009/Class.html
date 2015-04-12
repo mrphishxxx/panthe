@@ -1,0 +1,8 @@
+<!-- FormPrefix --><? echo $f_AdminCommon; ?><!-- /FormPrefix -->
+
+<!-- RecordTemplate --><? echo $f_AdminButtons; ?>
+<?=($inside_admin ? "
+$f_Code - ".($f_Used ? "Не активен" : "Активен")."
+" : "")?><!-- /RecordTemplate -->
+
+<!-- FormSuffix --><!-- /FormSuffix -->

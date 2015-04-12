@@ -1,0 +1,1 @@
+<li><a href="[url]" [blank]>[text]</a></li>

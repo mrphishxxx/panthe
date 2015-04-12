@@ -1,0 +1,125 @@
+/************* icons | Генерация спрайтов и определение иконок *************/
+//--------------------------------------------------------------------------
+
+@import "compass/utilities/sprites";
+
+//--------------------------------------------------------------------------
+
+// Генерация спрайта иконок из папки img/icon-20/
+$icons: sprite-map("icons-20/*.png", $spacing: 1, $layout: horizontal);
+$icons-white: sprite-map("icons-20-white/*.png", $spacing: 1, $layout: horizontal);
+$icons-dark: sprite-map("icons-20-dark/*.png", $spacing: 1, $layout: horizontal);
+
+// Определение иконок
+%#{$_icon} {
+	background-image:    $icons;
+	background-repeat:   no-repeat;
+	width:               20px;
+	height:              20px;
+	vertical-align:      middle;
+	display:             inline-block;
+	background-position: 30px 30px;
+	margin-top:          -3px;
+
+	&.nc--white {
+		background-image: $icons-white;
+	}
+	&.nc--dark {
+		background-image: $icons-dark;
+	}
+}
+
+.#{$_icon} {
+	@extend %#{$_icon};
+
+	&.#{$__hovered} {
+		@include opacity(.6);
+		cursor: pointer;
+
+		&:hover {
+			@include opacity(1);
+		}
+	}
+
+	// Определение иконок
+	@each $i in sprite_names($icons){
+		&.#{$__icon_prefix}#{$i}{
+			background-position: sprite-position($icons, $i);
+		}
+	}
+
+    // [.nc--folder.nc--disabler] == [.nc--folder-dark]
+    &.#{$__icon_prefix}folder.#{$__disabled} {
+        @extend .#{$_icon}.#{$__icon_prefix}folder-dark;
+    }
+    &.#{$__icon_prefix}folder-opened.#{$__disabled} {
+        @extend .#{$_icon}.#{$__icon_prefix}folder-opened-dark;
+    }
+}
+
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+
+// Генерация спрайта иконок из папки img/icon-36/
+$icons34: sprite-map("icons-34/*.png", $spacing: 1, $layout: vertical);
+
+// Базовый класс иконок (i.nc-icon-l)
+.#{$_icon_large} {
+	background-image:    $icons34;
+	background-repeat:   no-repeat;
+	width:               34px;
+	height:              34px;
+	vertical-align:      middle;
+	display:             inline-block;
+	background-position: 34px 34px;
+
+	// Определение иконок
+	@each $i in sprite_names($icons34){
+		&.#{$__icon_prefix}#{$i}{
+			background-position: sprite-position($icons34, $i);
+		}
+	}
+
+	&.nc--navbar-loader {
+		background: url("../img/navbar-loader.gif") no-repeat 50% 50%;
+	}
+}
+
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+
+// Генерация спрайта иконок из папки img/icon-50/
+$icons50-dark: sprite-map("icons-50-dark/*.png", $spacing: 0, $layout: horizontal);
+$icons50-white: sprite-map("icons-50-white/*.png", $spacing: 0, $layout: horizontal);
+
+// i.nc-icon-x
+.#{$_icon_xlarge} {
+	background-image:    $icons50-dark;
+	background-repeat:   no-repeat;
+	width:               50px;
+	height:              50px;
+	vertical-align:      middle;
+	display:             inline-block;
+	background-position: 50px 50px;
+	@include opacity(.5);
+
+	&.nc--white {
+		background-image: $icons50-white;
+		@include opacity(.95);
+	}
+	&.nc--dark {
+		background-image: $icons50-dark;
+	}
+
+	// Определение иконок
+	@each $i in sprite_names($icons50-dark){
+		&.#{$__icon_prefix}#{$i}{
+			background-position: sprite-position($icons50-dark, $i);
+		}
+	}
+}
+
+//--------------------------------------------------------------------------
+

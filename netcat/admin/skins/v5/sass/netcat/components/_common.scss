@@ -1,0 +1,76 @@
+/************* common | Базоыве стили *************/
+//--------------------------------------------------------------------------
+
+
+// Заголовки <H1-n> | nc-h[1-n]
+//--------------------------------------------------------------------------
+@for $i from 1 through length($h_font_size) {
+	.#{$_h_prefix}#{$i},
+	.#{$_global} h#{$i} {
+		font-size:   nth($h_font_size, $i);
+		line-height: nth($h_line_height, $i);
+		padding:     ceil(nth($h_line_height, $i) / 4) 0;
+		font-weight: normal;
+		margin:      0;
+	}
+}
+
+
+// nc-hr
+//--------------------------------------------------------------------------
+.#{$_hr},
+.#{$_global} hr {
+	@extend %clearfix;
+	border:     none;
+	height:     1px;
+	background: nc-color(light);
+	margin:     10px 0;
+}
+
+
+
+// nc-code
+//--------------------------------------------------------------------------
+.#{$_code} {
+	&, & code {
+		font-size:  $code_font_size;
+		@extend     %mono-font;
+	}
+
+	@extend     %border-radius-small;
+	background: $code_bg;
+	// color:      $code_color;
+	border:     $code_border;
+	padding:    $code_padding;
+}
+
+// nc-box
+//--------------------------------------------------------------------------
+.#{$_box} {
+	@extend     %border-radius;
+	padding:    $default_padding;
+	margin:     ceil($line_height / 2) 0;
+	background: nc_color(lighten);
+	@include box-shadow(0 1px 1px rgba(0,0,0,.1) inset);
+
+	@include nc-mod-colors($background: 70%);
+	@include nc-mod-colors($include: $bw_color_names, $exclude: $accent_color_names);
+}
+
+// nc-admin
+//--------------------------------------------------------------------------
+body.#{$_global} {
+	background: $body_bg;
+}
+
+//--------------------------------------------------------------------------
+
+.#{$_global} {
+	@extend  %default-font;
+
+	a {
+		@extend %link;
+	}
+}
+
+//--------------------------------------------------------------------------

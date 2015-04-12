@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    
+    <title>Главная страница</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="css/style.css" type="text/css" />
+    
+</head>
+
+
+
+<body>
+<table id="main" width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td valign="top" height="120" colspan="3"><script type="text/javascript" src="js/overlib.js"></script>
+<script type="text/javascript">
+   
+	function set_menu_opt() {
+		document.cookie='select_menu=1';
+		document.cookie='selected_submenu=1';
+	}
+	function set_menu_web() {
+		document.cookie='select_menu=2';
+		document.cookie='selected_submenu=1';
+	}
+	function setcookie(user_name) {
+		var tmp_date=new Date();
+		tmp_date.setDate(tmp_date.getDate()+30);
+		document.cookie='user_name='+user_name+';expires='+tmp_date.toString();
+	}
+	function delcookie() {
+		var tmp_date=new Date()-10;
+		document.cookie="user_name=;expires=Thu, 01-Jan-70 00:00:01 GMT;";
+		document.cookie="e_mail=;expires=Thu, 01-Jan-70 00:00:01 GMT;";
+		document.cookie="passsword=;expires=Thu, 01-Jan-70 00:00:01 GMT;";
+		window.location.href="logout.php";
+	}
+</script>
+<style>
+table.table_class tr.col_row:hover {background-color: #EEE4CC !important;}
+table.table_class tr.col_row td {padding: 0px 10px 0px 10px;}
+</style>
+<table id="header" border=0 cellpadding="0" cellspacing="0" style="height:148px;">
+<tr id="header_first_table_row">
+	<td valign="top">
+		<div id="header_left">
+			<div id="header_left_logo" style="border:0px solid;" >
+				<div onclick="window.location.href='/';"  style="padding-top:40px;"><strong id="header_left_label_logo">Биржа рекламных обзоров</strong></div>
+							</div>
+		</div>
+	</td>
+	<td colspan=2 valign="top" valign="top" id="header_middle">
+		
+		<img src="/img/menu/slogan.png" style="padding-top:30px;"/>
+		<div style="height:28px;">			<div class=menu_class1_0 style="float: right"><a href="template/try_logon.php" rel="facebox" onclick="document.cookie='selected_submenu=-1';" class="top_menu_label2">Войти</a></div>			<img style="float:right;padding-top:10px;display:none;" src="/img/menu/razdel_right_menu.jpg" />
+			<div class=menu_class1_0 style="float: right;display:none;"><a href="faq.php" onclick="document.cookie='selected_submenu=-1';" class="top_menu_label2">FAQ</a>			</div>
+		</div>
+	</td>
+</tr><tr height="80" style="background_color:#ffffff;;background-image:url(/img/menu/menu_gradient.png);background-repeat: no-repeat;background-position:left top;">
+	<td colspan="2"></td>
+</tr></table>
+
+
+</td>
+  </tr>
+  <tr valign="top">
+      <td style="padding:20px">
+                <form method="post" action="login.php" name="loginForm" onsubmit="if(check_input_value()) this.submit(); else return false;">
+		Пожалуйста авторизуйтесь, если Вы зарегистрированы.<br>Ещё не зарегистрированы? <a href="register_user.php">Присоединяйтесь сейчас!</a><br>		<noscript><strong style="color:red;">У браузера отключен JavaScript!</strong></noscript>
+                        <table border="0" cellpadding="2" cellspacing="2">
+                        <tr>
+
+                                <td><div style="color:red; font-weight:bold;" id="error_text"></div></td>
+                        </tr>
+
+                        <tr>
+                            <td>
+
+                                        <table border="0" cellpadding="2" cellspacing="2">
+                                        <tr>
+                                                <td><div align="right">E-mail:</div></td>
+                                                <td><input name="e_mail" type="text" value="" /></td>
+                                        </tr>
+                                        <tr>
+                                                <td><div align="right">Пароль:</div></td>
+                                                <td><input name="password" type="password" value="" /></td>
+                                        </tr>
+                                        <tr>
+                                                <td></td>
+                                                <td><input type="checkbox" name="remember" />Запомнить меня</td>
+                                        </tr>
+                                        </table>
+                            </td>
+                        </tr>
+
+                        <tr>
+                                <td>
+                                    <div align="center">
+                                            <input type="submit"  value="Войти" />
+                                    </div>
+                                </td>
+                        </tr>
+
+                        </table>
+                </form>
+		<br />
+		<a href="lost_pass.php">Забыли пароль?</a>
+		
+    <script>
+            document.getElementById("error_text").innerHTML="Неверное имя пользователя или пароль. Пожалуйста, попробуйте ещё раз.";
+            document.loginForm.e_mail.value="zmei116@list.ru";
+    </script>  </td></tr>
+  <tr valign="bottom" height="100px">
+	<td  colspan=3 align="middle" style="padding: 0px 40px 10px 40px;">
+            <div align="right" style="padding-bottom:5px;font-size:11px;">
+                    <a style="color:#000000;padding-left: 23px;" href="http://www.telderi.ru/" target="_blank"><strong>Биржа сайтов</strong></a>
+            <a style="color:#000000;padding-left: 23px;" href="http://botscanner.com/" target="_blank"><strong>Оценка качества трафика</strong></a>
+            <a style="color:#000000;padding-left: 23px;" href="http://forum.searchengines.ru/showthread.php?t=734248" target="_blank"><strong>Оставить отзыв о проекте&nbsp;в форуме Searchengines</strong></a>
+            </div>
+				<hr style="padding-bottom:10px;">
+    <table align=center cellpadding="0" cellspacing="0" style="width:100%">
+	  <tr>
+         <td valign="middle" align="left" width="48%"  nowrap="nowrap">
+                             <a class="bottom_link_class" onclick="document.cookie='selected_submenu=-1'" href="about.php">О проекте</a>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <a class="bottom_link_class" onclick="document.cookie='selected_submenu=-1'" href="buyer.php">Оптимизаторам</a>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <a class="bottom_link_class" onclick="document.cookie='selected_submenu=-1'" href="seller.php">Вебмастерам</a>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <a class="bottom_link_class" onclick="document.cookie='selected_submenu=-1'" href="faq.php">Правила/Частые вопросы</a>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <a class="bottom_link_class" id="link_contact_as" href="template/contact_admin.php" >Техподдержка</a>
+            			
+			
+        </td>
+  		<td width="120" align="left" nowrap="nowrap">
+			<!--LiveInternet counter-->
+				<script language="JavaScript"><!--
+					document.write('<img src="http://counter.yadro.ru/hit?r'+
+					escape(document.referrer)+((typeof(screen)=='undefined')?'':
+					';s'+screen.width+'*'+screen.height+'*'+(screen.colorDepth?
+					screen.colorDepth:screen.pixelDepth))+';u'+escape(document.URL)+
+					';'+Math.random()+
+					'"  alt="">')//-->
+				</script>
+			<!--/LiveInternet-->
+        </td>
+      </tr>
+    </table>
+	</td>
+</tr>
+
+<!--<script type="text/javascript" 			src="../js/jquery-1.2.6.js"></script>-->
+<script type="text/javascript" 			src="../facebox/facebox.js"></script>
+<link type="text/css" rel="stylesheet" href="../facebox/facebox.css" media="screen" />
+<script>
+jQuery(document).ready(function() {
+	$.facebox.settings.overlay=false;     jQuery('#link_contact_as').facebox(
+		{
+			closeImage:'facebox/closelabel_ru.gif'
+		}
+	);
+});
+</script>
+<script>
+jQuery(document).ready(function() {
+	$('.table_content_rows1').hover(function() {$(this).addClass("table_content_rows_hover");}, function() {$(this).removeClass("table_content_rows_hover"); });
+	$('.table_content_rows2').hover(function() {$(this).addClass("table_content_rows_hover");}, function() {$(this).removeClass("table_content_rows_hover"); });
+
+});
+</script></table>
+<script type="text/javascript" src="js/jquery-1.2.6.js"></script>
+<script type="text/javascript" src="facebox/facebox.js"></script>
+<script type="text/javascript">
+    jQuery(document).ready(function() {jQuery("a[rel*=facebox]").facebox({closeImage:"facebox/closelabel_ru.gif"});});
+    
+    function check_input_value()
+    {
+            var error_init=0;
+            var e_mail=document.loginForm.e_mail.value;
+            while(e_mail[0]==' ' || e_mail[0]=='\t') e_mail=e_mail.substr(1);
+            document.loginForm.e_mail.value=e_mail;
+            //Проверка заполнения полей
+            var str="Вы не заполнили следующие поля:<br>";
+            if(document.loginForm.e_mail.value=="") {str+="<li>E-mail<br>";error_init=1;}
+            if(document.loginForm.password.value=="") {str+="<li>Пароль<br>";error_init=1;}
+
+            //Вывод ошибки
+            if(error_init)
+            {
+                    document.getElementById("error_text").innerHTML=str;
+                    return false;
+            }
+            else {document.getElementById("error_text").innerHTML="";str="";}
+
+            //Проверке корректности данных
+            error_init=0;
+            str="Следующие поля заполненны не корректно:<br>";
+            if(!/^\s*([a-z0-9_\-.]+)@([a-z0-9\-]+)\.[a-z.]+\s*$/i.test(document.loginForm.e_mail.value))
+                    {str+="<li>E-mail<br>";error_init=1;}
+            /*if(document.loginForm.password.value.replace(/[^a-zA-Z0-9!@#$%^*_\-. ]/g,"")!=document.loginForm.password.value)
+                    {str+="<li>Пароль";error_init=1;}*/
+            if(error_init) document.getElementById("error_text").innerHTML=str;
+
+            if(error_init)
+            {
+                    document.getElementById("error_text").innerHTML=str;
+                    return false;
+            }
+            else {document.getElementById("error_text").innerHTML="";str="";}
+            return true;
+    }
+
+    $(document).ready(function()
+    {
+            $('#main').css('height',screen.height-180);
+    });
+</script>
+</body>
+</html>

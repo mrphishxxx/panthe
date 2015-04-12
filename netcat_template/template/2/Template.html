@@ -1,0 +1,165 @@
+<!-- Header --><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title><?=$nc_core->page->get_title()?></title>
+        <meta name="description" content="<?=$nc_core->page->get_description()?>" />
+        <meta name="keywords" content="<?=$nc_core->page->get_keywords()?>" />
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="/css/main.css" />
+	<link rel="stylesheet" type="text/css" href="/css/prototypes.css" />
+	<link rel="stylesheet" type="text/css" href="/css/jcar.css" />
+
+        <!-- <meta name="verify-reformal" content="65c4e5ec9903c7df782b9abb" />-->
+	
+	<script type="text/JavaScript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script type="text/JavaScript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+        <script src="http://code.jquery.com/jquery-migrate-1.0.0.js"></script>
+	<script type="text/JavaScript" src="/js/jcar.js"></script>
+	<script type="text/JavaScript" src="/js/main.js"></script>
+	
+</head>
+<body>
+<div id="page" class="<?=($sub == 1 ? "landing" : "front_end about")?>">
+
+
+	<!-- HEADER -->
+	<div id="header">
+		<div class="alignment">
+		
+			<!-- BAR -->
+			<div class="bar">
+				
+				<!-- logo -->
+				<a id="logo" href="/"></a>
+				
+				<!-- switch -->
+				<div id="switch">
+					
+					<!--<a href="/copywriters/">Копирайтерам</a><a href="/register.php?user=seo">Вебмастерам</a>!-->
+					
+				</div>
+				<!-- login -->
+<?
+if ($_COOKIE['iforget_ok'])
+{
+   $uinfo = $db->get_row("SELECT * FROM admins WHERE id=".$_COOKIE['iforget_ok'], "ARRAY_A");
+}
+?>
+                       <?=(($_COOKIE['iforget_ok'] > 0) ? '
+  		              <!-- userbar -->
+  		              <div id="userbar">
+                                 <p id="fast_connection">
+                                              Быстрая связь: 
+                                             <img src="/images/openid/skype16x16.png" /> <a href="skype:roman.vetes?chat">Roman.vetes</a>
+                                             <img src="/images/openid/icq16x16.gif" /> 133-215 
+                                 </p>
+  		                 <a id="user_login" href="'.($uinfo['type'] == "user" ? '/user.php?action=lk' : (($uinfo['type'] == "copywriter" ? '/copywriter.php' : (($uinfo['type'] == "manager" ? '/management.php' : '/admin.php'))))).'">'.($uinfo['email'] ? $uinfo['email'] : $uinfo['login']).'</a>
+                                 <span class="sep"></span>
+  		                 <a id="log_off" href="'.($uinfo['type'] == "manager" ? '?module=managers&action=logout'  : '/user.php?action=logout').'"><span class="ico"></span> <span>Выход</span> </a>
+  		              </div>
+                       ' : 
+                       '
+                                <div style="position:absolute;top:-12px;right:470px;">Войти через</div>
+				<div id="login">
+                                    <script src="//ulogin.ru/js/ulogin.js"></script>
+                                    
+                                    <div style="float: left;padding: 0 0 0 10px;" id="uLogin" data-ulogin="display=small;fields=first_name,last_name,email,nickname;providers=vkontakte,odnoklassniki,mailru,facebook,twitter,googleplus;hidden=;redirect_uri=http%3A%2F%2Fiforget.ru%2Fuser.php"></div>
+                                    
+                                    <p id="fast_connection">
+                                        Быстрая связь: 
+                                           <img src="/images/openid/skype16x16.png" /> <a href="skype:roman.vetes?chat">Roman.vetes</a>
+                                           <img src="/images/openid/icq16x16.gif" /> 133-215 
+                                    </p>
+                                    <form action="/user.php" method="POST" style="float: right;">
+						<input type="text" name="login" value="" style="height:16px;" placeholder="Логин" />
+						<input type="password" name="pass" value="" class="textfield" style="width:153px;" placeholder="Пароль" />
+						<input type="submit" value="Вход" />
+						
+						<div class="registration-recovery">
+							<a href="/register.php" id="registration">Регистрация</a>
+							<a href="/forgot/" id="registration">Забыли пароль?</a>
+						</div>
+					</form>
+				</div>
+                          ')?>
+				
+			</div>
+			
+		</div>
+	</div>
+	<!-- HEADER END --><!-- /Header -->
+
+<!-- Footer -->	<!-- FOOTER -->
+	<div id="footer">
+		<div class="alignment">	
+
+                        <?=($sub == 1 ? "<div class='ft_vetes'><div class='vt_img'><img src='/images/vetes.png' alt='' /></div><div class='vt_txt'><a href='http://www.vetes.ru/' target='_blank'>создание сайта</a></div></div>" : "")?>
+ 
+			<span id="copyrights">
+				© 2013 iForget — система автоматической монетизации.
+			</span>
+                        
+			
+			<ul class="navigation">
+                                <li><!-- begin WebMoney Transfer : attestation label --> 
+                                      <a href="https://passport.webmoney.ru/asp/certview.asp?wmid=243525969589" target=_blank style="border:none"><IMG SRC="/images/acc_blue_on_transp_ru.png" title="Здесь находится аттестат нашего WM идентификатора 243525969589" border="0"><br><font size=1>Проверить аттестат</font></a>
+                                      <!-- end WebMoney Transfer : attestation label -->
+                               </li>
+				<li><a href="/about/">О системе</a></li>
+				<li><a href="/price/">Цены</a></li>
+				<li><a href="/convention/">Соглашение</a></li>
+				<li><a href="/register.php">Регистрация</a></li>
+				<li><a href="/contacts/">Контакты</a></li>
+			</ul>
+
+		</div>
+	</div>
+	<!-- FOOTER END -->
+	
+	
+	
+	
+</div>
+
+    <!--
+<script type="text/javascript">
+    var reformalOptions = {
+        project_id: 49967,
+        project_host: "gskinoru.reformal.ru",
+        tab_orientation: "left",
+        tab_indent: "50%",
+        tab_bg_color: "#F05A00",
+        tab_border_color: "#FFFFFF",
+        tab_image_url: "http://tab.reformal.ru/T9GC0LfRi9Cy0Ysg0Lgg0L%252FRgNC10LTQu9C%252B0LbQtdC90LjRjw==/FFFFFF/2a94cfe6511106e7a48d0af3904e3090/left/1/tab.png",
+        tab_border_width: 2
+    };
+    
+    (function() {
+        var script = document.createElement('script');
+        script.type = 'text/javascript'; script.async = true;
+        script.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'media.reformal.ru/widgets/v3/reformal.js';
+        document.getElementsByTagName('head')[0].appendChild(script);
+    })();
+</script><noscript><a href="http://reformal.ru"><img src="http://media.reformal.ru/reformal.png" /></a><a href="http://gskinoru.reformal.ru">Oтзывы и предложения для Автоматизированная обработка заявок </a></noscript>
+-->
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-6397720-17', 'iforget.ru');
+  ga('send', 'pageview');
+
+</script>
+
+
+<!-- Yandex.Metrika counter --><script type="text/javascript">(function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter23267395 = new Ya.Metrika({id:23267395, webvisor:true, clickmap:true, trackLinks:true, accurateTrackBounce:true}); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks");</script><noscript><div><img src="//mc.yandex.ru/watch/23267395" style="position:absolute; left:-9999px;" alt="" /></div></noscript><!-- /Yandex.Metrika counter -->
+
+
+</body>
+</html><!-- /Footer -->

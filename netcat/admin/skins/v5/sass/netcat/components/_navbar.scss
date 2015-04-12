@@ -1,0 +1,230 @@
+/************* navbar | Оформление панели навигации *************/
+//--------------------------------------------------------------------------
+
+$active_border_size: 5px;
+$padding:    6px;
+//--------------------------------------------------------------------------
+
+
+.#{$_navbar} {
+	height:     $navbar_height;
+	background: $navbar_bg;
+	position:   relative;
+	// overflow:   hidden;
+	// min-width: 800px;
+
+	a {
+		text-decoration: none !important;
+	}
+
+	// Задаем шрифты напрямую т.к. это fron-end элемент
+    &, & *, & a {
+        @extend %default-font;
+    }
+
+	// nc--fixed
+	//--------------------------------------------------------------------------
+	&.#{$__fixed}, &.#{$__bordered} {
+		$navbar_height: $navbar_height - 1;
+		border-bottom:  1px solid nc_color(blue, -33%);
+		height:         $navbar_height;
+	}
+	&.#{$__fixed}
+	{
+		@extend %box-shadow-small;
+		position:      fixed;
+		width:         100%;
+		top:           0;
+		left:          0;
+		z-index:       999;
+	}
+
+	//--------------------------------------------------------------------------
+
+	@include nc-mod-colors($include: $bw_color_names, $background: -20%, $border: -50%);
+
+	//--------------------------------------------------------------------------
+
+	.#{$_quick_menu},
+	.#{$_menu} {
+		@extend %clearfix;
+		@include float-left;
+		height: $navbar_height;
+		padding: 0 ceil($default_padding / 2);
+	}
+
+	// nc-quick-menu
+	//--------------------------------------------------------------------------
+	&.#{$__fixed}, &.#{$__bordered} {
+		.#{$_quick_menu} {
+			border-bottom:1px solid nc_color(white, -33%);
+		}
+	}
+	.#{$_quick_menu} {
+		background: nc_color(white);
+		li {
+			padding: 0 $default_padding;
+			a {
+				display:     block;
+				float:       left;
+				color:       nc_color(blue) !important;
+				padding:     0;
+				margin:      0;
+				line-height: $navbar_height - $active_border_size +4;
+				height:      $navbar_height - $active_border_size +1;
+			}
+			&.#{$__active} a {
+				color:         nc_color(darken) !important;
+				border-bottom: $active_border_size solid nc_color(darken);
+			}
+		}
+	}
+
+	// nc-menu
+	//--------------------------------------------------------------------------
+	.#{$_menu} {
+		& > li > ul,
+		& > li > div {
+			min-width: 250px;
+			max-width: 400px;
+			overflow-x: hidden;
+		}
+	}
+
+	// nc-tray
+	//--------------------------------------------------------------------------
+	.#{$_tray} {
+		background:   $navbar_bg;
+		position:     absolute;
+		height:       $navbar_height;
+		right:        0;
+		margin-right: 5px;
+		top:          0;
+
+		@include background(linear-gradient(center left, rgba($navbar_bg,0), $navbar_bg 10%));
+
+		& > li > ul,
+		& > li > div {
+			min-width: 250px;
+			right:0;
+		}
+	}
+
+	// Уровень 1
+	//--------------------------------------------------------------------------
+	ul {
+		@extend %reset-list;
+	}
+	& > ul > li {
+		@include float-left;
+
+		& > a {
+			color:       $navbar_text_color;
+			font-size:   $navbar_font_size;
+			display:     block;
+			line-height: $navbar_height - $padding*2 - 1;
+			height:      $navbar_height - $padding*2;
+			margin:      $padding 0 0;
+			padding:     0 ceil($navbar_height / 4);
+			position:    relative;
+
+			.#{$_icon_large} {
+				margin-top: $padding - 2;
+				vertical-align: 0;
+			}
+
+		}
+
+		// li.nc--compact
+		&.#{$__compact} > a {
+			padding: 0 ceil($navbar_height / 4 / 2);
+		}
+
+
+		& > a:hover {
+			color: $navbar_text_color;
+		}
+
+		// &.#{$__active} > a {
+		// 	line-height:   $navbar_height - $active_border_size * 2;
+		// 	height:        $navbar_height - $active_border_size * 2;
+		// 	color:         nc_color(white) !important;
+		// 	border-bottom: $active_border_size solid nc_color(darken);
+		// }
+
+		&.#{$__dropdown}.#{$__clicked} > a {
+			background:    $navbar_dropdown_bg;
+			color:         nc_color(darken);
+			border:        1px solid $navbar_dropdown_border_color;
+			padding:       0 ceil($navbar_height / 4 - 1);
+			border-bottom: none;
+			z-index:       $z_index_dropdown + 1;
+		}
+	}
+	&>a:hover {
+
+	}
+	li.#{$__clicked} ul,
+	li.#{$__clicked} div {
+		display: block;
+		z-index: $z_index_dropdown;
+	}
+
+	// Уровень >= 2
+	//--------------------------------------------------------------------------
+	& > ul > li > ul,
+	& > ul > li > div {
+		@extend %box-shadow-large;
+		display:    none;
+		position:   absolute;
+		background: $navbar_dropdown_bg;
+		border:     1px solid $navbar_dropdown_border_color;
+		z-index:    $z_index_dropdown;
+		margin:     -1px 0 0 0;
+		padding:    0;
+		font-size:  $font_size;
+		overflow:   auto;
+	}
+	& > ul > li > ul {
+		.#{$_icon} {
+			// display:     block;
+			// float:       left;
+			margin-right:   5px;
+			vertical-align: middle;
+		}
+
+		li {
+			@include reset-float('block');
+
+			&.#{$_divider} {
+				border-top: 1px solid $navbar_dropdown_border_color;
+			}
+			& > span {
+				color:          nc_color(grey);
+				background:     nc_color(lighten, 50%);
+				// font-weight: bold;
+				text-transform: uppercase;
+				line-height:    ceil($navbar_height / 1.8);
+				padding:        0 ceil($navbar_height / 4);
+				display:        block;
+				white-space:    nowrap;
+			}
+			& > a {
+				color:       nc_color(darken);
+				line-height: ceil($navbar_height / 1.8);
+				padding:     0 ceil($navbar_height / 4);
+				display:     block;
+				white-space: nowrap;
+				overflow:    hidden;
+
+				// HOVER
+				&:hover {
+					background: $navbar_dropdown_bg_hover;
+				}
+			}
+		}
+	}
+
+	//--------------------------------------------------------------------------
+
+}

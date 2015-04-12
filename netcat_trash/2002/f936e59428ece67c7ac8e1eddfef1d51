@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<netcatml>
+  <subdivisions>
+    <subdivision subdivision_id="1" catalogue_id="1" parent_sub_id="0">
+      <Subdivision_Name>Титульная страница</Subdivision_Name>
+      <EnglishName>index</EnglishName>
+      <Checked>0</Checked>
+    </subdivision>
+  </subdivisions>
+  <sub_classes>
+    <sub_class sub_class_id="1" subdivision_id="1" class_id="2002">
+      <Sub_Class_Name>Текст на главной</Sub_Class_Name>
+      <EnglishName>index</EnglishName>
+      <Checked>0</Checked>
+    </sub_class>
+  </sub_classes>
+  <fields>
+    <field field_id="2332" type_of_data_id="3">
+      <Field_Name>Text</Field_Name>
+      <Description>Текст</Description>
+    </field>
+  </fields>
+  <messages>
+    <message message_id="1" class_id="2002" subdivision_id="1" sub_class_id="1">
+      <User_ID>1</User_ID>
+      <Priority>1</Priority>
+      <Checked>1</Checked>
+      <IP>188.235.129.87</IP>
+      <UserAgent>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.76 Safari/537.36</UserAgent>
+      <Parent_Message_ID>0</Parent_Message_ID>
+      <Created>2013-09-26 17:06:56</Created>
+      <LastUpdated>2013-10-03 13:54:15</LastUpdated>
+      <LastUser_ID>1</LastUser_ID>
+      <LastIP>188.168.235.29</LastIP>
+      <LastUserAgent>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.76 Safari/537.36</LastUserAgent>
+      <Keyword/>
+      <Text><![CDATA[<div class="description">
+<div class="title">доход без забот</div>
+
+<div class="logo">— система автоматической монетизации</div>
+
+<p>Ваш сайт приносит прибыль, но совсем<br />
+не оставляет свободного времени?<br />
+Выход есть — сервис iForget.</p>
+
+									<div class="share">
+										<a class="facebook" href="#"></a>
+										<a class="twitter" href="#"></a>
+										<a class="vk" href="#"></a>
+									</div>
+									
+								</div>]]></Text>
+    </message>
+    <message message_id="3" class_id="2002" subdivision_id="1" sub_class_id="1">
+      <User_ID>1</User_ID>
+      <Priority>2</Priority>
+      <Checked>1</Checked>
+      <IP>188.168.235.29</IP>
+      <UserAgent>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.76 Safari/537.36</UserAgent>
+      <Parent_Message_ID>0</Parent_Message_ID>
+      <Created>2013-10-03 13:54:59</Created>
+      <LastUpdated>2013-10-03 13:54:59</LastUpdated>
+      <LastUser_ID>0</LastUser_ID>
+      <LastIP/>
+      <LastUserAgent/>
+      <Keyword/>
+      <Text><![CDATA[<div class="description">
+<div class="title">еще один слайд</div>
+
+<div class="logo">— текст какой-то тут идет</div>
+
+<p>Ваш сайт приносит прибыль, но совсем<br />
+не оставляет свободного времени?<br />
+Выход есть — сервис iForget.</p>
+
+<div class="share"> </div>
+</div>]]></Text>
+    </message>
+    <message message_id="4" class_id="2002" subdivision_id="1" sub_class_id="1">
+      <User_ID>1</User_ID>
+      <Priority>3</Priority>
+      <Checked>1</Checked>
+      <IP>188.168.235.29</IP>
+      <UserAgent>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.76 Safari/537.36</UserAgent>
+      <Parent_Message_ID>0</Parent_Message_ID>
+      <Created>2013-10-03 13:56:04</Created>
+      <LastUpdated>2013-10-03 13:56:04</LastUpdated>
+      <LastUser_ID>0</LastUser_ID>
+      <LastIP></LastIP>
+      <LastUserAgent></LastUserAgent>
+      <Keyword></Keyword>
+      <Text><![CDATA[<div class="description">
+<div class="title">Третий слайд</div>
+
+<div class="logo">— система автоматической монетизации</div>
+
+<p>Ваш сайт приносит прибыль, но совсем<br />
+не оставляет свободного времени?<br />
+Выход есть — сервис iForget.</p>
+
+<div class="share"> </div>
+</div>]]></Text>
+    </message>
+  </messages>
+  <comments/>
+</netcatml>

@@ -1,0 +1,37 @@
+/************* labels | Лэйблы *************/
+//--------------------------------------------------------------------------
+
+body .#{$_label},
+.#{$_label} {
+    @extend %border-radius-small;
+    
+    white-space: nowrap;
+    display:     inline-block;
+    color:       nc-color(white);
+    background:  nc-color(grey);
+    font-size:   $font_size_small;
+    padding:     1px 5px;
+    min-width:   20px;
+    text-align:  center;
+
+    @include nc-mod-colors($include: $bw_color_names, $background: 10%);
+
+    &:hover {
+        color: nc-color(white);
+    }
+
+    &.#{$__mod_prefix}white,
+    &.#{$__mod_prefix}lighten,
+    &.#{$__mod_prefix}light {
+        color: nc_color(darken);
+    }
+
+    &.#{$__rounded} {
+        padding: 1px 10px;
+        @extend %border-rounded;
+    }
+
+    &.#{$__blocked} {
+        display:    block;
+    }
+}

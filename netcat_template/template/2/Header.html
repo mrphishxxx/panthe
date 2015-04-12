@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title><?=$nc_core->page->get_title()?></title>
+        <meta name="description" content="<?=$nc_core->page->get_description()?>" />
+        <meta name="keywords" content="<?=$nc_core->page->get_keywords()?>" />
+
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="/css/main.css" />
+	<link rel="stylesheet" type="text/css" href="/css/prototypes.css" />
+	<link rel="stylesheet" type="text/css" href="/css/jcar.css" />
+
+        <!-- <meta name="verify-reformal" content="65c4e5ec9903c7df782b9abb" />-->
+	
+	<script type="text/JavaScript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script type="text/JavaScript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+        <script src="http://code.jquery.com/jquery-migrate-1.0.0.js"></script>
+	<script type="text/JavaScript" src="/js/jcar.js"></script>
+	<script type="text/JavaScript" src="/js/main.js"></script>
+	
+</head>
+<body>
+<div id="page" class="<?=($sub == 1 ? "landing" : "front_end about")?>">
+
+
+	<!-- HEADER -->
+	<div id="header">
+		<div class="alignment">
+		
+			<!-- BAR -->
+			<div class="bar">
+				
+				<!-- logo -->
+				<a id="logo" href="/"></a>
+				
+				<!-- switch -->
+				<div id="switch">
+					
+					<!--<a href="/copywriters/">Копирайтерам</a><a href="/register.php?user=seo">Вебмастерам</a>!-->
+					
+				</div>
+				<!-- login -->
+<?
+if ($_COOKIE['iforget_ok'])
+{
+   $uinfo = $db->get_row("SELECT * FROM admins WHERE id=".$_COOKIE['iforget_ok'], "ARRAY_A");
+}
+?>
+                       <?=(($_COOKIE['iforget_ok'] > 0) ? '
+  		              <!-- userbar -->
+  		              <div id="userbar">
+                                 <p id="fast_connection">
+                                              Быстрая связь: 
+                                             <img src="/images/openid/skype16x16.png" /> <a href="skype:roman.vetes?chat">Roman.vetes</a>
+                                             <img src="/images/openid/icq16x16.gif" /> 133-215 
+                                 </p>
+  		                 <a id="user_login" href="'.($uinfo['type'] == "user" ? '/user.php?action=lk' : (($uinfo['type'] == "copywriter" ? '/copywriter.php' : (($uinfo['type'] == "manager" ? '/management.php' : '/admin.php'))))).'">'.($uinfo['email'] ? $uinfo['email'] : $uinfo['login']).'</a>
+                                 <span class="sep"></span>
+  		                 <a id="log_off" href="'.($uinfo['type'] == "manager" ? '?module=managers&action=logout'  : '/user.php?action=logout').'"><span class="ico"></span> <span>Выход</span> </a>
+  		              </div>
+                       ' : 
+                       '
+                                <div style="position:absolute;top:-12px;right:470px;">Войти через</div>
+				<div id="login">
+                                    <script src="//ulogin.ru/js/ulogin.js"></script>
+                                    
+                                    <div style="float: left;padding: 0 0 0 10px;" id="uLogin" data-ulogin="display=small;fields=first_name,last_name,email,nickname;providers=vkontakte,odnoklassniki,mailru,facebook,twitter,googleplus;hidden=;redirect_uri=http%3A%2F%2Fiforget.ru%2Fuser.php"></div>
+                                    
+                                    <p id="fast_connection">
+                                        Быстрая связь: 
+                                           <img src="/images/openid/skype16x16.png" /> <a href="skype:roman.vetes?chat">Roman.vetes</a>
+                                           <img src="/images/openid/icq16x16.gif" /> 133-215 
+                                    </p>
+                                    <form action="/user.php" method="POST" style="float: right;">
+						<input type="text" name="login" value="" style="height:16px;" placeholder="Логин" />
+						<input type="password" name="pass" value="" class="textfield" style="width:153px;" placeholder="Пароль" />
+						<input type="submit" value="Вход" />
+						
+						<div class="registration-recovery">
+							<a href="/register.php" id="registration">Регистрация</a>
+							<a href="/forgot/" id="registration">Забыли пароль?</a>
+						</div>
+					</form>
+				</div>
+                          ')?>
+				
+			</div>
+			
+		</div>
+	</div>
+	<!-- HEADER END -->

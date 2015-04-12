@@ -1,0 +1,211 @@
+<!-- Header -->%Header
+
+	<!-- CONTENT AREA -->
+	<div id="content_area">
+		<div class="alignment">
+			<div class="canvas">
+				
+				<h1>Первый платёж</h1><!-- /Header -->
+
+<!-- Footer --><?
+$path = "/var/www/iforget/data/www/iforget.ru/";
+require_once $path."includes/mandrill/mandrill.php";
+if ($sub == 19)
+{
+   // your registration data
+   $mrh_login = "postin";      // your login here
+   $mrh_pass1 = "xN567YtGhPoSz3M";   // merchant pass1 here
+
+   // order properties
+   $inv_id    = intval($_GET['oid']);        // shop's invoice number 
+                       // (unique for shop's lifetime)
+   $inv_desc  = "Пополнение баланса";   // invoice desc
+   $inv_desc = urlencode($inv_desc);
+   $out_summ  = "300";   // invoice summ
+
+   // build CRC value
+   $crc  = md5("$mrh_login:$out_summ:$inv_id:$mrh_pass1");
+
+   // build URL
+   $url = "https://merchant.roboxchange.com/Index.aspx?MrchLogin=$mrh_login&".
+    "OutSum=$out_summ&InvId=$inv_id&Desc=$inv_desc&SignatureValue=$crc";
+
+   // print URL if you need
+   echo "<a href='$url' target='_blank'>Оплатить через Робокассу!</a>";
+}
+
+/* тема/subject */
+$subject = "Поздравляем Вас с успешным пополнением баланса iforget.ru";
+/* сообщение */
+$body  ='
+<html>
+<head>
+ <title>Оплата прошла успешно</title>
+</head>
+<body>
+<p>Добрый день!</p>
+
+<p>Поздравляем! Ваш платеж успешно проведён, средства зачислены на Ваш баланс!</p>
+<p>Желаем приятной работы с системой iForget!</p>
+<br /> 
+<p>Оставить и почитать отзывы Вы сможете в нашей ветке на <a href="http://searchengines.guru/showthread.php?p=12378271">серчах</a>
+
+<p>С Уважением, Администрация сервиса iforget.ru</p>
+</body>
+</html>
+';
+
+$subject_admin = "Пользователь $ulogin пополнил баланс на $sum рублей";
+/* сообщение */
+$body_admin  ='
+<html>
+<head>
+ <title>Оплата прошла успешно</title>
+</head>
+<body>
+<p>Добрый день!</p>
+
+<p>Пользователь <a href="http://iforget.ru/admin.php?module=admins&action=sayty&uid='.$uid.'">'.$ulogin.'</a> успешно пополнил счет на '.$sum.' рублей.</p>
+
+<p>С Уважением, Администрация сервиса iforget.ru</p>
+</body>
+</html>
+';
+
+if ($sub == 22 && isset($_POST["LMI_PAYMENT_NO"])) { 
+    $LMI_PAYEE_PURSE = @$_POST["LMI_PAYEE_PURSE"];
+    $LMI_PAYMENT_AMOUNT = @$_POST["LMI_PAYMENT_AMOUNT"];
+    $LMI_PAYMENT_NO = @$_POST["LMI_PAYMENT_NO"];
+    $LMI_MODE = @$_POST["LMI_MODE"];
+    $LMI_SYS_INVS_NO = @$_POST["LMI_SYS_INVS_NO"];
+    $LMI_SYS_TRANS_NO = @$_POST["LMI_SYS_TRANS_NO"];
+    $LMI_SYS_TRANS_DATE = @$_POST["LMI_SYS_TRANS_DATE"];
+    $LMI_SECRET_KEY = "ff7a567a8adfed9f9941664994d31c86";
+    $LMI_PAYER_PURSE = @$_POST["LMI_PAYER_PURSE"];
+    $LMI_PAYER_WM = @$_POST["LMI_PAYER_WM"];
+
+    $SIGN = $LMI_PAYEE_PURSE . $LMI_PAYMENT_AMOUNT . $LMI_PAYMENT_NO . $LMI_MODE . $LMI_SYS_INVS_NO . $LMI_SYS_TRANS_NO . $LMI_SYS_TRANS_DATE . $LMI_SECRET_KEY . $LMI_PAYER_PURSE . $LMI_PAYER_WM;
+    $sha256 = hash('sha256', $SIGN);
+    $LMI_HASH = strtoupper($sha256);
+
+    if ($LMI_HASH == $_REQUEST["LMI_HASH"]) {
+        if (@$LMI_MODE == 0) {
+            $db->query("UPDATE orders SET status=1 WHERE id=" . $LMI_PAYMENT_NO);
+            $mailsend = $db->get_var("SELECT mailsend FROM orders WHERE id=" . $LMI_PAYMENT_NO);
+            $uid = $db->get_var("SELECT uid FROM orders WHERE id=" . $LMI_PAYMENT_NO);
+            $uinfo = $db->get_row("SELECT * FROM admins WHERE id=$uid", "ARRAY_A");
+            $ulogin = $uinfo['login'];
+            if (!$mailsend)
+            {
+                        $mandrill = new Mandrill("zTiNSqPNVH3LpQdk1PgZ8Q");
+                        $message = array();
+                        $message["html"] = $body;
+                        $message["text"] = "";
+                        $message["subject"] = $subject;
+                        $message["from_email"] = "news@iforget.ru";
+                        $message["from_name"] = "iforget";
+                        $message["to"] = array();
+                        $message["to"][0] = array("email" => $uinfo['email']);
+			$message["to"][1] = array("email" => "abashevav@gmail.com");
+                        $message["track_opens"] = null;
+                        $message["track_clicks"] = null;
+                        $message["auto_text"] = null;
+
+                        try {
+                            $mandrill->messages->send($message);
+                            $db->query("UPDATE orders SET mailsend=1 WHERE id=$id");
+                        } catch (Exception $e) {
+                            echo '';
+                        }
+                        
+                        $message["html"] = $body_admin;
+                        $message["subject"] = $subject_admin;
+                        $message["to"][0] = array("email" => "iforget.ru@gmail.com");
+			$message["to"][1] = array("email" => "abashevav@gmail.com");
+
+			try {
+                            $mandrill->messages->send($message);
+                        } catch (Exception $e) {
+                            echo '';
+                        }
+
+                        
+             }
+        }
+    }
+}
+
+if ($sub == 22 && (isset($_GET['InvId'])))
+{
+   $id = intval(@$_GET['InvId']); // получаем номер транзакции
+   $pwd2 = "QsC98Nbr5PmaU21";
+   $sum = $db->get_var("SELECT price FROM orders WHERE id=$id");
+
+   if ( $sum != floatval($_GET['OutSum']) ) {
+    echo "ERR: invalid amount";
+    exit();
+   }
+
+   if ( strtolower($_GET['SignatureValue']) != strtolower(md5($_GET['OutSum'] . ":" . $id . ":" . $pwd2)) ) {
+    echo "ERR: invalid signature";
+    exit();
+   }
+
+  $db->query("UPDATE orders SET status=1 WHERE id=$id");
+   echo "Оплата платежа #".$id." завершилась успешно!";
+
+  $uid = $db->get_var("SELECT uid FROM orders WHERE id=$id");
+  $mailsend = $db->get_var("SELECT mailsend FROM orders WHERE id=$id");
+  $uinfo = $db->get_row("SELECT * FROM admins WHERE id=$uid", "ARRAY_A");
+  $ulogin = $uinfo['login'];
+
+
+   if (!$mailsend)
+   {
+                        $mandrill = new Mandrill("zTiNSqPNVH3LpQdk1PgZ8Q");
+                        $message = array();
+                        $message["html"] = $body;
+                        $message["text"] = "";
+                        $message["subject"] = $subject;
+                        $message["from_email"] = "news@iforget.ru";
+                        $message["from_name"] = "iforget";
+                        $message["to"] = array();
+                        $message["to"][0] = array("email" => $uinfo['email']);
+			$message["to"][1] = array("email" => "abashevav@gmail.com");
+                        $message["track_opens"] = null;
+                        $message["track_clicks"] = null;
+                        $message["auto_text"] = null;
+
+                        try {
+                            $mandrill->messages->send($message);
+                            $db->query("UPDATE orders SET mailsend=1 WHERE id=$id");
+                        } catch (Exception $e) {
+                            echo '';
+                        }
+                        
+                        $message["html"] = $body_admin;
+                        $message["subject"] = $subject_admin;
+                        $message["to"][0] = array("email" => "iforget.ru@gmail.com");
+			$message["to"][1] = array("email" => "abashevav@gmail.com");
+
+			try {
+                            $mandrill->messages->send($message);
+                        } catch (Exception $e) {
+                            echo '';
+                        }
+
+                        
+   }
+}
+
+
+?>
+
+</div>
+
+		</div>
+	</div>
+	<!-- CONTENT AREA END -->
+
+
+%Footer<!-- /Footer -->

@@ -1,0 +1,584 @@
+/* ################################################## TABLES */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    background: transparent;
+}
+table th,
+table td {
+    vertical-align: middle;
+}
+table a {
+    border-color: #000;
+}
+table tbody .odd {
+    background-color: #f7f7f7;
+}
+.lefty {
+    text-align: left;
+}
+.righty {
+    text-align: right;
+}
+.first {
+    padding-left: 15px !important;
+}
+.last {
+    padding-right: 15px !important;
+}
+/* ================================================== table header */
+
+thead th, tfoot th {
+    padding: 0 10px;
+    height: 35px;
+    background-color: #f4f4f4;
+    background-image: url("../images/interface/table-header-bg.png");
+    background-position: left bottom;
+    background-repeat: repeat-x;
+
+    border-bottom: 1px solid #ccc;
+    border-left: 1px solid #cccccc;	
+    text-align: center;
+    font-weight: normal;
+}
+thead th:first-child {
+    border-left: none;
+}
+
+th.left-corner,
+th.right-corner {
+    padding: 0;
+    background-image: none;
+    background-color: #fff;
+}
+th.left-corner { padding: 0 0 0 10px; }
+th.right-corner { padding: 0 10px 0 0; }
+
+th.left-corner div,
+th.right-corner div {
+    min-width: 10px;
+    width: 100%;
+    height: 100%;
+    line-height: 35px;
+    background: #f4f4f4 url("../images/interface/table-header-bg.png");
+}
+th.left-corner div {
+    border-top-left-radius: 5px;
+    -moz-border-top-left-radius: 5px;
+}
+th.right-corner div {
+    border-top-right-radius: 5px;
+    -moz-border-top-right-radius: 5px;
+}
+
+/* ================================================== table body */
+tbody td {
+    text-align: center;
+    padding: 8px 10px;
+}
+tbody .tasks.none {
+    color: #6d6d6d;
+}
+tbody .tasks span {
+    color: #3f953b;
+}
+tbody .login,
+tbody .password {
+    color: #6d6d6d;
+}
+table td.action-bar {
+    text-align: left;
+    padding: 10px !important;
+    background-color: #fff;
+    border-top: 1px solid #cccccc;
+}
+tbody .tickets-state-text {
+    color: #6d6d6d;
+}
+tbody .closed td {
+    background-color: #faefef !important;
+}
+tbody .tickets-title a {
+    border: none;
+    line-height: 14px;
+}
+tbody .tickets-date {
+    color: #6d6d6d;
+    font-size: 12px;
+}
+tbody .account a {
+    color: #6d6d6d;
+    border: none;
+}
+tbody .account {
+    white-space: nowrap;
+}
+table .legend {
+    padding: 0;
+    border: none;
+}
+table .legend li {
+    width: 170px;
+    margin-left: 40px;
+
+}
+
+/* ================================================== alignment */
+
+/* left */
+table .title,
+table .login,
+table .password,
+table .account,
+table .tickets-state-text,
+table .tickets-date,
+table .tickets-title {
+    text-align: left;
+}
+/* right */
+table .exchange,
+table .pr,
+table .tasks,
+table .date,
+table .keyword,
+table .site {
+    text-align: right;
+}
+
+
+/* ================================================== icons */
+tbody .edit,
+tbody .close,
+tbody .renew,
+tbody .disable,
+tbody .id,
+tbody .message, 
+tbody .tickets-state-ico,
+tbody .checkbox,
+tbody .exchange-logo {
+    padding: 0 5px;
+    width: 1%;
+}
+tbody .edit .ico,
+tbody .close .ico,
+tbody .renew .ico,
+tbody .disable .ico,
+tbody .account .ico,
+tbody .exchange ul,
+tbody .tickets-state-ico .ico,
+tbody .exchange-logo .ico {
+    position: relative;
+    top: 3px;
+}
+
+tbody .edit .ico,
+tbody .close .ico,
+tbody .renew .ico,
+tbody .disable .ico {
+    display: inline-block;
+    width: 17px;
+    height: 17px;
+    background-image: url("../images/interface/sprite.png");
+    background-position: -80px -80px;
+    border: none !important;
+}
+tbody .edit.inactive .ico {
+    background-position: -80px -100px;
+    cursor: default;
+}
+tbody .edit.not-available .ico {
+    background-position: -80px -120px;
+    cursor: default;
+}
+tbody .close .ico {
+    width: 18px;
+    height: 18px;
+    background-position: -100px -80px;
+}
+tbody .renew .ico {
+    background-position: -100px -100px;
+}
+tbody .disable .ico {
+    background-position: -100px -120px;
+}
+tbody .state .ico {
+
+}
+
+tbody .account .ico,
+tbody .exchange-logo .ico {
+    display: inline-block;
+}
+tbody .tickets-state-ico .ico {
+    display: inline-block;
+    background-image: url("../images/interface/sprite.png");
+}
+
+tbody .add .ico {
+
+    position: relative;
+    top: 3px;
+    display: inline-block;
+    width: 17px;
+    height: 17px;
+    background-image: url("../images/interface/add2.png");
+    border: none !important;
+}
+
+tbody .output .ico {
+
+    position: relative;
+    top: 3px;
+    display: inline-block;
+    width: 17px;
+    height: 17px;
+    background-image: url("../images/interface/right2.png");
+    background-repeat: no-repeat;
+    border: none !important;
+}
+
+/* -------------------------------------------------- exchange */
+tbody .exchange ul {
+    display: inline-block;
+}
+tbody .exchange ul:after {
+    content: '';
+    height: 0;
+    line-height: 0;
+    background: transparent;
+    overflow: hidden;
+    clear: both;
+}
+tbody .exchange li {
+    float: left;
+    margin-left: 10px;
+}
+tbody .exchange li:first-child {
+    margin: 0;
+}
+
+/* ================================================== removed items table */
+.removed {
+    margin-top: 50px;
+}
+.removed table {
+    border-top: 1px solid #ccc;
+}
+.removed td,
+.removed a,
+.removed span {
+    color: #abb8c0;
+    border-color: #abb8c0;
+}
+.removed .button,
+.removed input[type="submit"] {
+    color: #fff;
+}
+.removed .odd td {
+    background-color: #fdfdfd;
+}
+.removed .edit .ico {
+    background-position: -80px -100px;
+}
+.removed .gogetlinks { background-position: -40px -100px; }
+.removed .miralinks { background-position: -60px -100px; }
+.removed .service3 { background-position: 0 -100px; }
+.removed .sape { background-position: -20px -100px; }
+.removed .tasks span,
+.removed .tasks.none {
+    color: #abb8c0;
+}
+
+tbody .edit.row_tt .ico{
+    background-position: -80px -120px;
+    cursor: pointer;
+}
+
+/* ################################################## ICONS */
+
+/* ================================================== legend */
+.legend .ico {
+    height: 20px;
+    display: inline-block;
+    background-image: url("../images/interface/sprite.png");
+    border: none !important;
+    position: relative;
+    top: 6px;
+    margin-right: 4px;
+}
+.legend {
+    padding: 30px 0;
+    display: inline-block;
+    width: 440px;
+    color: #6d6d6d;
+    vertical-align: top;
+}
+.legend li {
+    width: 210px;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+
+.gogetlinks,
+.miralinks,
+.service3,
+.sape {
+    display: block;
+    border: none !important;
+    width: 16px;
+    height: 16px;
+    background-image: url("../images/interface/sprite.png");
+}
+.gogetlinks { background-position: -40px -80px; }
+.miralinks { background-position: -60px -80px; }
+.service3 { background-position: 0 -80px; }
+.sape { background-position: -20px -80px; }
+
+
+.state .ico {
+    display: inline-block;
+    height: 20px;
+    background-image: url("../images/interface/sprite.png");
+    border: none !important;
+}
+
+.in-work .ico { background-position: -120px -60px ; width: 21px; }
+.done .ico { background-position: -120px -80px ; width: 21px; }
+.ready .ico { background-position: -120px -40px ; width: 19px; }
+.working .ico { background-position: -140px -40px ; width: 19px; }
+.vilojeno .ico { background-position: -120px -100px ; width: 21px; }
+.not_applications .ico {background-position: -20px -40px;  width: 21px; height: 27px;}
+
+.closed .ico { background-position: -160px -40px; width: 29px; height: 21px; }
+.in-progress .ico { background-position: -160px 0; width: 22px; height: 24px; }
+.answered .ico { background-position: -120px -20px; width: 24px;  height: 18px; }
+.processed .ico { background-position: -120px 0; width: 24px; height: 18px; }
+
+/* ################################################## BACK END FORMS */
+.form {	
+    position: relative;
+    margin-bottom: 10px;
+    padding: 16px 8px;
+    background-image: url("../images/interface/form-bg.png");
+    background-position: left top;
+    background-repeat: repeat-x;
+}
+.back_end .form {
+    background-color: #dedbc3;
+}
+.form li {
+    margin-top: 8px;
+}
+.form li:first-child {
+    margin: 0;
+}
+.form .title {
+    position: relative;
+    top: 8px;
+    display: inline-block;
+    vertical-align: top;
+    width: 162px;
+    color: #373938;
+    line-height: 14px;
+}
+.form .hint {
+    display: inline-block;
+    position: relative;
+    top: 5px;
+    margin: 0 10px;
+    font-size: 12px;
+}
+.form .title .hint {
+    display: inline;
+    position: static;
+    margin: 0;
+}
+.form .select,
+.form .textfield,
+.form .textarea,
+.form .multiple-choices {
+    display: inline-block;
+    vertical-align: top;
+}
+.textarea {
+    vertical-align: top;
+}
+.form .add-more {
+    position: relative;
+    top: 2px;
+    margin: 0 6px;
+    display: inline-block;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+}
+.form .more {
+    position: absolute;
+    top: 20px;
+    right: 15px;
+    font-style: italic;
+    border-color: #373938;
+}
+.action_bar {
+    padding: 0 8px;
+}
+
+/* ================================================== dimensions */
+.form .wide {
+    width: 250px;
+}
+.form .mini {
+    width: 44px;
+}
+.form .short {
+    width: 144px;
+}
+.form .full-length {
+    width: 410px;
+}
+.form .full-long {
+    width: 750px;
+}
+.form .entire_length {
+    width: 590px;
+}
+.form .half-length {
+    width: 197px;
+}
+.form .one-third {
+    width: 115px;
+}
+.multiple-choices {
+    width: 410px;
+}
+
+
+
+
+/* ################################################## CHAT */
+#chat {
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 30px;
+    font-size: 12px;
+}
+#chat > div {
+    margin: 20px 0;
+}
+#chat > div:after {
+    content: '';
+    display: block;
+    height: 0;
+    line-height: 0;
+    background-color: transparent;
+    overflow: hidden;
+    clear: both;
+}
+#chat .message {
+    background-color: #e3e3e3;
+    padding: 12px 20px;
+    position: relative;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    font-style: italic;
+}
+#chat .who {
+    position: absolute;
+    bottom: 2px;
+    width: 134px;
+    color: #b4b4b4;
+    font-style: italic;
+    max-height: 100px;
+}
+#chat .date {
+    display: block;
+    font-style: normal;
+    color: #6d6d6d;
+}
+#chat .pointer {
+    position: absolute;
+    bottom: -13px;
+    width: 20px;
+    height: 13px;
+
+    background-image: url("../images/interface/sprite.png");
+}
+/* ================================================== you */
+#chat .you .message {
+    float: left;
+    margin-right: 140px;
+}
+#chat .you .pointer {
+    left: 20px;
+    background-position: -100px -60px;
+}
+#chat .you .who {
+    right: -140px;
+}
+#chat .you.recent .message {
+    background-color: #e4f9e4;
+}
+#chat .you.recent .pointer {
+    background-position: -100px -40px;
+}
+
+/* ================================================== support */
+#chat .support .message {
+    background-color: #fbf0f0;
+    float: right;
+    margin-left: 140px;
+}
+#chat .support .pointer {
+    right: 20px;
+    background-position: -100px -20px;
+}
+#chat .support .who {
+    left: -140px;
+    text-align: right;
+}
+
+table thead .yellow1 th {
+    background-color: #FFFAF0;
+    background-image: url("../images/interface/table-header-bg2.png");
+    background-position: left bottom;
+    background-repeat: repeat-x;
+    border: solid 1px #d8d8ff;
+}
+table tbody .yellow1 {
+    background-color: #FFFAF0;
+}
+
+
+
+.error_to_etxt{
+    color: red;
+    font-weight: bold;
+}
+
+.error_to_copywrite{
+    color: red;
+}
+.navigation .balance {
+    display: block;
+    width: 55px;
+    float: right;
+    text-align: center;
+    color: green;
+    
+}
+.navigation .balance a {
+    border-bottom: 1px solid #0c0;
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,155 @@
+/************* helpers | Вспомогательные общие стили *************/
+//--------------------------------------------------------------------------
+
+.#{$__disabled} {
+	@extend %disabled;
+}
+
+.#{$__blocked} {
+	display: block;
+}
+
+.#{$__wide} {
+    width: 100%;
+}
+
+// nc-text-*
+//--------------------------------------------------------------------------
+@each $c in $accent_color_names {
+	.#{$_text_prefix}#{$c} {
+		color: mix(nc_color($c), #999, 70%) !important;
+	}
+}
+@each $c in $bw_color_names {
+	.#{$_text_prefix}#{$c} {
+		color: nc_color($c) !important;
+	}
+}
+
+// nc-text-small
+.#{$_text_prefix}small {
+	font-size:   $font_size_small;
+	line-height: floor($font_size_small * 1.3);
+}
+
+// nc-bg-*
+//--------------------------------------------------------------------------
+@each $c in $accent_color_names {
+	.#{$_bg_prefix}#{$c} {
+		background-color: nc_color($c, 30%);
+	}
+}
+@each $c in $bw_color_names {
+    .#{$_bg_prefix}#{$c} {
+        background-color: nc_color($c);
+    }
+}
+
+// nc-padding-*
+//--------------------------------------------------------------------------
+@for $i from 0 through 5 {
+	$padding: $i*5;
+	.#{$_padding_prefix}#{$padding} {
+		padding: #{$padding}px !important;
+		hr, .#{$_hr} {
+			margin: #{$padding}px -#{$padding}px;
+		}
+	}
+}
+
+// nc-shadow-*
+//--------------------------------------------------------------------------
+.#{$_shadow} {
+	@extend %box-shadow;
+}
+.#{$_shadow}-small {
+	@extend %box-shadow-small;
+}
+.#{$_shadow}-large {
+	@extend %box-shadow-large;
+}
+
+// nc-text-[left,right,center]
+//--------------------------------------------------------------------------
+
+
+// nc-position-*
+//--------------------------------------------------------------------------
+.nc-position-tl {
+	position: absolute;
+	top:      0;
+	left:     0;
+}
+.nc-position-tr {
+	position: absolute;
+	top:      0;
+	right:    0;
+}
+.nc-position-bl {
+	position: absolute;
+	bottom:   0;
+	left:     0;
+}
+.nc-position-br {
+	position: absolute;
+	bottom:   0;
+	right:    0;
+}
+.nc-position-t {
+	position: absolute;
+	left:     0;
+	top:      0;
+	width:    100%;
+}
+.nc-position-b {
+	position: absolute;
+	left:     0;
+	bottom:   0;
+	width:    100%;
+}
+
+.#{$_text_prefix}left {
+	text-align: left !important;
+}
+
+.#{$_text_prefix}right {
+	text-align: right !important;
+}
+
+.#{$_text_prefix}center {
+	text-align: center !important;
+}
+
+//--------------------------------------------------------------------------
+
+.#{$__hide} {
+	display: none;
+}
+.#{$__show} {
+	//FIXME: Изменить на значение по умолчанию
+	display: block !important;
+}
+
+//--------------------------------------------------------------------------
+
+.#{$__left} {
+	@include float-left;
+}
+
+.#{$__right} {
+	@include float-right;
+}
+
+//--------------------------------------------------------------------------
+
+.#{$__clearfix} {
+	@extend %clearfix;
+}
+
+//--------------------------------------------------------------------------
+
+.#{$__nowrap} {
+	white-space: nowrap;
+}
+
+//--------------------------------------------------------------------------

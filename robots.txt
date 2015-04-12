@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /forgot
+Disallow: /user.php
+Disallow: /admin.php
+Host: iforget.ru

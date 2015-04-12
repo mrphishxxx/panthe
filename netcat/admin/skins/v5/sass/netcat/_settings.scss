@@ -1,0 +1,128 @@
+
+// Цвета
+//--------------------------------------------------------------------------
+
+	// Оттенки серого
+	$bw_color_names:  black, darken, dark, grey, light, lighten, white;
+	$bw_color_values: black, #333, #646464, #8D8D8D, #DADADA, #EEE, white;
+
+	// Основные цвета
+	$accent_color_names:  blue, red, green, yellow; //, orange, purple, pink, cyan;
+	$accent_color_values: #1a87c2, #e54e43, #56be2a, #f9cd42; //, #000, #000, #000, #000;
+
+	$hover_bg: #e7ecf0;
+
+
+// Шрифты
+//--------------------------------------------------------------------------
+
+	$font_family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	$font_family_mono: Monaco, Menlo, Consolas, "Courier New", monospace;
+
+	$line-height: 20px;
+
+	$font_size:        14px;
+	$font_size_small:  12px;
+	$font_size_middle: 18px;
+	$font_size_large:  20px;
+
+	$mono_font_size: 13px;
+
+
+//--------------------------------------------------------------------------
+
+
+	$important: !important; // null, !important
+
+
+//##########################################################################
+//   Параметры UI
+//   По возможности необходимо использовать уже определенные значения
+//##########################################################################
+
+
+// Общее
+//--------------------------------------------------------------------------
+
+	$body_bg:          nc_color(white);
+	$font_color:       nc_color(darken);
+	$link_color:       nc_color(blue);
+	$link_color_hover: darken(nc_color(blue), 15%);
+
+	$default_padding: ceil($line_height / 1.5);
+	$padding_small:  ceil($line_height / 4);
+	$padding_large:  ceil($line_height);
+
+	$h_font_size:
+		ceil($font_size*2),
+		ceil($font_size*1.6),
+		ceil($font_size*1.2),
+		ceil($font_size*1),
+		ceil($font_size*0.8);
+	$h_line_height:
+		ceil($line_height*1.5),
+		ceil($line_height*1.5),
+		ceil($line_height),
+		ceil($line_height),
+		ceil($line_height);
+
+	$code_font_size: $font_size_small;
+	$code_padding:   1px 5px;
+	$code_color:     nc_color(darken);
+	$code_bg:        rgba(#CCC,.4); //mix(nc_color(lighten), #FFF, 50%);
+	$code_border:    1px solid rgba(0,0,0,.3);
+
+// Верхняя панель | .nc-navbar
+//--------------------------------------------------------------------------
+	$navbar_height:                55px;
+	$navbar_bg:                    nc_color(blue);
+	$navbar_text_color:            nc_color(white);
+	$navbar_font_size:             $font_size_middle;
+	$navbar_dropdown_bg:           nc_color(white);
+	$navbar_dropdown_border_color: nc_color(light);
+	$navbar_dropdown_bg_hover:     $hover_bg;
+
+
+// Вкладки | .nc-tabs
+//--------------------------------------------------------------------------
+	$tabs_height:            $line_height * 2;
+	$tabs_font_size:         $font_size + 1;
+	$tabs_text_color:        nc_color(blue);
+	$tabs_text_color_active: nc_color(darken);
+
+
+// Кнопки | .nc-btn
+//--------------------------------------------------------------------------
+	$btn_padding:         ceil($line_height/3) ceil($line_height/1.5);
+	$btn_font_size:       $font_size;
+	$btn_padding_small:   ceil($line_height / 7)+1 ceil($line_height/2);
+	$btn_font_size_small: $font_size_small;
+	$btn_padding_large:   ceil($line_height/2.5) ceil($line_height);
+	$btn_font_size_large: ceil($font_size * 1.1);
+
+// Предупреждения | .nc-alert
+//--------------------------------------------------------------------------
+	$alert_padding: ceil($line_height / 1.2);
+	$alert_margin:  ceil($line_height / 2) 0;
+
+// Таблицы | .nc-table
+//--------------------------------------------------------------------------
+	$table_padding:       ceil($line_height/2) ceil($line_height/2);
+	$table_padding_small: ceil($line_height/4) ceil($line_height/3);
+	$table_alter_bg:      mix(nc_color(lighten), white, 30%);
+
+// HTML Форма | .nc-form
+//--------------------------------------------------------------------------
+	$input_border:        1px solid nc_color(light);
+	$input_padding:       ceil($line_height / 7);
+	$input_default_width: 500px;
+
+// Дерево | .nc-tree
+	$tree_indent: 25px;
+
+// Z-INDEXES
+//--------------------------------------------------------------------------
+
+	$z_index_dropdown: 10;
+
+//--------------------------------------------------------------------------

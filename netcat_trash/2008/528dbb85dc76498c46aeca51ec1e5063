@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<netcatml>
+  <subdivisions>
+    <subdivision subdivision_id="23" catalogue_id="1" parent_sub_id="0">
+      <Subdivision_Name>Темы тикетов</Subdivision_Name>
+      <EnglishName>ticket-subjects</EnglishName>
+      <Checked>0</Checked>
+    </subdivision>
+  </subdivisions>
+  <sub_classes>
+    <sub_class sub_class_id="30" subdivision_id="23" class_id="2008">
+      <Sub_Class_Name>Темы тикетов</Sub_Class_Name>
+      <EnglishName>ticket-subjects</EnglishName>
+      <Checked>1</Checked>
+    </sub_class>
+    <sub_class sub_class_id="30" subdivision_id="23" class_id="2008">
+      <Sub_Class_Name>Темы тикетов</Sub_Class_Name>
+      <EnglishName>ticket-subjects</EnglishName>
+      <Checked>1</Checked>
+    </sub_class>
+    <sub_class sub_class_id="30" subdivision_id="23" class_id="2008">
+      <Sub_Class_Name>Темы тикетов</Sub_Class_Name>
+      <EnglishName>ticket-subjects</EnglishName>
+      <Checked>1</Checked>
+    </sub_class>
+  </sub_classes>
+  <fields>
+    <field field_id="2342" type_of_data_id="1">
+      <Field_Name>Name</Field_Name>
+      <Description>Тема</Description>
+    </field>
+  </fields>
+  <messages>
+    <message message_id="4" class_id="2008" subdivision_id="23" sub_class_id="30">
+      <User_ID>1</User_ID>
+      <Priority>4</Priority>
+      <Checked>1</Checked>
+      <IP>188.235.129.87</IP>
+      <UserAgent>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36</UserAgent>
+      <Parent_Message_ID>0</Parent_Message_ID>
+      <Created>2013-10-30 17:36:12</Created>
+      <LastUpdated>2013-10-30 17:36:12</LastUpdated>
+      <LastUser_ID>0</LastUser_ID>
+      <LastIP/>
+      <LastUserAgent/>
+      <Keyword/>
+      <Name><![CDATA[Просто так]]></Name>
+    </message>
+    <message message_id="2" class_id="2008" subdivision_id="23" sub_class_id="30">
+      <User_ID>1</User_ID>
+      <Priority>2</Priority>
+      <Checked>1</Checked>
+      <IP>188.235.129.87</IP>
+      <UserAgent>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36</UserAgent>
+      <Parent_Message_ID>0</Parent_Message_ID>
+      <Created>2013-10-30 17:35:57</Created>
+      <LastUpdated>2013-10-30 17:35:57</LastUpdated>
+      <LastUser_ID>0</LastUser_ID>
+      <LastIP/>
+      <LastUserAgent/>
+      <Keyword/>
+      <Name><![CDATA[Обработкой заявок]]></Name>
+    </message>
+    <message message_id="3" class_id="2008" subdivision_id="23" sub_class_id="30">
+      <User_ID>1</User_ID>
+      <Priority>3</Priority>
+      <Checked>1</Checked>
+      <IP>188.235.129.87</IP>
+      <UserAgent>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36</UserAgent>
+      <Parent_Message_ID>0</Parent_Message_ID>
+      <Created>2013-10-30 17:36:07</Created>
+      <LastUpdated>2013-10-30 17:36:07</LastUpdated>
+      <LastUser_ID>0</LastUser_ID>
+      <LastIP></LastIP>
+      <LastUserAgent></LastUserAgent>
+      <Keyword></Keyword>
+      <Name><![CDATA[Наполнением контента]]></Name>
+    </message>
+  </messages>
+  <comments/>
+</netcatml>

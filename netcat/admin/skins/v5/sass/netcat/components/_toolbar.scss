@@ -1,0 +1,114 @@
+/************* toolbar | Панель инструментов  *************/
+//--------------------------------------------------------------------------
+
+$toolbar-height:       30px;
+$toolbar-bg:           nc_color(white);
+$toolbar-alt-bg:       nc_color(lighten, 50%);
+$toolbar-border-color: nc_color(light);
+
+ul.#{$_toolbar} {
+    @extend %reset-list-important;
+    @extend %border-radius-small;
+    @extend %clearfix;
+
+    background:  $toolbar-bg $important;
+    border:      1px solid $toolbar-border-color $important;
+    height:      $toolbar-height $important;
+    margin:      5px 0 $important;
+    overflow:    visible;
+    display:     block;
+    white-space: nowrap;
+    font-size:   0; // fix: убираем пробелы между inline-block
+
+    &.#{$__left} {
+        margin-right: 5px $important;
+    }
+
+    // Задаем шрифты напрямую т.к. это fron-end элемент
+    &, & *, & a {
+        @extend %default-font;
+    }
+
+    &>li {
+        border-right:   1px solid $toolbar-border-color $important;
+        vertical-align: top $important;
+        height:         $toolbar-height $important;
+        display:        inline-block $important;
+        // IE7 FIX:
+        zoom:     1;
+        *display: inline $important;
+
+        &:last-child {
+            border: none $important;
+        }
+
+        &>* {
+            height:      $toolbar-height - 10 $important;
+            padding:     5px $important;
+            display:     block $important;
+
+            &,*{
+                line-height: $toolbar-height - 11 $important
+            }
+        }
+
+        &>a {
+            color:           $link_color $important;
+            text-decoration: none $important;
+
+            &:hover {
+                background:   $hover_bg $important;
+                color:       nc_color(dark) $important;
+            }
+        }
+
+        // nc-divider
+        &.#{$_divider} {
+            width:        3px;
+            padding:      0 $important;
+            height:       $toolbar-height $important;
+            background:   $toolbar-alt-bg $important;
+            border-right: 1px solid $toolbar-border-color $important;
+        }
+
+        i.#{$_icon} {
+            vertical-align: top $important;
+            margin: 0 $important;
+            display:        inline-block $important;
+            // IE7 FIX:
+            zoom:     1;
+            *display: inline $important;
+        }
+
+        // Идентификатор записи
+        &>span, &>label {
+            background: $toolbar-alt-bg;
+            color:      nc_color(grey) $important;
+            font-size:  $font-size;
+
+            input {
+                vertical-align: 1px $important;
+                line-height:    20 $important;
+                padding:        0 $important;
+                margin:         0 5px 0 0 $important;
+            }
+        }
+
+        // li.nc-alt
+        &.#{$__alt}>* {
+            background: nc-color(lighten, 80%) $important;
+        }
+
+        // Область перетаскивания объекта
+        .nc-move-place {
+            background: nc_color(lighten) $important;
+        }
+    }
+
+    &.#{$__disabled} {
+        @include opacity(.7);
+        &>* {
+            background: $toolbar-alt-bg $important;
+        }
+    }
+}

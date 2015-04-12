@@ -1,0 +1,258 @@
+/************* special_parts *************/
+//--------------------------------------------------------------------------
+
+#MainViewBody {
+	padding: 20px 20px 0 10px;
+}
+
+// Рамка вокруг данных компонента в режиме редактирования
+.nc-admin-mode-content-box {
+	@extend %border-radius-small;
+	@extend %clearfix;
+
+	border:  1px dashed nc_color(grey, 50%) $important;
+	padding: 2px 5px $important;
+	margin:  0 -5px $important;
+}
+
+//--------------------------------------------------------------------------
+
+#menu_left li.#{$__loading} > i.nc-icon {
+	background: image-url('loader-20.gif') no-repeat 50% 50%;
+	@inclide opacity(1);
+}
+
+.nc_admin_metro_button.#{$__loading} {
+	background:   nc_color(light) image-url('loader-20.gif') no-repeat 10px 50% !important;
+	color:        nc_color(grey);
+	padding-left: 40px;
+	@inclide opacity(1);
+}
+
+//--------------------------------------------------------------------------
+// Для модальных окон
+//--------------------------------------------------------------------------
+
+.nc-modal-overlay {
+	position:         fixed;
+	z-index:          999;
+	top:              0;
+	left:             0;
+	width:            100%;
+	height:           100%;
+	background-color: #9C9294;
+
+	@include opacity(.5);
+}
+#simplemodal-overlay {
+	background-color: #9C9294;
+	cursor: default;
+	filter: alpha(opacity=50);
+	height: 100%;
+}
+#simplemodal-container {
+	// margin-top:-60px !important;
+}
+.simplemodal-close {
+	@extend %#{$_icon};
+	@extend .#{$_icon}.#{$__icon_prefix}close;
+	@extend .#{$_icon}.#{$__hovered};
+
+	display:  block;
+	position: absolute;
+	margin:   0;
+	left:     auto;
+	right:    0;
+	top:      -60px;
+	cursor:   pointer;
+	z-index:  1005;
+}
+
+//--------------------------------------------------------------------------
+// Временные подпилы
+//--------------------------------------------------------------------------
+
+.nc-form, .nc-admin {
+	.CodeMirror {
+		border:            $input_border;
+		font-family:       $font_family_mono;
+		font-size:         12px;
+		line-height:       16px;
+	}
+}
+
+// fix высота пунктов меню в дереве
+.menu_left_sub {
+	line-height:   20px;
+	margin-top:    10px;
+	margin-bottom: 10px;
+
+	.plus_minus,
+	.plus_minus_none {
+		top: 2px;
+	}
+}
+
+//
+.menu_left_sub > .treeButtons {
+	@include background(linear-gradient(center left, rgba(#FFF,0), #FFF 10%));
+	padding-left: 5px;
+	@include old-ie {
+		background:   #FFF;
+		padding-left: 0;
+	}
+}
+.nc--selected > .treeButtons {
+	@include background(linear-gradient(center left, rgba(#EEE,0), #EEE 10%));
+	@include old-ie {
+		background: #EEE;
+	}
+}
+
+//--------------------------------------------------------------------------
+
+/*
+ * CSS Styles that are needed by jScrollPane for it to operate correctly.
+ *
+ * Include this stylesheet in your site or copy and paste the styles below into your stylesheet - jScrollPane
+ * may not operate correctly without them.
+ */
+
+$scroll_size: 5px;
+
+.jspContainer
+{
+	overflow: hidden;
+	position: relative;
+}
+
+.jspPane
+{
+	position: absolute;
+}
+
+.jspVerticalBar
+{
+	position:   absolute;
+	top:        0;
+	right:      0;
+	min-width:  $scroll_size;
+	height:     100%;
+}
+
+.jspHorizontalBar
+{
+	position:   absolute;
+	bottom:     0;
+	left:       0;
+	width:      100%;
+	height:     $scroll_size;
+}
+
+.jspVerticalBar *,
+.jspHorizontalBar *
+{
+	margin: 0;
+	padding: 0;
+}
+
+.jspCap
+{
+	display: none;
+}
+
+.jspHorizontalBar .jspCap
+{
+	float: left;
+}
+
+// Фон
+.jspTrack
+{
+	background: #d8d8d8;
+	position:   relative;
+}
+
+// "Ползунок"
+.jspDrag
+{
+	background: #a4a4a4;
+	position:   relative;
+	top:        0;
+	left:       0;
+	cursor:     pointer;
+}
+
+.jspHorizontalBar {
+	.jspTrack,
+	.jspDrag
+	{
+		float:  left;
+		height: 100%;
+	}
+}
+
+
+.jspArrow
+{
+	background:  #50506d;
+	text-indent: -20000px;
+	display:     block;
+	cursor:      pointer;
+
+	&.jspDisabled
+	{
+		cursor: default;
+		background: #80808d;
+	}
+
+	.jspVerticalBar &
+	{
+		height: $scroll_size;
+	}
+
+	.jspHorizontalBar &
+	{
+		width: $scroll_size;
+		float: left;
+		height: 100%;
+	}
+
+	.jspVerticalBar &:focus
+	{
+		outline: none;
+	}
+}
+
+
+
+.jspCorner
+{
+	background: #eeeef4;
+	float: left;
+	height: 100%;
+}
+
+/* Yuk! CSS Hack for IE6 3 pixel bug :( */
+* html .jspCorner
+{
+	margin: 0 -3px 0 0;
+}
+//--------------------------------------------------------------------------
+
+
+//--------------------------------------------------------------------------
+// Inline editor
+//--------------------------------------------------------------------------
+
+.cke_editable_inline:hover {
+	border:  1px dashed nc_color(grey, 50%) $important;
+	// padding: 1px 5px $important;
+	margin: -1px $important;
+}
+.cke_focus, .cke_focus:hover {
+	border: 1px dashed nc_color(blue) $important;
+	margin: -1px -3px $important;
+	padding: 0 2px;
+	@extend %default-input-focus:focus;
+}

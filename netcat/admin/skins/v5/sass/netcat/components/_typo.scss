@@ -1,0 +1,86 @@
+/************* typo | Типография *************/
+//--------------------------------------------------------------------------
+
+// $font_size:        14px;
+// $font_size_small:  12px;
+// $font_size_middle: 18px;
+// $font_size_large:  20px;
+
+// $__mini:   "nc--mini";
+// $__small:  "nc--small";
+// $__medium: "nc--medium";
+// $__large:  "nc--large";
+// $__xlarge: "nc--xlarge";
+
+$sizes: mini, small, medium, large, xlarge;
+$text_k: .8, .8, .8, .9, .9;
+$head_k: 1, 1.2, 2, 3, 4;
+$head_m: 0, 0, -2px, -3px, -3px;
+
+$base_size: 16px;
+
+.nc-info {
+	margin:  0;
+	padding: 0;
+
+	font-size: ceil($base_size);
+
+	&>dt,&>dd {
+		margin:  0;
+		padding: 0;
+		display: inline-block;
+		vertical-align: middle;
+		text-transform: lowercase;
+	}
+
+	dd {
+		margin: 0 0 0 5px;
+	}
+
+	@each $size in $sizes {
+		$i: index($sizes, $size);
+		$text_size: ceil($base_size * nth($text_k, $i));
+		$head_size: ceil($base_size * nth($head_k, $i));
+		$margin_left: nth($head_m, $i);
+
+		&.nc--#{$size} {
+			font-size:   $text_size;
+			line-height: $text_size;
+
+			&>dt {
+				line-height: $head_size;
+				font-size:   $head_size;
+				margin-left: $margin_left;
+			}
+			&>dd {
+
+			}
+		}
+	}
+	// medium as default
+	@extend .nc-info.nc--medium;
+
+	&.nc--vertical {
+		&>dt,&>dd {
+			display: block;
+		}
+		&>dd {
+			line-height: $base_size -2px;
+			margin: 2px 0 0 0;
+		}
+	}
+
+	&.nc--horizontal {
+		&>dt,&>dd {
+			display: block;
+		}
+		&>dt {
+			float: left;
+			margin-right: 5px;
+		}
+		&>dd {
+			line-height: $base_size -2px;
+			margin: 2px 0 0 0;
+		}
+	}
+}

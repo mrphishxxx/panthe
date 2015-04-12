@@ -1,0 +1,12 @@
+<!-- FormPrefix --><? echo $f_AdminCommon; ?>
+<ul><!-- /FormPrefix -->
+
+<!-- RecordTemplate --><? echo $f_AdminButtons; ?>
+<li>
+    <a href="<?= $f_photo_big ? $f_photo_big : $nc_parent_template_folder_path . "static/images/default_photo.jpg"; ?>" target="_blank">
+        <img src="<?= $f_photo_small; ?>" alt="<?= $f_photo_title; ?>" />
+        <span><?= $f_photo_title; ?></span>
+    </a>
+</li><!-- /RecordTemplate -->
+
+<!-- FormSuffix --></ul><!-- /FormSuffix -->
