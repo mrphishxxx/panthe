@@ -32,11 +32,10 @@ else
 $query = $db->Execute("SELECT a.id FROM birjs b LEFT JOIN admins a ON b.uid = a.id WHERE b.birj = 8 AND a.active=1 AND b.active=1 AND a.type='user'");
 while ($res = $query->FetchRow()) {
     //if ($res["id"] != 601)continue;
-
-    //$balance = $admins->getUserBalans($res['id'], $db, 1);
-    //if ($balance >= 45 || (($res['id'] == 20) || ($res['id'] == 55))) {
-    getTask($db, $res['id']);
-    //}
+    $balance = $admins->getUserBalans($res['id'], $db, 1);
+    if ($balance >= 45 || (($res['id'] == 20) || ($res['id'] == 55))) {
+        getTask($db, $res['id']);
+    }
 }
 
 function getTask($db, $uid) {
@@ -103,7 +102,7 @@ function getTask($db, $uid) {
         return null;
     }
     $sites_to_user = array();
-    $sayty = $db->Execute("SELECT * FROM sayty WHERE uid='".$data['uid']."' AND (blogun_id IS NOT NULL AND blogun_id != 0)");
+    $sayty = $db->Execute("SELECT * FROM sayty WHERE uid='" . $data['uid'] . "' AND (blogun_id IS NOT NULL AND blogun_id != 0)");
     while ($site = $sayty->FetchRow()) {
         $sites_to_user[$site["id"]] = $site["blogun_id"];
     }
@@ -123,10 +122,10 @@ function getTask($db, $uid) {
         preg_match('/id=(\d+)&idblog=(\d+)/i', $href, $subs);
         $data['id'] = $subs[1];
         $data['idblog'] = $subs[2];
-        if(!in_array($data['idblog'], $sites_to_user)) {
+        if (!in_array($data['idblog'], $sites_to_user)) {
             continue;
         }
-        
+
         $driver->get($href);
         $description = $driver->findElement(WebDriverBy::xpath("//p[@class='getcodeText']"));
         $data['comments'] = $description->getText();
