@@ -253,7 +253,7 @@ class copywriter {
         $content = file_get_contents(PATH . 'modules/copywriter/tmp/dashboard.tpl');
         $condition = " AND rectificate='0' AND vrabote='0' AND vipolneno='0' AND dorabotka='0' AND navyklad='0' AND vilojeno='0'";
         $uid = $_SESSION['user']['id'];
-
+        $user = $db->Execute("SELECT * FROM admins WHERE id=$uid")->FetchRow();
         $all = $db->Execute("SELECT * FROM zadaniya_new WHERE 
             tema != '' AND 
             from_sape=1 AND 
@@ -272,27 +272,29 @@ class copywriter {
 
         $table = "";
         $num_task = 0;
-        while ($res = $all->FetchRow()) {
-            if (!in_array($res["id"], $prohibition_tasks)) {
-                $num_task++;
-                switch ($res["type_task"]) {
-                    case 0: $type = "Статья";
-                        break;
-                    case 1: $type = "Обзор";
-                        break;
-                    case 2: $type = "Новость";
-                        break;
-                    default : $type = "Статья";
-                }
+        if($user["banned"] == 0){
+            while ($res = $all->FetchRow()) {
+                if (!in_array($res["id"], $prohibition_tasks)) {
+                    $num_task++;
+                    switch ($res["type_task"]) {
+                        case 0: $type = "Статья";
+                            break;
+                        case 1: $type = "Обзор";
+                            break;
+                        case 2: $type = "Новость";
+                            break;
+                        default : $type = "Статья";
+                    }
 
-                $tr = "<tr>";
-                $tr .= "<td><a href='/copywriter.php?action=tasks&action2=view&id=" . $res["id"] . "'>" . $res["tema"] . "</a></td>";
-                $tr .= "<td>" . $res["nof_chars"] . "</td>";
-                $tr .= "<td>" . $type . "</td>";
-                $tr .= "<td>" . date("Y-m-d", $res["date"]) . "</td>";
-                $tr .= "<td class='add'><a href='/copywriter.php?action=tasks&action2=add&id=" . $res["id"] . "' class='ico'></a></td>";
-                $tr .= "</tr>";
-                $table .= $tr;
+                    $tr = "<tr>";
+                    $tr .= "<td><a href='/copywriter.php?action=tasks&action2=view&id=" . $res["id"] . "'>" . $res["tema"] . "</a></td>";
+                    $tr .= "<td>" . $res["nof_chars"] . "</td>";
+                    $tr .= "<td>" . $type . "</td>";
+                    $tr .= "<td>" . date("Y-m-d", $res["date"]) . "</td>";
+                    $tr .= "<td class='add'><a href='/copywriter.php?action=tasks&action2=add&id=" . $res["id"] . "' class='ico'></a></td>";
+                    $tr .= "</tr>";
+                    $table .= $tr;
+                }
             }
         }
 

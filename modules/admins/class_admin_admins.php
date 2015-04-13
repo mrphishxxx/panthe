@@ -4102,7 +4102,7 @@ class admins {
             $message["to"] = array();
             $copywriters = $db->Execute("SELECT * FROM admins WHERE type='copywriter' AND active=1");
             while ($copywriter = $copywriters->FetchRow()) {
-                if ($copywriter["mail_period"] > 0) {
+                if ($copywriter["mail_period"] > 0 && $copywriter["banned"] == 0) {
                     $message["to"][] = array("email" => $copywriter["email"], "name" => $copywriter["login"]);
                 }
             }
