@@ -1,14 +1,18 @@
 <?php
 
 $start = time();
+set_time_limit(0);
+ini_set("memory_limit", "1024M");
+ini_set("max_execution_time", "0");
+
+header('Content-Type: text/html; charset=utf-8');
 
 include_once dirname(__FILE__) . '/../' . 'config.php';
-include_once dirname(__FILE__) . '/../' . 'includes/simple_html_dom.php';
 include_once dirname(__FILE__) . '/../' . 'includes/adodb5/adodb.inc.php';
 include_once dirname(__FILE__) . '/../' . 'includes/mandrill/mandrill.php';
+include_once dirname(__FILE__) . '/../' . 'includes/selenium/lib/__init__.php';
 include_once dirname(__FILE__) . '/../' . 'modules/admins/class_admin_admins.php';
 
-global $admins;
 $admins = new admins();
 error_reporting(E_ALL);
 
@@ -18,7 +22,7 @@ $db->Execute('set charset utf8');
 $db->Execute('SET NAMES utf8');
 
 $new_tasks = array();
-$last_task = $db->Execute("SELECT id FROM zadaniya WHERE sistema='http://blogun.ru/' ORDER BY id DESC LIMIT 1")->FetchRow();
+$last_task = $db->Execute("SELECT id FROM zadaniya WHERE sistema='https://blogun.ru/' ORDER BY id DESC LIMIT 1")->FetchRow();
 if (!empty($last_task))
     $last_id = $last_task['id'];
 else
@@ -27,246 +31,145 @@ else
 // Special for BLOGUN (birj = 8)
 $query = $db->Execute("SELECT a.id FROM birjs b LEFT JOIN admins a ON b.uid = a.id WHERE b.birj = 8 AND a.active=1 AND b.active=1 AND a.type='user'");
 while ($res = $query->FetchRow()) {
-    if ($res["id"] != 601)
-        continue;
-    $balance = $admins->getUserBalans($res['id'], $db, 1);
-    if ($balance >= 45 || (($res['id'] == 20) || ($res['id'] == 55))) {
-        getTask($db, $res['id']);
-    }
+    //if ($res["id"] != 601)continue;
+
+    //$balance = $admins->getUserBalans($res['id'], $db, 1);
+    //if ($balance >= 45 || (($res['id'] == 20) || ($res['id'] == 55))) {
+    getTask($db, $res['id']);
+    //}
 }
-
-//print_r($query->GetAll());
-
 
 function getTask($db, $uid) {
-    global $admins;
-    $cookie = tempnam(PATH . 'temp', "cookie");
-    $url = "https://blogun.ru/api/json";
-    if (isset($_SERVER['HTTP_USER_AGENT']) && !empty($_SERVER['HTTP_USER_AGENT'])) {
-        $useragent = $_SERVER['HTTP_USER_AGENT'];
-    } else {
-        $useragent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36 OPR/27.0.1689.76";
+    $proxy_file = file(dirname(__FILE__) . '/../' . "modules/angry_curl/proxy_list.txt");
+    $proxies = array();
+    foreach ($proxy_file as $p) {
+        $proxies[] = array(
+            'proxy_host' => substr($p, 0, strpos($p, ":")),
+            'proxy_port' => (int) substr($p, strpos($p, ":") + 1),
+            'proxy_user' => 'RUS79476',
+            'proxy_pass' => 'H987tURQLo'
+        );
     }
-
     $user = $db->Execute("SELECT * FROM birjs WHERE birj=8 AND uid=$uid")->FetchRow();
-    if ($user['login'] == null || $user['pass'] == null)
-        return false;
+    $proxy = $proxies[rand(0, count($proxies) - 1)];
+    $data = array();
 
-    $func_login = $url . "/user/auth/login/" . $user['login'] . "/password/" . $user['pass'];
-    //echo $func_login = $url . "/user/auth/login/abashevav@gmail.com/password/gfhjkm2812";
-    //$response = $admins->executeRequest("GET", $func_login, $useragent, $cookie, NULL, NULL, NULL);
-    if ($curl = curl_init()) {
-        curl_setopt($curl, CURLOPT_URL, $func_login);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie);
-        curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($curl, CURLOPT_USERAGENT, $useragent);
-        $response = curl_exec($curl);
-        curl_close($curl);
+    $host = 'http://localhost:4444/wd/hub'; // this is the default
+    $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => "firefox");
+    if (!is_null($proxy)) {
+        $proxy_capabilities = array(WebDriverCapabilityType::PROXY => array('proxyType' => 'manual',
+                'httpProxy' => '' . $proxy['proxy_host'] . ':' . $proxy['proxy_port'] . '', 'sslProxy' => '' . $proxy['proxy_host'] . ':' . $proxy['proxy_port'] . '', 'socksUsername' => '' . $proxy['proxy_user'] . '', 'socksPassword' => '' . $proxy['proxy_pass'] . ''));
+
+        array_push($capabilities, $proxy_capabilities);
     }
-    $login = json_decode($response);
-    //print_r($login);die();
-    if(isset($login->key)){
-        $key = $login->key;
-        echo $func_invetes = $url . "/bloger/invetes/key/".$key;
-        echo "<BR>";
-        //$response = $admins->executeRequest("GET", $func_invetes, $useragent, $cookie, NULL, NULL, NULL);
-        if ($curl = curl_init()) {
-            curl_setopt($curl, CURLOPT_URL, "https://blogun.ru/api/json/bloger/invetes/key/$key");
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            //curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie);
-            //curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-            @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-            curl_setopt($curl, CURLOPT_USERAGENT, $useragent);
-            //curl_setopt($curl, CURLOPT_POST, true);
-            //curl_setopt($curl, CURLOPT_POSTFIELDS, array("key" => $key));
-            $response = curl_exec($curl);
-            curl_close($curl);
+    $driver = RemoteWebDriver::create($host, $capabilities, 300000);
+    $driver->manage()->window()->maximize();
+    $driver->manage()->timeouts()->implicitlyWait(20);
+    $driver->manage()->deleteAllCookies();
+
+    //LOGIN
+    $data['uid'] = $user['uid'];
+    $data['login'] = $user['login'];
+    $data['pass'] = $user['pass'];
+
+    $loginpage = $driver->get('https://blogun.ru/');
+    $driver->wait(15);
+    $login = $driver->findElement(WebDriverBy::xpath("//input[@name='login']"));
+    $login->sendKeys($data['login']);
+    $pass = $driver->findElement(WebDriverBy::xpath("//input[@name='password']"));
+    $pass->sendKeys($data['pass']);
+    $btn = $driver->findElement(WebDriverBy::xpath("//button[@type='submit']"));
+    $btn->click();
+
+    if (count($driver->findElements(WebDriverBy::xpath("//a[@class='amount']"))) === 0) {
+        $driver->close();
+        return null;
+    }
+    //END LOGIN
+
+
+    $driver->get('https://blogun.ru/requests.php?tasks=1');
+
+    $rows = $driver->findElements(WebDriverBy::xpath("//form[@id='mainform']//div//table//tbody//tr[starts-with(@id, 'row')]"));
+    $types = array();
+    $hrefs = array();
+    for ($i = 0; $i < count($rows); $i++) {
+        array_push($hrefs, $rows[$i]->findElement(WebDriverBy::xpath(".//a[@class='descript_text']"))->getAttribute('href'));
+        array_push($types, $rows[$i]->findElement(WebDriverBy::xpath(".//td[7]"))->getText());
+    }
+
+    if (count($rows) === 0) {
+        $driver->close();
+        return null;
+    }
+    $sites_to_user = array();
+    $sayty = $db->Execute("SELECT * FROM sayty WHERE uid='".$data['uid']."' AND (blogun_id IS NOT NULL AND blogun_id != 0)");
+    while ($site = $sayty->FetchRow()) {
+        $sites_to_user[$site["id"]] = $site["blogun_id"];
+    }
+
+    for ($i = 0; $i < count($rows); $i++) {
+        $data['type_task'] = 0;
+        if ($types[$i] == 'Подробный обзор')
+            $data['type_task'] = 1;
+        if ($types[$i] == 'Краткий обзор')
+            $data['type_task'] = 1;
+        if ($types[$i] == 'Постовой')
+            $data['type_task'] = 0;
+
+        $href = $hrefs[$i];
+
+        //https://blogun.ru/getcode.php?id=337124&idblog=158557&submenu=2&menu=tsk
+        preg_match('/id=(\d+)&idblog=(\d+)/i', $href, $subs);
+        $data['id'] = $subs[1];
+        $data['idblog'] = $subs[2];
+        if(!in_array($data['idblog'], $sites_to_user)) {
+            continue;
         }
-        $invetes = json_decode($response);
         
-        print_r($invetes);
-    } else {
-        print_r($login);
-        die("err");
-    }
-    
-    
-}
+        $driver->get($href);
+        $description = $driver->findElement(WebDriverBy::xpath("//p[@class='getcodeText']"));
+        $data['comments'] = $description->getText();
+        $data['url'] = NULL;
+        $data['ankor'] = NULL;
+        if (count($driver->findElements(WebDriverBy::xpath("//textarea[@readonly='']"))) === 0) {
+            //ESLI ZAYAVKA BEZ URL ILI ANKORA????
+            continue;
+        } else {
+            $url = $driver->findElement(WebDriverBy::xpath("//textarea[@readonly='']"));
+            $txt = $url->getText();
 
-exit();
-
-function getTaskSape($db, $uid) {
-    $cookie_jar = tempnam(PATH . 'temp', "cookie");
-    $url = "https://blogun.ru/api/json/";
-
-    $user = $db->Execute("SELECT * FROM birjs WHERE birj=8 AND uid=$uid")->FetchRow();
-    if ($user['login'] == null || $user['pass'] == null)
-        return false;
-
-    if ($curl = curl_init()) {
-        curl_setopt($curl, CURLOPT_URL, $url . 'user/auth/');
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
-        curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
-        //curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-        $out = curl_exec($curl);
-        curl_close($curl);
-    }
-    $id_user_sape = xmlrpc_decode($out);
-
-    if (is_array($id_user_sape)) {
-        $user = $db->Execute("SELECT * FROM admins WHERE id=$uid")->FetchRow();
-        $body = "Добрый день " . $user["login"] . "! <br/>" .
-                "На сайте <strong>iForget</strong>, у Вас внесены не верные данные для входа в биржу Sape. <br/>" .
-                "Пожалуйста внесите актуальные логин и пароль, так как Ваши задачи из Sape сейчас не выгружаются.<br/>" .
-                "Для этого перейдите по ссылке в <a href='http://iforget.ru/user.php?action=birj'>Личный кабинет</a>.<br/><br/>" .
-                "С уважением! Администрация iForget.";
-        $message = array();
-        $message["html"] = $body;
-        $message["text"] = "";
-        $message["subject"] = "Введите верные данные входа в биржу Sape";
-        $message["from_email"] = "news@iforget.ru";
-        $message["from_name"] = "iforget";
-        $message["to"] = array();
-        $message["to"][1] = array("email" => "abashevav@gmail.com");
-        $message["to"][0] = array("email" => $user["email"]);
-        $message["track_opens"] = null;
-        $message["track_clicks"] = null;
-        $message["auto_text"] = null;
-        $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-        try {
-            $mandrill->messages->send($message);
-            $db->Execute("UPDATE birjs SET active='0' WHERE birj=4 AND uid=$uid");
-        } catch (Exception $e) {
-            echo $body;
-        }
-    } else {
-        $sites_to_user = $sites = array();
-        $sayty = $db->Execute("SELECT * FROM sayty WHERE uid=$uid AND (sape_id IS NOT NULL AND sape_id != 0)");
-        while ($site = $sayty->FetchRow()) {
-            $sites_to_user[$site["id"]] = $site["sape_id"];
-            $sites[] = $site["id"];
-        }
-        $sites = implode(",", $sites);
-
-        $tasks_in_iforget = array();
-        $zadaniya = $db->Execute("SELECT sape_id FROM zadaniya WHERE (sape_id IS NOT NULL AND sape_id != 0) AND sistema = 'http://pr.sape.ru/' AND sid IN ($sites)");
-        if (!empty($zadaniya)) {
-            while ($task = $zadaniya->FetchRow()) {
-                $tasks_in_iforget[] = $task["sape_id"];
+            if (preg_match('/<a href="([^"]+)">([^<]+)<\/a>/i', $txt, $subs)) {
+                $data['url'] = $subs[1];
+                $data['ankor'] = $subs[2];
+            } else {
+                $data['url'] = $txt;
+                $data['ankor'] = '';
             }
-        }
-
-        $data = xmlrpc_encode_request('sape_pr.site.adverts', array(array("status_codes" => array(5)), 1, 500, true)); //"site_ids" => array(38665), 
-        $header[1] = "Content-length: " . strlen($data);
-        if ($curl = curl_init()) {
-            curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_POST, true);
-            curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
-            curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-            @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-            curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-            $out = curl_exec($curl);
-            curl_close($curl);
-        }
-        $site_adverts = xmlrpc_decode($out);
-
-        if (!empty($site_adverts)) {
-            foreach ($site_adverts as $key => $adverts) {
-                if (!in_array($adverts["site_id"], $sites_to_user)) {
-                    continue;
-                }
-                if ($adverts["type"] == "archive") {
-                    unset($site_adverts[$key]);
-                    continue;
-                }
-
-                if (count($tasks_in_iforget) == 0 || !in_array($adverts["id"], $tasks_in_iforget)) {
-                    $new_task = array();
-                    $new_task["url"] = array();
-                    $new_task["ankor"] = array();
-                    $new_task["text"] = "";
-                    $lay_out = 0;
-                    foreach ($adverts["links"] as $link) {
-                        $new_task["url"][] = $link["href"];
-                        $new_task["ankor"][] = $db->escape($link["text"]);
-                    }
-                    if ($adverts["type"] == "news")
-                        $type = 0;
-                    elseif ($adverts["type"] == "link")
-                        $type = 2;
-                    else
-                        $type = 1;
-
-                    $new_task["comments"] = $adverts["description"];
-                    if (!empty($new_task["comments"]) && $type == 0) {
-                        foreach ($new_task["ankor"] as $key_ankor => $ankor) {
-                            if (strpos($new_task["comments"], $ankor) && strpos($new_task["comments"], $new_task["url"][$key_ankor])) {
-                                $new_task["text"] = $adverts["description"];
-                                $new_task["comments"] = '';
-                                $lay_out = 1;
-                            }
-                        }
-                    }
-                    $new_task["comments"] = $db->escape($new_task["comments"]);
-                    if (!empty($adverts["keywords"])) {
-                        $new_task["keywords"] = $adverts["keywords"];
-                    } else {
-                        $new_task["keywords"] = implode($new_task["ankor"], ",");
-                    }
-
-                    $new_task["tema"] = (isset($adverts["title"]) ? $adverts["title"] : "");
-                    $new_task["sape_id"] = $adverts["id"];
-                    $new_task["uid"] = $uid;
-                    $new_task["sid"] = array_search($adverts["site_id"], $sites_to_user);
-
-                    if ($type == 2 && isset($new_task["ankor"][0])) {
-                        $first = mb_strtoupper(mb_substr($new_task["ankor"][0], 0, 1, 'UTF-8'), 'UTF-8'); //первая буква
-                        $first = str_replace("?", "", $first);
-                        $last = mb_strtolower(mb_substr($new_task["ankor"][0], 1), 'UTF-8'); //все кроме первой буквы
-                        $last = ($last[0] == "?") ? mb_substr($last, 1) : $last;
-                        $new_task["tema"] = mysql_real_escape_string($first . $last);
-                    }
-                    $date = time();
-                    if (count($new_task["ankor"]) != 0 && count($new_task["url"]) != 0) {
-                        switch (count($new_task["url"])) {
-                            case 1:
-                                $db->Execute("INSERT INTO zadaniya (tema, text, lay_out, sid, b_id, sape_id, uid, sistema, type_task, ankor, url, comments, vipolneno, date, keywords) VALUES ('" . $new_task["tema"] . "', '" . $new_task["text"] . "', '" . $lay_out . "', '" . $new_task["sid"] . "', '0', '" . $new_task["sape_id"] . "','" . $uid . "', 'http://pr.sape.ru/', '$type', '" . $new_task["ankor"][0] . "', '" . $new_task["url"][0] . "', '" . $new_task["comments"] . "', '0', '" . $date . "', '" . $new_task["keywords"] . "')");
-                                break;
-                            case 2:
-                                $db->Execute("INSERT INTO zadaniya (tema, text, lay_out, sid, b_id, sape_id, uid, sistema, type_task, ankor, ankor2, url, url2, comments, vipolneno, date, keywords) VALUES ('" . $new_task["tema"] . "', '" . $new_task["text"] . "', '" . $lay_out . "', '" . $new_task["sid"] . "', '0', '" . $new_task["sape_id"] . "','" . $uid . "', 'http://pr.sape.ru/', '$type', '" . $new_task["ankor"][0] . "', '" . @$new_task["ankor"][1] . "', '" . $new_task["url"][0] . "', '" . $new_task["url"][1] . "', '" . $new_task["comments"] . "', '0', '" . $date . "', '" . $new_task["keywords"] . "')");
-                                break;
-                            case 3:
-                                $db->Execute("INSERT INTO zadaniya (tema, text, lay_out, sid, b_id, sape_id, uid, sistema, type_task, ankor, ankor2, ankor3,url, url2, url3, comments, vipolneno, date, keywords) VALUES ('" . $new_task["tema"] . "', '" . $new_task["text"] . "', '" . $lay_out . "', '" . $new_task["sid"] . "', '0', '" . $new_task["sape_id"] . "','" . $uid . "', 'http://pr.sape.ru/', '$type', '" . $new_task["ankor"][0] . "', '" . @$new_task["ankor"][1] . "', '" . @$new_task["ankor"][2] . "', '" . $new_task["url"][0] . "', '" . $new_task["url"][1] . "', '" . $new_task["url"][2] . "', '" . $new_task["comments"] . "', '0', '" . $date . "', '" . $new_task["keywords"] . "')");
-                                break;
-                            case 4:
-                                $db->Execute("INSERT INTO zadaniya (tema, text, lay_out, sid, b_id, sape_id, uid, sistema, type_task, ankor, ankor2, ankor3, ankor4, url, url2, url3, url4, comments, vipolneno, date, keywords) VALUES ('" . $new_task["tema"] . "', '" . $new_task["text"] . "', '" . $lay_out . "', '" . $new_task["sid"] . "', '0', '" . $new_task["sape_id"] . "','" . $uid . "', 'http://pr.sape.ru/', '$type', '" . $new_task["ankor"][0] . "', '" . @$new_task["ankor"][1] . "', '" . @$new_task["ankor"][2] . "', '" . @$new_task["ankor"][3] . "', '" . $new_task["url"][0] . "', '" . $new_task["url"][1] . "', '" . $new_task["url"][2] . "', '" . $new_task["url"][3] . "', '" . $new_task["comments"] . "', '0', '" . $date . "', '" . $new_task["keywords"] . "')");
-                                break;
-                            case 5:
-                                $db->Execute("INSERT INTO zadaniya (tema, text, lay_out, sid, b_id, sape_id, uid, sistema, type_task, ankor, ankor2, ankor3, ankor4, ankor5, url, url2, url3, url4, url5, comments, vipolneno, date, keywords) VALUES ('" . $new_task["tema"] . "', '" . $new_task["text"] . "', '" . $lay_out . "', '" . $new_task["sid"] . "', '0', '" . $new_task["sape_id"] . "','" . $uid . "', 'http://pr.sape.ru/', '$type', '" . $new_task["ankor"][0] . "', '" . @$new_task["ankor"][1] . "', '" . @$new_task["ankor"][2] . "', '" . @$new_task["ankor"][3] . "', '" . @$new_task["ankor"][4] . "', '" . $new_task["url"][0] . "', '" . $new_task["url"][1] . "', '" . $new_task["url"][2] . "', '" . $new_task["url"][3] . "', '" . $new_task["url"][4] . "', '" . $new_task["comments"] . "', '0', '" . $date . "', '" . $new_task["keywords"] . "')");
-                                break;
-                        }
-                        $tasks_in_iforget[] = $adverts["id"];
-                    }
-                    unset($new_task);
-                }
+            if (($data['type_task'] == 0) && !empty($data['ankor'])) {
+                $first = mb_strtoupper(mb_substr($data['ankor'], 0, 1, 'UTF-8'), 'UTF-8'); //первая буква
+                $first = str_replace("?", "", $first);
+                $last = mb_strtolower(mb_substr($data['ankor'], 1), 'UTF-8'); //все кроме первой буквы
+                $last = ($last[0] == "?") ? mb_substr($last, 1) : $last;
+                $data["tema"] = mysql_real_escape_string($first . $last);
+            } elseif (isset($data["url"])) {
+                $data["tema"] = mysql_real_escape_string("Обзор сайта " . $data['url']);
+            }
+            $data['site'] = array_search($data['idblog'], $sites_to_user);
+            //check if task exists in db
+            $exists = $db->Execute("SELECT * FROM zadaniya WHERE b_id='" . $data['id'] . "' AND uid='" . $data['uid'] . "' AND sistema = 'https://blogun.ru/'")->FetchRow();
+            if (empty($exists)) {
+                $s = "INSERT into zadaniya(date, sistema, tema, sid, b_id, comments, url, ankor, uid, type_task, vrabote, navyklad, vilojeno, vipolneno, dorabotka) 
+                           VALUES ('" . time() . "', 'https://blogun.ru/', '" . $data["tema"] . "', '" . $data['site'] . "','" . $data['id'] . "','" . $data['comments'] . "','" . $data['url'] . "','" . $data['ankor'] . "','" . $data['uid'] . "','" . $data['type_task'] . "','0','0','0','0','0')";
+                $db->Execute($s);
             }
         }
     }
+    $driver->close();
+    return;
 }
 
-$add_task = $db->Execute("SELECT * FROM zadaniya WHERE id > '$last_id' AND sistema='http://pr.sape.ru/'");
+$add_task = $db->Execute("SELECT * FROM zadaniya WHERE id > '$last_id' AND sistema='https://blogun.ru/'");
 while ($task = $add_task->FetchRow()) {
     $new_tasks[$task['id']] = "http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $task['uid'] . "&sid=" . $task['sid'] . "&action2=edit&id=" . $task['id'];
 }
@@ -274,15 +177,15 @@ while ($task = $add_task->FetchRow()) {
 if (count($new_tasks) !== 0) {
 
     $body = "Добрый день!<br/><br/>
-            На сайт выгружены новые задачи из биржи <b>pr.sape.ru</b>.<br/><br/>";
-    $subject = "[" . count($new_tasks) . " новых задач из биржи sape]";
+            На сайт выгружены новые задачи из биржи <b>blogun</b>.<br/><br/>";
+    $subject = "[" . count($new_tasks) . " новых задач из биржи blogun]";
     foreach ($new_tasks as $knt => $vnt) {
         $body .= "<a href='$vnt'>$knt</a><br/>";
     }
 } else {
     $body = "Добрый день!<br/><br/>
-            В бирже pr.sape.ru не найдено ни одной новой задачи.<br/><br/>";
-    $subject = "[0 новых задач из биржи sape]";
+            В бирже blogun не найдено ни одной новой задачи.<br/><br/>";
+    $subject = "[0 новых задач из биржи blogun]";
 }
 
 $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
@@ -293,7 +196,7 @@ $message["subject"] = $subject;
 $message["from_email"] = "news@iforget.ru";
 $message["from_name"] = "iforget";
 $message["to"] = array();
-//$message["to"][1] = array("email" => "abashevav@gmail.com");
+$message["to"][1] = array("email" => MAIL_DEVELOPER);
 $message["to"][0] = array("email" => MAIL_ADMIN);
 $message["track_opens"] = null;
 $message["track_clicks"] = null;
@@ -307,7 +210,7 @@ try {
 
 $end = time();
 echo ((int) $end - (int) $start);
+echo " sec. \r\n";
 echo "data:" . date("d-m-Y H:i:s") . " \r\n";
-echo "sec. \r\n";
 exit();
 ?>

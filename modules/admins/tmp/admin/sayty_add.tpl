@@ -105,7 +105,11 @@
             </li>
             <li>
                 <span class="title">ID в webartex:</span>
-                <input type="text" name="webartex_id" id="webartex_id" value="[webartex_id]" class="full-length"[readonly]>
+                <input type="text" name="webartex_id" id="webartex_id" value="" class="full-length">
+            </li>
+            <li>
+                <span class="title">ID в blogun:</span>
+                <input type="text" name="blogun_id" id="blogun_id" value="" class="full-length">
             </li>
             <li>
                 <span class="title">Цена ETXT (1000 симв.):</span>

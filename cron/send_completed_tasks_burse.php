@@ -2,11 +2,16 @@
 
 header("Content-Type: text/html; charset=utf-8");
 mb_internal_encoding("UTF-8");
+set_time_limit(0);
+ini_set("memory_limit", "1024M");
+ini_set("max_execution_time", "0");
+
 define("GOGETLINKS", 1);
 define("GETGOODLINKS", 2);
 define("ROTAPOST", 3);
 define("SAPE", 4);
 define("WEBARTEX", 6);
+define("BLOGUN", 8);
 
 define("GOGETLINKS_URL", "https://gogetlinks.net/");
 define("GETGOODLINKS_URL", "http://getgoodlinks.ru/");
@@ -18,6 +23,7 @@ include_once dirname(__FILE__) . '/../' . 'config.php';
 include_once dirname(__FILE__) . '/../' . 'includes/adodb5/adodb.inc.php';
 include_once dirname(__FILE__) . '/../' . 'includes/mandrill/mandrill.php';
 include_once dirname(__FILE__) . '/../' . 'includes/Rotapost.php';
+include_once dirname(__FILE__) . '/../' . 'includes/selenium/lib/__init__.php';
 
 error_reporting(E_ALL);
 
@@ -27,7 +33,7 @@ $db->Execute('set charset utf8');
 $db->Execute('SET NAMES utf8');
 
 $body = "";
-$tasks = $db->Execute("SELECT * FROM zadaniya WHERE sistema IN ('https://gogetlinks.net/', 'http://getgoodlinks.ru/', 'http://pr.sape.ru/', 'http://rotapost.ru/', 'http://webartex.ru/') AND vilojeno = 1");
+$tasks = $db->Execute("SELECT * FROM zadaniya WHERE sistema IN ('https://gogetlinks.net/', 'http://getgoodlinks.ru/', 'http://pr.sape.ru/', 'http://rotapost.ru/', 'http://webartex.ru/', 'https://blogun.ru/') AND vilojeno = 1");
 $count = $tasks->NumRows();
 $yes = $no = "";
 if ($count > 0) {
@@ -50,6 +56,9 @@ if ($count > 0) {
                     break;
                 case 'http://webartex.ru/':
                     $err = setTaskWebartex($db, $task);
+                    break;
+                case 'https://blogun.ru/':
+                    $err = setTaskBlogun($db, $task);
                     break;
                 default : $err = 'В данную биржу (' . $task["sistema"] . ') задания отправить не возможно!';
             }
@@ -83,7 +92,7 @@ $message["track_clicks"] = null;
 $message["auto_text"] = null;
 
 try {
-    if(!empty($body)){
+    if (!empty($body)) {
         $mandrill->messages->send($message);
         echo $body;
     }
@@ -224,6 +233,60 @@ function setTaskWebartex($db, $task) {
         /*  Иначе отправляем ошибку админу  */
         return $err;
     }
+}
+
+function setTaskBlogun($db, $task) {
+    $birj = $db->Execute("select * from birjs where birj='" . BLOGUN . "' AND uid=" . $task["uid"])->FetchRow();
+    $proxy_file = file(dirname(__FILE__) . '/../' . "modules/angry_curl/proxy_list.txt");
+    $proxies = array();
+    foreach ($proxy_file as $p) {
+        $proxies[] = array(
+            'proxy_host' => substr($p, 0, strpos($p, ":")),
+            'proxy_port' => (int) substr($p, strpos($p, ":") + 1),
+            'proxy_user' => 'RUS79476',
+            'proxy_pass' => 'H987tURQLo'
+        );
+    }
+
+    $proxy = $proxies[rand(0, count($proxies) - 1)];
+    $host = 'http://localhost:4444/wd/hub'; // this is the default
+    $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => "firefox");
+
+    if (!is_null($proxy)) {
+        $proxy_capabilities = array(WebDriverCapabilityType::PROXY => array('proxyType' => 'manual',
+                'httpProxy' => '' . $proxy['proxy_host'] . ':' . $proxy['proxy_port'] . '', 'sslProxy' => '' . $proxy['proxy_host'] . ':' . $proxy['proxy_port'] . '', 'socksUsername' => '' . $proxy['proxy_user'] . '', 'socksPassword' => '' . $proxy['proxy_pass'] . ''));
+
+        array_push($capabilities, $proxy_capabilities);
+    }
+
+    $driver = RemoteWebDriver::create($host, $capabilities, 300000);
+    $driver->manage()->window()->maximize();
+    $driver->manage()->timeouts()->implicitlyWait(20);
+    $driver->manage()->deleteAllCookies();
+
+    $driver->get('https://blogun.ru/');
+    $driver->wait(15);
+    $login = $driver->findElement(WebDriverBy::xpath("//input[@name='login']"));
+    $login->sendKeys($birj['login']);
+    $pass = $driver->findElement(WebDriverBy::xpath("//input[@name='password']"));
+    $pass->sendKeys($birj['pass']);
+    $btn = $driver->findElement(WebDriverBy::xpath("//button[@type='submit']"));
+    $btn->click();
+
+    if (count($driver->findElements(WebDriverBy::xpath("//a[@class='amount']"))) === 0) {
+        $driver->close();
+        return "Ошибка отправления, поле 'a[@class='amount']' - не найдено";
+    }
+    
+    $sayty = $db->Execute("SELECT * FROM sayty WHERE uid='".$task['uid']."' AND id='".$task['sid']."'")->FetchRow();
+    $driver->get('https://blogun.ru/getcode.php?id=' . $task['b_id'] . '&idblog=' . $sayty['blogun_id'] . '&submenu=2&menu=tsk');
+    $url = $driver->findElement(WebDriverBy::xpath("//input[@id='url']"));
+    $url->sendKeys($task['url_statyi']);
+    $btn = $driver->findElement(WebDriverBy::xpath("//input[@name='submit']"));
+    $btn->click();
+
+    $driver->close();
+    return FALSE;
 }
 
 function executeRequest($method, $url, $useragent, $cookie, $query, $body, $header) {

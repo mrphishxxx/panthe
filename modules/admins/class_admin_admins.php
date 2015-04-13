@@ -1383,6 +1383,7 @@ class admins {
             $sape_id = $_REQUEST['sape_id'];
             $miralinks_id = $_REQUEST['miralinks_id'];
             $webartex_id = $_REQUEST['webartex_id'];
+            $blogun_id = $_REQUEST['blogun_id'];
             $subj_flag = ($_REQUEST['subj_flag'] == "Да" ? 1 : 0);
             $obzor_flag = ($_REQUEST['obzor_flag'] == "Да" ? 1 : 0);
             $news_flag = ($_REQUEST['news_flag'] == "Да" ? 1 : 0);
@@ -1393,8 +1394,8 @@ class admins {
             $pic_position = $_REQUEST['pic_position'];
             $site_comments = $_REQUEST['site_comments'];
 
-            $db->Execute("insert into sayty(uid, url, url_admin, login, pass, price, gid, getgoodlinks_id, sape_id, miralinks_id, webartex_id, site_subject, site_subject_more, cms, obzor_flag, news_flag, subj_flag, bad_flag, anons_size, pic_width, pic_height, pic_position, site_comments) values 
-					($uid, '$url', '$url_admin', '$login', '$pass', '$price', '$gid', '$getgoodlinksId', '$sape_id', '$miralinks_id', '$webartex_id', '$site_subject', '$site_subject_more', '$cms', '$obzor_flag', '$news_flag', '$subj_flag', '$bad_flag', '$anons_size', '$pic_width', '$pic_height', '$pic_position', '$site_comments')");
+            $db->Execute("insert into sayty(uid, url, url_admin, login, pass, price, gid, getgoodlinks_id, sape_id, miralinks_id, webartex_id, blogun_id, site_subject, site_subject_more, cms, obzor_flag, news_flag, subj_flag, bad_flag, anons_size, pic_width, pic_height, pic_position, site_comments) values 
+					($uid, '$url', '$url_admin', '$login', '$pass', '$price', '$gid', '$getgoodlinksId', '$sape_id', '$miralinks_id', '$blogun_id', '$webartex_id', '$site_subject', '$site_subject_more', '$cms', '$obzor_flag', '$news_flag', '$subj_flag', '$bad_flag', '$anons_size', '$pic_width', '$pic_height', '$pic_position', '$site_comments')");
 
             $alert = 'Сайт успешно добавлен.';
             $url = "?module=admins&action=sayty&uid=$uid";
@@ -1768,6 +1769,7 @@ class admins {
             $sape_id = $_REQUEST['sape_id'];
             $miralinks_id = $_REQUEST['miralinks_id'];
             $webartex_id = $_REQUEST['webartex_id'];
+            $blogun_id = $_REQUEST['blogun_id'];
             $url_admin = $_REQUEST['url_admin'];
             $colvos = $_REQUEST['colvos'];
             $moder_id = $_REQUEST['viklad'];
@@ -1801,7 +1803,7 @@ class admins {
                 $price_iforget = 40;
             }
 
-            $db->Execute("update sayty set uid='$owner_id', colvos='$colvos', login='$login', gid='$gid', getgoodlinks_id='$getgoodlinksId', sape_id='$sape_id', miralinks_id='$miralinks_id', webartex_id='$webartex_id', pass='$pass', url='$url', 
+            $db->Execute("update sayty set uid='$owner_id', colvos='$colvos', login='$login', gid='$gid', getgoodlinks_id='$getgoodlinksId', sape_id='$sape_id', miralinks_id='$miralinks_id', webartex_id='$webartex_id', blogun_id='$blogun_id', pass='$pass', url='$url', 
                                         url_admin='$url_admin', price='$price_iforget', cena='$price_etxt', moder_id='$moder_id', price_viklad = '$price_viklad', comment_viklad='$comment_viklad', question_viklad='$question_viklad',
 					site_subject='$site_subject', site_subject_more='$site_subject_more', cms='$cms', subj_flag='$subj_flag', obzor_flag='$obzor_flag', news_flag='$news_flag', 
 					bad_flag='$bad_flag', anons_size='$anons_size', pic_width='$pic_width', pic_height='$pic_height', pic_position='$pic_position', site_comments='$site_comments' where id=$id");
@@ -1893,7 +1895,7 @@ class admins {
             }
             $content = str_replace('[sistema1]', $sistema, $content);
             $content = str_replace('[display]', (($res['sistema'] != "http://miralinks.ru/" && $res['sistema'] != "http://pr.sape.ru/") ? "style='display:none'" : ""), $content);
-
+            $content = str_replace("[burse]", (($res['sistema'] == "https://blogun.ru/")? "Blogun_id" : "GGL_ID"), $content);
             if ((int) $res['type_task'] == 0) {
                 $content = str_replace('[type0]', "selected='selected'", $content);
                 $content = str_replace('[type1]', "", $content);

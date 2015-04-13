@@ -1873,10 +1873,10 @@ class user {
             $miralinks_id = $_REQUEST['miralinks_id'];
             $rotapost_id = $_REQUEST['rotapost_id'];
             $webartex_id = $_REQUEST['webartex_id'];
+            $blogun_id = $_REQUEST['blogun_id'];
 
             //######################Проверка на изменения#########################
-            $uinfo = $db->Execute("SELECT * FROM admins WHERE id=$uid");
-            $uinfo = $uinfo->FetchRow();
+            $uinfo = $db->Execute("SELECT * FROM admins WHERE id=$uid")->FetchRow();
             $changed = "Добрый день!<br/><br/>
 			Пользователь <a href='http://iforget.ru/admin.php?module=admins&action=edit&id=$uid'>" . $uinfo['login'] . "</a> изменил данные для своего сайта <a href='http://iforget.ru/admin.php?module=admins&action=sayty&uid=$uid&action2=edit&id=$id'>" . $res['url'] . "</a><br/><br/>";
             $flag = 0;
@@ -1976,7 +1976,7 @@ class user {
                 $price_iforget = 40;
             }
 
-            $q = "update sayty set login='$login', pass='$pass',gid='$gid', getgoodlinks_id='$getgoodlinks_id', sape_id='$sape_id', miralinks_id='$miralinks_id', rotapost_id='$rotapost_id', webartex_id='$webartex_id',
+            $q = "update sayty set login='$login', pass='$pass',gid='$gid', getgoodlinks_id='$getgoodlinks_id', sape_id='$sape_id', miralinks_id='$miralinks_id', rotapost_id='$rotapost_id', webartex_id='$webartex_id', blogun_id='$blogun_id',
                                         url='$url', url_admin='$url_admin', cena='$price_etxt', price='$price_iforget', site_subject='$site_subject', site_subject_more='$site_subject_more', 
                                         cms='$cms', subj_flag='$subj_flag', obzor_flag='$obzor_flag', news_flag='$news_flag', bad_flag='$bad_flag', anons_size='$anons_size', 
                                         pic_width='$pic_width', pic_height='$pic_height', pic_position='$pic_position', site_comments='$site_comments' where id=$id";
@@ -2052,9 +2052,10 @@ class user {
             $miralinks_id = $_REQUEST['miralinks_id'];
             $rotapost_id = $_REQUEST['rotapost_id'];
             $webartex_id = $_REQUEST['webartex_id'];
+            $blogun_id = $_REQUEST['blogun_id'];
 
-            $db->Execute("insert into sayty(uid, url, url_admin, login, pass, gid, getgoodlinks_id, sape_id, miralinks_id, rotapost_id, webartex_id, price, cena, site_subject, site_subject_more, cms, obzor_flag, news_flag, subj_flag, bad_flag, anons_size, pic_width, pic_height, pic_position, site_comments) values 
-					($uid, '$url', '$url_admin', '$login', '$pass', '$gid', '$getgoodlinks_id', '$sape_id', '$miralinks_id', '$rotapost_id', '$webartex_id', '$price_iforget', '$price_etxt', '$site_subject', '$site_subject_more', '$cms', '$obzor_flag', '$news_flag', '$subj_flag', '$bad_flag', '$anons_size', '$pic_width', '$pic_height', '$pic_position', '$site_comments')");
+            $db->Execute("insert into sayty(uid, url, url_admin, login, pass, gid, getgoodlinks_id, sape_id, miralinks_id, rotapost_id, webartex_id, blogun_id, price, cena, site_subject, site_subject_more, cms, obzor_flag, news_flag, subj_flag, bad_flag, anons_size, pic_width, pic_height, pic_position, site_comments) values 
+					($uid, '$url', '$url_admin', '$login', '$pass', '$gid', '$getgoodlinks_id', '$sape_id', '$miralinks_id', '$rotapost_id', '$webartex_id', '$blogun_id', '$price_iforget', '$price_etxt', '$site_subject', '$site_subject_more', '$cms', '$obzor_flag', '$news_flag', '$subj_flag', '$bad_flag', '$anons_size', '$pic_width', '$pic_height', '$pic_position', '$site_comments')");
 
 
             $new_site = $db->Execute("SELECT * FROM sayty WHERE uid=$uid AND url='$url'")->FetchRow();

@@ -234,7 +234,7 @@
                         </span>
                     </a>
                 </span>
-                <input type="text" name="rotapost_id" id="rotapost_id" value="[rotapost_id]" class="full-length">
+                <input type="text" name="rotapost_id" id="rotapost_id" value="" class="full-length">
             </li>
             <li>
                 <span class="title">
@@ -252,7 +252,25 @@
                         </span>
                     </a>
                 </span>
-                <input type="text" name="webartex_id" id="webartex_id" value="[webartex_id]" class="full-length">
+                <input type="text" name="webartex_id" id="webartex_id" value="" class="full-length">
+            </li>
+            <li>
+                <span class="title">
+                    <a class="tooltip" href="#" onclick="return false;">
+                        ID в blogun:
+                        <span class="custom help">
+                            <img src="images/interface/system-help.png" alt="Помощь" height="48" width="48" />
+                            <em>Помощь</em>
+                            Заходим в систему. Страница "МОИ ПЛОЩАДКИ".<br /><br />
+                            В столбце "Площадка" кликаем мышкой на url сайта.<br /><br />
+                            Открывается карточка сайта.<br /><br />
+                            Нужно скопировать последнюю часть URL, число в конце.<br /><br />
+                            Вставляем данное значение в это поле.<br /><br />
+                            (Пример : 138100)
+                        </span>
+                    </a>
+                </span>
+                <input type="text" name="blogun_id" id="blogun_id" value="" class="full-length">
             </li>
             <li>
                 <span class="title">Обзоры: <span class="hint">(размещать заявки с типом обзоров)</span></span>

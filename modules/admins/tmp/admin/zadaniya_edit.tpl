@@ -114,7 +114,7 @@
                 <input type="text" name="etxt" value='[etxt]' id="etxt" class="full-length">
             </li>
             <li>
-                <span class="title">GGL_ID:</span>
+                <span class="title">[burse]:</span>
                 <input type="text" name="b_id" value='[b_id]' id="b_id" class="full-length">
             </li>
             <li>
