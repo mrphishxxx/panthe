@@ -143,15 +143,15 @@ if (!empty($all)) {
                     $cur_text = file_get_contents($file_path);
                     $cur_text_utf = iconv('cp1251', 'utf-8', $cur_text);
                     $cur_text_utf = str_replace('&nbsp;', ' ', $cur_text_utf);
-                    $description = mb_substr($cur_text_utf, 0, strpos($cur_text_utf, ".", 1));
+                    $description = mb_substr($cur_text_utf, 0, mb_strpos($cur_text_utf, ".", 1, "utf-8"), "utf-8");
                     if (mb_strlen($description) < 150) {
-                        $first = mb_strpos($cur_text_utf, ".");
-                        $next = mb_strpos($cur_text_utf, ".", ((int) $first + 1));
-                        $description .= mb_substr($cur_text_utf, $first, ($next - $first));
+                        $first = mb_strpos($cur_text_utf, ".", "utf-8");
+                        $next = mb_strpos($cur_text_utf, ".", ((int) $first + 1), "utf-8");
+                        $description .= mb_substr($cur_text_utf, $first, ($next - $first), "utf-8");
                     }
                     $description = str_replace("}", "", str_replace("{", "", $description));
                     if(mb_strlen($description) > 255) {
-                        $description = mb_substr($description, 0, 254);
+                        $description = mb_substr($description, 0, 254, "utf-8");
                     }
 
                     $pos_one = $pos_two = 0;
@@ -193,7 +193,6 @@ if (!empty($all)) {
                         }
                     }
 
-                    $cur_text_utf = $db->escape($cur_text_utf);
                     if (!empty($value['title']) && !empty($value['tema']) && !empty($value['keywords']) && !empty($description) && !empty($cur_text_utf)) {
                         $cookie_jar = tempnam(PATH . 'temp', "cookie");
                         if ($curl = curl_init()) {
@@ -241,6 +240,11 @@ if (!empty($all)) {
                             $body .= "Задача #<a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=".$value['id']."'>" . $value['id'] . "</a> не отправлена в Sape (ОШИБКА отправления) - <br>";
                             foreach ($request as $err) {
                                 $body .= "error = " . $err . "<br>";
+                                if($err == "Failed to parse request") {
+                                    //$body .= json_encode(array((int) $value["sape_id"], array("title" => $value['title'], "header" => $value['tema'], "keywords" => $value['keywords'], "description" => $description, "text" => $cur_text_utf)));
+                                    $body .= "DESCRIPTION = $description <br>";
+                                    $body .= "TEXT = $cur_text_utf <br>";                                    
+                                }
                             }
                             $body .= "<br><br>";
                             $error = true;
@@ -268,7 +272,7 @@ if (!empty($all)) {
                         $body .= "<br><br>";
                         $error = true;
                     }
-                    $db->Execute("UPDATE zadaniya_new SET vrabote='0', navyklad='$navyklad', vilojeno='$vilojeno', description='" . $description . "', text='" . ($cur_text_utf) . "' WHERE id=" . $value['id']);
+                    $db->Execute("UPDATE zadaniya_new SET vrabote='0', navyklad='$navyklad', vilojeno='$vilojeno', description='" . $description . "', text='" . $db->escape($cur_text_utf) . "' WHERE id=" . $value['id']);
                     $num++;
                 }
             }

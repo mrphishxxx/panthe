@@ -43,7 +43,11 @@ if ($count > 0) {
         if ((!empty($task["url_statyi"]) && $task["url_statyi"] != "" && strstr($task["url_statyi"], $sinfo["url"])) && ($task["vipolneno"] != 1)) {
             switch ($task["sistema"]) {
                 case 'https://gogetlinks.net/':
-                    $err = setTaskGGL($db, $task);
+                    if(!empty($task["b_id"]) && $task["b_id"] != 0){
+                        $err = setTaskGGL($db, $task);
+                    } else {
+                        continue;
+                    }
                     break;
                 case 'http://getgoodlinks.ru/':
                     $err = setTaskGetGoodLinks($db, $task);
@@ -55,7 +59,11 @@ if ($count > 0) {
                     $err = setTaskRotapost($db, $task);
                     break;
                 case 'http://webartex.ru/':
-                    $err = setTaskWebartex($db, $task);
+                    if(!empty($task["webartex_id"]) && $task["webartex_id"] != 0){
+                        $err = setTaskWebartex($db, $task);
+                    } else {
+                        continue;
+                    }
                     break;
                 case 'https://blogun.ru/':
                     $err = setTaskBlogun($db, $task);

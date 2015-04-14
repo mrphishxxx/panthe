@@ -39,7 +39,7 @@ function getNewTask($db, $uid) {
 
     $login = $birjs['login'];
     $pass = $birjs['pass'];
-
+    $new_tasks = array();
     /*     * **************************************\
      *      ВЫТАСКИВАЕМ ЗАЯВКИ НА НАПИСАНИЕ
       /*************************************** */
@@ -54,7 +54,6 @@ function getNewTask($db, $uid) {
         curl_close($curl);
     }
     $tasks = json_decode($out);
-    $new_tasks = array();
     if (isset($tasks->list) && !empty($tasks->list)) {
         foreach ($tasks->list as $task) {
             //Получаем детальную информацию по каждой заяке
@@ -85,7 +84,7 @@ function getNewTask($db, $uid) {
         curl_close($curl);
     }
     $tasks_layout = json_decode($out);
-    if (isset($tasks->list) && !empty($tasks->list)) {
+    if (isset($tasks_layout->list) && !empty($tasks_layout->list)) {
         foreach ($tasks_layout->list as $task) {
             //Получаем детальную информацию по каждой заяке
             if ($curl = curl_init()) {
@@ -118,7 +117,7 @@ function getNewTask($db, $uid) {
     while ($site = $sayty->FetchRow()) {
         $sites_to_user[$site["id"]] = $site["webartex_id"];
     }
-
+    
     if (count($new_tasks) > 0) {
         foreach ($new_tasks as $task) {
             $task = (array) $task;
