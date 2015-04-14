@@ -238,6 +238,29 @@ tbody .output .ico {
     border: none !important;
 }
 
+.lock_ok .ico {
+
+    position: relative;
+    top: 3px;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-image: url("../images/interface/lock-ok.png");
+    background-repeat: no-repeat;
+    border: none !important;
+}
+.lock_open .ico {
+
+    position: relative;
+    top: 3px;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-image: url("../images/interface/lock-open.png");
+    background-repeat: no-repeat;
+    border: none !important;
+}
+
 /* -------------------------------------------------- exchange */
 tbody .exchange ul {
     display: inline-block;

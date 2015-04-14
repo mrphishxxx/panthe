@@ -210,6 +210,15 @@ class admins {
                     case '':
                         $content = $this->copywriters($db);
                         break;
+                    case 'banned':
+                        $content = $this->copywriters_banned($db);
+                        break;
+                    case 'bannedoff':
+                        $content = $this->copywriters_bannedoff($db);
+                        break;
+                    case 'blacklist':
+                        $content = $this->copywriters_blacklist($db);
+                        break;
                     case 'statistics':
                         $content = $this->copywriters($db);
                         break;
@@ -1895,7 +1904,7 @@ class admins {
             }
             $content = str_replace('[sistema1]', $sistema, $content);
             $content = str_replace('[display]', (($res['sistema'] != "http://miralinks.ru/" && $res['sistema'] != "http://pr.sape.ru/") ? "style='display:none'" : ""), $content);
-            $content = str_replace("[burse]", (($res['sistema'] == "https://blogun.ru/")? "Blogun_id" : "GGL_ID"), $content);
+            $content = str_replace("[burse]", (($res['sistema'] == "https://blogun.ru/") ? "Blogun_id" : "GGL_ID"), $content);
             if ((int) $res['type_task'] == 0) {
                 $content = str_replace('[type0]', "selected='selected'", $content);
                 $content = str_replace('[type1]', "", $content);
@@ -2357,9 +2366,9 @@ class admins {
         $msg = $_REQUEST['msg'];
         $cdate = date("Y-m-d");
         $user = $db->Execute("SELECT * FROM admins WHERE id=$uid")->FetchRow();
-        
+
         $db->Execute("INSERT INTO tickets (uid, subject, q_theme, msg, date, status, site) VALUES ($uid, '$subject', '$theme', '$msg', '$cdate', 1, '$site')");
-        if($user["mail_period"] > 0){
+        if ($user["mail_period"] > 0) {
             $lastId = $db->Insert_ID();
             $body = "Добрый день!<br/><br/>
                     Поступил новый тикет от Администрации iForget. <br>
@@ -2525,7 +2534,7 @@ class admins {
 
             $res = $db->Execute("SELECT * FROM tickets WHERE id=$tid")->FetchRow();
             $client = $db->Execute("SELECT * FROM admins WHERE id=" . $res['uid'])->FetchRow();
-            if($client["mail_period"] > 0){
+            if ($client["mail_period"] > 0) {
                 if ($client["type"] == "copywriter") {
                     $url = "copywriter.php";
                 } else {
@@ -3093,7 +3102,7 @@ class admins {
             $body = "Добрый день!<br/><br/>
 			Вам поступил новый тикет. Для просмотра <a href='http://iforget.ru/user.php?action=ticket&action2=view&tid=" . $lastId . "'>перейдите данной ссылке</a>.<br /><br /> 
 			";
-            if($user["type"] == "copywriter"){
+            if ($user["type"] == "copywriter") {
                 $body .= "<p><small><a href='http://iforget.ru/copywriter.php?action=unsubscribe'>Отписаться от рассылки</a></small></p>";
             }
             $body .= "Оставить и почитать отзывы Вы сможете в нашей ветке на <a href='http://searchengines.guru/showthread.php?p=12378271'>серчах</a><br/><br/>С уважением,<br/>Администрация проекта iForget.";
@@ -3124,7 +3133,7 @@ class admins {
             $message["subject"] = "[Новый тикет в системе iforget]";
             $message["to"][0] = array("email" => $user['email']);
             try {
-                if($user["mail_period"] > 0)
+                if ($user["mail_period"] > 0)
                     $mandrill->messages->send($message);
             } catch (Exception $e) {
                 $alert = 'Письмо не отправлено! Возникли проблемы!';
@@ -3306,7 +3315,7 @@ class admins {
             $message["auto_text"] = null;
 
             try {
-                if($res["mail_period"] > 0)
+                if ($res["mail_period"] > 0)
                     $mandrill->messages->send($message);
             } catch (Exception $e) {
                 echo '';
@@ -3335,7 +3344,7 @@ class admins {
             $message["auto_text"] = null;
 
             try {
-                if($res["mail_period"] > 0)
+                if ($res["mail_period"] > 0)
                     $mandrill->messages->send($message);
             } catch (Exception $e) {
                 echo '';
@@ -3856,21 +3865,87 @@ class admins {
         }
         $content = str_replace('[name_stat]', $name_chart, $content);
 
-        $copywriters = $db->Execute("SELECT * FROM admins WHERE type = 'copywriter' AND active = 1 ORDER BY login ASC");
-        $table = "";
-        while ($copywriter = $copywriters->FetchRow()) {
-            $tasks_vipolneno = $db->Execute("SELECT count(id) as num, sum(nof_chars) as chars FROM zadaniya_new WHERE copywriter = " . $copywriter["id"] . " AND vipolneno = 1" . $condition)->FetchRow();
-            $tasks_other = $db->Execute("SELECT count(id) as num FROM zadaniya_new WHERE copywriter = " . $copywriter["id"] . " AND vipolneno != 1")->FetchRow();
+        // Задачи которые выполнили копирайтеры
+        $tasks_vipolneno = $db->Execute("SELECT COUNT(*) AS cnt, `copywriter` FROM `zadaniya_new` WHERE copywriter != 0 AND vipolneno = 1 $condition GROUP BY `copywriter`")->GetAll();
+        $statistics = array();
+        foreach ($tasks_vipolneno as $task) {
+            if (!isset($statistics[$task["copywriter"]])) {
+                $statistics[$task["copywriter"]] = array();
+            }
+            $statistics[$task["copywriter"]]["vipolneno"] = $task["cnt"];
+        }
 
+        //Задачи, которые ещё находятся в работе и не засчитаны копирайтерам
+        $tasks_other = $db->Execute("SELECT COUNT(*) AS cnt, `copywriter` FROM `zadaniya_new` WHERE copywriter != 0 AND vipolneno != 1 GROUP BY `copywriter`")->GetAll();
+        foreach ($tasks_other as $task) {
+            if (!isset($statistics[$task["copywriter"]])) {
+                $statistics[$task["copywriter"]] = array();
+            }
+            $statistics[$task["copywriter"]]["vrabote"] = $task["cnt"];
+        }
+
+        $table = "";
+        $copywriters = $db->Execute("SELECT id, login FROM admins WHERE type = 'copywriter' AND active = 1 AND banned = 0 ORDER BY login ASC");
+        while ($copywriter = $copywriters->FetchRow()) {
             $tr = "<tr>";
-            $tr .= "<td>" . $copywriter["login"] . "</td>";
-            $tr .= "<td>" . $tasks_vipolneno["num"] . "</td>";
-            $tr .= "<td>" . $tasks_other["num"] . "</td>";
+            $tr .= "<td style='text-align:left'>" . $copywriter["login"] . "</td>";
+            $tr .= "<td>" . ($statistics[$copywriter["id"]]["vipolneno"] ? $statistics[$copywriter["id"]]["vipolneno"] : 0) . "</td>";
+            $tr .= "<td>" . ($statistics[$copywriter["id"]]["vrabote"] ? $statistics[$copywriter["id"]]["vrabote"] : 0) . "</td>";
+            $tr .= "<td class='lock_ok'><a href='/admin.php?module=admins&action=copywriters&action2=banned&id=" . $copywriter["id"] . "' class='ico'></a></td>";
             $tr .= "</tr>";
             $table .= $tr;
         }
         $content = str_replace('[table]', $table, $content);
+        return $content;
+    }
 
+    function copywriters_banned($db) {
+        $copywriter = @$_REQUEST['id'];
+        if (!empty($copywriter)) {
+            $db->Execute("UPDATE admins SET banned='1' WHERE type='copywriter' AND id = '$copywriter'");
+            header('location:' . $_SERVER['HTTP_REFERER']);
+        } else {
+            header('location:' . $_SERVER['HTTP_REFERER'] . "&error=Не верные данные");
+        }
+    }
+
+    function copywriters_bannedoff($db) {
+        $copywriter = @$_REQUEST['id'];
+        if (!empty($copywriter)) {
+            $db->Execute("UPDATE admins SET banned='0' WHERE type='copywriter' AND id = '$copywriter'");
+            header('location:' . $_SERVER['HTTP_REFERER']);
+        } else {
+            header('location:' . $_SERVER['HTTP_REFERER'] . "&error=Не верные данные");
+        }
+    }
+
+    function copywriters_blacklist($db) {
+        $content = file_get_contents(PATH . 'modules/admins/tmp/admin/copywriters_blacklist.tpl');
+        $statistics = array();
+        $copywriters = $db->Execute("SELECT id, login FROM admins WHERE type = 'copywriter' AND active = 1 AND banned = 1 ORDER BY login ASC");
+        if ($copywriters->NumRows() == 0) {
+            $table = "<tr><td colspan='2'>Нет ни одного заблокированного копирайтера!</td></tr>";
+        } else {
+            // Задачи которые выполнили копирайтеры
+            $tasks_vipolneno = $db->Execute("SELECT COUNT(*) AS cnt, `copywriter` FROM `zadaniya_new` WHERE copywriter != 0 AND vipolneno = 1 GROUP BY `copywriter`")->GetAll();
+            foreach ($tasks_vipolneno as $task) {
+                if (!isset($statistics[$task["copywriter"]])) {
+                    $statistics[$task["copywriter"]] = array();
+                }
+                $statistics[$task["copywriter"]]["vipolneno"] = $task["cnt"];
+            }
+        }
+        
+        $table = "";
+        while ($copywriter = $copywriters->FetchRow()) {
+            $tr = "<tr>";
+            $tr .= "<td style='text-align:left'>" . $copywriter["login"] . "</td>";
+            $tr .= "<td>" . ($statistics[$copywriter["id"]]["vipolneno"] ? $statistics[$copywriter["id"]]["vipolneno"] : 0) . "</td>";
+            $tr .= "<td class='lock_open'><a href='/admin.php?module=admins&action=copywriters&action2=bannedoff&id=" . $copywriter["id"] . "' class='ico'></a></td>";
+            $tr .= "</tr>";
+            $table .= $tr;
+        }
+        $content = str_replace('[table]', $table, $content);
         return $content;
     }
 
@@ -4282,7 +4357,7 @@ class admins {
                     case 128 : $price = 33.5;
                         break;
                 }
-                
+
                 if ($task['price'] == 93 && $task['date'] > "2015-02-01 00:00:00") {
                     $price += 17;
                 }
@@ -4292,7 +4367,7 @@ class admins {
                 }
                 if ($price > 0 && $task['price'] == 15) {
                     $price -= 0.4;
-                } elseif($price > 0) {
+                } elseif ($price > 0) {
                     $price -= 2.9;
                 }
                 $money[$date_time_array[$filter]] += $price;
@@ -4351,7 +4426,7 @@ class admins {
         $count = $sum = 0;
         while ($task = $sapes->FetchRow()) {
             $date_time_array = getdate($task["date"]);
-            
+
             if (!isset($money[$date_time_array[$filter]])) {
                 $money[$date_time_array[$filter]] = 0;
             }
@@ -4947,54 +5022,54 @@ class admins {
             } else {
                 $content = str_replace('[activen]', "", $content);
             }
-            
-            /*$profil .= microtime() . "  - BEFORE 1 curl - login in sape" . "\r\n";
-            $cookie_jar = tempnam(PATH . 'temp', "cookie");
-            $url = "http://api.articles.sape.ru/performer/index/";
-            if ($curl = curl_init()) {
-                curl_setopt($curl, CURLOPT_URL, $url);
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($curl, CURLOPT_POST, true);
-                curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
-                curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
-                @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, xmlrpc_encode_request('performer.login', array(LOGIN_IN_SAPE, PASS_IN_SAPE)));
-                curl_exec($curl);
-                curl_close($curl);
-            }
-            $profil .= microtime() . "  - AFTER 2 curl" . "\r\n";
-            $data = xmlrpc_encode_request('performer.messageList', array(array("order_id" => (int) $task["sape_id"]), array("date" => "DESC"), 0, 100));
-            $profil .= microtime() . "  - BEFORE 3 curl - messageList" . "\r\n";
-            if ($curl = curl_init()) {
-                curl_setopt($curl, CURLOPT_URL, $url);
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($curl, CURLOPT_POST, true);
-                curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
-                curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
-                @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-                $out = curl_exec($curl);
-                curl_close($curl);
-            }
-            $messages = xmlrpc_decode($out);
-            $profil .= microtime() . "  - AFTER 3 curl" . "\r\n";
-            $message_text = "";
-            if (isset($messages["items"]) && !empty($messages["items"])) {
-                foreach ($messages["items"] as $item) {
-                    $message_text .= $item["message_date"] . PHP_EOL;
-                    $message_text .= $item["message_text"];
-                    $message_text .= PHP_EOL . PHP_EOL;
-                }
-                $content = str_replace('[message]', $message_text, $content);
-                if ($task['admin_comments'] != $message_text) {
-                    $db->Execute("UPDATE zadaniya_new SET admin_comments='$message_text', new_comment=0 WHERE id=" . $id);
-                } else {
-                    $db->Execute("UPDATE zadaniya_new SET new_comment=0 WHERE id=" . $id);
-                }
-                $profil .= microtime() . "  - AFTER query - UPDATE new_comment AND admin_comments" . "\r\n";
-            }
-            $content = str_replace('[message]', "", $content);*/
-            
+
+            /* $profil .= microtime() . "  - BEFORE 1 curl - login in sape" . "\r\n";
+              $cookie_jar = tempnam(PATH . 'temp', "cookie");
+              $url = "http://api.articles.sape.ru/performer/index/";
+              if ($curl = curl_init()) {
+              curl_setopt($curl, CURLOPT_URL, $url);
+              curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+              curl_setopt($curl, CURLOPT_POST, true);
+              curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
+              curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
+              @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+              curl_setopt($curl, CURLOPT_POSTFIELDS, xmlrpc_encode_request('performer.login', array(LOGIN_IN_SAPE, PASS_IN_SAPE)));
+              curl_exec($curl);
+              curl_close($curl);
+              }
+              $profil .= microtime() . "  - AFTER 2 curl" . "\r\n";
+              $data = xmlrpc_encode_request('performer.messageList', array(array("order_id" => (int) $task["sape_id"]), array("date" => "DESC"), 0, 100));
+              $profil .= microtime() . "  - BEFORE 3 curl - messageList" . "\r\n";
+              if ($curl = curl_init()) {
+              curl_setopt($curl, CURLOPT_URL, $url);
+              curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+              curl_setopt($curl, CURLOPT_POST, true);
+              curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
+              curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
+              @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+              curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+              $out = curl_exec($curl);
+              curl_close($curl);
+              }
+              $messages = xmlrpc_decode($out);
+              $profil .= microtime() . "  - AFTER 3 curl" . "\r\n";
+              $message_text = "";
+              if (isset($messages["items"]) && !empty($messages["items"])) {
+              foreach ($messages["items"] as $item) {
+              $message_text .= $item["message_date"] . PHP_EOL;
+              $message_text .= $item["message_text"];
+              $message_text .= PHP_EOL . PHP_EOL;
+              }
+              $content = str_replace('[message]', $message_text, $content);
+              if ($task['admin_comments'] != $message_text) {
+              $db->Execute("UPDATE zadaniya_new SET admin_comments='$message_text', new_comment=0 WHERE id=" . $id);
+              } else {
+              $db->Execute("UPDATE zadaniya_new SET new_comment=0 WHERE id=" . $id);
+              }
+              $profil .= microtime() . "  - AFTER query - UPDATE new_comment AND admin_comments" . "\r\n";
+              }
+              $content = str_replace('[message]', "", $content); */
+
             $content = str_replace('[message]', $task["admin_comments"], $content);
             $content = str_replace('[date]', date("Y-m-d", $task['date']), $content);
 
@@ -5209,7 +5284,7 @@ class admins {
                     }
 
                     foreach ($request as $err) {
-                        if(mb_strpos("В статье не найдены требуемые ссылки", $err)){
+                        if (mb_strpos("В статье не найдены требуемые ссылки", $err)) {
                             $err = "В статье не найдены требуемые ссылки. Добавьте не менее 1 ссылок из списка.";
                         }
                         $data[] = "error[]=" . $err;
@@ -6027,4 +6102,5 @@ class admins {
     }
 
 }
+
 ?>

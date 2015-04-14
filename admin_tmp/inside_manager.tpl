@@ -97,11 +97,15 @@
                                     <li><a href="?module=admins&action=ticket&type=moder">Модераторы</a><span>([new_tick_moder]/[all_tick_moder])</span></li>
                                     <li><a href="?module=admins&action=ticket&type=copywriter">Копирайтеры</a><span>([new_tick_copywriter]/[all_tick_copywriter])</span></li>
                                 </ul>
+                                <h2>Копирайтеры</h2>
+                                <ul>
+                                    <li><a href="?module=admins&action=copywriters">Копирайтеры</a></li>
+                                    <li><a href="?module=admins&action=copywriters&action2=blacklist">Черный список</a></li>
+                                </ul>
                                 
                                 <h2>Дополнительно</h2>
                                 <ul>
                                     <li><a href="?module=admins&action=moders">Модераторы</a></li>
-                                    <li><a href="?module=admins&action=copywriters">Копирайтеры</a></li>
                                 </ul>
 
                             </div>
