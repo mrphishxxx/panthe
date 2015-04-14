@@ -27,7 +27,7 @@ while ($res = $query->FetchRow()) {
 foreach ($webart_to_uid as $uid) {
     //if ($uid != 601)continue;
     $balance = $admins->getUserBalans($uid, $db, 1);
-    if ($balance >= 60 || $uid == 20 || $uid == 55) {
+    if ($balance >= 15 || $uid == 20 || $uid == 55) {
         getNewTask($db, $uid);
     }
 }
