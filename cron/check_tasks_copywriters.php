@@ -28,6 +28,12 @@ if(!empty($tasks)) {
             $db->Execute("UPDATE zadaniya_new SET date_in_work=NULL, vrabote=0, rework=0, dorabotka=0, copywriter=0 WHERE id=" . $row['id']); //text='', 
             $db->Execute("INSERT INTO prohibition_taking_tasks (user_id, task_id) VALUE ('".$row['copywriter']."', '".$row['id']."')");
             $body .= "Задача <a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=" . $row['id'] . "'>" . $row['id'] . "</a> снята с копирайтера '" . $row['login'] . "'<br/>";
+        
+            /*$prohibition = $db->Execute("SELECT COUNT(*) AS cnt, `user_id` FROM `prohibition_taking_tasks` WHERE `user_id` = '".$row['copywriter']."' GROUP BY `user_id`")->FetchRow();
+            if($prohibition["cnt"] == LIMIT_ERROR_FROM_COPYWRITER) {
+                $db->Execute("UPDATE admins SET banned = '1' WHERE id = '".$row['copywriter']."'");
+                $body .= "Данный копирайтер просрочил уже ".LIMIT_ERROR_FROM_COPYWRITER. " задачи! Он переведен в статус Забанен!<br>";
+            }*/
         }
     }
     $body .= "<br/>С уважением, Администрация iForget!";

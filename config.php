@@ -22,5 +22,7 @@ define('PATH', dirname(__FILE__).'/');
 define('LOGIN_IN_SAPE', 'iforget');
 define('PASS_IN_SAPE', 'iforgetiforget');
 
+/*  OTHER CONSTANTS   */
+define("LIMIT_ERROR_FROM_COPYWRITER", 3);
 
 ?>

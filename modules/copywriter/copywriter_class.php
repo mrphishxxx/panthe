@@ -154,19 +154,19 @@ class copywriter {
         exit;
     }
 
-    function unsubscribe($db){
+    function unsubscribe($db) {
         $uid = (int) $_SESSION['user']['id'];
         $query = "";
-        if(!empty($uid)){
+        if (!empty($uid)) {
             $uinfo = $db->Execute("SELECT * FROM admins WHERE id=$uid")->FetchRow();
-            if(!empty($uinfo) && $uinfo["mail_period"] > 0) {
+            if (!empty($uinfo) && $uinfo["mail_period"] > 0) {
                 $db->Execute("UPDATE admins SET mail_period='0' WHERE id=$uid");
                 $query .= "Изменения сохранены";
             }
         }
         header("Location: /copywriter.php?action=lk&query=$query");
     }
-    
+
     function lk($db) {
         $uid = (int) $_SESSION['user']['id'];
         $uinfo = $db->Execute("SELECT * FROM admins WHERE id=$uid")->FetchRow();
@@ -179,8 +179,8 @@ class copywriter {
             $wallet_type = $db->escape($_REQUEST['wallet_type']);
             $icq = $db->escape($_REQUEST['icq']);
             $scype = $db->escape($_REQUEST['scype']);
-            if(isset($_REQUEST['mail_period']) && !empty($_REQUEST['mail_period']))
-                $mail_period = 0; 
+            if (isset($_REQUEST['mail_period']) && !empty($_REQUEST['mail_period']))
+                $mail_period = 0;
             else
                 $mail_period = 1;
 
@@ -234,7 +234,7 @@ class copywriter {
             $content = file_get_contents(PATH . 'modules/copywriter/tmp/lk.tpl');
             $query = @$_REQUEST['query'];
             $error = @$_REQUEST['error'];
-            
+
             $content = str_replace('[login]', $uinfo['login'], $content);
             $content = str_replace('[email]', $uinfo['email'], $content);
             $content = str_replace('[fio]', $uinfo['contacts'], $content);
@@ -244,7 +244,7 @@ class copywriter {
             $content = str_replace('[scype]', $uinfo['scype'], $content);
             $content = str_replace('[query]', (!empty($query) ? $query : ""), $content);
             $content = str_replace('[error]', (!empty($error) ? $error : ""), $content);
-            $content = str_replace('[mail_period]', (($uinfo["mail_period"] == 0)?"checked='checked'":""), $content);
+            $content = str_replace('[mail_period]', (($uinfo["mail_period"] == 0) ? "checked='checked'" : ""), $content);
         }
         return $content;
     }
@@ -272,7 +272,7 @@ class copywriter {
 
         $table = "";
         $num_task = 0;
-        if($user["banned"] == 0){
+        if ($user["banned"] == 0) {
             while ($res = $all->FetchRow()) {
                 if (!in_array($res["id"], $prohibition_tasks)) {
                     $num_task++;
@@ -534,31 +534,40 @@ class copywriter {
         if (!empty($id)) {
             $task = $db->Execute("SELECT * FROM zadaniya_new WHERE id = $id")->FetchRow();
             if (!empty($task)) {
-                $task = $db->Execute("UPDATE zadaniya_new SET copywriter = '0', 
-                                                              vrabote='0',
-                                                              vipolneno='0',
-                                                              dorabotka='0',
-                                                              vilojeno='0',
-                                                              navyklad='0',
-                                                              text='',
-                                                              uniq='0',
-                                                              for_copywriter='0',
-                                                              date_in_work='NULL' WHERE id = $id");
+                $banned = "";
+                $db->Execute("UPDATE zadaniya_new SET copywriter = '0', 
+                                                      vrabote='0',
+                                                      vipolneno='0',
+                                                      dorabotka='0',
+                                                      vilojeno='0',
+                                                      navyklad='0',
+                                                      text='',
+                                                      uniq='0',
+                                                      for_copywriter='0',
+                                                      date_in_work='NULL' WHERE id = $id");
+
+                $db->Execute("INSERT INTO prohibition_taking_tasks (user_id, task_id) VALUE ('" . $task['copywriter'] . "', '" . $id . "')");
+                $prohibition = $db->Execute("SELECT COUNT(*) AS cnt, `user_id` FROM `prohibition_taking_tasks` WHERE `user_id` = '" . $task['copywriter'] . "' GROUP BY `user_id`")->FetchRow();
+                if ($prohibition["cnt"] == LIMIT_ERROR_FROM_COPYWRITER) {
+                    $db->Execute("UPDATE admins SET banned = '1' WHERE id = '" . $task['copywriter'] . "' AND type='copywriter'");
+                    $banned = "<br><br><em>Данный копирайтер отказался от задачи уже ".LIMIT_ERROR_FROM_COPYWRITER. " раза! Он переведён в статус Забанен. Больще ему не показываются новые задачи!</em>";
+                }
 
                 require_once 'includes/mandrill/mandrill.php';
                 $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
                 $message = array();
                 $message["html"] = "Добрый день! <br/><br/>
-                         Копирайтор <strong>" . $_SESSION['user']['login'] . "</strong> отказался от 
-                             задания <a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=" . $id . "'>" . $id . "</a>.<br/>
-                             Задание переведено в статус Активен. Поле текст очищено.";
+                         Копирайтер <strong>" . $_SESSION['user']['login'] . "</strong> отказался от 
+                         задания <a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=" . $id . "'>" . $id . "</a>.<br/>
+                         Задание переведено в статус Активен. Поле текст очищено.
+                         ".$banned;
                 $message["text"] = "";
                 $message["subject"] = "[Копирайтер отменил задачу]";
                 $message["from_email"] = "news@iforget.ru";
                 $message["from_name"] = "iforget";
                 $message["to"] = array();
                 $message["to"][0] = array("email" => MAIL_ADMIN);
-                //$message["to"][1] = array("email" => "abashevav@gmail.com");
+                //$message["to"][1] = array("email" => MAIL_DEVELOPER);
                 $message["track_opens"] = null;
                 $message["track_clicks"] = null;
                 $message["auto_text"] = null;
@@ -685,7 +694,7 @@ class copywriter {
                         }
                         if ($task["navyklad"] != 1 && $task["vipolneno"] != 1 && $task["vilojeno"] != 1) {
                             $message["to"] = array();
-                            
+
                             if ($task["dorabotka"] == 1 || $task["rework"] == 1) {
                                 $body = "Добрый день! <br/><br/>
                                          Копирайтер '" . $_SESSION['user']['login'] . "' выполнил задание # $id.<br/><br/>
@@ -770,7 +779,7 @@ class copywriter {
                             $message["auto_text"] = null;
 
                             try {
-                                if(!empty($message["to"]))
+                                if (!empty($message["to"]))
                                     $mandrill->messages->send($message);
                             } catch (Exception $e) {
                                 echo 'Сообщение не отправлено!';
@@ -967,7 +976,7 @@ class copywriter {
                 $table .= '</tr>';
                 $num++;
             }
-            if(empty($withdrawal_first)){
+            if (empty($withdrawal_first)) {
                 $last_ticket = $db->Execute("SELECT * FROM tickets WHERE uid='" . $user['id'] . "' AND subject = 'Вывод средств' ORDER BY date DESC LIMIT 1")->FetchRow();
                 $three_days_last = date("Y-m-d", mktime(0, 0, 0, date("m"), date("d") - 3, date("Y")));
                 if ($last_ticket["date"] > $three_days_last) {
@@ -980,7 +989,7 @@ class copywriter {
                 date_add($date, date_interval_create_from_date_string('3 days'));
                 $three_days_ago = date_format($date, 'Y-m-d H:i:s');
                 $str = "<br /><span>Вывод средств возможен не чаще 1 раз в 3 суток</span><br />";
-                if(isset($withdrawal_first["subject"]))
+                if (isset($withdrawal_first["subject"]))
                     $str .= "<span>Вы запросили снятие средств <i>" . $withdrawal_first["date"] . "</i><br /> Следующий раз можно будет послать запрос не ранее <i>" . $three_days_ago . "</i>.</span><br />";
                 else
                     $str .= "<span>Вы снимали средства <i>" . $withdrawal_first["date"] . "</i><br /> Следующий раз можно будет снять не ранее <i>" . $three_days_ago . "</i>.</span><br />";
@@ -1047,10 +1056,10 @@ class copywriter {
 
         return $content;
     }
-    
+
     function tickets($db) {
         $content = file_get_contents(PATH . 'modules/copywriter/tmp/tickets.tpl');
-        
+
         $uid = (int) $_SESSION['user']['id'];
         $res = $db->Execute("select * from admins where id=$uid")->FetchRow();
         $content = str_replace('[login]', $res['login'], $content);
@@ -1116,7 +1125,7 @@ class copywriter {
 
         return $content;
     }
-    
+
     function ticket_add($db) {
         $uid = (int) $_SESSION['user']['id'];
 
@@ -1202,7 +1211,7 @@ class copywriter {
         $content = str_replace('[tid]', $tid, $content);
         return $content;
     }
-    
+
     function ticket_edit($db) {
 
         $send = $_REQUEST['send'];
