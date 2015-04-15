@@ -5069,7 +5069,7 @@ class admins {
               $profil .= microtime() . "  - AFTER query - UPDATE new_comment AND admin_comments" . "\r\n";
               }
               $content = str_replace('[message]', "", $content); */
-
+            $db->Execute("UPDATE zadaniya_new SET new_comment=0 WHERE id=" . $id);
             $content = str_replace('[message]', $task["admin_comments"], $content);
             $content = str_replace('[date]', date("Y-m-d", $task['date']), $content);
 
