@@ -170,7 +170,7 @@ if (!empty($all)) {
                             $ankor[] = $a;
                         }
                     }
-
+                    $cur_text_utf = $db->escape($cur_text_utf);
                     // Проходим по массиву Анкоров и заменяем в тексте конструкцию {анкор} на <a href='урл'>анкор</a>
                     for ($i = 0; $i < count($ankor); $i++) {
                         /*                         * * Старый вид поиска - пропускал конструкции {  анкор }
@@ -192,7 +192,7 @@ if (!empty($all)) {
                             $cur_text_utf = mb_substr_replace($cur_text_utf, '<a href="' . $url[$key] . '">' . $ankor[$key] . '</a>', $pos_one, $pos_two);
                         }
                     }
-
+                    
                     if (!empty($value['title']) && !empty($value['tema']) && !empty($value['keywords']) && !empty($description) && !empty($cur_text_utf)) {
                         $cookie_jar = tempnam(PATH . 'temp', "cookie");
                         if ($curl = curl_init()) {
@@ -272,7 +272,7 @@ if (!empty($all)) {
                         $body .= "<br><br>";
                         $error = true;
                     }
-                    $db->Execute("UPDATE zadaniya_new SET vrabote='0', navyklad='$navyklad', vilojeno='$vilojeno', description='" . $description . "', text='" . $db->escape($cur_text_utf) . "' WHERE id=" . $value['id']);
+                    $db->Execute("UPDATE zadaniya_new SET vrabote='0', navyklad='$navyklad', vilojeno='$vilojeno', description='" . $description . "', text='" . ($cur_text_utf) . "' WHERE id=" . $value['id']);
                     $num++;
                 }
             }
