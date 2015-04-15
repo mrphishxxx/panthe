@@ -231,6 +231,9 @@ class admins {
                     case 'change_task_off':
                         $content = $this->change_task_off($db);
                         break;
+                    case 'change_task_all':
+                        $content = $this->change_task_all($db);
+                        break;
                     case 'change_status_task':
                         $content = $this->change_status_task($db);
                         break;
@@ -4156,38 +4159,8 @@ class admins {
         $task = $db->Execute("SELECT * FROM zadaniya_new WHERE id = $zid")->FetchRow();
         if ($task["etxt"] == 0) {
             $db->Execute("UPDATE zadaniya_new SET for_copywriter = 1 WHERE id = $zid");
-
-            require_once 'includes/mandrill/mandrill.php';
-            $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-            $body = "Добрый день!<br/><br/>
-                     На сайт <a href='http://iforget.ru/'>iForget</a> выгружена новая задача для написания текста.<br/>
-                     Для того чтобы взять её в работу перейдите по ссылке в Ваш <a href='http://iforget.ru/copywriter.php'>личный кабинет</a>.<br/><br/>
-                     Спасибо!<br/>
-                     <br /><small><a href='http://iforget.ru/copywriter.php?action=unsubscribe'>Отписаться от рассылки</a></small>
-                     Администрация iForget.";
-            $message = array();
-            $message["html"] = $body;
-            $message["text"] = "";
-            $message["subject"] = "[Новая задача]";
-            $message["from_email"] = "news@iforget.ru";
-            $message["from_name"] = "iforget";
-            $message["track_opens"] = null;
-            $message["track_clicks"] = null;
-            $message["auto_text"] = null;
-            $message["to"] = array();
-            $copywriters = $db->Execute("SELECT * FROM admins WHERE type='copywriter' AND active=1");
-            while ($copywriter = $copywriters->FetchRow()) {
-                if ($copywriter["mail_period"] > 0 && $copywriter["banned"] == 0) {
-                    $message["to"][] = array("email" => $copywriter["email"], "name" => $copywriter["login"]);
-                }
-            }
-            try {
-                if (count($message["to"]) > 0)
-                    $mandrill->messages->send($message);
-                echo "<br/><br/><br/>" . $body;
-            } catch (Exception $e) {
-                echo "<br/><br/><br/>" . $body;
-            }
+            // Пока убрал отправление писем Копирайтерам, когда включают галку у задачи 
+            // Слишком много писем высылается, получается спам какой-то
         }
     }
 
@@ -4200,6 +4173,18 @@ class admins {
             header('location: ?module=admins&action=articles');
             die();
         }
+    }
+    
+    function change_task_all($db) {
+        $status = (int) $_POST['status'];
+        $tasks = $db->Execute("SELECT * FROM zadaniya_new z WHERE z.for_copywriter != '$status' AND z.rectificate='0' AND z.vrabote='0' AND z.vipolneno='0' AND z.dorabotka='0' AND z.navyklad='0' AND z.vilojeno='0'");
+        if($tasks->NumRows() > 0){
+            while($task = $tasks->FetchRow()){
+                $db->Execute("UPDATE zadaniya_new SET for_copywriter = '$status' WHERE id = ".$task["id"]);
+            }
+        }
+        echo $tasks->NumRows();
+        die();
     }
 
     function change_status_task($db) {
@@ -4801,6 +4786,7 @@ class admins {
                         $condition = " AND z.vrabote = 1";
                         break;
                     case "new":
+                        $content = str_replace('[check_all]', "", $content);
                         $condition = " AND z.rectificate='0' AND z.vrabote='0' AND z.vipolneno='0' AND z.dorabotka='0' AND z.navyklad='0' AND z.vilojeno='0'";
                         break;
                     default: $condition = "";
@@ -4926,7 +4912,7 @@ class admins {
         $content = str_replace('[pegination]', $pegination, $content);
         $content = str_replace('[cur_url]', "?module=admins&action=articles" . ($offset != 1 ? '&offset' . $offset : ''), $content);
         $content = str_replace('[table]', $table, $content);
-
+        $content = str_replace('[check_all]', "style='display:none'", $content);
         $profil .= microtime() . "  - END FUNCTION" . "\r\n";
         $endtime = time() - $starttime;
         if ($endtime > 3) {
