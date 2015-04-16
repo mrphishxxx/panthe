@@ -1,5 +1,5 @@
 <?php
-
+echo "data: " . date("d-m-Y H:i:s") . "\r\n";
 error_reporting(E_ALL);
 include(dirname(__FILE__) . '/../' . 'config.php');
 include(dirname(__FILE__) . '/../' . 'includes/simple_html_dom.php');
@@ -224,7 +224,7 @@ $message["subject"] = $subject;
 $message["from_email"] = "news@iforget.ru";
 $message["from_name"] = "iforget";
 $message["to"] = array();
-$message["to"][1] = array("email" => MAIL_DEVELOPER);
+//$message["to"][1] = array("email" => MAIL_DEVELOPER);
 $message["to"][0] = array("email" => MAIL_ADMIN);
 $message["track_opens"] = null;
 $message["track_clicks"] = null;

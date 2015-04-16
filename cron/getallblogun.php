@@ -1,5 +1,6 @@
 <?php
 
+echo "data:" . date("d-m-Y H:i:s") . " \r\n";
 $start = time();
 set_time_limit(0);
 ini_set("memory_limit", "1024M");
@@ -195,7 +196,7 @@ $message["subject"] = $subject;
 $message["from_email"] = "news@iforget.ru";
 $message["from_name"] = "iforget";
 $message["to"] = array();
-$message["to"][1] = array("email" => MAIL_DEVELOPER);
+//$message["to"][1] = array("email" => MAIL_DEVELOPER);
 $message["to"][0] = array("email" => MAIL_ADMIN);
 $message["track_opens"] = null;
 $message["track_clicks"] = null;
@@ -210,6 +211,5 @@ try {
 $end = time();
 echo ((int) $end - (int) $start);
 echo " sec. \r\n";
-echo "data:" . date("d-m-Y H:i:s") . " \r\n";
 exit();
 ?>

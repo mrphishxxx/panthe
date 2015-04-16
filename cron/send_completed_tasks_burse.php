@@ -43,30 +43,46 @@ if ($count > 0) {
         if ((!empty($task["url_statyi"]) && $task["url_statyi"] != "" && strstr($task["url_statyi"], $sinfo["url"])) && ($task["vipolneno"] != 1)) {
             switch ($task["sistema"]) {
                 case 'https://gogetlinks.net/':
-                    if(!empty($task["b_id"]) && $task["b_id"] != 0){
+                    if (!empty($task["b_id"]) && $task["b_id"] != 0) {
                         $err = setTaskGGL($db, $task);
                     } else {
                         continue;
                     }
                     break;
                 case 'http://getgoodlinks.ru/':
-                    $err = setTaskGetGoodLinks($db, $task);
+                    if (!empty($task["b_id"]) && $task["b_id"] != 0) {
+                        $err = setTaskGetGoodLinks($db, $task);
+                    } else {
+                        continue;
+                    }
                     break;
                 case 'http://pr.sape.ru/':
-                    $err = setTaskSape($db, $task);
+                    if (!empty($task["sape_id"]) && $task["sape_id"] != 0) {
+                        $err = setTaskSape($db, $task);
+                    } else {
+                        continue;
+                    }
                     break;
                 case 'http://rotapost.ru/':
-                    $err = setTaskRotapost($db, $task);
+                    if (!empty($task["rotapost_id"]) && $task["rotapost_id"] != 0) {
+                        $err = setTaskRotapost($db, $task);
+                    } else {
+                        continue;
+                    }
                     break;
                 case 'http://webartex.ru/':
-                    if(!empty($task["webartex_id"]) && $task["webartex_id"] != 0){
+                    if (!empty($task["webartex_id"]) && $task["webartex_id"] != 0) {
                         $err = setTaskWebartex($db, $task);
                     } else {
                         continue;
                     }
                     break;
                 case 'https://blogun.ru/':
-                    $err = setTaskBlogun($db, $task);
+                    if (!empty($task["b_id"]) && $task["b_id"] != 0) {
+                        $err = setTaskBlogun($db, $task);
+                    } else {
+                        continue;
+                    }
                     break;
                 default : $err = 'В данную биржу (' . $task["sistema"] . ') задания отправить не возможно!';
             }
@@ -285,8 +301,8 @@ function setTaskBlogun($db, $task) {
         $driver->close();
         return "Ошибка отправления, поле 'a[@class='amount']' - не найдено";
     }
-    
-    $sayty = $db->Execute("SELECT * FROM sayty WHERE uid='".$task['uid']."' AND id='".$task['sid']."'")->FetchRow();
+
+    $sayty = $db->Execute("SELECT * FROM sayty WHERE uid='" . $task['uid'] . "' AND id='" . $task['sid'] . "'")->FetchRow();
     $driver->get('https://blogun.ru/getcode.php?id=' . $task['b_id'] . '&idblog=' . $sayty['blogun_id'] . '&submenu=2&menu=tsk');
     $url = $driver->findElement(WebDriverBy::xpath("//input[@id='url']"));
     $url->sendKeys($task['url_statyi']);
