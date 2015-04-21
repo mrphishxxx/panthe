@@ -20,7 +20,7 @@ $db->Execute('SET NAMES utf8');
 
 $admins = new admins();
 $balance = $admins->getUserBalans($UID, $db, 1);
-if($balance < 45){
+if($balance < 60){
     exit();
 } else {
     

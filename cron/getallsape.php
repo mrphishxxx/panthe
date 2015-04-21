@@ -26,7 +26,7 @@ $query = $db->Execute("SELECT a.id FROM birjs b LEFT JOIN admins a ON b.uid = a.
 while ($res = $query->FetchRow()) {
     //if($res["id"] != 399)continue;
     $balance = $admins->getUserBalans($res['id'], $db, 1);
-    if ($balance >= 45 || (($res['id'] == 20) || ($res['id'] == 55))) {
+    if ($balance >= 60 || (($res['id'] == 20) || ($res['id'] == 55))) {
         getTask($db, $res['id']);
     }
 }

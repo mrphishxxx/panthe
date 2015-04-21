@@ -257,7 +257,7 @@ $users = $db->Execute("SELECT * FROM admins WHERE active=1 AND type='user'");
 $act_uids = array();
 while ($res = $users->FetchRow()) {
     $balance = $admins->getUserBalans($res['id'], $db, 1);
-    if ($balance >= 45 || (($res['id'] == 20) || ($res['id'] == 55))) {
+    if ($balance >= 60 || (($res['id'] == 20) || ($res['id'] == 55))) {
         if (in_array($res['id'], $ggl_to_uid)) {
             $act_uids[] = $res['id'];
         }
