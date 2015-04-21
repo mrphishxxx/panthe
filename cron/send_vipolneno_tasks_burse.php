@@ -33,14 +33,17 @@ $db->Execute('set charset utf8');
 $db->Execute('SET NAMES utf8');
 
 $body = "";
-$tasks = $db->Execute("SELECT * FROM zadaniya WHERE sistema IN ('https://gogetlinks.net/', 'http://getgoodlinks.ru/', 'http://pr.sape.ru/', 'http://rotapost.ru/', 'http://webartex.ru/', 'https://blogun.ru/') AND vilojeno = 1");
+$date = time()-259200; // - 3 DAYs
+$tasks = $db->Execute("SELECT * FROM zadaniya WHERE sistema IN ('http://pr.sape.ru/', 'http://rotapost.ru/') AND vipolneno = 1 AND date > '$date'");
 $count = $tasks->NumRows();
 $yes = $no = "";
+
 if ($count > 0) {
     while ($task = $tasks->FetchRow()) {
         $sinfo = $db->Execute("SELECT * FROM sayty WHERE id=" . $task["sid"])->FetchRow();
         $sinfo["url"] = str_replace("/", "", str_replace("http://", "", str_replace("www.", "", $sinfo["url"])));
-        if ((!empty($task["url_statyi"]) && $task["url_statyi"] != "" && strstr($task["url_statyi"], $sinfo["url"])) && ($task["vipolneno"] != 1)) {
+        if ((!empty($task["url_statyi"]) && $task["url_statyi"] != "" && strstr($task["url_statyi"], $sinfo["url"]))) {
+            $err = false;
             switch ($task["sistema"]) {
                 case 'https://gogetlinks.net/':
                     if (!empty($task["b_id"]) && $task["b_id"] != 0) {
@@ -88,14 +91,13 @@ if ($count > 0) {
             }
             $main = "Задача <a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $task['uid'] . "&sid=" . $task['sid'] . "&action2=edit&id=" . $task['id'] . "'>" . $task['id'] . "</a> - ";
             if (!$err) {
-                $db->Execute($q = "UPDATE zadaniya SET vipolneno='1', dorabotka=0, vrabote=0, navyklad=0, vilojeno='0' WHERE id=" . $task["id"]);
                 $yes .= $main . "Отправлена в биржу [" . $task["sistema"] . "]!<br/><br/>";
             } else {
                 $no .= $main . "Ошибка отправления в биржу [" . $task["sistema"] . "]<br/>'<strong>$err</strong>'!<br/><br/>";
             }
         }
     }
-    $body = "<h2>Повторная отправка задач в биржи</h2><h3>Задачи, которые были отправлены:</h3> " . $yes;
+    $body = "<h3>Задачи, которые были отправлены:</h3> " . $yes;
     $body .= "<br /><br /> <h3>Задачи, которые НЕ отправлены:</h3> " . $no;
 } else {
     $body = NULL;
@@ -105,7 +107,7 @@ $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
 $message = array();
 $message["html"] = $body;
 $message["text"] = "";
-$message["subject"] = "Повторная отправка задач в биржи";
+$message["subject"] = "Отправка ссылок задач в статусе Выполнено";
 $message["from_email"] = "news@iforget.ru";
 $message["from_name"] = "iforget";
 $message["to"] = array();
