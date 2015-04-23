@@ -302,6 +302,9 @@ class admins {
             case 'send_mail_users_bl_etxt':
                 $content = $this->send_mail_users_bl_etxt($db);
                 break;
+            case 'verify_compliance_deadlines_order':
+                $content = $this->verify_compliance_deadlines_order($db);
+                break;
         }
 
 
@@ -3938,7 +3941,7 @@ class admins {
                 $statistics[$task["copywriter"]]["vipolneno"] = $task["cnt"];
             }
         }
-        
+
         $table = "";
         while ($copywriter = $copywriters->FetchRow()) {
             $tr = "<tr>";
@@ -4174,13 +4177,13 @@ class admins {
             die();
         }
     }
-    
+
     function change_task_all($db) {
         $status = (int) $_POST['status'];
         $tasks = $db->Execute("SELECT * FROM zadaniya_new z WHERE z.for_copywriter != '$status' AND z.rectificate='0' AND z.vrabote='0' AND z.vipolneno='0' AND z.dorabotka='0' AND z.navyklad='0' AND z.vilojeno='0'");
-        if($tasks->NumRows() > 0){
-            while($task = $tasks->FetchRow()){
-                $db->Execute("UPDATE zadaniya_new SET for_copywriter = '$status' WHERE id = ".$task["id"]);
+        if ($tasks->NumRows() > 0) {
+            while ($task = $tasks->FetchRow()) {
+                $db->Execute("UPDATE zadaniya_new SET for_copywriter = '$status' WHERE id = " . $task["id"]);
             }
         }
         echo $tasks->NumRows();
@@ -6056,6 +6059,52 @@ class admins {
         return $content;
     }
 
+    public function verify_compliance_deadlines_order($db) {
+        if (!@$_SESSION['admin']['id'] && !@$_SESSION['manager']['id']) {
+            $content = file_get_contents(PATH . 'modules/admins/tmp/admin/no-rights.tpl');
+            $content = str_replace('[url]', $_SERVER['HTTP_REFERER'], $content);
+            echo $content;
+            exit;
+        }
+        $content = file_get_contents(PATH . 'modules/admins/tmp/admin/verify_compliance_deadlines_order.tpl');
+        /*$pass = ETXT_PASS;
+        $tasks = $db->Execute("SELECT * FROM zadaniya WHERE vrabote = 1 AND vipolneno != 1");
+        $table = "";
+        while ($row = $tasks->FetchRow()) {
+            $params = array('method' => 'tasks.listTasks', 'token' => '29aa0eec2c77dd6d06e23b3faaef9eed', 'id' => $row['task_id']);
+            ksort($params);
+            $data = array();
+            $data2 = array();
+            foreach ($params as $k => $v) {
+                $data[] = $k . '=' . $v;
+                $data2[] = $k . '=' . urlencode($v);
+            }
+            $sign = md5(implode('', $data) . md5($pass . 'api-pass'));
+            $url = 'https://www.etxt.ru/api/json/?' . implode('&', $data2) . '&sign=' . $sign;
+            if ($curl = curl_init()) {
+                curl_setopt($curl, CURLOPT_URL, $url);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+                $cur_out = curl_exec($curl);
+                curl_close($curl);
+            }
+
+            $task_stat = json_decode($cur_out);
+            if (!empty($task_stat)) {
+                foreach ($task_stat as $vl) {
+                    $vl = (array) $vl;
+                    if ($vl['status'] == 5)
+                    {
+                        $table .= "<tr></tr>";
+                    }
+                }
+            }
+        
+        }*/
+
+        return $content;
+    }
+
     public function executeRequest($method, $url, $useragent, $cookie, $query, $body, $header) {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -6088,5 +6137,7 @@ class admins {
     }
 
 }
+
+
 
 ?>

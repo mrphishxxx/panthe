@@ -20,7 +20,7 @@ $date = new DateTime(date("Y-m-d", time()));
 $date->add(new DateInterval('P1D'));
 $new_data['day'] = $date->format('d.m.Y');
 $new_data['time'] = "17:00";
-$body = "Есть просроченные задания в системе ETXT<br />";
+$body = "Есть просроченные задания в системе ETXT\r\n";
 /* Проверка старых заданий */
 while ($row = $tasks->FetchRow()) {
     $params = array('method' => 'tasks.listTasks', 'token' => '29aa0eec2c77dd6d06e23b3faaef9eed', 'id' => $row['task_id']);
@@ -70,7 +70,7 @@ while ($row = $tasks->FetchRow()) {
                 $result = json_decode($cur_out);
                 $result = (array) $result;
                 if (!empty($result['id_copy'])) {
-                    $body .= "Задача " . $row['id'] . ": ETXT old id - " . $vl['id'] . " => new id - " . $result['id_copy'] . "<br />";
+                    $body .= "Задача " . $row['id'] . ": ETXT old id - " . $vl['id'] . " => new id - " . $result['id_copy'] . "\r\n";
                     $db->Execute("UPDATE zadaniya SET task_id = " . $result['id_copy'] . " WHERE id=" . $row['id']);
                 }
             }
@@ -104,7 +104,6 @@ while ($row = $tasks_new->FetchRow()) {
         foreach ($task_stat as $vl) {
             $vl = (array) $vl;
             if ($vl['status'] == 5) {
-                $num++;
                 $params = array('method' => 'tasks.failTask', 'token' => '29aa0eec2c77dd6d06e23b3faaef9eed', 'id' => $vl['id'], 'copy' => 1, 'deadline' => $new_data['day'], 'timeline' => $new_data['time']);
                 ksort($params);
                 $data = array();
@@ -126,7 +125,8 @@ while ($row = $tasks_new->FetchRow()) {
                 $result = json_decode($cur_out);
                 $result = (array) $result;
                 if (!empty($result['id_copy'])) {
-                    $body .= "Задача " . $row['id'] . ": ETXT old id - " . $vl['id'] . " => new id - " . $result['id_copy'] . "<br />";
+                    $num++;
+                    $body .= "Задача " . $row['id'] . ": ETXT old id - " . $vl['id'] . " => new id - " . $result['id_copy'] . "\r\n";
                     $db->Execute("UPDATE zadaniya_new SET task_id = " . $result['id_copy'] . " WHERE id=" . $row['id']);
                 }
             }
@@ -136,7 +136,7 @@ while ($row = $tasks_new->FetchRow()) {
 
 
 if ($num == 0) {
-    $body = "Нет просроченных заданий.<br />";
+    $body = "Нет просроченных заданий.\r\n";
 }
 
 $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
@@ -155,10 +155,10 @@ $message["auto_text"] = null;
 
 try {
     //if((int) $minute < 10)
-        $mandrill->messages->send($message);
+        //$mandrill->messages->send($message);
     echo $body;
 } catch (Exception $e) {
-    echo '';
+    echo 'Ошибка отправления!';
 }
 
 exit();
