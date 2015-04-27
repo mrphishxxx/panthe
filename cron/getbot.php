@@ -59,7 +59,7 @@ if ($balance->balance > 0) {
         $body .= "<br><strong>Выгружаем новые задачи в GetBot  и запускаем их:</strong><br>";
         foreach ($zadaniya as $value) {
             if (!in_array($value["id"], $in_getbot)) {
-                $task = $api->taskCreate($value["tema"], array($value["url_statyi"]), GetbotApi::MODE_EXPRESS, $value["id"]); //MODE_EXPRESS
+                $task = $api->taskCreate($value["tema"], array($value["url_statyi"]), GetbotApi::MODE_ABSOLUTE, $value["id"]); //MODE_EXPRESS
                 $id = $task->id;
                 if ($task->can_launch) {
                     $result = $api->taskLaunch($id); // StdClass: status
