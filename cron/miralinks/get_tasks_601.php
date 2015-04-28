@@ -36,7 +36,7 @@ if($balance < 60){
         );
     }
 
-    $mira_to_uid = array('minsk1' => 'minskadm1n2teraspol');
+    $mira_to_uid = array('minsk1' => '2808s2607a');
 
     $new_tasks = array();
     $num = 0;
