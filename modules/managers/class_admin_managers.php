@@ -157,7 +157,7 @@ class managers {
         $tid = (int) $_REQUEST['tid'];
         $res = $db->Execute("SELECT * FROM tickets WHERE id=$tid")->FetchRow();
 
-        if ($res['status'] == 1 && $res['uid'] == $uid) {
+        if ($res['status'] == 1 && $res['uid'] != $uid) {
             $db->Execute("UPDATE tickets SET status=2 WHERE id=$tid");
         }
 

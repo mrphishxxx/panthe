@@ -2552,7 +2552,7 @@ class admins {
         $tid = (int) $_REQUEST['tid'];
         $res = $db->Execute("SELECT * FROM tickets WHERE id=$tid")->FetchRow();
 
-        if ($res['status'] == 1 && $res['to_uid'] == 0) {
+        if ($res['status'] == 1 && ($res['to_uid'] == 0 || $res['to_uid'] == $uid)) {
             $db->Execute("UPDATE tickets SET status=2 WHERE id=$tid");
         }
 
