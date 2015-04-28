@@ -49,6 +49,7 @@ if ($count > 0) {
                     if (!empty($task["b_id"]) && $task["b_id"] != 0) {
                         $err = setTaskGGL($db, $task);
                     } else {
+                        $err = "Отсутствует ID задачи. Скорей всего задача заведена руками!";
                         continue;
                     }
                     break;
@@ -56,6 +57,7 @@ if ($count > 0) {
                     if (!empty($task["b_id"]) && $task["b_id"] != 0) {
                         $err = setTaskGetGoodLinks($db, $task);
                     } else {
+                        $err = "Отсутствует ID задачи. Скорей всего задача заведена руками!";
                         continue;
                     }
                     break;
@@ -63,6 +65,7 @@ if ($count > 0) {
                     if (!empty($task["sape_id"]) && $task["sape_id"] != 0) {
                         $err = setTaskSape($db, $task);
                     } else {
+                        $err = "Отсутствует ID задачи. Скорей всего задача заведена руками!";
                         continue;
                     }
                     break;
@@ -70,6 +73,7 @@ if ($count > 0) {
                     if (!empty($task["rotapost_id"]) && $task["rotapost_id"] != 0) {
                         $err = setTaskRotapost($db, $task);
                     } else {
+                        $err = "Отсутствует ID задачи. Скорей всего задача заведена руками!";
                         continue;
                     }
                     break;
@@ -77,6 +81,7 @@ if ($count > 0) {
                     if (!empty($task["webartex_id"]) && $task["webartex_id"] != 0) {
                         $err = setTaskWebartex($db, $task);
                     } else {
+                        $err = "Отсутствует ID задачи. Скорей всего задача заведена руками!";
                         continue;
                     }
                     break;
@@ -84,6 +89,7 @@ if ($count > 0) {
                     if (!empty($task["b_id"]) && $task["b_id"] != 0) {
                         $err = setTaskBlogun($db, $task);
                     } else {
+                        $err = "Отсутствует ID задачи. Скорей всего задача заведена руками!";
                         continue;
                     }
                     break;
