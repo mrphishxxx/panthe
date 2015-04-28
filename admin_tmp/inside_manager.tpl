@@ -96,6 +96,7 @@
                                     <li><a href="?module=admins&action=ticket&type=user">Пользователи</a><span>([new_tick_user]/[all_tick_user])</span></li>
                                     <li><a href="?module=admins&action=ticket&type=moder">Модераторы</a><span>([new_tick_moder]/[all_tick_moder])</span></li>
                                     <li><a href="?module=admins&action=ticket&type=copywriter">Копирайтеры</a><span>([new_tick_copywriter]/[all_tick_copywriter])</span></li>
+                                    <li><a href="?module=admins&action=ticket&type=admin">Администрация</a><span>([new_tick_admin]/[all_tick_admin])</span></li>
                                 </ul>
                                 <h2>Копирайтеры</h2>
                                 <ul>

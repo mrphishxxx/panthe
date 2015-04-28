@@ -1,6 +1,6 @@
 <h1>[title_page]</h1>
 
-<a href="?module=admins&action=create_ticket[type]">Создать тикет</a>
+<a href="?module=admins&action=ticket&action2=create_ticket[type]">Создать тикет</a>
 
 [pegination]
 <!-- the table -->

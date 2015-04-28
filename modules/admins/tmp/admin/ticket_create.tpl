@@ -3,7 +3,7 @@
 <div class="add-exchange">
     <h3>Тема обращения:</h3>
     <!-- form -->
-    <form action="?module=admins&action=create_ticket&action2=add" method="post">
+    <form action="" method="post">
         <div class="form">
 
             <ul>

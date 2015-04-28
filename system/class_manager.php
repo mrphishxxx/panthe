@@ -99,6 +99,12 @@ class class_manager {
         $all_tick_copywriter = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE a.type = 'copywriter'")->FetchRow();
         $content = str_replace('[new_tick_copywriter]', $new_tick_copywriter['newt'], $content);
         $content = str_replace('[all_tick_copywriter]', $all_tick_copywriter['newt'], $content);
+        
+        /* Тикеты АДМИНИСТРАЦИИ */
+        $new_tick_admin = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE t.status != 0 AND a.type = 'admin'")->FetchRow();
+        $all_tick_admin = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE a.type = 'admin'")->FetchRow();
+        $content = str_replace('[new_tick_admin]', $new_tick_admin['newt'], $content);
+        $content = str_replace('[all_tick_admin]', $all_tick_admin['newt'], $content);
 
 
         $main_comment = $db->Execute("SELECT * FROM Message2002 WHERE Sub_Class_ID = 22")->FetchRow();
