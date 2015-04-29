@@ -32,7 +32,7 @@
 					[menu1]
 				</ul>
 				<div class="header-column">
-					<a href="/" class="logo" style=" background: url(/files/[logo]) 0 0 no-repeat;"></a>
+					<a href="/" class="logo" style=" background: url('/files/[logo]') 0 0 no-repeat;"></a>
 					<div class="contacts">
 						<span class="time">
 							Офис работает [vr]

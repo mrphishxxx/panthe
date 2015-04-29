@@ -65,7 +65,7 @@
 
                         <!-- PAGE TITLE / NOTIFICATION AREA -->
 
-                        <div class="notification" style="display:[display_comment]">
+                        <div class="notification" [display_comment]>
                             [main_comment]
                             <a class="close" href="/user.php?action=birj&act2=close_notify"></a>
                             <div class="pointer"></div>
@@ -149,8 +149,8 @@
         </div>
 
         <script>
-    (function(i, s, o, g, r, a, m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)}, i[r].l = 1 * new Date(); a = s.createElement(o),
+    (function(i, s, o, g, r, a, m){ i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments) }, i[r].l = 1 * new Date(); a = s.createElement(o),
             m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
     })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
             ga('create', 'UA-6397720-17', 'iforget.ru');

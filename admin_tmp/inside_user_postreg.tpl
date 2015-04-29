@@ -50,7 +50,7 @@
                     <div class='bread_crumbs'><a href='/' >iForget</a> - [brcr]</div>
                     <!-- CANVAS ( WHITE SHEET ) --> 
                     <div class="canvas">
-                        <div class="notification" style="display:[display_comment]">
+                        <div class="notification" [display_comment]>
                             [main_comment]
                             <a class="close" href="/user.php?action=birj&act2=close_notify"></a>
                             <div class="pointer"></div>

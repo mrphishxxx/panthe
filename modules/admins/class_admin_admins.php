@@ -361,18 +361,18 @@ class admins {
                 if ($res['type'] != "admin") {
                     if ($res['active'] == 1) {
                         $ssi = "<input type=checkbox checked name=u$uid class='chbox-user' value=$uid>";
-                        $ssis = "background:white";
+                        $ssis = "style='background:white'";
                     } else {
                         $ssi = "<input type=checkbox name=u$uid class='chbox-user' value=$uid>";
-                        $ssis = "background:yellow";
+                        $ssis = "style='background:yellow'";
                     }
                 } else {
                     if ($res['active'] == 1) {
                         $ssi = "<input type=checkbox checked name=u$uid class='chbox-user' value=$uid disabled>";
-                        $ssis = "background:white";
+                        $ssis = "style='background:white'";
                     } else {
                         $ssi = "<input type=checkbox name=u$uid class='chbox-user' value=$uid checked  disabled>";
-                        $ssis = "background:yellow";
+                        $ssis = "style='background:yellow'";
                     }
                 }
 
@@ -1317,18 +1317,18 @@ class admins {
             if ($res['type'] != "admin") {
                 if ($res['active'] == 1) {
                     $ssi = "<input class='chbox-user' type=checkbox name=u$uid value=$uid checked>";
-                    $ssis = "background:white";
+                    $ssis = "style='background:white'";
                 } else {
                     $ssi = "<input class='chbox-user' type=checkbox name=u$uid value=$uid>";
-                    $ssis = "background:yellow";
+                    $ssis = "style='background:yellow'";
                 }
             } else {
                 if ($res['active'] == 1) {
                     $ssi = "<input type=checkbox name=u$uid class='chbox-user' value=$uid checked " . (($status == 'all') ? 'disabled' : '') . ">";
-                    $ssis = "background:white";
+                    $ssis = "style='background:white'";
                 } else {
                     $ssi = "<input type=checkbox name=u$uid class='chbox-user' value=$uid checked " . (($status == 'all') ? 'disabled' : '') . ">";
-                    $ssis = "background:yellow";
+                    $ssis = "style='background:yellow'";
                 }
             }
 

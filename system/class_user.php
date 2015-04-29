@@ -108,13 +108,13 @@ class class_user {
         if($this->user["active"] != 0){
             $content = str_replace('[main_comment]', $main_comment['Text'], $content);
             if ($this->user['hide_notify']) {
-                $content = str_replace('[display_comment]', 'none', $content);
+                $content = str_replace('[display_comment]', 'style="display:none"', $content);
             } else {
-                $content = str_replace('[display_comment]', 'block;', $content);
+                $content = str_replace('[display_comment]', 'style="display:block;"', $content);
             }
         } else {
             $content = str_replace('[main_comment]', "", $content);
-            $content = str_replace('[display_comment]', 'none', $content);
+            $content = str_replace('[display_comment]', 'style="display:none"', $content);
         }
         
         $content = str_replace('[brcr]', $this->get_brcr(), $content);
@@ -148,7 +148,7 @@ class class_user {
         $content = str_replace('[balance]', $sum_num_tasks['sum'] - $withdrawal["sums"], $content);
         $content = str_replace('[num]', $sum_num_tasks['num'], $content);
         
-        $content = str_replace('[display_comment]', 'none;', $content);
+        $content = str_replace('[display_comment]', 'style="display:none;"', $content);
         return $content;
     }
 

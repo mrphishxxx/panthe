@@ -1,4 +1,4 @@
-﻿<tr style="background:[bg]">
+﻿<tr [bg]>
 	<td style="padding:0 5px; border-right:solid 1px #d8d8ff; border-bottom:solid 1px #d8d8ff;">
 		[birja]
 	</td>

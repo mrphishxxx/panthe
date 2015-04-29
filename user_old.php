@@ -382,9 +382,9 @@ if (isset($_SESSION['user']['type']) && $_SESSION['user']['type'] == "user") {
     $content = str_replace('[main_comment]', $main_comment['Text'], $content);
 
     if ($_SESSION['user']['hide_notify']) {
-        $content = str_replace('[display_comment]', 'none', $content);
+        $content = str_replace('[display_comment]', 'style="display:none"', $content);
     } else {
-        $content = str_replace('[display_comment]', 'block;', $content);
+        $content = str_replace('[display_comment]', 'style="display:block;"', $content);
     }
 
     // КРОШКИ
@@ -438,7 +438,7 @@ if (isset($_SESSION['user']['type']) && $_SESSION['user']['type'] == "user") {
     $content = str_replace('[balance]', $sum_num_tasks['sum'] - $withdrawal["sums"], $content);
     $content = str_replace('[num]', $sum_num_tasks['num'], $content);
     
-    $content = str_replace('[display_comment]', 'none;', $content);
+    $content = str_replace('[display_comment]', 'style="display:none;"', $content);
     
 }
 

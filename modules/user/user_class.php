@@ -1,4 +1,4 @@
-<?
+<?php
 
 class user {
 
@@ -688,7 +688,7 @@ class user {
             $sites = str_replace('[sid]', $res['id'], $sites);
             $sites = str_replace('[comment_viklad]', $res['comment_viklad'], $sites);
 
-            $class = ($n % 2 == 0) ? "#f7f7f7" : "white";
+            $class = ($n % 2 == 0) ? 'style="background:#f7f7f7"' : 'style="background:white"';
             $sites = str_replace('[bg]', $class, $sites);
         }
 
@@ -790,15 +790,15 @@ class user {
                 $zadaniya = str_replace('[status]', $new_s, $zadaniya);
 
                 if ($res['dorabotka'])
-                    $bg = '#f6b300';
+                    $bg = 'style="background:#f6b300"';
                 else if ($res['vipolneno'])
-                    $bg = '#83e24a';
+                    $bg = 'style="background:#83e24a"';
                 else if ($res['vrabote'])
-                    $bg = '#00baff';
+                    $bg = 'style="background:#00baff"';
                 else if ($res['navyklad'])
-                    $bg = '#ffde96';
+                    $bg = 'style="background:#ffde96"';
                 else if ($res['vilojeno'])
-                    $bg = '#b385bf';
+                    $bg = 'style="background:#b385bf"';
                 else
                     $bg = '';
                 $zadaniya = str_replace('[bg]', $bg, $zadaniya);
@@ -2743,15 +2743,15 @@ class user {
 
             if (@$_SESSION['admin']['id'] == 1) {
                 if ($res['dorabotka'])
-                    $bg = '#f6b300';
+                    $bg = 'style="background:#f6b300"';
                 else if ($res['vipolneno'])
-                    $bg = '#83e24a';
+                    $bg = 'style="background:#83e24a"';
                 else if ($res['vrabote'])
-                    $bg = '#00baff';
+                    $bg = 'style="background:#00baff"';
                 else if ($res['navyklad'])
-                    $bg = '#ffde96';
+                    $bg = 'style="background:#ffde96"';
                 else if ($res['vilojeno'])
-                    $bg = '#b385bf';
+                    $bg = 'style="background:#b385bf"';
                 else
                     $bg = '';
 
@@ -3568,15 +3568,15 @@ class user {
 
             if ($_SESSION['admin']['id'] == 1) {
                 if ($res['dorabotka'])
-                    $bg = '#f6b300';
+                    $bg = 'style="background:#f6b300"';
                 else if ($res['vipolneno'])
-                    $bg = '#83e24a';
+                    $bg = 'style="background:#83e24a"';
                 else if ($res['vrabote'])
-                    $bg = '#00baff';
+                    $bg = 'style="background:#00baff"';
                 else if ($res['navyklad'])
-                    $bg = '#ffde96';
+                    $bg = 'style="background:#ffde96"';
                 else if ($res['vilojeno'])
-                    $bg = '#b385bf';
+                    $bg = 'style="background:#b385bf"';
                 else
                     $bg = '';
 

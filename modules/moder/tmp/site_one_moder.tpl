@@ -1,4 +1,4 @@
-<tr style="background:[bg]">
+<tr [bg]>
     <td style="display: none;">&nbsp;</td>
     <td style="border:solid 1px #d8d8ff;padding: 0 5px;">
         <a class="downcomment" href="#" onclick="return false;">
@@ -18,7 +18,7 @@
         [pass]
     </td>
 </tr>
-<tr style="display:none;background:[bg]">
+<tr style="display:none;" [bg]>
     <td colspan="4" style="text-align:center; border:solid 1px #d8d8ff;">
         [comment_viklad]
     </td>
