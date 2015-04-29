@@ -672,12 +672,12 @@ class copywriter {
 
                 if ($navyklad == 1) {
                     if ($num_symbol_without_space < (int) $task["nof_chars"] || (empty($uniq) || $uniq < 95)) {
-                        if (@$uniq < 95) {
+                        if ($uniq < 95) {
                             $error = "Уникальность статьи должна быть больше 95%! Читайте Описание задачи!";
                         }
-                        else
-                            $error = "Количество символов ($num_symbol_without_space) в статье меньше, чем требуется в задании!r\n Количество символов считается без учета ссылок!";
-
+                        else {
+                            $error = "Количество символов ($num_symbol_without_space) в статье меньше, чем требуется в задании! Количество символов считается без учета ссылок!";
+                        }
                         $db->Execute("UPDATE zadaniya_new SET title='" . mysql_real_escape_string($title) . "', 
                                               keywords='" . mysql_real_escape_string($keywords) . "', 
                                               description='" . mysql_real_escape_string($description) . "', 
@@ -686,7 +686,8 @@ class copywriter {
                                               url_pic='" . mysql_real_escape_string($url_pic) . "', 
                                               uniq='$uniq'
                                               WHERE id=$id");
-                        header('location: /copywriter.php?action=tasks&action2=edit&id=' . $id . '&error=' . $error);
+                        
+                        header('Location: /copywriter.php?action=tasks&action2=edit&id=' . $id . '&error=' . $error);
                         exit();
                     } else {
                         if (empty($description) || mb_strlen($description) > 255) {
