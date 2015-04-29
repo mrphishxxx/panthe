@@ -2290,6 +2290,7 @@ class admins {
             }
             $admins_manager = $db->Execute("SELECT id FROM admins WHERE type = '$sql_if'");
         } else {
+            $sql_if = "admin";
             $admins_manager = $db->Execute("SELECT id FROM admins WHERE type = 'admin' OR type = 'manager'");
         }
         while ($user = $admins_manager->FetchRow()) {
