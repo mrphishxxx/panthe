@@ -1282,20 +1282,20 @@ class moder {
 		Поступил новый тикет. Для просмотра <a href='http://iforget.ru/admin.php?module=admins&action=ticket'>перейдите данной ссылке</a>.
 		";
 
-        $admin_mail = MAIL_ADMIN;
-
-        $subject = "[Новый тикет в системе]";
-
+        if(!mb_stristr($subject, "Вопрос по задаче")) {
+            $subject = "[Новый тикет в системе]";
+        }
         require_once 'includes/mandrill/mandrill.php';
         $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
         $message = array();
         $message["html"] = $body;
         $message["text"] = "";
         $message["subject"] = $subject;
-        $message["from_email"] = "news@" . $_SERVER['HTTP_HOST'];
+        $message["from_email"] = "news@iforget.ru";
         $message["from_name"] = "iforget";
         $message["to"] = array();
-        $message["to"][0] = array("email" => $admin_mail);
+        $message["to"][0] = array("email" => MAIL_ADMIN);
+        $message["to"][1] = array("email" => MAIL_DEVELOPER);
         $message["track_opens"] = null;
         $message["track_clicks"] = null;
         $message["auto_text"] = null;
