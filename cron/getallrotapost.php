@@ -7,6 +7,7 @@ include_once dirname(__FILE__) . '/../' . 'config.php';
 include_once dirname(__FILE__) . '/../' . 'includes/Rotapost.php';
 include_once dirname(__FILE__) . '/../' . 'includes/adodb5/adodb.inc.php';
 require_once dirname(__FILE__) . '/../' . 'includes/mandrill/mandrill.php';
+include_once dirname(__FILE__) . '/../' . 'includes/idna_convert.class.php';
 include_once dirname(__FILE__) . '/../' . 'modules/admins/class_admin_admins.php';
 $admins = new admins();
 
@@ -93,6 +94,10 @@ function callback($uid, $db) {
                     $url_site = $task->Site;
                     $site_in_iforget = false;
                     foreach ($user_sites as $key => $value) {
+                        if(mb_detect_encoding($value) == "UTF-8") {
+                            $idn = new idna_convert(array('idn_version'=>2008));
+                            $value = $idn->encode($value);
+                        }
                         if (mb_strpos($url_site, $value) || mb_strpos($value, $url_site) || $url_site == $value) {
                             $site_in_iforget = true;
                             $sid = $key;
@@ -212,4 +217,3 @@ try {
     echo $body;
 }
 exit();
-?>
