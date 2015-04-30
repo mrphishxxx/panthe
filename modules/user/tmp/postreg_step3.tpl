@@ -8,9 +8,8 @@
         75%
     </div>
 </div>
-<br />
 <form method="POST" action="https://merchant.webmoney.ru/lmi/payment.asp" id="webm_form">  
-    <p>Я хочу пополнить счет на <input class="textfield" type="text" name="LMI_PAYMENT_AMOUNT" value="300" id="money" style="width: 50px; display:inline;"> рублей</p>
+    <p>Я хочу пополнить счет на <input class="textfield" type="text" name="LMI_PAYMENT_AMOUNT" value="1000" id="money" style="width: 50px; display:inline;"> рублей</p>
     <input type="hidden" name="LMI_PAYEE_PURSE" value="R340688327144">
     <input type="hidden" name="LMI_PAYMENT_NO" id="payment_no" value="[payment_no]">
     <input type="hidden" name="LMI_PAYMENT_DESC" value="Balance increase iForget">
@@ -49,7 +48,8 @@
         </tbody>
     </table>
 </div>
-
+<br />
+<a class="button right" href="/user.php?action=all_tasks">Пропустить этот шаг</a>
 <script>
         $(document).ready(function() {
             $("#rob_send").click(function() {

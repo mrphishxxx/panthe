@@ -17,7 +17,7 @@
 <div class="clear"></div>
 <br />
 <br />
-<a href="/user.php?module=user&action=sayty&uid=[uid]&action2=add" class="button">Добавить сайт</a>
+<a href="/user.php?module=user&action=sayty&uid=[uid]&action2=add&postreg=step2" class="button">Добавить сайт</a>
 <br /><br />
 <div class="wider">
     <form action="remove" method="post">

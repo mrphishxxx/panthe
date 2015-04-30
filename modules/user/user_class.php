@@ -14,13 +14,13 @@ class user {
                 if ($user["active"] != 1) {
                     $birjs = $db->Execute("SELECT * FROM birjs b LEFT JOIN birgi b2 ON b.birj=b2.id WHERE uid = '$uid'")->GetAll();
                     if (count($birjs) == 0) {
-                        $content = $this->postreg_step1($db);
+                        header("Location: /user.php?action=postreg_step1");                        
                     } else {
                         $sayty = $db->Execute("SELECT * FROM sayty WHERE uid = '$uid'")->GetAll();
                         if (count($sayty) == 0) {
-                            $content = $this->postreg_step2($db);
+                            header("Location: /user.php?action=postreg_step2");
                         } else {
-                            $content = $this->postreg_step3($db);
+                            header("Location: /user.php?action=postreg_step3");
                         }
                     }
                 } else {
@@ -41,7 +41,9 @@ class user {
             case 'logout':
                 $content = $this->logout($db);
                 break;
-
+            case 'unsubscribe':
+                $content = $this->unsubscribe($db);
+                break;
             case 'sayty':
                 switch (@$action2) {
                     case '':
@@ -177,6 +179,9 @@ class user {
             case 'decode_balans':
                 $content = $this->decode_balans($db);
                 break;
+            case 'close_notify':
+                $content = $this->hide_notify($db);
+                break;
 
             default:
                 $content = $this->lk($db);
@@ -185,6 +190,14 @@ class user {
 
 
         return $content;
+    }
+    
+    function hide_notify($db){
+        if(isset($_SESSION["user"]['id'])){
+            $_SESSION["user"]['hide_notify'] = 1;
+            $db->Execute("UPDATE admins SET hide_notify=1 WHERE id=" . $_SESSION["user"]['id']);
+        }
+        header("Location: " . $_SERVER["HTTP_REFERER"]);
     }
 
     function logout() {
@@ -325,6 +338,19 @@ class user {
         }
         return $error;
     }
+    
+    function unsubscribe($db) {
+        $uid = (int) $_SESSION['user']['id'];
+        $query = "";
+        if (!empty($uid)) {
+            $uinfo = $db->Execute("SELECT * FROM admins WHERE id=$uid")->FetchRow();
+            if (!empty($uinfo) && $uinfo["mail_period"] > 0) {
+                $db->Execute("UPDATE admins SET mail_period='0' WHERE id=$uid");
+                $query .= "Изменения сохранены";
+            }
+        }
+        header("Location: /user.php");
+    }
 
     function postreg_step1($db) {
         $content = file_get_contents(PATH . 'modules/user/tmp/postreg_step1.tpl');
@@ -352,20 +378,16 @@ class user {
             <strong>Пароль</strong> : $pass 
             ";
 
-            $admin_mail = MAIL_ADMIN;
-
-            $subject = "[Добавилась биржа]";
-
             require_once 'includes/mandrill/mandrill.php';
             $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
             $message = array();
             $message["html"] = $body;
             $message["text"] = "";
-            $message["subject"] = $subject;
+            $message["subject"] = "[Добавилась биржа]";
             $message["from_email"] = "news@iforget.ru";
             $message["from_name"] = "iforget";
             $message["to"] = array();
-            $message["to"][0] = array("email" => $admin_mail);
+            $message["to"][0] = array("email" => MAIL_ADMIN);
             if ((int) $birj == 5) {
                 $message["to"][1] = array("email" => MAIL_DEVELOPER);
             }
@@ -397,7 +419,7 @@ class user {
                 $content = str_replace('[link]', '<a class="button right" href="/user.php?action=postreg_step2">ПЕРЕЙТИ К ШАГУ 2</a>', $content);
             } else {
                 $birj = "<tr><td colspan='5'>Вы не добавили пока ни одной биржи</td></tr>";
-                $content = str_replace('[link]', '', $content);
+                $content = str_replace('[link]', '<a class="button right" href="/user.php?action=postreg_step2">Пропустить этот шаг</a>', $content);
             }
 
             $content = str_replace('[uid]', $uid, $content);
@@ -424,8 +446,8 @@ class user {
         if ($sayty) {
             $content = str_replace('[link]', '<span>Пожалуйста, заполните карточки сайтов, перед тем как перейти к Шагу 3. Это можно сделать, если кликнуть на значок редактирования рядом с сайтом.</span><br /><br /><a class="button right" href="/user.php?action=postreg_step3">ПЕРЕЙТИ К ШАГУ 3</a>', $content);
         } else {
-            $sayty = "<tr><td colspan='2'>Не добавлнео ни одно сайта</td></tr>";
-            $content = str_replace('[link]', '', $content);
+            $sayty = "<tr><td colspan='2'>Не добавлено ни одно сайта</td></tr>";
+            $content = str_replace('[link]', '<a class="button right" href="/user.php?action=postreg_step3">Пропустить этот шаг</a>', $content);
         }
 
         $ggl = $db->Execute("SELECT * FROM birjs WHERE birj=1 AND uid = '$uid'")->FetchRow();
@@ -2057,7 +2079,6 @@ class user {
             $db->Execute("insert into sayty(uid, url, url_admin, login, pass, gid, getgoodlinks_id, sape_id, miralinks_id, rotapost_id, webartex_id, blogun_id, price, cena, site_subject, site_subject_more, cms, obzor_flag, news_flag, subj_flag, bad_flag, anons_size, pic_width, pic_height, pic_position, site_comments) values 
 					($uid, '$url', '$url_admin', '$login', '$pass', '$gid', '$getgoodlinks_id', '$sape_id', '$miralinks_id', '$rotapost_id', '$webartex_id', '$blogun_id', '$price_iforget', '$price_etxt', '$site_subject', '$site_subject_more', '$cms', '$obzor_flag', '$news_flag', '$subj_flag', '$bad_flag', '$anons_size', '$pic_width', '$pic_height', '$pic_position', '$site_comments')");
 
-
             $new_site = $db->Execute("SELECT * FROM sayty WHERE uid=$uid AND url='$url'")->FetchRow();
             $sid = $new_site['id'];
 
@@ -2086,7 +2107,7 @@ class user {
                 echo '';
             }
 
-            if ($user["active"] != 1 && isset($_SESSION["postreg"]) && $_SESSION["postreg"] == "step2") {
+            if ($user["active"] != 1 && isset($_REQUEST["postreg"]) && $_REQUEST["postreg"] == "step2") {
                 $url = "?action=postreg_step2";
             } else {
                 $url = "?module=user&action=sayty&uid=$uid";
@@ -3491,7 +3512,7 @@ class user {
         $all_zadanya = $all->NumRows();
         $count_pegination = ceil($all_zadanya / $limit);
         if ($all_zadanya > $limit) {
-            $pegination = '<div style="float:right">';
+            $pegination = '<br /><div style="float:right">';
             if ($offset == 1) {
                 $pegination .= '<div style="float:left">Пред.</div>';
             } else {
@@ -3514,7 +3535,7 @@ class user {
             } else {
                 $pegination .= "<a href='/user.php?action=all_tasks&offset=" . ($offset + 1) . ((!$from) ? '' : '&date-from=' . $from) . ((!$to) ? '' : '&date-to=' . $to) . "'>След.</a>";
             }
-            $pegination .= '</div>';
+            $pegination .= '</div><br />';
         }
 
         $pass = ETXT_PASS;

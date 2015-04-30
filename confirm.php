@@ -1,4 +1,5 @@
 <?php
+
 @session_start();
 error_reporting(E_ALL ^ E_NOTICE);
 include('config.php');
@@ -8,15 +9,16 @@ $db = ADONewConnection(DB_TYPE);
 $db->Execute('set charset utf8');
 //$db->debug = true;
 //загружаем шаблон
-$content = file_get_contents(PATH.'admin_tmp/confirm.tpl');
+$content = file_get_contents(PATH . 'admin_tmp/confirm.tpl');
 include 'system/class_index.php';
 
 $text = '
 <!-- CANVAS ( WHITE SHEET ) --> 
 <div class="canvas">
-		<h1>Подтверждение регистрации</h1>
-		<p>Благодарим за регистрацию на сайте iForget!</p>
-		<p>Теперь Вы можете <a href="/user.php">перейти в личный кабинет.</a></p>
+		<h1>Благодарим за регистрацию на сайте iForget!</h1>
+		<p>Теперь Вы можете <a href="/user.php">перейти в личный кабинет</a> и пройти 3 шага для начала работы с нашим сервисом.</p>
+		<p>Если у вас будут вопросы, контакты для связи в правом верхнем углу.</p>
+                <p><small><a href="/user.php?action=unsubscribe">Отписаться от рассылки</a></small></p>
 </div>
 ';
 
@@ -36,44 +38,39 @@ $not_ok = '<!-- CANVAS ( WHITE SHEET ) -->
 </div>
 ';
 
-if (@$_GET['uid'] && $_GET['code'])
-{        
-	$content = str_replace('[text]', "", $content);
-	$uid = $db->escape($_GET['uid']);
-	$code = $db->escape($_GET['code']);
+if (@$_GET['uid'] && $_GET['code']) {
+    $content = str_replace('[text]', "", $content);
+    $uid = $db->escape($_GET['uid']);
+    $code = $db->escape($_GET['code']);
 
-	$q = "SELECT * FROM admins WHERE confirmation='$code' AND id=$uid";
-	$allok = $db->Execute($q);
-	$allok = $allok->FetchRow();
-	if ($allok)
-	{   
-		$q = "UPDATE admins SET active=1 WHERE id=$uid";
-		$db->Execute($q);
-                if($allok['type'] == "copywriter"){
-                    $ok = str_replace('user.php?action=birj', "copywriter.php", $ok);
-                }
-		$_SESSION['user'] = $allok;
-		@setcookie("iforget_ok", $allok['id'], time()+60*60*24*30);
-                $content = str_replace('[status]', $ok, $content);
-	}
-	else
-		$content = str_replace('[status]', $not_ok, $content);
+    $q = "SELECT * FROM admins WHERE confirmation='$code' AND id=$uid";
+    $allok = $db->Execute($q);
+    $allok = $allok->FetchRow();
+    if ($allok) {
+        $q = "UPDATE admins SET active=1 WHERE id=$uid";
+        $db->Execute($q);
+        if ($allok['type'] == "copywriter") {
+            $ok = str_replace('user.php?action=birj', "copywriter.php", $ok);
+        }
+        $_SESSION['user'] = $allok;
+        @setcookie("iforget_ok", $allok['id'], time() + 60 * 60 * 24 * 30);
+        $content = str_replace('[status]', $ok, $content);
+    } else
+        $content = str_replace('[status]', $not_ok, $content);
 }
-else
-{
-	$content = str_replace('[status]', "", $content);
-	$content = str_replace('[text]', $text, $content);
+else {
+    $content = str_replace('[status]', "", $content);
+    $content = str_replace('[text]', $text, $content);
 }
 
 
 
-if (@$_SESSION['user']['id'] > 0)
-{
-	$auth_block = '
+if (@$_SESSION['user']['id'] > 0) {
+    $auth_block = '
 		<!-- userbar -->
 		<div id="userbar">
 			
-			<a id="user_login" href="#">'.$_SESSION['user']['login'].'</a>
+			<a id="user_login" href="#">' . $_SESSION['user']['login'] . '</a>
 			
 			<span class="sep"></span>
 			
@@ -81,10 +78,8 @@ if (@$_SESSION['user']['id'] > 0)
 			
 		</div>
 	';
-}
-else
-{
-	$auth_block = '
+} else {
+    $auth_block = '
 		<!-- login -->
 		<div id="login">
                     <script src="//ulogin.ru/js/ulogin.js"></script>

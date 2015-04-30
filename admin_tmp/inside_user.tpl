@@ -52,7 +52,7 @@
                     <div class="canvas">
                         <div class="notification" [display_comment]>
                             [main_comment]
-                            <a class="close" href="/user.php?action=birj&act2=close_notify"></a>
+                            <a class="close" href="/user.php?action=close_notify"></a>
                             <div class="pointer"></div>
                         </div>
 

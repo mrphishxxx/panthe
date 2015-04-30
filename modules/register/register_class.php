@@ -63,7 +63,7 @@ class register_class {
             $cur_dt = date("Y-m-d H:i:s");
             $cur_id = $user['id'];
             if ($type == "user")
-                $db->Execute("INSERT INTO orders (uid, price, date, status) VALUES ($cur_id, 300, '$cur_dt', 0)");
+                $db->Execute("INSERT INTO orders (uid, price, date, status) VALUES ($cur_id, 1000, '$cur_dt', 0)");
             else
                 $active = 1;
             
@@ -240,7 +240,7 @@ class register_class {
             $cur_dt = date("Y-m-d H:i:s");
             $cur_id = $res['id'];
             if ($type == "user")
-                $db->Execute("INSERT INTO orders (uid, price, date, status) VALUES ($cur_id, 300, '$cur_dt', 0)");
+                $db->Execute("INSERT INTO orders (uid, price, date, status) VALUES ($cur_id, 1000, '$cur_dt', 0)");
 
             /* сообщение */
             $body = '

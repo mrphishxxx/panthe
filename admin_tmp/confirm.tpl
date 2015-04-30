@@ -55,7 +55,7 @@
 	<!-- CONTENT AREA -->
 	<div id="content_area">
 		<div class="alignment">
-			<div class='bread_crumbs'><a href='/' >iForget</a> - Подтверждение регистрации</div>
+			<div class='bread_crumbs'><a href='/' >iForget</a> - Регистрация пройдена</div>
 			[text]
 			[status]
 		</div>

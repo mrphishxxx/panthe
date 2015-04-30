@@ -33,10 +33,6 @@ class class_user {
         $sform = $this->search->form();
         $content = str_replace('[search]', $sform, $content);
 
-        if (isset($_GET['act2']) && $_GET['act2'] == "close_notify") {
-            $db->Execute("UPDATE admins SET hide_notify=1 WHERE id=" . $this->user['id']);
-        }
-
         $auth_block = '
 		<!-- userbar -->
 		<div id="userbar">
@@ -113,8 +109,14 @@ class class_user {
                 $content = str_replace('[display_comment]', 'style="display:block;"', $content);
             }
         } else {
-            $content = str_replace('[main_comment]', "", $content);
-            $content = str_replace('[display_comment]', 'style="display:none"', $content);
+            $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : '';
+            if(!empty($action) && mb_stristr($action, "postreg_step")) {
+                $content = str_replace('[main_comment]', "Вы можете пропустить эти шаги и легко к ним вернуться, нажав на ссылку <b>Управление</b>.", $content);
+                $content = str_replace('[display_comment]', (($this->user['hide_notify'] == 1) ? 'style="display:none"' : ""), $content);
+            } else {
+                $content = str_replace('[main_comment]', '', $content);
+                $content = str_replace('[display_comment]', 'style="display:none"', $content);
+            }
         }
         
         $content = str_replace('[brcr]', $this->get_brcr(), $content);
