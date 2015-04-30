@@ -323,7 +323,7 @@ class moder {
                 $zadaniya = str_replace('[sistemaggl]', $res['sistema'], $zadaniya);
                 $zadaniya = str_replace('[date]', date('d.m.Y', $res['date']), $zadaniya);
                 $zadaniya = str_replace('[ankor]', $res['ankor'], $zadaniya);
-                $zadaniya = str_replace('[tema]', mb_substr($res['tema'], 0, 50), $zadaniya);
+                $zadaniya = str_replace('[tema]', mb_substr($res['tema'], 0, 35), $zadaniya);
                 $zadaniya = str_replace('[url_statyi]', $res['url_statyi'], $zadaniya);
 
                 if ($res['dorabotka'])
