@@ -32,10 +32,11 @@ while ($res = $query->FetchRow()) {
 }
 $main_error = array();
 foreach ($rota_to_uid as $uid) {
-    //if ($uid != 601)continue;
+    //if ($uid != 410)continue;
     $balance = $admins->getUserBalans($uid, $db, 1);
+    echo $balance;
     if ($balance >= 60 || (($res['id'] == 20) || ($res['id'] == 55))) {
-        //echo $uid . "\r\n";
+        echo $uid . "\r\n";
         $main_error[] = callback($uid, $db);
     }
 }
@@ -51,6 +52,7 @@ function callback($uid, $db) {
     $data_birjs = $db->Execute("select * from birjs where birj=3 AND uid=$uid")->FetchRow();
     $rotapost = new Rotapost\Client();
     $auth = $rotapost->loginAuth($data_birjs['login'], md5($data_birjs['login'] . $data_birjs['pass']));
+    //print_r($auth);
     if (($data_birjs['login'] == null || $data_birjs['pass'] == null) || (isset($auth->Success) && $auth->Success == "false") || !isset($auth->ApiKey)) {
         //  Если нет логина или пароля от биржи, отправляем админу письмо с ошибкой 
         $err = (array) $auth->Error;
@@ -63,6 +65,7 @@ function callback($uid, $db) {
         //  ИНАЧЕ 
         // (1) Вытаскиваем задачи в статусе Ожидает одобрения, и подтверждаем их!
         $New = $rotapost->taskWebmaster("New");
+        print_r($New);//die();
         if ((isset($New->Success) && $New->Success == "true")) {
             $result = array();
             if (isset($New->Tasks->Task) && !empty($New->Tasks->Task)) {
@@ -88,6 +91,7 @@ function callback($uid, $db) {
         }
         // (2) - Выгружаем задания в статусе "Ожидает выполнения" и сохраняем их к нам
         $ToDo = $rotapost->taskWebmaster("ToDo");
+        //print_r($ToDo);die();
         if ((isset($ToDo->Success) && $ToDo->Success == "true")) {
             if (isset($ToDo->Tasks->Task) && !empty($ToDo->Tasks->Task)) {
                 foreach ($ToDo->Tasks->Task as $task) {
@@ -204,7 +208,7 @@ $message["subject"] = $subject;
 $message["from_email"] = "news@iforget.ru";
 $message["from_name"] = "iforget";
 $message["to"] = array();
-//$message["to"][1] = array("email" => MAIL_DEVELOPER);
+$message["to"][1] = array("email" => MAIL_DEVELOPER);
 $message["to"][0] = array("email" => MAIL_ADMIN);
 $message["track_opens"] = null;
 $message["track_clicks"] = null;

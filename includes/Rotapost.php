@@ -1223,7 +1223,6 @@
         private function executeRequest($method, $path, $query, $body) {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             $url = self::API_URL . $path . '?apiKey=' . $this->apiKey;
             if (count($query) > 0) {
                 $url = $url . '&' . http_build_query($query);
@@ -1238,6 +1237,7 @@
             //curl_setopt($ch, CURLINFO_HEADER_OUT, true);
             $response = curl_exec($ch);
             //$info = curl_getinfo($ch);
+            //print_r($info);
             if (!$response) {
                 die(curl_error($ch));
             }

@@ -33,7 +33,16 @@ $db->Execute('set charset utf8');
 $db->Execute('SET NAMES utf8');
 
 $body = "";
-$tasks = $db->Execute("SELECT * FROM zadaniya WHERE sistema IN ('https://gogetlinks.net/', 'http://getgoodlinks.ru/', 'http://pr.sape.ru/', 'http://rotapost.ru/', 'http://webartex.ru/', 'https://blogun.ru/') AND vilojeno = 1");
+$tasks = $db->Execute("SELECT * FROM zadaniya WHERE "
+        . "sistema IN ("
+            . "'https://gogetlinks.net/', "
+            . "'http://getgoodlinks.ru/', "
+            . "'http://pr.sape.ru/', "
+            . "'http://rotapost.ru/', "
+            . "'http://webartex.ru/', "
+            . "'https://blogun.ru/'"
+        . ") AND (b_id != 0 OR sape_id != 0 OR rotapost_id != 0 OR webartex_id != 0) AND vilojeno = 1");
+
 $count = $tasks->NumRows();
 $yes = $no = "";
 if ($count > 0) {

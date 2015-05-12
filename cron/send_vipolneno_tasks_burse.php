@@ -34,7 +34,13 @@ $db->Execute('SET NAMES utf8');
 
 $body = "";
 $date = time()-259200; // - 3 DAYs
-$tasks = $db->Execute("SELECT * FROM zadaniya WHERE sistema IN ('http://pr.sape.ru/', 'http://rotapost.ru/') AND vipolneno = 1 AND date > '$date'");
+$tasks = $db->Execute("SELECT * FROM zadaniya WHERE "
+        . "sistema IN ("
+            . "'http://pr.sape.ru/', "
+            . "'http://rotapost.ru/',"
+            . "'http://webartex.ru/', "
+            . "'https://blogun.ru/'"
+        . ") AND (rotapost_id != 0 OR webartex_id != 0 OR sape_id != 0 OR b_id != 0) AND vipolneno = 1 AND date > '$date'");
 $count = $tasks->NumRows();
 $yes = $no = "";
 
@@ -99,12 +105,12 @@ if ($count > 0) {
             if (!$err) {
                 $yes .= $main . "Отправлена в биржу [" . $task["sistema"] . "]!<br/><br/>";
             } else {
-                $no .= $main . "Ошибка отправления в биржу [" . $task["sistema"] . "]<br/>'<strong>$err</strong>'!<br/><br/>";
+                //$no .= $main . "Ошибка отправления в биржу [" . $task["sistema"] . "]<br/>'<strong>$err</strong>'!<br/><br/>";
             }
         }
     }
     $body = "<h3>Задачи, которые были отправлены:</h3> " . $yes;
-    $body .= "<br /><br /> <h3>Задачи, которые НЕ отправлены:</h3> " . $no;
+    //$body .= "<br /><br /> <h3>Задачи, которые НЕ отправлены:</h3> " . $no;
 } else {
     $body = NULL;
 }
