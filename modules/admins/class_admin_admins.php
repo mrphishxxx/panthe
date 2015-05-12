@@ -3622,15 +3622,16 @@ class admins {
         $moders = $db->Execute("SELECT * FROM admins WHERE type = 'moder' AND active = 1 ORDER BY login ASC");
         $table = "";
         while ($moder = $moders->FetchRow()) {
-            $tasks_vipolneno = $db->Execute("SELECT count(z.id) as num, SUM(s.price_viklad) as sum FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.who_posted = '" . $moder["id"] . "' AND z.vipolneno = 1")->FetchRow();
+            $tasks_vipolneno = $db->Execute("SELECT count(z.id) as num FROM zadaniya z WHERE z.who_posted = '" . $moder["id"] . "' AND z.vipolneno = 1")->FetchRow();
+            $moder_money = $db->Execute("SELECT SUM(price) as summ FROM moders_money WHERE moder_id = '" . $moder["id"] . "'")->FetchRow();
             $withdrawal = $db->Execute("SELECT sum(sum) as summa FROM withdrawal WHERE uid = " . $moder["id"])->FetchRow();
             $summa = (isset($withdrawal["summa"]) && !empty($withdrawal["summa"])) ? $withdrawal["summa"] : 0;
-            $balance = ((int) $tasks_vipolneno["sum"]) - $summa;
+            $balance = ((int) $moder_money["summ"]) - $summa;
 
             $tr = "<tr>";
             $tr .= "<td>" . $moder["login"] . "</td>";
             $tr .= "<td>" . $tasks_vipolneno["num"] . "</td>";
-            $tr .= "<td>" . (!empty($tasks_vipolneno["sum"]) ? $tasks_vipolneno["sum"] : 0) . "</td>";
+            $tr .= "<td>" . (!empty($moder_money["summ"]) ? $moder_money["summ"] : 0) . "</td>";
             $tr .= "<td class='withdrawal'>" . $summa . "</td>";
             $tr .= "<td class='balance'><a href='?module=admins&action=moders&action2=decode_balance&moder=" . $moder["id"] . "'>" . $balance . "</a></td>";
             $tr .= "<td><input type='text' value='' class='mini' id='" . $moder["id"] . "' /></td>";
@@ -3700,14 +3701,20 @@ class admins {
         if (isset($_GET['offset']) && !empty($_GET['offset'])) {
             $offset = (int) $_GET['offset'];
         }
+        $money = array();
         $moder = @$_REQUEST['moder'];
         if (!empty($moder)) {
             $moder = $db->Execute("SELECT * FROM admins WHERE type = 'moder' AND id = " . $moder)->FetchRow();
             $content = str_replace('[balance_title]', "Баланс модератора: <b>" . $moder['login'] . "</b>", $content);
-            $tasks = $db->Execute("SELECT z.*, s.price_viklad FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.who_posted = '" . $moder["id"] . "' AND z.vipolneno = 1 ORDER BY z.date DESC, z.id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit);
-            $all_tasks = $db->Execute("SELECT z.*, s.price_viklad FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.who_posted = '" . $moder["id"] . "' AND z.vipolneno = 1 ORDER BY z.date DESC, z.id DESC");
-
-            $tasks_vipolneno = $db->Execute("SELECT count(z.id) as num, SUM(s.price_viklad) as sum FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.who_posted = '" . $moder["id"] . "' AND z.vipolneno = 1")->FetchRow();
+            $tasks = $db->Execute("SELECT z.* FROM zadaniya z WHERE z.who_posted = '" . $moder["id"] . "' AND z.vipolneno = 1 ORDER BY z.date DESC, z.id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit);
+            $all_tasks = $db->Execute("SELECT z.* FROM zadaniya z WHERE z.who_posted = '" . $moder["id"] . "' AND z.vipolneno = 1 ORDER BY z.date DESC, z.id DESC");
+            $moders_money = $db->Execute("SELECT * FROM moders_money WHERE moder_id = '".$moder["id"]."'")->GetAll();
+            foreach ($moders_money as $task) {
+                $money[$task["zid"]] = $task["price"];
+            }
+            
+            //$count_task = $db->Execute("SELECT count(id) as num FROM zadaniya WHERE who_posted = '" . $moder["id"] . "' AND vipolneno = 1")->FetchRow();
+            $all_money = $db->Execute("SELECT SUM(price) as sum FROM moders_money WHERE moder_id = '" . $moder["id"] . "'")->FetchRow();
             $withdrawal = $db->Execute("SELECT sum(sum) as summa FROM withdrawal WHERE uid = " . $moder["id"])->FetchRow();
         }
 
@@ -3769,18 +3776,19 @@ class admins {
                 $bg = '';
 
             $zadaniya .= '<tr style="background:' . $bg . '">';
-            $zadaniya .= '<td>' . (!empty($task["price_viklad"]) ? $task["price_viklad"] : 0) . '</td>';
+            $zadaniya .= '<td>' . (!empty($money[$task["id"]]) ? $money[$task["id"]] : 0) . '</td>';
             $zadaniya .= '<td style="text-align:left"><a href="?module=admins&action=zadaniya&uid=' . $task["uid"] . '&sid=' . $task["sid"] . '&action2=edit&id=' . $task["id"] . '">' . $task["tema"] . '</a></td>';
             $zadaniya .= '<td>' . date("d.m.Y", $task["date"]) . '</td>';
             $zadaniya .= '<td class="state ' . $new_s . '"><span class="ico"></span></td>';
             $zadaniya .= '</tr>';
-            if ($task["vipolneno"] == 1)
+            if ($task["vipolneno"] == 1){
                 $sum += ($task["price_viklad"]);
+            }
         }
         $content = str_replace('[id]', $moder["id"], $content);
-        $content = str_replace('[earned]', $tasks_vipolneno["sum"], $content);
+        $content = str_replace('[earned]', $all_money["sum"], $content);
         $content = str_replace('[withdrawn]', $withdrawal["summa"] ? $withdrawal["summa"] : 0, $content);
-        $content = str_replace('[balance]', ($tasks_vipolneno["sum"] - $withdrawal["summa"]), $content);
+        $content = str_replace('[balance]', ($all_money["sum"] - $withdrawal["summa"]), $content);
         $content = str_replace('[zadaniya]', $zadaniya, $content);
         $content = str_replace('[pegination]', $pegination, $content);
         return $content;

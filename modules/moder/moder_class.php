@@ -1537,7 +1537,7 @@ class moder {
             $table = $bg = "";
             $num = 1;
             $withdrawal_first = null;
-            $sum_tasks = $db->Execute("SELECT SUM(s.price_viklad) as sum FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.who_posted = '" . $_SESSION['user']["id"] . "' AND z.vipolneno = 1")->FetchRow();
+            $sum_tasks = $db->Execute("SELECT SUM(price) as sum FROM moders_money WHERE moder_id = '" . $_SESSION['user']["id"] . "'")->FetchRow();
             $balance = $sum_tasks['sum'];
             $withdrawal = $db->Execute("SELECT * FROM withdrawal WHERE uid='" . $user['id'] . "' ORDER BY date DESC");
             while ($res = $withdrawal->FetchRow()) {

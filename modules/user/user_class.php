@@ -14,7 +14,7 @@ class user {
                 if ($user["active"] != 1) {
                     $birjs = $db->Execute("SELECT * FROM birjs b LEFT JOIN birgi b2 ON b.birj=b2.id WHERE uid = '$uid'")->GetAll();
                     if (count($birjs) == 0) {
-                        header("Location: /user.php?action=postreg_step1");                        
+                        header("Location: /user.php?action=postreg_step1");
                     } else {
                         $sayty = $db->Execute("SELECT * FROM sayty WHERE uid = '$uid'")->GetAll();
                         if (count($sayty) == 0) {
@@ -191,9 +191,9 @@ class user {
 
         return $content;
     }
-    
-    function hide_notify($db){
-        if(isset($_SESSION["user"]['id'])){
+
+    function hide_notify($db) {
+        if (isset($_SESSION["user"]['id'])) {
             $_SESSION["user"]['hide_notify'] = 1;
             $db->Execute("UPDATE admins SET hide_notify=1 WHERE id=" . $_SESSION["user"]['id']);
         }
@@ -242,12 +242,11 @@ class user {
 
     function login($db) {
         $error = '';
-        if (@$_REQUEST['login'] and (@$_REQUEST['pass'] or @$_REQUEST['password'])) {
+        if (@$_REQUEST['login'] and ( @$_REQUEST['pass'] or @ $_REQUEST['password'])) {
             $login = $_REQUEST['login'];
             if (isset($_REQUEST['password']) && !empty($_REQUEST['password'])) {
                 $pass = md5($_REQUEST['password']);
-            }
-            else
+            } else
                 $pass = md5($_REQUEST['pass']);
 
             $res = $db->Execute("select * from admins where (email='$login' OR login='$login') and pass='$pass'")->FetchRow();
@@ -338,7 +337,7 @@ class user {
         }
         return $error;
     }
-    
+
     function unsubscribe($db) {
         $uid = (int) $_SESSION['user']['id'];
         $query = "";
@@ -453,32 +452,28 @@ class user {
         $ggl = $db->Execute("SELECT * FROM birjs WHERE birj=1 AND uid = '$uid'")->FetchRow();
         if ($ggl) {
             $content = str_replace('[load_site_ggl]', '<a href="/user.php?action=sayty&uid=[uid]&action2=load_ggl" class="button">GoGetLinks</a>', $content);
-        }
-        else
+        } else
             $content = str_replace('[load_site_ggl]', '', $content);
 
         $getgl = $db->Execute("SELECT * FROM birjs WHERE birj=2 AND uid = '$uid'")->FetchRow();
         if ($getgl) {
             $content = str_replace('[load_site_getgoodlinks]', '<a href="/user.php?action=sayty&uid=[uid]&action2=load_getgoodlinks" class="button">GetGoodLinks</a>', $content);
-        }
-        else
+        } else
             $content = str_replace('[load_site_getgoodlinks]', '', $content);
 
         $sape = $db->Execute("SELECT * FROM birjs WHERE birj=4 AND uid = '$uid'")->FetchRow();
         if ($sape) {
             $content = str_replace('[load_site_sape]', '<a href="/user.php?action=sayty&uid=[uid]&action2=load_sape" class="button">Sape</a>', $content);
-        }
-        else
+        } else
             $content = str_replace('[load_site_sape]', '', $content);
-        
+
         $rotapost = $db->Execute("SELECT * FROM birjs WHERE birj=3 AND uid = '$uid'")->FetchRow();
         if ($rotapost) {
             $content = str_replace('[load_site_rotapost]', '<a href="/user.php?action=sayty&uid=[uid]&action2=load_rotapost" class="button">Rotapost</a>', $content);
-        }
-        else
+        } else
             $content = str_replace('[load_site_rotapost]', '', $content);
 
-        if ($ggl || $getgl || $sape  || $rotapost) {
+        if ($ggl || $getgl || $sape || $rotapost) {
             $content = str_replace('[add_site]', '<br /><h3>Вы можете автоматически выгрузить сайты из бирж</h3>', $content);
         } else {
             $content = str_replace('[add_site]', '', $content);
@@ -1056,7 +1051,7 @@ class user {
             $message["from_name"] = "iforget";
             $message["to"] = array();
             $message["to"][0] = array("email" => MAIL_ADMIN);
-            //$message["to"][1] = array("email" => "abashevav@gmail.com");
+            $message["to"][1] = array("email" => "abashevav@gmail.com");
             $message["track_opens"] = null;
             $message["track_clicks"] = null;
             $message["auto_text"] = null;
@@ -1065,231 +1060,39 @@ class user {
 
             $sinfo["url"] = str_replace("/", "", str_replace("http://", "", str_replace("www.", "", $sinfo["url"])));
             $vipolneno = 0;
-            /*  Проверяем есть ли ссылка на статью и не пустали она!
-             *  Также смотрим, чтобы URL сайта, чья задача, обязательно присутствовал в ссылке на статью!
-             *  Статус изменен на ВЫПОЛНЕНО  */
-            if ((!empty($url_statyi) && $url_statyi != "" && strstr($url_statyi, $sinfo["url"])) && $vilojeno == 1) {
-                if (!empty($res["sape_id"]) && $res["sape_id"] != 0) { /*  Если задача принадлежит PR.SAPE, то отправляем туда ссылку  */
-                    $url = "http://api.pr.sape.ru/xmlrpc/";
-                    $birj = $db->Execute("select * from birjs where birj=4 AND uid=" . $res["uid"])->FetchRow();
 
-                    $data = xmlrpc_encode_request('sape_pr.login', array($birj["login"], $birj["pass"]));
-                    $header[] = "Content-type: text/xml";
-                    $header[] = "Content-length: " . strlen($data);
-                    $cookie_jar = tempnam(PATH . 'temp', "cookie");
-                    if ($curl = curl_init()) { /*  Логинимся в сапе  */
-                        curl_setopt($curl, CURLOPT_URL, $url);
-                        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                        curl_setopt($curl, CURLOPT_POST, true);
-                        curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
-                        curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
-                        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-                        @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-                        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-                        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-                        $out = curl_exec($curl);
-                        curl_close($curl);
-                    }
-                    $id_user_sape = xmlrpc_decode($out);
-                    if (!is_array($id_user_sape)) { /*  Если залогинились, отправляем ссылку  */
-                        $data = xmlrpc_encode_request('sape_pr.advert.place', array((int) $res["sape_id"], $url_statyi));
-                        $header[1] = "Content-length: " . strlen($data);
-                        if ($curl = curl_init()) {
-                            curl_setopt($curl, CURLOPT_URL, $url);
-                            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                            curl_setopt($curl, CURLOPT_POST, true);
-                            curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
-                            curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
-                            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-                            @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-                            curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-                            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-                            $out = curl_exec($curl);
-                            curl_close($curl);
-                        }
-                        $result = xmlrpc_decode($out);
-
-                        if (isset($result['faultString']) && !empty($result['faultString'])) {
-                            $body = "Добрый день!<br/><br/>
-                                Возникли проблемы с выкладывание URL статьи в Pr.Sape.<br/>
-                                Error = '" . $result['faultString'] . "'<br/><br/>
-				Задание на сайте iForget с номером <a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $res['uid'] . "&sid=" . $sid . "&action2=edit&id=" . $id . "'>" . $id . "</a> 
-                                    поменяло статус: &laquo;Выложено&raquo;!<br/>
-                                    
-				";
-                            $subject = "Выложено задание, но с проблемой!";
-                        } else {
-                            $body = "Добрый день!<br/><br/>
-                                    Задание на сайте iForget с номером <a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $res['uid'] . "&sid=" . $sid . "&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус: &laquo;Выложено&raquo;!<br/>
-                                    Ссылка отправлена в Pr.Sape.<br/> --" . $result;
-                            $subject = "Выложено задание";
-                            $vilojeno = 0;
-                            $vipolneno = 1;
-                        }
-                    } else {
-                        /*  Если нет пользователя, отправляем админу письмо с ошибкой (задача все равно переводится в статус Выполнено  */
-                        $body = "Добрый день!<br/><br/>
-                                Возникли проблемы с выкладывание URL статьи в pr.sape.<br/>
-                                Error = 'Не верный логин или пароль для доступа к биржи'!<br/><br/>
-				Задание на сайте iForget с номером <a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $res['uid'] . "&sid=" . $sid . "&action2=edit&id=" . $id . "'>" . $id . "</a> 
-                                    поменяло статус: &laquo;Выложено&raquo;!<br/>
-                                    
-				";
-                        $subject = "Выложено задание, но с проблемой!";
-                    }
-                } elseif (!empty($res["rotapost_id"]) && $res["rotapost_id"] != 0) { /*  Если задача принадлежит ROTAPOST, то отправляем туда ссылку  */
-                    // ПОка не работает отправка ссылок в Ротапост, меняем статус и оповещаем админа
+            if ($vilojeno == 0) {
+                /*  Если статус не изменился, сохраняем поля и отправляем админу писомо об изменениии в задаче  */
+                $db->Execute($q = "update zadaniya set vilojeno='$vilojeno', url_statyi='$url_statyi', url_pic='$url_pic', admin_comments='$admin_comments' where id=$id");
+                if (($res['text'] != $text) || ($res['admin_comments'] != $admin_comments)) {
                     $body = "Добрый день!<br/><br/>
-				Задание на сайте iForget с номером <a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $res['uid'] . "&sid=" . $sid . "&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус: &laquo;Выложено&raquo;!<br/>
-				Задача не принадлежит системе rotapost, но в данный момент автоматическая отправка ссылок не доступна!<br/> 
-                                Ссылка на статью нужно отправить руками.";
-                    $subject = "Выложено задание";
-                    //include_once 'includes/Rotapost.php';
-                    //$rotapost = new Client();
-                    //$birj = $db->Execute("select * from birjs where birj=3 AND uid=" . $res["uid"])->FetchRow();
-                    //$auth = $rotapost->loginAuth($birj['login'], md5($birj['login'] . $birj['pass']));
-                    //$message["to"][1] = array("email" => "abashevav@gmail.com");
-                    //print_r($auth);die();
-                    /* if (($birj['login'] == null || $birj['pass'] == null) || (isset($auth->Success) && $auth->Success == false)) {
-                      /*  Если нет логина или пароля от биржи, отправляем админу письмо с ошибкой */
-                    /* $body = "Добрый день!<br/><br/>
-                      Возникли проблемы с выкладывание URL статьи в rotapost.<br/>
-                      Error = 'Отсутствует логин или пароль для доступа к биржи Rotapost'!<br/><br/>
-                      Задание на сайте iForget с номером <a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $res['uid'] . "&sid=" . $sid . "&action2=edit&id=" . $id . "'>" . $id . "</a>
-                      поменяло статус: &laquo;Выложено&raquo;!<br/>
-
-                      ";
-                      $subject = "Выложено задание, но с проблемой!";
-                      } else {
-
-                      /*  ИНАЧЕ отправляем в ротапост ссылку */
-                    /* $result = $rotapost->taskComplete($res["rotapost_id"], $url_statyi);
-                      $body = "Добрый день!<br/><br/>
-                      Задание на сайте iForget с номером <a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $res['uid'] . "&sid=" . $sid . "&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус: &laquo;Выложено&raquo;!<br/>
-                      Ссылка отправлена в Rotapost.<br/>";
-                      $subject = "Выложено задание";
-                      //$vilojeno = 0;
-                      //$vipolneno = 1;
-                      //echo "<br>";
-                      } */
-                    //die();
-                } elseif (!empty($res["b_id"]) && $res["b_id"] != 0) { /*  Если задача принадлежит GGL, то отправляем туда ссылку  */
-                    $birj = $db->Execute("select * from birjs where birj=1 AND uid=" . $res["uid"])->FetchRow();
-                    $data = array('e_mail' => $birj['login'],
-                        'password' => trim($birj['pass']),
-                        'remember' => "");
-                    $query_p = http_build_query($data);
-                    $cookie_jar = tempnam(PATH . 'temp', "cookie");
-                    if ($curl = curl_init()) { /*  Логинимся  */
-                        curl_setopt($curl, CURLOPT_URL, 'https://gogetlinks.net/login.php');
-                        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                        curl_setopt($curl, CURLOPT_POST, true);
-                        curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
-                        curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
-                        @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-                        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-                        $page = curl_exec($curl);
-                        curl_close($curl);
-                    }
-                    $page = iconv("windows-1251", "utf-8", $page);
-                    if ($page == "Некорректный Логин или Пароль" || $page == "Некорректный email или Пароль") {
-                        /*  Если НЕ залогинились отправляем ошибку админу  */
-                        $body = "Добрый день!<br/><br/>
-                                Возникли проблемы с выкладывание URL статьи в gogetlinks!<br/>
-                                Error = '$page'!<br/><br/>
-				Задание на сайте iForget с номером <a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $res['uid'] . "&sid=" . $sid . "&action2=edit&id=" . $id . "'>" . $id . "</a> 
-                                    поменяло статус: &laquo;Выложено&raquo;!<br/>
-                                    
-				";
-                        $subject = "Выложено задание, но с проблемой!";
-                    } else {
-                        /*  ИНАЧЕ отправляем ссылку в ГГЛ  */
-                        $urlg = "https://gogetlinks.net/template/check_exist_view.php";
-                        $query_p = json_encode(array('curr_id' => $res["b_id"], 'URL' => $url_statyi, 'path' => "Главная -> "));
-                        if ($curl = curl_init()) {
-                            curl_setopt($curl, CURLOPT_URL, $urlg);
-                            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                            curl_setopt($curl, CURLOPT_POST, true);
-                            curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
-                            curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
-                            @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-                            curl_setopt($curl, CURLOPT_POSTFIELDS, array('curr_id' => $res["b_id"], 'URL' => $url_statyi, 'path' => "Главная -> "));
-                            $out = curl_exec($curl);
-                            $out = iconv("windows-1251", "utf-8", $out);
-                            curl_close($curl);
-                        }
-                        if (strstr($out, "Обзор проверен системой и отправлен на проверку оптимизатору")) {
-                            /*  Если ответ с ГГЛ "НОРМ", то подтверждаем отправку  */
-                            $body = "Добрый день!<br/><br/>
-				Задание на сайте iForget с номером <a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $res['uid'] . "&sid=" . $sid . "&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус: &laquo;Выложено&raquo;!<br/>
-				Ссылка отправлена в GGL.<br/>";
-                            $subject = "Выложено задание";
-                            $vilojeno = 0;
-                            $vipolneno = 1;
-                        } else {
-                            /*  Иначе отправляем ошибку админу  */
-                            $body = "Добрый день!<br/><br/>
-                                Произошла ошибка при выкладывании URL статьи в gogetlinks!<br/>
-                                Error = '$out!'<br/>Ссылка не выложена! <br/><br/>
-				Задание на сайте iForget с номером <a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $res['uid'] . "&sid=" . $sid . "&action2=edit&id=" . $id . "'>" . $id . "</a> 
-                                    поменяло статус: &laquo;Выложено&raquo;!<br/>
-                                    
-				";
-                            $subject = "Выложено задание, но с проблемой!";
-                        }
-                    }
-                } else { /*  Если задача НЕ ПРИНАДЛЕЖИТ ggl, sape, rotapost, то просто подтверждаем перевод статуса. Ссылку не отправляем!  */
-                    $body = "Добрый день!<br/><br/>
-				Задание на сайте iForget с номером <a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $res['uid'] . "&sid=" . $sid . "&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус: &laquo;Выложено&raquo;!<br/>
-				Задача не принадлежит системам ggl, sape, rotapost!<br/> Ссылка на статью нужно отправить руками.";
-                    $subject = "Выложено задание";
-                }
-                $db->Execute($q = "update zadaniya set vipolneno='$vipolneno', dorabotka=0, vrabote=0, navyklad=0, vilojeno='$vilojeno', url_statyi='$url_statyi', url_pic='$url_pic', admin_comments='$admin_comments' where id=$id");
-
-                $message["html"] = $body;
-                $message["subject"] = $subject;
-
-                try {
-                    $mandrill->messages->send($message);
-                } catch (Exception $e) {
-                    echo '';
-                }
-            } else {
-                /*  Если одно из требований не совпало, значит:
-                 * либо статус не изменялся
-                 * либо ссылка отсутствует
-                 * либо в ссылке нет URL сайта  */
-
-                if ($vilojeno == 0) {
-                    /*  Если статус не изменился, сохраняем поля и отправляем админу писомо об изменениии в задаче  */
-                    $db->Execute($q = "update zadaniya set vilojeno='$vilojeno', url_statyi='$url_statyi', url_pic='$url_pic', admin_comments='$admin_comments' where id=$id");
-                    if (($res['text'] != $text) || ($res['admin_comments'] != $admin_comments)) {
-                        $body = "Добрый день!<br/><br/>
 				 Задание на сайте iForget с номером <a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $res['uid'] . "&sid=" . $sid . "
                                      &action2=edit&id=" . $id . "'>" . $id . "</a> было изменено выкладывальщиком (" . $uinfo['email'] . ")!<br/>";
-                        $subject = "Модератор изменил задание";
-                        $message["html"] = $body;
-                        $message["subject"] = $subject;
+                    $subject = "Модератор изменил задание";
+                    $message["html"] = $body;
+                    $message["subject"] = $subject;
 
-                        try {
-                            $mandrill->messages->send($message);
-                        } catch (Exception $e) {
-                            echo '';
-                        }
+                    try {
+                        $mandrill->messages->send($message);
+                    } catch (Exception $e) {
+                        echo '';
                     }
-                } else {
-                    /*  ПРОБЛЕМА с ссылкой на статью  */
-                    if (empty($url_statyi) || $url_statyi == "") { /*  Ссылка пуста или отсутствует  */
-                        $error .= ("Поле `Ссылка на статью` обязательно для заполнения, если текст выложен! ");
-                    }
-                    if (!strstr($url_statyi, $sinfo["url"])) { /*  Ссылка и URL сайта не совпадают  */
-                        $error .= "В поле `Ссылка на статью` url не соответствует сайту!";
-                    }
-                    /*  отправляем ошибку МОДЕРАТОРУ об этом  */
-                    echo "<script>window.location.href='/user.php?module=user&action=zadaniya_moder&action2=edit&uid=$uid&sid=$sid&id=$id&error=$error';</script>";
-                    exit();
                 }
+            } elseif ((empty($url_statyi) || $url_statyi == "" || !mb_strstr($url_statyi, $sinfo["url"]))) {
+                /*  ПРОБЛЕМА с ссылкой на статью  */
+                if (empty($url_statyi) || $url_statyi == "") { /*  Ссылка пуста или отсутствует  */
+                    $error .= ("Поле `Ссылка на статью` обязательно для заполнения, если текст выложен! ");
+                }
+                if (!mb_strstr($url_statyi, $sinfo["url"])) { /*  Ссылка и URL сайта не совпадают  */
+                    $error .= "В поле `Ссылка на статью` url не соответствует сайту!";
+                }
+                /*  отправляем ошибку МОДЕРАТОРУ об этом  */
+                header("Location: /user.php?module=user&action=zadaniya_moder&action2=edit&uid=$uid&sid=$sid&id=$id&error=$error'");
+                exit();
+            } else {
+                $db->Execute($q = "update zadaniya set dorabotka=0, vrabote=0, navyklad=0, vilojeno='$vilojeno', who_posted='$uid', url_statyi='$url_statyi', url_pic='$url_pic', admin_comments='$admin_comments' where id=$id");
             }
+
             /*  Если проблем с ссылкой не было, то изменения были уже сохранены, и редиректим на главную страницу  */
             echo "<script>window.location.href='/user.php';</script>";
             exit();
@@ -1474,95 +1277,6 @@ class user {
         echo '</table>';
 
         exit();
-    }
-
-    function money_output($db) {
-        $content = file_get_contents(PATH . 'modules/user/tmp/money_output.tpl');
-        $user = $db->Execute("SELECT * FROM admins WHERE id = '" . $_SESSION['user']['id'] . "'")->FetchRow();
-        if (isset($_REQUEST["query"])) {
-            $content = str_replace('[query]', $_REQUEST["query"], $content);
-        } else {
-            $content = str_replace('[query]', "", $content);
-        }
-        if (isset($_REQUEST["error"])) {
-            $content = str_replace('[error]', $_REQUEST["error"], $content);
-        } else {
-            $content = str_replace('[error]', "", $content);
-        }
-
-        $send = isset($_REQUEST["send"]) ? 1 : null;
-        if (!$send) {
-            $table = $bg = "";
-            $num = 1;
-            $sum_tasks = $db->Execute("SELECT SUM(s.price_viklad) as sum FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.who_posted = '" . $_SESSION['user']["id"] . "' AND z.vipolneno = 1")->FetchRow();
-            $balance = $sum_tasks['sum'];
-            $withdrawal = $db->Execute("SELECT * FROM withdrawal WHERE uid='" . $user['id'] . "' ORDER BY date DESC");
-            while ($res = $withdrawal->FetchRow()) {
-                $balance -= $res["sum"];
-
-                $bg = (($num % 2) == 0) ? "#f7f7f7" : "";
-                $table .= '<tr style="background:' . $bg . '">';
-                $table .= '<td>' . $res["date"] . '</td>';
-                $table .= '<td>' . $res["sum"] . ' руб.</td>';
-                $table .= '</tr>';
-                $num++;
-            }
-            $content = str_replace('[balance]', $balance, $content);
-            $content = str_replace('[webmoney]', (!empty($user["wallet"]) ? $user["wallet"] : "Не указан (<i><a href='user.php?action=lk'>Изменить</a></i>)"), $content);
-            $content = str_replace('[table]', $table, $content);
-        } else {
-            $sum = $_REQUEST["sum"];
-            $balance = $_REQUEST["balance"];
-            $date = date("Y-m-d");
-
-            if ($sum < $balance) {
-                $msg = "Добрый день! Модератор " . $user["login"] . " просит вывести деньги. <br> Запрашиваемая сумма: $sum руб. <br> Кошелек: " . (!empty($user["wallet"]) ? $user["wallet"] : "Не указан") . "";
-
-                $db->Execute("INSERT INTO tickets (uid, subject, q_theme, msg, date, status, site, tid) 
-                                                VALUES (
-                                                        " . $user["id"] . ", 
-                                                        'Вывод средств', 
-                                                        'Общими вопросами', 
-                                                        '$msg', 
-                                                        '$date', 
-                                                        1, 
-                                                        '', 
-                                                        '')");
-                $lastId = $db->Insert_ID();
-
-                $body = "Добрый день!<br/><br/>
-                        Поступил новый тикет (Прозьба вывести деньги модератору).<br>
-                        Для просмотра <a href='http://iforget.ru/admin.php?module=admins&action=ticket&action2=view&tid=$lastId'>перейдите по данной ссылке</a>.
-                        ";
-
-                require_once 'includes/mandrill/mandrill.php';
-                $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-                $message = array();
-                $message["html"] = $body;
-                $message["text"] = "";
-                $message["subject"] = "[Новый тикет в системе]";
-                $message["from_email"] = "news@iforget.ru";
-                $message["from_name"] = "iforget";
-                $message["to"] = array();
-                $message["to"][0] = array("email" => MAIL_ADMIN);
-                $message["to"][1] = array("email" => MAIL_DEVELOPER);
-                $message["track_opens"] = null;
-                $message["track_clicks"] = null;
-                $message["auto_text"] = null;
-
-                try {
-                    $mandrill->messages->send($message);
-                } catch (Exception $e) {
-                    echo $e;
-                }
-                header('location: /user.php?action=money&action2=output&query=Запрос успешно отправлен');
-                exit();
-            } else {
-                header('location: /user.php?action=money&action2=output&error=Запрашиваемая сумма меньше текущего баланса');
-            }
-        }
-
-        return $content;
     }
 
 //##################################################### USER PART ############################################################
@@ -1848,16 +1562,14 @@ class user {
             $content = str_replace('[subj_' . $res["subj_flag"] . ']', "selected", $content);
             $content = str_replace('[bad_' . $res["bad_flag"] . ']', "selected", $content);
 
-            $option =
-                    '<option value="20-45" [cena_45]>45 руб. - 1500 знаков (econom)</option>
+            $option = '<option value="20-45" [cena_45]>45 руб. - 1500 знаков (econom)</option>
                      <option value="30-61" [cena_61]>61 руб. - 1500 знаков (medium)</option>
                      <option value="50-93" [cena_93]>93 руб. - 1500 знаков (elit)</option>
                      <option value="20-60" [cena_60]>60 руб. - 2000 знаков (econom)</option>
                      <option value="30-76" [cena_76]>76 руб. - 2000 знаков (medium)</option>
                      <option value="45-111" [cena_111]>111 руб. - 2000 знаков (elit)</option>';
 
-            $option_newUser =
-                    '<option value="20-45" [cena_45]>62 рубл. - 1500 знаков (econom)</option>
+            $option_newUser = '<option value="20-45" [cena_45]>62 рубл. - 1500 знаков (econom)</option>
                      <option value="30-61" [cena_61]>78 рубл. - 1500 знаков (medium)</option>
                      <option value="50-93" [cena_93]>110 рубл. - 1500 знаков (elit)</option>
                      <option value="20-60" [cena_60]>77 руб. - 2000 знаков (econom)</option>
@@ -2021,16 +1733,14 @@ class user {
         $send = @$_REQUEST['send'];
         if (!$send) {
             $content = file_get_contents(PATH . 'modules/user/tmp/sayty_add.tpl');
-            $option =
-                    '<option value="20-45">32 руб. - 1500 знаков + 13 руб. комиссия = 45 руб.</option>
+            $option = '<option value="20-45">32 руб. - 1500 знаков + 13 руб. комиссия = 45 руб.</option>
                     <option value="30-61">48 руб. - 1500 знаков + 13 руб. комиссия = 61 руб.</option>
                     <option value="50-93">80 руб. - 1500 знаков + 13 руб. комиссия = 93 руб.</option>
                     <option value="20-60">47 руб. - 2000 знаков + 13 руб. комиссия = 60 руб.</option>
                     <option value="30-76">63 руб. - 2000 знаков + 13 руб. комиссия = 76 руб.</option>
                     <option value="45-111">98 руб. - 2000 знаков + 13 руб. комиссия = 111 руб.</option>';
 
-            $option_newUser =
-                    '<option value="20-45">32 руб. - 1500 знаков + 30 руб. комиссия = 62 руб.</option>
+            $option_newUser = '<option value="20-45">32 руб. - 1500 знаков + 30 руб. комиссия = 62 руб.</option>
                     <option value="30-61">48 руб. - 1500 знаков + 30 руб. комиссия = 78 руб.</option>
                     <option value="50-93">80 руб. - 1500 знаков + 30 руб. комиссия = 110 руб.</option>
                     <option value="20-60">47 руб. - 2000 знаков + 30 руб. комиссия = 77 руб.</option>
@@ -2175,7 +1885,7 @@ class user {
                 $tmp->outertext = '';
             }
 
-            if ($open->innertext != '' and (count($open->find('tr[id^=row_body]')))) {
+            if ($open->innertext != '' and ( count($open->find('tr[id^=row_body]')))) {
                 foreach ($open->find('tr[id^=row_body]') as $tr) {
                     foreach ($tr->find('td[class^=row_]') as $td) {
                         foreach ($td->find('div,img,font,label') as $tmp) {
@@ -2233,10 +1943,10 @@ class user {
                     $message["auto_text"] = null;
 
                     try {
-                        if($uid != 260)
+                        if ($uid != 260)
                             $mandrill->messages->send($message);
                     } catch (Exception $e) {
-                        echo 'Error Send Mail!<br>'.$e;
+                        echo 'Error Send Mail!<br>' . $e;
                     }
                     if ($user["active"] != 1 && isset($_SESSION["postreg"]) && $_SESSION["postreg"] == "step2") {
                         header("Location: /user.php?action=postreg_step2");
@@ -2317,7 +2027,7 @@ class user {
                 $tmp->outertext = '';
             }
 
-            if ($open->innertext != '' and (count($open->find('tr[id^=row_body]')))) {
+            if ($open->innertext != '' and ( count($open->find('tr[id^=row_body]')))) {
                 foreach ($open->find('tr[id^=row_body]') as $tr) {
                     foreach ($tr->find('td[class^=row_]') as $td) {
                         foreach ($td->find('div,img,font,label') as $tmp) {
@@ -2375,10 +2085,10 @@ class user {
                     $message["auto_text"] = null;
 
                     try {
-                        if($uid != 260)
+                        if ($uid != 260)
                             $mandrill->messages->send($message);
                     } catch (Exception $e) {
-                        echo 'Error Send Mail!<br>'.$e;
+                        echo 'Error Send Mail!<br>' . $e;
                     }
                     if ($user["active"] != 1 && isset($_SESSION["postreg"]) && $_SESSION["postreg"] == "step2") {
                         header("Location: /user.php?action=postreg_step2");
@@ -2501,10 +2211,10 @@ class user {
                 $message["auto_text"] = null;
 
                 try {
-                    if($uid != 260)
+                    if ($uid != 260)
                         $mandrill->messages->send($message);
                 } catch (Exception $e) {
-                    echo 'Error Send Mail!<br>'.$e;
+                    echo 'Error Send Mail!<br>' . $e;
                 }
                 if ($user["active"] != 1 && isset($_SESSION["postreg"]) && $_SESSION["postreg"] == "step2") {
                     header("Location: /user.php?action=postreg_step2");
@@ -2567,12 +2277,12 @@ class user {
             }
         } else {
             $result = $rotapost->siteIndex();
-            if($result->Success == "true") {
-                if(isset($result->Sites->Site) && !empty($result->Sites->Site)){
+            if ($result->Success == "true") {
+                if (isset($result->Sites->Site) && !empty($result->Sites->Site)) {
                     if ($_REQUEST["check"] == 1 && count($result->Sites->Site) > 0) {
                         $body = "Добрый день!<br/><br/>";
                         foreach ($result->Sites->Site as $site) {
-                            if($site->Status == "Active"){
+                            if ($site->Status == "Active") {
                                 $dubl = $db->Execute("SELECT * FROM sayty WHERE (url LIKE '" . $site->Url . "' OR rotapost_id='" . $site->Id . "') AND uid='$uid'")->FetchRow();
                                 if (!$dubl) {
                                     $db->Execute("INSERT INTO sayty(uid,url,rotapost_id) values('" . $uid . "','" . $site->Url . "','" . $site->Id . "')");
@@ -2605,7 +2315,7 @@ class user {
                         $message["auto_text"] = null;
 
                         try {
-                            if($uid != 260)
+                            if ($uid != 260)
                                 $mandrill->messages->send($message);
                         } catch (Exception $e) {
                             echo 'Error Send Mail!<br>' . $e;
@@ -2618,7 +2328,7 @@ class user {
                     } else {
                         $count_new_site = 0;
                         foreach ($result->Sites->Site as $site) {
-                            if($site->Status == "Active"){
+                            if ($site->Status == "Active") {
                                 $dubl = $db->Execute("SELECT * FROM sayty WHERE (url LIKE '" . $site->Url . "' OR rotapost_id='" . $site->Id . "') AND uid='$uid'")->FetchRow();
                                 if (!$dubl) {
                                     $table .= "<tr><td style='border-right:1px solid #ccc'><small>" . $site->Id . "</small></td><td style='border-right:1px solid #ccc'>" . $site->Url . "</td>";
@@ -2637,7 +2347,7 @@ class user {
                                 }
                             }
                         }
-                        if($count_new_site > 0){
+                        if ($count_new_site > 0) {
                             $button = "<a href='/user.php?action=sayty&uid=$uid&action2=load_rotapost&check=1' class='button'>Да</a>&nbsp;<a href='/user.php?action=sayty' class='button'>Нет</a>";
                             $content = str_replace('[sites]', $table, $content);
                             $content = str_replace('[button]', $button, $content);
@@ -2672,7 +2382,7 @@ class user {
         $content = str_replace('[url]', $res['url'], $content);
 
         $zadaniya = '';
-        if (@$_SESSION['sort'] == 'asc' or !@$_SESSION['sort']) {
+        if (@$_SESSION['sort'] == 'asc' or ! @$_SESSION['sort']) {
             $symb = '↓';
             $sort = 'asc';
         } else {
@@ -3098,7 +2808,6 @@ class user {
             $viklad_email = $viklad_info['email'];
 
             //$q = "update zadaniya set etxt='$etxt', url_statyi='$url_statyi', text='$text', tema='$tema', sistema='$sistema', ankor='$ankor', url='$url', keywords='$keywords', price='$price', url_pic='$url_pic', comments='$comments', admin_comments='$admin_comments' where id=$id";
-
             //$db->Execute($q);
             $alert = 'Задание успешно отредактировано.';
             $url = "?module=user&action=zadaniya&uid=$uid&sid=$sid";
@@ -3471,7 +3180,7 @@ class user {
             $offset = (int) $_GET['offset'];
         }
         $zadaniya = $pegination = '';
-        if ($_SESSION['sort'] == 'asc' or !$_SESSION['sort']) {
+        if ($_SESSION['sort'] == 'asc' or ! $_SESSION['sort']) {
             $symb = '↓';
             $sort = 'asc';
         } else {
@@ -3780,8 +3489,7 @@ class user {
             if ($pass) {
                 $pass = md5($pass);
                 $db->Execute("UPDATE admins SET pass='$pass', contacts='$fio', dostupy='$knowus', wallet_type='$wallet_type', wallet='$wallet', mail_period='$mail_period', icq='$icq', scype='$scype' WHERE id=$uid");
-            }
-            else
+            } else
                 $db->Execute("UPDATE admins SET contacts='$fio', dostupy='$knowus', wallet_type='$wallet_type', wallet='$wallet', mail_period='$mail_period', icq='$icq', scype='$scype' WHERE id=$uid");
 
             switch ($mail_period) {

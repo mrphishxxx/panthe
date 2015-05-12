@@ -144,10 +144,11 @@ class class_user {
         $content = str_replace('[all_dorabotka]', $all_dorabotka['count(*)'], $content);
         $content = str_replace('[all_vilojeno]', $all_vilojeno['count(*)'], $content);
         
-        $sum_num_tasks = $db->Execute("SELECT count(z.id) as num, SUM(s.price_viklad) as sum FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.who_posted = '" . $this->user["id"] . "' AND z.vipolneno = 1")->FetchRow();
+        $sum_num_tasks = $db->Execute("SELECT count(id) as num FROM zadaniya WHERE who_posted = '" . $this->user["id"] . "' AND vipolneno = 1")->FetchRow();
+        $sum_money = $db->Execute("SELECT SUM(price) as sum FROM moders_money WHERE moder_id = '" . $this->user["id"] . "'")->FetchRow();
         $withdrawal = $db->Execute("SELECT SUM(w.`sum`) as sums FROM withdrawal w WHERE w.uid='" . $this->user["id"] . "' ORDER BY w.date DESC")->FetchRow();
         $withdrawal["sums"] = (!empty($withdrawal["sums"])) ? $withdrawal["sums"] : 0;
-        $content = str_replace('[balance]', $sum_num_tasks['sum'] - $withdrawal["sums"], $content);
+        $content = str_replace('[balance]', $sum_money['sum'] - $withdrawal["sums"], $content);
         $content = str_replace('[num]', $sum_num_tasks['num'], $content);
         
         $content = str_replace('[display_comment]', 'style="display:none;"', $content);
