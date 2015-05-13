@@ -22,7 +22,7 @@ foreach ($tasks as $value) {
         if ($value["price_viklad"] == NULL) {
             $value["price_viklad"] = 0;
         }
-        $db->Execute("INSERT INTO moders_money (moder_id, zid, price) VALUES ('" . $value["who_posted"] . "', '" . $value["id"] . "', '" . $value["price_viklad"] . "')");
+        $db->Execute("INSERT INTO moders_money (moder_id, zid, price, date) VALUES ('" . $value["who_posted"] . "', '" . $value["id"] . "', '" . $value["price_viklad"] . "', '".date("Y-m-d H:i:s")."')");
         $buffer[] = $value["id"];
         echo "<br>----> USER " . $value["who_posted"] . " (" . $value["id"] . ")<br>";
     }
