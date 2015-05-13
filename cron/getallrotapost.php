@@ -34,9 +34,9 @@ $main_error = array();
 foreach ($rota_to_uid as $uid) {
     //if ($uid != 410)continue;
     $balance = $admins->getUserBalans($uid, $db, 1);
-    echo $balance;
+    echo $balance . " - balance <br>\r\n";
     if ($balance >= 60 || (($res['id'] == 20) || ($res['id'] == 55))) {
-        echo $uid . "\r\n";
+        echo $uid . " - UID <br>\r\n";
         $main_error[] = callback($uid, $db);
     }
 }
@@ -65,7 +65,7 @@ function callback($uid, $db) {
         //  ИНАЧЕ 
         // (1) Вытаскиваем задачи в статусе Ожидает одобрения, и подтверждаем их!
         $New = $rotapost->taskWebmaster("New");
-        print_r($New);//die();
+        //print_r($New);//die();
         if ((isset($New->Success) && $New->Success == "true")) {
             $result = array();
             if (isset($New->Tasks->Task) && !empty($New->Tasks->Task)) {
