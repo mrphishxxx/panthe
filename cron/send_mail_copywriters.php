@@ -11,7 +11,7 @@ $db->Execute('set charset utf8');
 $db->Execute('SET NAMES utf8');
 
 $task_copywriter = array();
-$add_task = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter=0 AND for_copywriter=1 ORDER BY id ASC");
+$add_task = $db->Execute("SELECT * FROM zadaniya_new WHERE (vipolneno=0 AND vrabote=0 AND vilojeno=0 AND dorabotka=0 AND navyklad=0 AND rework=0 AND rectificate=0) AND copywriter=0 AND for_copywriter=1 ORDER BY id ASC");
 while ($task = $add_task->FetchRow()) {
     $task_copywriter[] = $task['id'];
 }
@@ -42,12 +42,14 @@ if (count($task_copywriter) != 0) {
         }
     }
     try {
-        if(count($message["to"]) > 0)
+        if(count($message["to"]) > 0){
             $mandrill->messages->send($message);
+            echo $body;
+            echo "[" . count($task_copywriter) . " новых задач]";
+        }
     } catch (Exception $e) {
         echo $e;
         echo $body;
     }
 }
 exit();
-?>
