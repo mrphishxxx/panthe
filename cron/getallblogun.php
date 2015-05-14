@@ -130,40 +130,35 @@ function getTask($db, $uid) {
         $driver->get($href);
         $description = $driver->findElement(WebDriverBy::xpath("//p[@class='getcodeText']"));
         $data['comments'] = $description->getText();
-        $data['url'] = NULL;
-        $data['ankor'] = NULL;
+        $data['url'] = '*';$data['url2'] = '*';$data['url3'] = '*';$data['url4'] = '*';$data['url5'] = '*';
+		$data['ankor'] = '*';$data['ankor2'] = '*';$data['ankor3'] = '*';$data['ankor4'] = '*';$data['ankor5'] = '*';
+
         if (count($driver->findElements(WebDriverBy::xpath("//textarea[@readonly='']"))) === 0) {
             //ESLI ZAYAVKA BEZ URL ILI ANKORA????
-            continue;
-        } else {
-            $url = $driver->findElement(WebDriverBy::xpath("//textarea[@readonly='']"));
-            $txt = $url->getText();
-
-            if (preg_match('/<a href="([^"]+)">([^<]+)<\/a>/i', $txt, $subs)) {
-                $data['url'] = $subs[1];
-                $data['ankor'] = $subs[2];
-            } else {
-                $data['url'] = $txt;
-                $data['ankor'] = '';
-            }
-            if (($data['type_task'] == 0) && !empty($data['ankor'])) {
-                $first = mb_strtoupper(mb_substr($data['ankor'], 0, 1, 'UTF-8'), 'UTF-8'); //первая буква
-                $first = str_replace("?", "", $first);
-                $last = mb_strtolower(mb_substr($data['ankor'], 1), 'UTF-8'); //все кроме первой буквы
-                $last = ($last[0] == "?") ? mb_substr($last, 1) : $last;
-                $data["tema"] = mysql_real_escape_string($first . $last);
-            } elseif (isset($data["url"])) {
-                $data["tema"] = mysql_real_escape_string("Обзор сайта " . $data['url']);
-            }
-            $data['site'] = array_search($data['idblog'], $sites_to_user);
-            //check if task exists in db
-            $exists = $db->Execute("SELECT * FROM zadaniya WHERE b_id='" . $data['id'] . "' AND uid='" . $data['uid'] . "' AND sistema = 'https://blogun.ru/'")->FetchRow();
-            if (empty($exists)) {
-                $s = "INSERT into zadaniya(date, sistema, tema, sid, b_id, comments, url, ankor, uid, type_task, vrabote, navyklad, vilojeno, vipolneno, dorabotka) 
-                           VALUES ('" . time() . "', 'https://blogun.ru/', '" . $data["tema"] . "', '" . $data['site'] . "','" . $data['id'] . "','" . $data['comments'] . "','" . $data['url'] . "','" . $data['ankor'] . "','" . $data['uid'] . "','" . $data['type_task'] . "','0','0','0','0','0')";
-                $db->Execute($s);
-            }
-        }
+            //continue;
+		} else {
+			$url = $driver->findElements(WebDriverBy::xpath("//textarea[@readonly='']"));
+			for($j=0; $j<count($url); $j++)
+			{
+				$txt = $url[$j]->getText();
+				
+				if($j==0) $urlKey = 'url'; else $urlKey = 'url'.($j+1);
+				if($j==0) $ankorKey = 'ankor'; else $ankorKey = 'ankor'.($j+1);
+				
+				if(preg_match('/<a href="([^"]+)">([^<]+)<\/a>/i', $txt, $subs))
+				{
+					$data[$urlKey] = $subs[1];
+					$data[$ankorKey] = $subs[2];
+				}
+				else
+				{
+					$data[$urlKey] = $txt;
+					$data[$ankorKey] = '';
+				}
+			}
+			
+				
+			}
     }
     $driver->close();
     return;
