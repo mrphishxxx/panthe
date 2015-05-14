@@ -28,9 +28,9 @@
         $(".ico").click(function() {
             var tr = $(this).parent().parent();
             var input = $('input', tr);
-            var sum = parseInt(input.val());
+            var sum = parseFloat(input.val().replace(/,/,'.'));
             var copywriter = input.attr('id');
-            var balance = parseInt($('.balance', tr).text());
+            var balance = parseFloat($('.balance', tr).text());
             
             if (sum !== 0 && sum !== "") {
                 if ($.isNumeric(sum)) {

@@ -3999,8 +3999,8 @@ class admins {
             $tr .= "<td>" . $copywriter["login"] . "</td>";
             $tr .= "<td>" . $tasks_vipolneno["num"] . "</td>";
             $tr .= "<td>" . ((int) $tasks_vipolneno["chars"] / 1000 * 21) . "</td>";
-            $tr .= "<td class='withdrawal'>" . $summa . "</td>";
-            $tr .= "<td class='balance'><a href='?module=admins&action=copywriters&action2=decode_balance&copywriter=" . $copywriter["id"] . "'>" . $balance . "</a></td>";
+            $tr .= "<td class='withdrawal'>" . round($summa,2) . "</td>";
+            $tr .= "<td class='balance'><a href='?module=admins&action=copywriters&action2=decode_balance&copywriter=" . $copywriter["id"] . "'>" . round($balance,2) . "</a></td>";
             $tr .= "<td><input type='text' value='' class='mini' id='" . $copywriter["id"] . "' /></td>";
             $tr .= "<td class='output'><a href='#' class='ico' onclick='return false;'></a></td>";
             $tr .= "</tr>";
