@@ -4015,7 +4015,7 @@ class admins {
         $copywriter = @$_REQUEST['copywriter'];
         $sum = @$_REQUEST['sum'];
         $date = date("Y-m-d H:i:s");
-
+        
         if (!empty($copywriter) && !empty($sum)) {
             $db->Execute("INSERT INTO withdrawal (uid, sum, date) VALUES ('$copywriter', '$sum', '$date')");
             header('location:' . $_SERVER['HTTP_REFERER']);
