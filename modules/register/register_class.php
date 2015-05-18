@@ -9,7 +9,20 @@ class register_class {
             $input_text = htmlspecialchars($input_text);
             $input_text = addslashes($input_text);
             if ($key == "type") {
-                $input_text = ($val == 1) ? "copywriter" : "user";
+                if($val == 1){
+                    $input_text = "copywriter";
+                    if(!empty($post["wallet"])) {
+                        $wallet = $db->Execute("SELECT * FROM admins WHERE wallet='" . $post['wallet'] . "'")->FetchRow();
+                        if(!empty($wallet)){
+                            $rez['error'][] = "Копирайтер с таким кошельком уже существует в системе!";
+                        }
+                    } else {
+                        $rez['error'][] = "Webmoney кошелек - обязателен для заполнения!";
+                    }
+                } else {
+                    $input_text = "user";
+                }
+                
             }
             $rez[$key] = $input_text;
         }
@@ -32,13 +45,14 @@ class register_class {
         $login = $data['login'];
         $email = $data['email'];
         $type = $data['type'];
+        $wallet = $data['wallet'];
         $active = 0;
         if (empty($data['password']))
             $data['password'] = uniqid();
 
         $pass = md5($data['password']);
         $date = time();
-        $new_user = $date > 1414800000 ? 1 : 0; //если зарегестрировался позже 1 ноября, то пользователь считается новым и цены для него выше
+        $new_user = 1; //если зарегестрировался позже 1 ноября, то пользователь считается новым и цены для него выше
         $contacts = NULL;
         $dostupy = $data['knowus'];
 
@@ -47,11 +61,12 @@ class register_class {
             $alert = 'Пользователь с такими данными уже имеется в базе';
             $url = '/register.php';
         } else {
-            if ($type == "copywriter")
+            if ($type == "copywriter") {
                 $active = 1;
+            }
             $confirmation = md5($email . time());
             $db->Execute("SET NAMES 'UTF8'");
-            $q = "insert into admins(login, email, pass, type, active, reg_date, contacts, dostupy, confirmation, new_user) values ('$login', '$email', '$pass', '$type', '$active', $date, '$contacts', '$dostupy', '$confirmation', '$new_user')";
+            $q = "insert into admins(login, email, pass, type, active, reg_date, contacts, dostupy, confirmation, wallet, new_user) values ('$login', '$email', '$pass', '$type', '$active', $date, '$contacts', '$dostupy', '$confirmation', '$wallet', '$new_user')";
             $db->Execute($q);
 
             $user = $db->Execute("select * from admins where login='$login'")->FetchRow();
@@ -66,7 +81,7 @@ class register_class {
                 $db->Execute("INSERT INTO orders (uid, price, date, status) VALUES ($cur_id, 1000, '$cur_dt', 0)");
             else
                 $active = 1;
-            
+
             if ($data['promo'] && $type == "user") {
                 $Message2009 = $db->Execute("SELECT * FROM Message2009 WHERE Code='" . $db->escape($data['promo']) . "' AND ((Used=0) OR (Used IS NULL))")->FetchRow();
                 if ($Message2009['Message_ID']) {
@@ -217,13 +232,14 @@ class register_class {
         $email = $data['email'];
         $cid = $data['uid'];
         $network = $data['network'];
-        $type = $data['type'];
+        $type = "user";
 
-        if(empty($data['password']))
+        if (empty($data['password'])) {
             $data['password'] = uniqid();
+        }
         $pass = md5($data['password']);
         $date = time();
-        $new_user = $date > 1414800000 ? 1 : 0; //если зарегестрировался позже `01.11.14 00:00`, то пользователь считается новым и цены для него выше
+        $new_user = 1; //если зарегестрировался позже `01.11.14 00:00`, то пользователь считается новым и цены для него выше
         $contacts = $data['last_name'] . " " . $data['first_name'];
 
         $res = $db->Execute("select * from admins where login='$login' OR email='$email'")->FetchRow();
@@ -346,6 +362,25 @@ class register_class {
         foreach ($data as $key => $val) {
             if ($key != "error")
                 $content = str_replace('[' . $key . ']', $val, $content);
+        }
+        
+        if (isset($data["type"])) {
+            if ($data["type"] == "user") {
+                $content = str_replace('[type0]', "selected", $content);
+                $content = str_replace('[type1]', "", $content);
+                $content = str_replace('[display]', "style='display: none'", $content);
+                $content = str_replace('[socseti]', "style='display: block'", $content);
+            } else {
+                $content = str_replace('[type0]', "", $content);
+                $content = str_replace('[type1]', "selected", $content);
+                $content = str_replace('[display]', "style='display: block'", $content);
+                $content = str_replace('[socseti]', "style='display: none'", $content);
+            }
+        } else {
+            $content = str_replace('[type0]', "", $content);
+            $content = str_replace('[type1]', "", $content);
+            $content = str_replace('[display]', "style='display: none'", $content);
+            $content = str_replace('[socseti]', "style='display: block'", $content);
         }
 
         $error_text = "";

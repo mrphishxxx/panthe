@@ -34,7 +34,7 @@
                 </select>
             </li>
             <li>
-                <span class="title">Кошелек:</span>
+                <span class="title">Кошелек:*</span>
                 <input type="text"  value="[wallet]" placeholder="" name="wallet" id="wallet" />
             </li>
             <li>
@@ -54,8 +54,18 @@
         <div class="action-bar">
             <br/>
             <input name="send" type="hidden" value='1'>
-            <input type="submit" value="Сохранить" />
-
+            <input id="send" onclick="return false;" type="submit" value="Сохранить" />
         </div>
     </form>
 </div>
+<script type="text/javascript">
+$(document).ready(function (){
+    $("#send").click(function () {
+        if($("#wallet").val() === ""){
+            alert("Поле Кошелек обязателен для заполнения!");
+        } else {
+            $(".form").submit();
+        }
+    });
+});
+</script>

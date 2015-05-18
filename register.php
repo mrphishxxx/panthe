@@ -44,6 +44,7 @@ if (@$_POST['wmid'] == 1) {
         $content = str_replace('[login]', "", $content);
         $content = str_replace('[email]', "", $content);
         $content = str_replace('[promo]', "", $content);
+        $content = str_replace('[wallet]', "", $content);
     } else {
         header("Location:/confirm.php");
         exit();
@@ -53,16 +54,26 @@ if (@$_POST['wmid'] == 1) {
 
     if (isset($_REQUEST["type"])) {
         if ($_REQUEST["type"] == 0) {
-            $content = str_replace('[type0]', "checked='checked'", $content);
+            $content = str_replace('[type0]', "selected", $content);
             $content = str_replace('[type1]', "", $content);
+            $content = str_replace('[display]', "style='display: none'", $content);
+            $content = str_replace('[socseti]', "style='display: block'", $content);
         } else {
             $content = str_replace('[type0]', "", $content);
             $content = str_replace('[type1]', "selected", $content);
+            $content = str_replace('[display]', "style='display: block'", $content);
+            $content = str_replace('[socseti]', "style='display: none'", $content);
         }
     } else {
         $content = str_replace('[type0]', "", $content);
         $content = str_replace('[type1]', "", $content);
+        $content = str_replace('[display]', "style='display: none'", $content);
+        $content = str_replace('[socseti]', "style='display: block'", $content);
     }
+    $content = str_replace('[login]', "", $content);
+    $content = str_replace('[email]', "", $content);
+    $content = str_replace('[wallet]', "", $content);
+    
     $content = str_replace('[promo]', (@$_GET['promo'] ? $_GET['promo'] : ""), $content);
     $content = str_replace('[partner_link]', (@$_GET['partner'] ? $_GET['partner'] : ""), $content);
     $content = str_replace('[error]', "", $content);

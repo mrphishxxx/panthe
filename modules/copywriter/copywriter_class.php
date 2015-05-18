@@ -179,6 +179,20 @@ class copywriter {
             $wallet_type = $db->escape($_REQUEST['wallet_type']);
             $icq = $db->escape($_REQUEST['icq']);
             $scype = $db->escape($_REQUEST['scype']);
+            
+            if(!empty($wallet)){
+                $wallet_model = $db->Execute("SELECT * FROM admins WHERE wallet='" . $wallet . "' AND id != $uid")->FetchRow();
+                if (!empty($wallet_model)) {
+                    $error = "Не возможно сохранить профиль. Копирайтер с таким кошельком уже существует в системе!";
+                    header("Location: /copywriter.php?action=lk&error=$error");
+                    exit();
+                }
+            } else {
+                $error = "Поле Кошелек обязателен для заполнения!";
+                header("Location: /copywriter.php?action=lk&error=$error");
+                exit();
+            }
+
             if (isset($_REQUEST['mail_period']) && !empty($_REQUEST['mail_period']))
                 $mail_period = 0;
             else
@@ -194,10 +208,9 @@ class copywriter {
                     header("Location: /copywriter.php?action=lk&error=Пароли не совпадают");
                     exit();
                 }
-            }
-            else
+            } else {
                 $db->Execute("UPDATE admins SET contacts='$fio', wallet_type='$wallet_type', wallet='$wallet', icq='$icq', scype='$scype', mail_period='$mail_period' WHERE id=$uid");
-
+            }
 
             $body = "Добрый день!<br />
                      Копирайтер изменил свои данные:<br /><br />
@@ -550,7 +563,7 @@ class copywriter {
                 $prohibition = $db->Execute("SELECT COUNT(*) AS cnt, `user_id` FROM `prohibition_taking_tasks` WHERE `user_id` = '" . $task['copywriter'] . "' GROUP BY `user_id`")->FetchRow();
                 if ($prohibition["cnt"] == LIMIT_ERROR_FROM_COPYWRITER) {
                     $db->Execute("UPDATE admins SET banned = '1' WHERE id = '" . $task['copywriter'] . "' AND type='copywriter'");
-                    $banned = "<br><br><em>Данный копирайтер отказался от задачи уже ".LIMIT_ERROR_FROM_COPYWRITER. " раза! Он переведён в статус Забанен. Больще ему не показываются новые задачи!</em>";
+                    $banned = "<br><br><em>Данный копирайтер отказался от задачи уже " . LIMIT_ERROR_FROM_COPYWRITER . " раза! Он переведён в статус Забанен. Больще ему не показываются новые задачи!</em>";
                 }
 
                 require_once 'includes/mandrill/mandrill.php';
@@ -560,7 +573,7 @@ class copywriter {
                          Копирайтер <strong>" . $_SESSION['user']['login'] . "</strong> отказался от 
                          задания <a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=" . $id . "'>" . $id . "</a>.<br/>
                          Задание переведено в статус Активен. Поле текст очищено.
-                         ".$banned;
+                         " . $banned;
                 $message["text"] = "";
                 $message["subject"] = "[Копирайтер отменил задачу]";
                 $message["from_email"] = "news@iforget.ru";
@@ -674,8 +687,7 @@ class copywriter {
                     if ($num_symbol_without_space < (int) $task["nof_chars"] || (empty($uniq) || $uniq < 95)) {
                         if ($uniq < 95) {
                             $error = "Уникальность статьи должна быть больше 95%! Читайте Описание задачи!";
-                        }
-                        else {
+                        } else {
                             $error = "Количество символов ($num_symbol_without_space) в статье меньше, чем требуется в задании! Количество символов считается без учета ссылок!";
                         }
                         $db->Execute("UPDATE zadaniya_new SET title='" . mysql_real_escape_string($title) . "', 
@@ -686,7 +698,7 @@ class copywriter {
                                               url_pic='" . mysql_real_escape_string($url_pic) . "', 
                                               uniq='$uniq'
                                               WHERE id=$id");
-                        
+
                         header('Location: /copywriter.php?action=tasks&action2=edit&id=' . $id . '&error=' . $error);
                         exit();
                     } else {

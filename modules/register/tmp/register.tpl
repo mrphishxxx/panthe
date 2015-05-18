@@ -6,21 +6,23 @@
             [error]
             <a href="/pages/registration/" target="_blank">Для чего нужна регистрация?</a><br/><br/>
             
-            <script src="//ulogin.ru/js/ulogin.js"></script>
-            <h3>Через социальные сети</h3>
-            <div id="uLogin2" data-ulogin="display=panel;fields=first_name,last_name,email,nickname;providers=vkontakte,odnoklassniki,mailru,facebook,twitter,googleplus;hidden=;redirect_uri=http%3A%2F%2Fiforget.ru%2Fregister.php"></div>
-            <br />
+            <div id="socseti">
+                <script src="//ulogin.ru/js/ulogin.js"></script>
+                <h3>Через социальные сети (в статусе Вебмастера)</h3>
+                <div id="uLogin2" data-ulogin="display=panel;fields=first_name,last_name,email,nickname;providers=vkontakte,odnoklassniki,mailru,facebook,twitter,googleplus;hidden=;redirect_uri=http%3A%2F%2Fiforget.ru%2Fregister.php"></div>
+                <br />
+            </div>
 
             <h3>Самостоятельная регистрация</h3>
             <ul>
                 <li>
                     <span class="title">Логин:*</span>
-                    <input name="login" id="" value="" type="text" class="necessarily" />
+                    <input name="login" id="" value="[login]" type="text" class="necessarily" />
                     <span class="hint"></span>
                 </li>
                 <li>
                     <span class="title">E-mail:*</span>
-                    <input name="email" id="email" value="" type="text" class="necessarily" />
+                    <input name="email" id="email" value="[email]" type="text" class="necessarily" />
                     <span class="hint"></span>
                 </li>
                 <li>
@@ -39,6 +41,11 @@
                         <option value="0" [type0]>Вебмастер</option>
                         <option value="1" [type1]>Копирайтер</option>
                     </select>
+                    <span class="hint"></span>
+                </li>
+                <li id="wallet_block" [display]>
+                    <span class="title">Webmoney кошелек:*</span>
+                    <input name="wallet" value="[wallet]" id="wallet" type="text" class="" />
                     <span class="hint"></span>
                 </li>
                 <li>
@@ -71,5 +78,18 @@
             <div class="pointer"></div>
         </div>
     </div>
-
 </div>
+<script type="text/javascript">
+$(document).ready(function (){
+    $("#type").change(function () {
+        if($(this).val() === "0"){
+            $("#wallet_block").hide();
+            $("#wallet").val("");
+            $("#wallet").removeClass("necessarily");
+        } else {
+            $("#wallet_block").show();
+            $("#wallet").addClass("necessarily");
+        }
+    });
+});
+</script>
