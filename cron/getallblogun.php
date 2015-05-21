@@ -1,12 +1,12 @@
 <?php
 
-echo "data:" . date("d-m-Y H:i:s") . " \r\n";
 $start = time();
 set_time_limit(0);
 ini_set("memory_limit", "1024M");
 ini_set("max_execution_time", "0");
 
 header('Content-Type: text/html; charset=utf-8');
+echo "data:" . date("d-m-Y H:i:s") . " \r\n";
 
 include_once dirname(__FILE__) . '/../' . 'config.php';
 include_once dirname(__FILE__) . '/../' . 'includes/adodb5/adodb.inc.php';
@@ -160,7 +160,7 @@ function getTask($db, $uid) {
 				
 			}
     }
-    $driver->close();
+    $driver->quit();
     return;
 }
 
