@@ -1,33 +1,76 @@
 <?php
+/**
+ * @version 0.4
+ * История изменений:
+ * версия 0.4:
+ * 1. добавлен новый тариф GetbotApi::MODE_ABSOLUTE_UPDATE
+ * версия 0.3:
+ * 1. добавлен новый тариф GetbotApi::MODE_EXPRESS_PRIORITY
+ * 2. добавлен новый тариф GetbotApi::MODE_CHECK_INDEX
+ * 3. удален старый тариф GetbotApi::MODE_EXPRESS_LIGHT
+
+ * версия 0.2:
+ * 1. добавлен новый тариф GetbotApi::MODE_ABSOLUTE_PRIORITY
+ * 2. объявление функций API как public
+ */
 
 class GetbotApi {
-    const MODE_ANY           = -1;
-    const MODE_ABSOLUTE           =  0;
-    const MODE_EXPRESS           =  1;
-    const MODE_EXPRESS_LIGHT         = 2;
+    /**
+     * Любой тариф проекта, актуален для метода tasksList
+     */
+    const MODE_ANY = -1;
+    /**
+     * тариф АБСОЛЮТ
+     */
+    const MODE_ABSOLUTE = 0;
+    /**
+     * тариф Экспресс
+     */
+    const MODE_EXPRESS = 1;
 
-    /** New project */
+    /**
+     * тариф АБСОЛЮТ Приоритет
+     */
+    const MODE_ABSOLUTE_PRIORITY = 3;
+
+    /**
+     * тариф Экспресс Приоритет
+     */
+    const MODE_EXPRESS_PRIORITY = 4;
+
+    /**
+     * тариф Проверка на индексацию в Яндекс
+     */
+    const MODE_CHECK_INDEX = 5;
+
+    /**
+     * тариф АБСОЛЮТ Апдейт
+     */
+    const MODE_ABSOLUTE_UPDATE = 6;
+
+    /** Проект в любой стадии выполнения, актуален для метода tasksList */
     const STATUS_ANY = -1;
 
-    /** New project */
+    /** Проект проект создан пользователем, для проектов этого состояния нужно вызвать метод taskLaunch для запуска проекта на выполенение */
     const STATUS_CREATED = 0;
 
-    /** Project in idle */
+    /** Проект был запущен пользователем и будет выполнен системой Getbot.guru после того как до проекта дойдет очередь */
     const STATUS_WAITED = 1;
 
-    /** Project is running */
+    /** Проект выполняется системой Getbot.guru */
     const STATUS_RUNNING = 2;
 
-    /** Project is ready */
+    /** Финальное состояние проекта, проект выполнен */
     const STATUS_READY = 3;
 
-    /** Project is rejected by admin */
+    /** Финальное состояние проекта, проект был отклонен администратором в соответствии с правилами сервиса */
     const STATUS_REJECTED = 4;
 
 
     private $noCurl;
     private $apiKey;
     private $apiEndpoint = 'http://getbot.guru/api';
+
     private $apiVersion = '1';
 
     function __construct($apiKey, $noCurl = false){
@@ -48,7 +91,7 @@ class GetbotApi {
             $response = curl_exec($ch);
             curl_close($ch);
         } else {
-            $response = file_get_contents($$url);
+            $response = file_get_contents($url);
         }
         
         return json_decode($response);
@@ -90,15 +133,14 @@ class GetbotApi {
      * @param int $mode
      * @return mixed array of StdClass for task
      */
-    function tasksList($status = GetbotApi::STATUS_ANY, $mode = GetbotApi::MODE_ANY) {
+    public function tasksList($status = GetbotApi::STATUS_ANY, $mode = GetbotApi::MODE_ANY) {
         return $this->get("tasksList", array(
             "status" => $status,
             "mode" => $mode,
         ));
     }
 
-
-    function taskCreate($name, $urls, $mode = GetbotApi::MODE_EXPRESS_LIGHT, $description = '') {
+    public function taskCreate($name, $urls, $mode = GetbotApi::MODE_EXPRESS_LIGHT, $description = '') {
         return $this->post("taskCreate", array(
             "name" => $name,
             "urls" => $urls,
@@ -107,21 +149,21 @@ class GetbotApi {
         ));
     }
 
-    function taskDetails($taskId) {
+    public function taskDetails($taskId) {
         return $this->get("taskDetails", array(
             "id" => $taskId));
     }
 
-    function taskLaunch($taskId) {
+    public function taskLaunch($taskId) {
         return $this->get("taskLaunch", array(
             "id" => $taskId));
     }
 
-    function userBalance() {
+    public function userBalance() {
         return $this->get("balance");
     }
 
-    function queueList() {
+    public function queueList() {
         return $this->get("queueList");
     }
 }

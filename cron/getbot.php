@@ -11,19 +11,12 @@ $db = ADONewConnection(DB_TYPE);
 $db->Execute('set charset utf8');
 $db->Execute('SET NAMES utf8');
 
-$day_start = 1422738000; //01.02.2015, 0:00:00
+$day_start = 1432069200; //20.05.2015, 0:00:00
 $day_end = time() - 90000; //90000 - отнимаем сутки + 1 час (время сервера)
 $api = new GetbotApi(GETBOT_APIKEY);
-//print_r($day_end);die();
-// Вытаскиваем все загруженные задачи, чтобы потом не загрузить их ещё раз
-$in_getbot = array();
-$tasks = $api->tasksList();
-foreach ($tasks as $task) {
-    $in_getbot[] = $task->description;
-}
 
-$body = "<h3>Запуск задач в GetBot от " . date("d-m-Y H:i:s") . "</h3><br>";
-$body .= "Выгружаются задачи, дата создания у которых не более " . date("d-m-Y H:i:s", $day_end) . " (" . $day_end . ")<br><br>";
+$body = "<h3>Запуск задач в GetBot от " . date("d-m-Y H:i:s") . "</h3>";
+$body .= "<small>Выгружаются задачи, дата создания у которых не более " . date("d-m-Y H:i:s", $day_end) . " (" . $day_end . ")</small><br><br>";
 // Проверяем баланс, если он больше нуля, то запускаем новые задачи в гетбот
 $user = $api->userBalance();
 if ($user->balance > 0) {
@@ -49,32 +42,36 @@ if ($user->balance > 0) {
     }
 }
 
+$links = $ids = array();
 // Заново проверяем баланс, если он Больше нуля, то выгружаем новые задачи в гетбот и запускаем их
 $balance = $api->userBalance();
 if ($balance->balance > 0) {
-    // Вытаскиваем все ВЫПОЛНЕНЫЕ задачи, у которых есть ссылка на статью
-    // ВАЖНО! Задания должны попасть в дату БОЛЬШУЮ начала выгрузки (чтобы не загружать в гетбот лишнее) и МЕНЬШУЮ сегодня минус 1 день
-    $zadaniya = $db->Execute("SELECT id, url_statyi, tema FROM zadaniya WHERE vipolneno='1' AND (date > '$day_start' AND date < '$day_end') AND (url_statyi != '' AND url_statyi IS NOT NULL) ORDER BY date")->GetAll();
+    // Вытаскиваем все ВЫПОЛНЕНЫЕ задачи, у которых есть ссылка на статью и которые ещё не загружались в ГетБот
+    // ВАЖНО! Задания должны попасть в дату БОЛЬШУЮ начала выгрузки (чтобы не загружать в гетбот лишнее) и МЕНЬШУЮ "сегодня минус 1 день"
+    $zadaniya = $db->Execute("SELECT id, url_statyi FROM zadaniya WHERE vipolneno='1' AND getbot='0' AND (date > '$day_start' AND date < '$day_end') AND (url_statyi != '' AND url_statyi IS NOT NULL) ORDER BY date")->GetAll();
     if (!empty($zadaniya)) {
         $body .= "<br><strong>Выгружаем новые задачи в GetBot  и запускаем их:</strong><br>";
         foreach ($zadaniya as $value) {
-            if (!in_array($value["id"], $in_getbot)) {
-                $task = $api->taskCreate($value["tema"], array($value["url_statyi"]), GetbotApi::MODE_EXPRESS_PRIORITY, $value["id"]); //MODE_EXPRESS
-                $id = $task->id;
-                if ($task->can_launch) {
-                    $result = $api->taskLaunch($id); // StdClass: status
-                    if ($result->status == 'ok') {
-                        $body .= $id . " (" . $value["id"] . ") -> Задание успешно запущено<br>";
-                        echo "Задание успешно запущено";
-                    } else if (!empty($result->errors)) {
-                        $body .= $id . " (" . $value["id"] . ") -> Ошибка запуска задания:<br>";
-                        foreach ($result->errors as $error) {
-                            $body .= "&emsp; - " . $error . "<br>";
-                            echo "Ошибка запуска задания: " . $error . "<br>";
-                        }
-                    }
+            $links[] = $value["url_statyi"];
+            $ids[] = $value["id"];
+        }
+        $data = date("d-m-Y H:i:s");
+        $description = implode(", ", $ids);
+
+        $task = $api->taskCreate($data, $links, GetbotApi::MODE_EXPRESS_PRIORITY, $description);
+        $id = $task->id;
+        if ($task->can_launch) {
+            $result = $api->taskLaunch($id); // >>StdClass: status
+            if ($result->status == 'ok') {
+                $body .= "Задания ($description) успешно запущены<br>";
+                $db->Execute("UPDATE zadaniya SET getbot='$id' WHERE id IN ($description)");
+                echo "Задания ($description) успешно запущены<br>";
+            } else if (!empty($result->errors)) {
+                $body .= "Ошибка запуска задания:<br>";
+                foreach ($result->errors as $error) {
+                    $body .= "&emsp; - " . $error . "<br>";
+                    echo "Ошибка запуска задания: " . $error . "<br>";
                 }
-                //print_r($result);die("die");
             }
         }
     }
@@ -92,7 +89,7 @@ $message["from_email"] = "news@iforget.ru";
 $message["from_name"] = "iforget";
 $message["to"] = array();
 $message["to"][0] = array("email" => MAIL_ADMIN);
-//$message["to"][1] = array("email" => MAIL_DEVELOPER);
+$message["to"][1] = array("email" => MAIL_DEVELOPER);
 $message["track_opens"] = null;
 $message["track_clicks"] = null;
 $message["auto_text"] = null;
@@ -100,6 +97,7 @@ $message["auto_text"] = null;
 try {
     $mandrill->messages->send($message);
 } catch (Exception $e) {
+    echo $e;
     echo $body;
 }
 echo "THE END\r\n";
