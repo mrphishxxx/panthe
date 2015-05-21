@@ -24,7 +24,7 @@ class user {
                         }
                     }
                 } else {
-                    $content = $this->sayty_user($db);
+                    $content = $this->sayty($db);
                 }
                 break;
 
@@ -69,6 +69,9 @@ class user {
                         break;
                     case 'load_rotapost':
                         $content = $this->sayty_load_rotapost($db);
+                        break;
+                    case 'thankspage':
+                        $content = $this->sayty_thankspage($db);
                         break;
                 }
                 break;
@@ -620,56 +623,6 @@ class user {
         $user_email = $_SESSION['user']['email'];
         $content = str_replace('[email]', $user_email, $content);
 
-        return $content;
-    }
-
-    function sayty($db) {
-        $content = file_get_contents(PATH . 'modules/user/tmp/sayty_view.tpl');
-
-        $uid = (int) $_SESSION['user']['id'];
-        $query = $db->Execute("select * from admins where id=$uid");
-        $res = $query->FetchRow();
-        $content = str_replace('[login]', $res['login'], $content);
-
-        $content = str_replace('[uid]', $uid, $content);
-
-        $sayty = '';
-        $query = $db->Execute("select * from sayty where uid=$uid order by id asc");
-        $n = 0;
-        while ($res = $query->FetchRow()) {
-            $sayty .= file_get_contents(PATH . 'modules/user/tmp/sayty_one.tpl');
-            $sayty = str_replace('[url]', $res['url'], $sayty);
-            $sayty = str_replace('[id]', $res['id'], $sayty);
-            $sayty = str_replace('[comment_viklad]', $res['comment_viklad'], $sayty);
-            $sid = $res['id'];
-            $z1 = $db->Execute("select count(*) from zadaniya where vrabote=1 and sid=$sid");
-            $z1 = $z1->FetchRow();
-            $z1 = $z1['count(*)'];
-            $sayty = str_replace('[z1]', $z1, $sayty);
-            $z2 = $db->Execute("select count(*) from zadaniya where dorabotka=1 and sid=$sid");
-            $z2 = $z2->FetchRow();
-            $z2 = $z2['count(*)'];
-            $sayty = str_replace('[z2]', $z2, $sayty);
-            $z3 = $db->Execute("select count(*) from zadaniya where vipolneno=1 and sid=$sid");
-            $z3 = $z3->FetchRow();
-            $z3 = $z3['count(*)'];
-            $sayty = str_replace('[z3]', $z3, $sayty);
-            $z7 = $db->Execute("select count(*) from zadaniya where navyklad=1 and sid=$sid");
-            $z7 = $z7->FetchRow();
-            $z7 = $z7['count(*)'];
-            $sayty = str_replace('[z7]', $z7, $sayty);
-            $z4 = $db->Execute("select count(*) from zadaniya where sid=$sid");
-            $z4 = $z4->FetchRow();
-            $z4 = $z4['count(*)'] - ($z1 + $z2 + $z3 + $z7);
-            $sayty = str_replace('[z4]', $z4, $sayty);
-        }
-        if ($sayty)
-            $sayty = str_replace('[sayty]', $sayty, file_get_contents(PATH . 'modules/user/tmp/sayty_top.tpl'));
-        else
-            $sayty = file_get_contents(PATH . 'modules/user/tmp/no.tpl');
-
-        $content = str_replace('[sayty]', $sayty, $content);
-        $content = str_replace('[uid]', $uid, $content);
         return $content;
     }
 
@@ -1280,10 +1233,10 @@ class user {
     }
 
 //##################################################### USER PART ############################################################
-
-    function sayty_user($db) {
+    
+    function sayty($db) {
         $content = file_get_contents(PATH . 'modules/user/tmp/sayty_view.tpl');
-
+        
         $uid = (int) $_SESSION['user']['id'];
         $query = $db->Execute("select * from admins where id=$uid");
         $res = $query->FetchRow();
@@ -1327,6 +1280,13 @@ class user {
             $sayty = file_get_contents(PATH . 'modules/user/tmp/no.tpl');
 
         $content = str_replace('[sayty]', $sayty, $content);
+        $content = str_replace('[uid]', $uid, $content);
+        return $content;
+    }
+    
+    function sayty_thankspage($db) {
+        $content = file_get_contents(PATH . 'modules/user/tmp/thanks_page.tpl');
+        $uid = (int) $_SESSION['user']['id'];
         $content = str_replace('[uid]', $uid, $content);
         return $content;
     }
@@ -1820,8 +1780,11 @@ class user {
             if ($user["active"] != 1 && isset($_REQUEST["postreg"]) && $_REQUEST["postreg"] == "step2") {
                 $url = "?action=postreg_step2";
             } else {
-                $url = "?module=user&action=sayty&uid=$uid";
+                $url = "?module=user&action=sayty&action2=thankspage";
+                //$url = "?module=user&action=sayty&uid=$uid";
             }
+            
+            header("Location: $url");
 
             $content = file_get_contents(PATH . 'modules/admins/tmp/admin/request.tpl');
             $content = str_replace('[alert]', 'Сайт успешно добавлен.', $content);
