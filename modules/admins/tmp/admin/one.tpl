@@ -1,6 +1,6 @@
 <tr [aktstyle]>
     <td class="add_ticket">
-        <a href="?module=admins&action=create_ticket&uid=[id]"><img src="/images/interface/add.png" /></a>
+        <a href="?module=admins&action=ticket&action2=create_ticket&uid=[id]"><img src="/images/interface/add.png" /></a>
     </td>
     <td>
         [aktivn]

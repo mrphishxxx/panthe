@@ -179,8 +179,8 @@ class copywriter {
             $wallet_type = $db->escape($_REQUEST['wallet_type']);
             $icq = $db->escape($_REQUEST['icq']);
             $scype = $db->escape($_REQUEST['scype']);
-            
-            if(!empty($wallet)){
+
+            if (!empty($wallet)) {
                 $wallet_model = $db->Execute("SELECT * FROM admins WHERE wallet='" . $wallet . "' AND id != $uid")->FetchRow();
                 if (!empty($wallet_model)) {
                     $error = "Не возможно сохранить профиль. Копирайтер с таким кошельком уже существует в системе!";
@@ -608,9 +608,10 @@ class copywriter {
         $send = isset($_REQUEST['send']) ? $_REQUEST['send'] : null;
         $id = $_REQUEST['id'];
         $display = $read = "";
+        $copywriter = $db->Execute("SELECT * FROM admins WHERE id='$uid'")->FetchRow();
         $task = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='$uid' AND id='$id'")->FetchRow();
         if (!empty($id)) {
-            if (!$send) {
+            if (!$send) { 
                 if ($task['navyklad']) {
                     $task['navyklad'] = 'checked';
                 } else {
@@ -652,10 +653,17 @@ class copywriter {
                 $db->Execute("UPDATE chat_admin_copywriter SET status=1 WHERE uid != '" . $_SESSION["user"]["id"] . "' AND zid='$id'");
                 if (!empty($task['ankor3']) || !empty($task['ankor2']) || !empty($task['ankor4']) || !empty($task['ankor5'])) {
                     $content = str_replace('[mn]', "ы", $content);
-                }
-                else
+                } else {
                     $content = str_replace('[mn]', "а", $content);
-
+                }
+                
+                if ($copywriter["trust"] == 0) {
+                    $content = str_replace('[trust]', "readonly='readonly'", $content);
+                    $content = str_replace('[trust_text]', "style='display:none'", $content);
+                } else {
+                    $content = str_replace('[trust]', "", $content);
+                    $content = str_replace('[trust_text]', "", $content);
+                }
 
                 $content = str_replace('[ankor_url]', (!empty($task['ankor'])) ? htmlspecialchars(' <a href="' . $task['url'] . '">' . $task['ankor'] . '</a>') : '', $content);
                 $content = str_replace('[ankor2_url2]', (!empty($task['ankor2'])) ? "<br>" . htmlspecialchars('<a href="' . $task['url2'] . '">' . $task['ankor2'] . '</a>') : '', $content);
@@ -676,14 +684,15 @@ class copywriter {
                 $rework = isset($_REQUEST['task_status']) ? 0 : 1;
                 $dorabotka = isset($_REQUEST['task_status']) ? 0 : 1;
                 $vilojeno = $task["vilojeno"];
-
+                $vrabote = isset($_REQUEST['task_status']) ? 0 : $task["vrabote"];
+                
                 //$arr = explode("\n", $text);
                 //$num_line = count($arr);
                 //$num_symbol = mb_strlen(str_replace("\r", "", str_replace("\n", "", $text)), "UTF-8");
                 $text_without_links = preg_replace('~<a\b[^>]*+>|</a\b[^>]*+>~', '', $text);
                 $num_symbol_without_space = mb_strlen(str_replace(" ", "", str_replace("\r", "", str_replace("\n", "", $text_without_links))), "UTF-8");
-
-                if ($navyklad == 1) {
+                $message = array();
+                if ($navyklad == 1 && $copywriter['trust'] == 1) {
                     if ($num_symbol_without_space < (int) $task["nof_chars"] || (empty($uniq) || $uniq < 95)) {
                         if ($uniq < 95) {
                             $error = "Уникальность статьи должна быть больше 95%! Читайте Описание задачи!";
@@ -707,7 +716,7 @@ class copywriter {
                         }
                         if ($task["navyklad"] != 1 && $task["vipolneno"] != 1 && $task["vilojeno"] != 1) {
                             $message["to"] = array();
-
+                            
                             if ($task["dorabotka"] == 1 || $task["rework"] == 1) {
                                 $body = "Добрый день! <br/><br/>
                                          Копирайтер '" . $_SESSION['user']['login'] . "' выполнил задание # $id.<br/><br/>
@@ -723,10 +732,10 @@ class copywriter {
                                         curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
                                         @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
                                         curl_setopt($curl, CURLOPT_POSTFIELDS, xmlrpc_encode_request('performer.login', array(LOGIN_IN_SAPE, PASS_IN_SAPE)));
-                                        curl_exec($curl);
+                                        $login_sape = curl_exec($curl);
                                         curl_close($curl);
                                     }
-
+                                    
                                     $data = xmlrpc_encode_request('performer.orderComplite', array((int) $task["sape_id"], array("title" => $title, "header" => $tema, "keywords" => $keywords, "description" => $description, "text" => $text)), array('encoding' => 'UTF-8', 'escaping' => 'markup'));
                                     if ($curl = curl_init()) {
                                         curl_setopt($curl, CURLOPT_URL, "http://api.articles.sape.ru/performer/index/");
@@ -751,8 +760,8 @@ class copywriter {
                                     } else {
                                         $request = array();
                                         $errors = json_decode($accept["faultString"]);
-                                        foreach ($errors->items as $err_type => $err_arr) {
-                                            foreach ($err_arr as $key_err => $err) {
+                                        foreach ($errors->items as $err_arr) {
+                                            foreach ($err_arr as $err) {
                                                 $request[] = $err;
                                             }
                                         }
@@ -762,12 +771,13 @@ class copywriter {
                                         $body = "Добрый день! <br/><br/>
                                                 Копирайтер '" . $_SESSION['user']['login'] . "' выполнил задание # $id.<br/><br/>
                                                 Данное задание <a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус на 'Готов'!<br/>
-                                                <br>Во время автоматической загрузке задачи в Sape произошкли ошибки:<br>";
+                                                <br>Во время автоматической загрузке задачи в Sape произошли ошибки:<br>";
                                         foreach ($request as $err) {
                                             $body .= "error = " . $err . "<br>";
                                         }
                                         $message["to"][0] = array("email" => MAIL_ADMIN);
                                         $message["to"][1] = array("email" => MAIL_DEVELOPER);
+                                        
                                     }
                                 } else {
                                     $message["to"][0] = array("email" => MAIL_ADMIN);
@@ -781,9 +791,8 @@ class copywriter {
 
                             require_once 'includes/mandrill/mandrill.php';
                             $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-                            $message = array();
                             $message["text"] = "Копирайтер отправил текст на выкладывание.";
-                            $message["subject"] = "[Задание Sape готово]";
+                            $message["subject"] = "[Ошибка отправки в Sape]";
                             $message["html"] = $body;
                             $message["from_email"] = "news@iforget.ru";
                             $message["from_name"] = "iforget";
@@ -792,8 +801,9 @@ class copywriter {
                             $message["auto_text"] = null;
 
                             try {
-                                if (!empty($message["to"]))
+                                if (!empty($message["to"])){
                                     $mandrill->messages->send($message);
+                                }
                             } catch (Exception $e) {
                                 echo 'Сообщение не отправлено!';
                             }
@@ -812,7 +822,7 @@ class copywriter {
                                               vilojeno='$vilojeno',
                                               rework='$rework',
                                               dorabotka='$dorabotka',
-                                              vrabote='0'
+                                              vrabote='$vrabote'
                                               WHERE id=$id";
                 $db->Execute($q);
 

@@ -118,6 +118,7 @@ class admins {
                     case 'close':
                         $content = $this->ticket_close($db);
                         break;
+                    
                     case 'create_ticket':
                         $content = $this->ticket_add($db);
                         break;
@@ -234,6 +235,9 @@ class admins {
                         break;
                     case 'withdrawal':
                         $content = $this->copywriters_withdrawal($db);
+                        break;
+                    case 'trust':
+                        $content = $this->copywriters_trust($db);
                         break;
                     case 'money':
                         switch (@$_REQUEST['action3']) {
@@ -519,7 +523,8 @@ class admins {
 
             if (!empty($db_res2['ankor3']) || !empty($db_res2['ankor2']) || !empty($db_res2['ankor4']) || !empty($db_res2['ankor5'])) {
                 $description = str_replace('[mn]', "ы", $description);
-            } else
+            }
+            else
                 $description = str_replace('[mn]', "а", $description);
 
 
@@ -752,7 +757,7 @@ class admins {
         $zadaniya = '';
         $array_zadanya = array();
         $array_copy = array();
-        if (@$_SESSION['sort'] == 'asc' or ! @$_SESSION['sort']) {
+        if (@$_SESSION['sort'] == 'asc' or !@$_SESSION['sort']) {
             $symb = '↓';
             $sort = 'asc';
         } else {
@@ -1139,7 +1144,8 @@ class admins {
                         echo "<b>Вы действительно хотите добавить эти сайты?</b><br>";
                         echo "<a href='?module=admins&action=sayty&uid=$uid'><input type='button' value='Нет'></a>";
                         echo "<a href='?module=admins&action=sayty&uid=$uid&action2=load&check=1'><input type='button' value='Да'></a>";
-                    } else
+                    }
+                    else
                         echo "Новых сайтов не найдено <a href='?module=admins&action=sayty&uid=$uid'><input type='button' value='Назад'></a>";
                 }
             }
@@ -1896,7 +1902,8 @@ class admins {
             while ($birga = $birgi->FetchRow()) {
                 if ($birga['url'] == $res['sistema']) {
                     $sistema .= "<option value='" . $birga['url'] . "' selected='selected'>" . $birga['url'] . "</option>";
-                } else
+                }
+                else
                     $sistema .= "<option value='" . $birga['url'] . "'>" . $birga['url'] . "</option>";
             }
             $content = str_replace('[sistema1]', $sistema, $content);
@@ -2280,8 +2287,8 @@ class admins {
         $content = str_replace('[type]', $type, $content);
 
         $admins_managers = array();
-        if(isset($_SESSION['admin']['id']) && isset($_SESSION['manager']['id'])) {
-            switch($_SERVER["PHP_SELF"]){
+        if (isset($_SESSION['admin']['id']) && isset($_SESSION['manager']['id'])) {
+            switch ($_SERVER["PHP_SELF"]) {
                 case "/admin.php" : $sql_if = "admin";
                     break;
                 case "/management.php" : $sql_if = "admin' OR type = 'manager";
@@ -2299,7 +2306,7 @@ class admins {
         $admins_managers = "(" . implode(",", $admins_managers) . ")";
         $all = $db->Execute("SELECT t.id FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE $condition a.id != 0 ORDER BY t.id DESC");
         $query = $db->Execute("SELECT t.* FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE $condition a.id != 0 ORDER BY t.status DESC, t.id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit);
-        
+
         $pegination = "";
         $tickets_all = $all->NumRows();
         if ($tickets_all > $limit) {
@@ -2376,8 +2383,8 @@ class admins {
             echo $content;
             exit();
         }
-        if(isset($_SESSION['admin']['id']) && isset($_SESSION['manager']['id'])) {
-            switch($_SERVER["PHP_SELF"]){
+        if (isset($_SESSION['admin']['id']) && isset($_SESSION['manager']['id'])) {
+            switch ($_SERVER["PHP_SELF"]) {
                 case "/admin.php" : $uid = $_SESSION['admin']['id'];
                     break;
                 case "/management.php" : $uid = $_SESSION['manager']['id'];
@@ -2387,7 +2394,7 @@ class admins {
         } else {
             $uid = (int) isset($_SESSION['admin']['id']) ? $_SESSION['admin']['id'] : $_SESSION['manager']['id'];
         }
-        
+
         $content = file_get_contents(PATH . 'modules/admins/tmp/admin/ticket_create.tpl');
         $type = isset($_REQUEST['type']) ? "type='" . $_REQUEST['type'] . "' AND " : "";
         $to_user = (int) (isset($_REQUEST['uid'])) ? $_REQUEST['uid'] : NULL;
@@ -2413,7 +2420,7 @@ class admins {
             }
         }
         $content = str_replace('[title_page]', $title_page, $content);
-        
+
         if (isset($_POST) && !empty($_POST)) {
             $to = $_REQUEST['ticket_to'];
             $subject = $_REQUEST['subject'];
@@ -2438,7 +2445,7 @@ class admins {
                 $body .= "<p><small><a href='http://iforget.ru/copywriter.php?action=unsubscribe'>Отписаться от рассылки</a></small></p>";
             }
             $body .= "Оставить и почитать отзывы Вы сможете в нашей ветке на <a href='http://searchengines.guru/showthread.php?p=12378271'>серчах</a><br/><br/>С уважением,<br/>Администрация проекта iForget.";
-            
+
             require_once 'includes/mandrill/mandrill.php';
             $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
             $message = array();
@@ -2452,7 +2459,7 @@ class admins {
             $message["track_opens"] = null;
             $message["track_clicks"] = null;
             $message["auto_text"] = null;
-            
+
             try {
                 $mandrill->messages->send($message);
                 $alert = 'Тикет успешно добавлен.';
@@ -2465,17 +2472,17 @@ class admins {
             $message["subject"] = "[Новый тикет в системе iforget]";
             $message["to"][0] = array("email" => $user['email']);
             try {
-                if ($user["mail_period"] > 0){
+                if ($user["mail_period"] > 0) {
                     $mandrill->messages->send($message);
                 }
             } catch (Exception $e) {
                 $alert = 'Письмо не отправлено! Возникли проблемы!';
             }
-            
+
             header("Location: ?module=admins&action=ticket");
             exit();
         }
-        
+
         $res = $db->Execute("select * from admins where id=$uid")->FetchRow();
         $content = str_replace('[login]', $res['login'], $content);
         $content = str_replace('[uid]', $uid, $content);
@@ -2544,7 +2551,7 @@ class admins {
             exit;
         }
         $content = file_get_contents(PATH . 'modules/admins/tmp/admin/ticket_full_view.tpl');
-        
+
         $uid = (int) (@$_SESSION['admin']['id'] ? $_SESSION['admin']['id'] : @$_SESSION['manager']['id']);
         $admin = $db->Execute("select * from admins where id=$uid")->FetchRow();
         $content = str_replace('[login]', $admin['login'], $content);
@@ -3708,11 +3715,11 @@ class admins {
             $content = str_replace('[balance_title]', "Баланс модератора: <b>" . $moder['login'] . "</b>", $content);
             $tasks = $db->Execute("SELECT z.* FROM zadaniya z WHERE z.who_posted = '" . $moder["id"] . "' AND z.vipolneno = 1 ORDER BY z.date DESC, z.id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit);
             $all_tasks = $db->Execute("SELECT z.* FROM zadaniya z WHERE z.who_posted = '" . $moder["id"] . "' AND z.vipolneno = 1 ORDER BY z.date DESC, z.id DESC");
-            $moders_money = $db->Execute("SELECT * FROM moders_money WHERE moder_id = '".$moder["id"]."'")->GetAll();
+            $moders_money = $db->Execute("SELECT * FROM moders_money WHERE moder_id = '" . $moder["id"] . "'")->GetAll();
             foreach ($moders_money as $task) {
                 $money[$task["zid"]] = $task["price"];
             }
-            
+
             //$count_task = $db->Execute("SELECT count(id) as num FROM zadaniya WHERE who_posted = '" . $moder["id"] . "' AND vipolneno = 1")->FetchRow();
             $all_money = $db->Execute("SELECT SUM(price) as sum FROM moders_money WHERE moder_id = '" . $moder["id"] . "'")->FetchRow();
             $withdrawal = $db->Execute("SELECT sum(sum) as summa FROM withdrawal WHERE uid = " . $moder["id"])->FetchRow();
@@ -3781,7 +3788,7 @@ class admins {
             $zadaniya .= '<td>' . date("d.m.Y", $task["date"]) . '</td>';
             $zadaniya .= '<td class="state ' . $new_s . '"><span class="ico"></span></td>';
             $zadaniya .= '</tr>';
-            if ($task["vipolneno"] == 1){
+            if ($task["vipolneno"] == 1) {
                 $sum += ($task["price_viklad"]);
             }
         }
@@ -3878,12 +3885,13 @@ class admins {
         }
 
         $table = "";
-        $copywriters = $db->Execute("SELECT id, login FROM admins WHERE type = 'copywriter' AND active = 1 AND banned = 0 ORDER BY login ASC");
+        $copywriters = $db->Execute("SELECT id, login, trust FROM admins WHERE type = 'copywriter' AND active = 1 AND banned = 0 ORDER BY login ASC");
         while ($copywriter = $copywriters->FetchRow()) {
             $tr = "<tr>";
             $tr .= "<td style='text-align:left'>" . $copywriter["login"] . "</td>";
             $tr .= "<td>" . ($statistics[$copywriter["id"]]["vipolneno"] ? $statistics[$copywriter["id"]]["vipolneno"] : 0) . "</td>";
             $tr .= "<td>" . ($statistics[$copywriter["id"]]["vrabote"] ? $statistics[$copywriter["id"]]["vrabote"] : 0) . "</td>";
+            $tr .= "<td><input class='trust' type='checkbox' id='".$copywriter["id"]."' " . (($copywriter["trust"] == 1) ? 'checked="checked"' : '') . " /></td>";
             $tr .= "<td class='lock_ok'><a href='/admin.php?module=admins&action=copywriters&action2=banned&id=" . $copywriter["id"] . "' class='ico'></a></td>";
             $tr .= "</tr>";
             $table .= $tr;
@@ -3999,8 +4007,8 @@ class admins {
             $tr .= "<td>" . $copywriter["login"] . "</td>";
             $tr .= "<td>" . $tasks_vipolneno["num"] . "</td>";
             $tr .= "<td>" . ((int) $tasks_vipolneno["chars"] / 1000 * 21) . "</td>";
-            $tr .= "<td class='withdrawal'>" . round($summa,2) . "</td>";
-            $tr .= "<td class='balance'><a href='?module=admins&action=copywriters&action2=decode_balance&copywriter=" . $copywriter["id"] . "'>" . round($balance,2) . "</a></td>";
+            $tr .= "<td class='withdrawal'>" . round($summa, 2) . "</td>";
+            $tr .= "<td class='balance'><a href='?module=admins&action=copywriters&action2=decode_balance&copywriter=" . $copywriter["id"] . "'>" . round($balance, 2) . "</a></td>";
             $tr .= "<td><input type='text' value='' class='mini' id='" . $copywriter["id"] . "' /></td>";
             $tr .= "<td class='output'><a href='#' class='ico' onclick='return false;'></a></td>";
             $tr .= "</tr>";
@@ -4015,7 +4023,7 @@ class admins {
         $copywriter = @$_REQUEST['copywriter'];
         $sum = @$_REQUEST['sum'];
         $date = date("Y-m-d H:i:s");
-        
+
         if (!empty($copywriter) && !empty($sum)) {
             $db->Execute("INSERT INTO withdrawal (uid, sum, date) VALUES ('$copywriter', '$sum', '$date')");
             header('location:' . $_SERVER['HTTP_REFERER']);
@@ -4137,6 +4145,21 @@ class admins {
         }
         $content = str_replace('[table]', $table, $content);
         return $content;
+    }
+    
+    function copywriters_trust($db) {
+        $id = (int) $_POST['id'];
+        $copywriter = $db->Execute("SELECT * FROM admins WHERE id = $id")->FetchRow();
+        if(!empty($copywriter)){
+            if ($copywriter["trust"] == 0) {
+                $db->Execute("UPDATE admins SET trust = 1 WHERE id = $id");
+                echo "Копирайтер теперь в числе доверенных!";
+            } else {
+                $db->Execute("UPDATE admins SET trust = 0 WHERE id = $id");
+                echo "Копирайтер потерял доверие!";
+            }
+        }
+        die();
     }
 
     function statistics($db) {
@@ -4922,7 +4945,8 @@ class admins {
         if (!empty($error)) {
             $query_p = implode(' \r\n ', $error);
             $content = str_replace('[error]', $query_p, $content);
-        } else
+        }
+        else
             $content = str_replace('[error]', "", $content);
 
         $send = @$_REQUEST['send'];
@@ -5496,7 +5520,8 @@ class admins {
 
             if (!empty($task['ankor2']) || !empty($task['ankor3']) || !empty($task['ankor4']) || !empty($task['ankor5'])) {
                 $description = str_replace('[mn]', "ы", $description);
-            } else
+            }
+            else
                 $description = str_replace('[mn]', "а", $description);
 
 
@@ -5779,7 +5804,7 @@ class admins {
             $birjs = $db->Execute("SELECT * FROM birjs WHERE uid = " . $user["id"])->FetchRow();
             $sayty = $db->Execute("SELECT * FROM orders WHERE uid = " . $user["id"])->FetchRow();
             if (
-                    (!isset($orders["id"]) OR empty($orders["id"])) OR ( !isset($birjs["bid"]) OR empty($birjs["bid"])) OR ( !isset($sayty["id"]) OR empty($sayty["id"]))
+                    (!isset($orders["id"]) OR empty($orders["id"])) OR (!isset($birjs["bid"]) OR empty($birjs["bid"])) OR (!isset($sayty["id"]) OR empty($sayty["id"]))
             ) {
                 $table .= "<tr><td><a href='?module=admins&action=edit&uid=" . $user["id"] . "'>" . $user["login"] . "</a></td><td>" . $user["email"] . "</td></tr>";
             }
@@ -5884,7 +5909,7 @@ class admins {
             $birjs = $db->Execute("SELECT * FROM birjs WHERE uid = " . $user["id"])->FetchRow();
             $sayty = $db->Execute("SELECT * FROM orders WHERE uid = " . $user["id"])->FetchRow();
             if (
-                    (!isset($orders["id"]) OR empty($orders["id"])) OR ( !isset($birjs["bid"]) OR empty($birjs["bid"])) OR ( !isset($sayty["id"]) OR empty($sayty["id"]))
+                    (!isset($orders["id"]) OR empty($orders["id"])) OR (!isset($birjs["bid"]) OR empty($birjs["bid"])) OR (!isset($sayty["id"]) OR empty($sayty["id"]))
             ) {
                 $non_active_users[$user["id"]] = $user;
                 $message["to"][0] = array("email" => $user["email"]);
@@ -5957,7 +5982,7 @@ class admins {
             $birjs = $db->Execute("SELECT * FROM birjs WHERE uid = " . $user["id"])->FetchRow();
             $sayty = $db->Execute("SELECT * FROM orders WHERE uid = " . $user["id"])->FetchRow();
             if (
-                    (!isset($orders["id"]) OR empty($orders["id"])) OR ( !isset($birjs["bid"]) OR empty($birjs["bid"])) OR ( !isset($sayty["id"]) OR empty($sayty["id"]))
+                    (!isset($orders["id"]) OR empty($orders["id"])) OR (!isset($birjs["bid"]) OR empty($birjs["bid"])) OR (!isset($sayty["id"]) OR empty($sayty["id"]))
             ) {
                 $row++;
                 $objPHPExcel->getActiveSheet()->getStyle("A$row:B$row")->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
