@@ -118,7 +118,7 @@ class admins {
                     case 'close':
                         $content = $this->ticket_close($db);
                         break;
-                    
+
                     case 'create_ticket':
                         $content = $this->ticket_add($db);
                         break;
@@ -400,12 +400,59 @@ class admins {
 
     function sayty($db) {
         $content = file_get_contents(PATH . 'modules/admins/tmp/admin/sayty_view.tpl');
-
         $uid = (int) $_REQUEST['uid'];
-        $user = $db->Execute("select * from admins where id=$uid")->FetchRow();
+        $user = $db->Execute("SELECT * FROM admins WHERE id=$uid")->FetchRow();
         $content = str_replace('[login]', $user['login'], $content);
         $sayty = '';
-        $query = $db->Execute("select * from sayty where uid=$uid order by id asc");
+        $sites = $db->Execute("SELECT * FROM sayty WHERE uid=$uid ORDER BY id ASC")->GetAll();
+        $neobrabot = $dorabotka = $vilojeno = $vrabote = $navyklad = $neo = array();
+        $zadaniya = $db->Execute("SELECT * FROM zadaniya WHERE vipolneno!=1 AND uid=$uid");
+        while ($task = $zadaniya->FetchRow()) {
+            if (!isset($navyklad[$task["sid"]])) {
+                $navyklad[$task["sid"]] = 0;
+            }
+            if (!isset($vrabote[$task["sid"]])) {
+                $vrabote[$task["sid"]] = 0;
+            }
+            if (!isset($vilojeno[$task["sid"]])) {
+                $vilojeno[$task["sid"]] = 0;
+            }
+            if (!isset($dorabotka[$task["sid"]])) {
+                $dorabotka[$task["sid"]] = 0;
+            }
+            if (!isset($neobrabot[$task["sid"]])) {
+                $neobrabot[$task["sid"]] = 0;
+            }
+
+
+            if ($task["navyklad"] == 1) {
+                $navyklad[$task["sid"]] += 1;
+            }
+            if ($task["vrabote"] == 1 && empty($task["dorabotka"]) && empty($task["vipolneno"]) && empty($task["navyklad"]) && empty($task["vilojeno"])) {
+                $vrabote[$task["sid"]] += 1;
+            }
+            if ($task["vilojeno"] == 1) {
+                $vilojeno[$task["sid"]] += 1;
+            }
+            if ($task["dorabotka"] == 1) {
+                $dorabotka[$task["sid"]] += 1;
+            }
+            if (empty($task["vrabote"]) && empty($task["dorabotka"]) && empty($task["vipolneno"]) && empty($task["navyklad"]) && empty($task["vilojeno"])) {
+                $neobrabot[$task["sid"]] += 1;
+                $neobrabot[$task["sid"]]["n"] += 1;
+            }
+        }
+        foreach ($sites as $site) {
+            $sayty .= file_get_contents(PATH . 'modules/admins/tmp/admin/sayty_one.tpl');
+            $sayty = str_replace('[url]', $site['url'], $sayty);
+            $sayty = str_replace('[id]', $site['id'], $sayty);
+            $sayty = str_replace('[z1]', $vrabote[$site['id']] ? $vrabote[$site['id']] : 0, $sayty);
+            $sayty = str_replace('[z2]', $dorabotka[$site['id']] ? $dorabotka[$site['id']] : 0, $sayty);
+            $sayty = str_replace('[z4]', $neobrabot[$site['id']] ? $neobrabot[$site['id']] : 0, $sayty);
+            $sayty = str_replace('[z7]', $navyklad[$site['id']] ? $navyklad[$site['id']] : 0, $sayty);
+            $sayty = str_replace('[z5]', $vilojeno[$site['id']] ? $vilojeno[$site['id']] : 0, $sayty);
+        }
+        /*$query = $db->Execute("SELECT * FROM sayty WHERE uid=$uid ORDER BY id ASC");
         while ($res = $query->FetchRow()) {
             $sayty .= file_get_contents(PATH . 'modules/admins/tmp/admin/sayty_one.tpl');
             $sayty = str_replace('[url]', $res['url'], $sayty);
@@ -423,12 +470,12 @@ class admins {
             $sayty = str_replace('[z4]', abs((int) $z4['count(*)']), $sayty);
             $sayty = str_replace('[z5]', $z5['count(*)'], $sayty);
             $sayty = str_replace('[z7]', $z7['count(*)'], $sayty);
-        }
-        if ($sayty)
+        }*/
+        if ($sayty) {
             $sayty = str_replace('[sayty]', $sayty, file_get_contents(PATH . 'modules/admins/tmp/admin/sayty_top.tpl'));
-        else
+        } else {
             $sayty = file_get_contents(PATH . 'modules/admins/tmp/admin/no.tpl');
-
+        }
         $content = str_replace('[sayty]', $sayty, $content);
 
         if (!@$_SESSION["admin"]["id"]) {
@@ -827,26 +874,6 @@ class admins {
         }
         $pegination .= '</div>';
         $profil .= microtime() . "  - AFTER PEGINATION" . "\r\n";
-        $pass = ETXT_PASS;
-        $params = array('method' => 'tasks.listTasks', 'token' => '29aa0eec2c77dd6d06e23b3faaef9eed', 'status' => '3');
-        ksort($params);
-        $data = array();
-        $data2 = array();
-        foreach ($params as $k => $v) {
-            $data[] = $k . '=' . $v;
-            $data2[] = $k . '=' . urlencode($v);
-        }
-        $sign = md5(implode('', $data) . md5($pass . 'api-pass'));
-        $url = 'https://www.etxt.ru/api/json/?' . implode('&', $data2) . '&sign=' . $sign;
-        $profil .= microtime() . "  - BEFORE curl 1" . "\r\n";
-        if ($curl = curl_init()) {
-            curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            $out = curl_exec($curl);
-            curl_close($curl);
-        }
-        $etxt_list = json_decode($out);
-        $profil .= microtime() . "  - AFTER curl 1" . "\r\n";
         while ($res = $query->FetchRow()) {
             $startTimeStamp = ($res['date']);
             $endTimeStamp = strtotime(date("Y-m-d"));
@@ -858,11 +885,12 @@ class admins {
             }
 
             $zadaniya = file_get_contents(PATH . 'modules/admins/tmp/admin/zadaniya_one.tpl');
-            $zadaniya = str_replace('[url]', (mb_substr(mb_substr($res['url'], strpos($res['url'], "http")), 0, 30)), $zadaniya);
+            $url = (mb_substr(mb_substr($res['url'], mb_strpos($res['url'], "http")), 0, 30));
+            $zadaniya = str_replace('[url]', $url, $zadaniya);
             $zadaniya = str_replace('[id]', $res['id'], $zadaniya);
             $zadaniya = str_replace('[etxt_id]', $res['task_id'], $zadaniya);
             $zadaniya = str_replace('[date]', date('d.m.Y', $res['date']), $zadaniya);
-            $zadaniya = str_replace('[tema]', mb_substr($res['tema'], 0, 100), $zadaniya);
+            $zadaniya = str_replace('[tema]', mb_substr($res['tema'], 0, 50), $zadaniya);
 
             $new_s = "";
             if ($res['dorabotka']) {
@@ -886,61 +914,10 @@ class admins {
             $zadaniya = str_replace('[status]', $new_s, $zadaniya);
             $zadaniya = str_replace('[bg]', 'style="background:' . $bg . '"', $zadaniya);
 
-            $etxt_status = $task_stat = "";
-            if (!empty($etxt_list)) {
-                foreach ($etxt_list as $k => $v) {
-                    $v = (array) $v;
-                    if ($v['id'] == $res['task_id']) {
-                        $profil .= microtime() . "  - BEFORE CURL's getResult - " . $v['id'] . "\r\n";
-                        $params = array('method' => 'tasks.getResults', 'token' => '29aa0eec2c77dd6d06e23b3faaef9eed', 'id' => $v['id']);
-                        ksort($params);
-                        $data = array();
-                        $data2 = array();
-                        foreach ($params as $k => $v) {
-                            $data[] = $k . '=' . $v;
-                            $data2[] = $k . '=' . urlencode($v);
-                        }
-                        $sign = md5(implode('', $data) . md5($pass . 'api-pass'));
-                        $url = 'https://www.etxt.ru/api/json/?' . implode('&', $data2) . '&sign=' . $sign;
-                        try {
-                            if ($curl = curl_init()) {
-                                curl_setopt($curl, CURLOPT_URL, $url);
-                                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                                $cur_out = curl_exec($curl);
-                                curl_close($curl);
-                            }
-                            //$cur_out = file_get_contents($url);
-                            $task_stat = json_decode($cur_out);
-                        } catch (Exception $e) {
-                            echo "Error<br>";
-                        }
-
-                        $file_href = "";
-                        $file_path = "";
-                        if (!empty($task_stat)) {
-                            foreach ($task_stat as $kt => $vt) {
-                                $vt = (array) $vt;
-                                $file_href = (array) $vt['files'];
-                                $file_href_parts = (array) $file_href['file'];
-                                if ($file_href_parts['path']) {
-                                    $file_path = $file_href_parts['path'];
-                                } else {
-                                    $file_href_parts = (array) $file_href['text'];
-                                    $file_path = $file_href_parts['path'];
-                                }
-                            }
-                        }
-                        if ($file_path) {
-                            $etxt_status = "<a href='" . $file_path . "' target='_blank' style='color:#000; text-decoration:underline;'>статья</a>";
-                        }
-                        $profil .= microtime() . "  - AFTER CURL 2" . "\r\n";
-                        break;
-                    }
-                }
-            }
-
-            if (!$etxt_status && $res['text']) {
+            if ($res['text']) {
                 $etxt_status = "текст";
+            } else {
+                $etxt_status = "";
             }
             $zadaniya = str_replace('[etxt_status]', $etxt_status, $zadaniya);
             if (empty($res['copy'])) {
@@ -3891,7 +3868,7 @@ class admins {
             $tr .= "<td style='text-align:left'>" . $copywriter["login"] . "</td>";
             $tr .= "<td>" . ($statistics[$copywriter["id"]]["vipolneno"] ? $statistics[$copywriter["id"]]["vipolneno"] : 0) . "</td>";
             $tr .= "<td>" . ($statistics[$copywriter["id"]]["vrabote"] ? $statistics[$copywriter["id"]]["vrabote"] : 0) . "</td>";
-            $tr .= "<td><input class='trust' type='checkbox' id='".$copywriter["id"]."' " . (($copywriter["trust"] == 1) ? 'checked="checked"' : '') . " /></td>";
+            $tr .= "<td><input class='trust' type='checkbox' id='" . $copywriter["id"] . "' " . (($copywriter["trust"] == 1) ? 'checked="checked"' : '') . " /></td>";
             $tr .= "<td class='lock_ok'><a href='/admin.php?module=admins&action=copywriters&action2=banned&id=" . $copywriter["id"] . "' class='ico'></a></td>";
             $tr .= "</tr>";
             $table .= $tr;
@@ -4146,11 +4123,11 @@ class admins {
         $content = str_replace('[table]', $table, $content);
         return $content;
     }
-    
+
     function copywriters_trust($db) {
         $id = (int) $_POST['id'];
         $copywriter = $db->Execute("SELECT * FROM admins WHERE id = $id")->FetchRow();
-        if(!empty($copywriter)){
+        if (!empty($copywriter)) {
             if ($copywriter["trust"] == 0) {
                 $db->Execute("UPDATE admins SET trust = 1 WHERE id = $id");
                 echo "Копирайтер теперь в числе доверенных!";

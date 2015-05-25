@@ -99,9 +99,13 @@ function getTask($db, $uid) {
     }
 
     if (count($rows) === 0) {
+        echo "No tasks:" . $data['uid'] . "<br>";
         $driver->close();
         return null;
     }
+
+    echo "TASKS:" . $data['uid'] . "<br>";
+
     $sites_to_user = array();
     $sayty = $db->Execute("SELECT * FROM sayty WHERE uid='" . $data['uid'] . "' AND (blogun_id IS NOT NULL AND blogun_id != 0)");
     while ($site = $sayty->FetchRow()) {
@@ -130,35 +134,71 @@ function getTask($db, $uid) {
         $driver->get($href);
         $description = $driver->findElement(WebDriverBy::xpath("//p[@class='getcodeText']"));
         $data['comments'] = $description->getText();
-        $data['url'] = '*';$data['url2'] = '*';$data['url3'] = '*';$data['url4'] = '*';$data['url5'] = '*';
-		$data['ankor'] = '*';$data['ankor2'] = '*';$data['ankor3'] = '*';$data['ankor4'] = '*';$data['ankor5'] = '*';
-
+        $data['url'] = '*';
+        $data['url2'] = '*';
+        $data['url3'] = '*';
+        $data['url4'] = '*';
+        $data['url5'] = '*';
+        $data['ankor'] = '*';
+        $data['ankor2'] = '*';
+        $data['ankor3'] = '*';
+        $data['ankor4'] = '*';
+        $data['ankor5'] = '*';
+        $keywords = array();
         if (count($driver->findElements(WebDriverBy::xpath("//textarea[@readonly='']"))) === 0) {
             //ESLI ZAYAVKA BEZ URL ILI ANKORA????
             //continue;
-		} else {
-			$url = $driver->findElements(WebDriverBy::xpath("//textarea[@readonly='']"));
-			for($j=0; $j<count($url); $j++)
-			{
-				$txt = $url[$j]->getText();
-				
-				if($j==0) $urlKey = 'url'; else $urlKey = 'url'.($j+1);
-				if($j==0) $ankorKey = 'ankor'; else $ankorKey = 'ankor'.($j+1);
-				
-				if(preg_match('/<a href="([^"]+)">([^<]+)<\/a>/i', $txt, $subs))
-				{
-					$data[$urlKey] = $subs[1];
-					$data[$ankorKey] = $subs[2];
-				}
-				else
-				{
-					$data[$urlKey] = $txt;
-					$data[$ankorKey] = '';
-				}
-			}
-			
-				
-			}
+        } else {
+            $url = $driver->findElements(WebDriverBy::xpath("//textarea[@readonly='']"));
+            for ($j = 0; $j < count($url); $j++) {
+                $txt = $url[$j]->getText();
+
+                if ($j == 0)
+                    $urlKey = 'url';
+                else
+                    $urlKey = 'url' . ($j + 1);
+                if ($j == 0)
+                    $ankorKey = 'ankor';
+                else
+                    $ankorKey = 'ankor' . ($j + 1);
+
+                if (preg_match('/<a href="([^"]+)">([^<]+)<\/a>/i', $txt, $subs)) {
+                    $data[$urlKey] = $subs[1];
+                    $data[$ankorKey] = $subs[2];
+                    $keywords[] = $subs[2];
+                } else {
+                    $data[$urlKey] = $txt;
+                    $data[$ankorKey] = '';
+                }
+            }
+        }
+
+        $exists = $db->Execute('SELECT * FROM zadaniya WHERE sistema="https://blogun.ru/" AND b_id=' . $data['id'] . ' AND uid=' . $data['uid'])->FetchRow();
+        if (empty($exists)) {
+            $first = mb_strtoupper(mb_substr($data["ankor"], 0, 1, 'UTF-8'), 'UTF-8'); //первая буква
+            $first = str_replace("?", "", $first);
+            $last = mb_strtolower(mb_substr($data["ankor"], 1), 'UTF-8'); //все кроме первой буквы
+            $last = ($last[0] == "?") ? mb_substr($last, 1) : $last;
+            $data["tema"] = mysql_real_escape_string($first . $last);
+            $data["keywords"] = implode($keywords, ",");
+            $db->Execute("INSERT into zadaniya(sistema, sid, b_id, comments, 
+                    url, ankor, 
+                    url2, ankor2,
+                    url3, ankor3,
+                    url4, ankor4,
+                    url5, ankor5,
+                    uid, vrabote, navyklad, vilojeno, vipolneno, dorabotka, type_task, date, tema, keywords) VALUES 
+                    ('https://blogun.ru/', '" . (array_search($data['idblog'], $sites_to_user)) . "', '" . $data['id'] . "', '" . $data['comments'] . "',
+                        '" . $data['url'] . "','" . $data['ankor'] . "',
+                        '" . $data['url2'] . "','" . $data['ankor2'] . "',
+                        '" . $data['url3'] . "','" . $data['ankor3'] . "',
+                        '" . $data['url4'] . "','" . $data['ankor4'] . "',
+                        '" . $data['url5'] . "','" . $data['ankor5'] . "',
+                        '" . $data['uid'] . "',0,0,0,0,0,'" . $data['type_task'] . "', '" . time() . "', '".$data["tema"]."', '".$data["keywords"]."')");
+        } else {
+            echo $data['id'] . " - TASK EXIST\r\n";
+            //dont do anything
+        }
     }
     $driver->quit();
     return;
