@@ -658,7 +658,7 @@ class copywriter {
                 }
                 
                 if ($copywriter["trust"] == 0) {
-                    $content = str_replace('[trust]', "readonly='readonly'", $content);
+                    $content = str_replace('[trust]', "readonly='readonly' disabled", $content);
                     $content = str_replace('[trust_text]', "style='display:none'", $content);
                 } else {
                     $content = str_replace('[trust]', "", $content);

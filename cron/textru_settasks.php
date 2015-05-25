@@ -13,7 +13,17 @@ $db->Execute('set charset utf8');
 $db->Execute('SET NAMES utf8');
 
 $API = new APITextRu(TEXTRU_APIKEY);
-$tasks = $db->Execute('SELECT id, text FROM zadaniya_new WHERE copywriter != 0 AND navyklad=1 AND textru_id IS NULL AND (text != "" AND text IS NOT NULL) ORDER BY id DESC')->GetAll();
+$users = array();
+$copywriters =$db->Execute('SELECT id FROM admins WHERE type="copywriter" AND trust = 0')->GetAll();
+foreach ($copywriters as $copywriter) {
+    $users[] = $copywriter["id"];
+}
+if(!empty($users)){
+    $trust = implode(",", $users);
+} else {
+    $trust = "0";
+}
+$tasks = $db->Execute('SELECT id, text FROM zadaniya_new WHERE copywriter != 0 AND navyklad=1 AND textru_id IS NULL AND (text != "" AND text IS NOT NULL) AND copywriter IN ('.$trust.') ORDER BY id DESC')->GetAll();
 
 if (!empty($tasks)) {
     foreach ($tasks as $task) {
@@ -21,7 +31,6 @@ if (!empty($tasks)) {
         if (is_string($result)) {
             $db->Execute('UPDATE zadaniya_new SET textru_id = "' . $result . '" WHERE id = ' . $task["id"]);
         } elseif (is_array($result)) {
-            require_once 'includes/mandrill/mandrill.php';
             $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
             $mail = array();
             $mail["html"] = "<br>Не получилось отправить задачу в text.ru (проверка текста в задаче " . $task["id"] . " - не возможна). <br> ОШИБКА: " . $result["code"] . "-> " . $result["description"];
@@ -46,5 +55,5 @@ if (!empty($tasks)) {
 }
 
 
-die("die");
+die("end");
 ?>

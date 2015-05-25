@@ -50,7 +50,7 @@ if (!empty($id_user_sape) && !empty($tasks)) {
         }
         $task = xmlrpc_decode($detail);
         $body .= $sape_id."(".$task["status"].");<br> ";
-        if ($task["status"] == 50) {
+        if ($task["status"] == 50 || $task["status"] == 0) {
             //echo "Выполнена задача, ID = ".$id."<br>";
             $body .= "Выполнена задача, ID = ".$id."<br>";
             $db->Execute("UPDATE zadaniya_new SET vilojeno='0', vipolneno='1', dorabotka = '0', navyklad = '0' WHERE id=" . $id);
