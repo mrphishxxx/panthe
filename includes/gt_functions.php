@@ -199,9 +199,11 @@
                     $browser
                         ->WebBrowser("locationToArticleViwDone")
                         ->location(MIRALINKS_URL . "project_articles/view/" . $article_id);
-                    //todo: delay
+                    usleep(2000000);
                 } catch (Zend_Http_Client_Exception $e) {
-                    //echo 'error<br>'.$e;
+                    $i--;
+                    echo 'Zend_Http_Client_Exception function - loginTryDone_getPlaceExtended (if): ',  $e->getMessage(), "\n";
+                    usleep(10000000);
                 }
             } else
                 $result_data['place'][$i]['extended_data'] = NULL;

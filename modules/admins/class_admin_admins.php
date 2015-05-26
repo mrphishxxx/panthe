@@ -516,7 +516,7 @@ class admins {
                 $cur_balans = $this->getUserBalans($uid, $db, 1);
                 if ($db_res2['lay_out'] == 1) {
                     $cur_balans -= 15;
-                } else if ($db_res2['sistema'] == "http://miralinks.ru/" || $db_res2['sistema'] == "http://pr.sape.ru/" || $db_res2['sistema'] == "http://getgoodlinks.ru/" || $db_res2['sistema'] == "http://rotapost.ru/") {
+                } else if ($db_res2['sistema'] == "http://miralinks.ru/" || $db_res2['sistema'] == "https://gogetlinks.net/" || $db_res2['sistema'] == "http://pr.sape.ru/" || $db_res2['sistema'] == "http://getgoodlinks.ru/" || $db_res2['sistema'] == "http://rotapost.ru/") {
                     $colvos = 2000;
                     switch ($sinfo['cena']) {
                         case 20:$cur_balans -= 60;
@@ -539,7 +539,9 @@ class admins {
                     break;
                 }
             }
-
+            if($db_res2['sistema'] == "http://miralinks.ru/" || $db_res2['sistema'] == "https://gogetlinks.net/" || $db_res2['sistema'] == "http://pr.sape.ru/" || $db_res2['sistema'] == "http://getgoodlinks.ru/" || $db_res2['sistema'] == "http://rotapost.ru/") {
+                $colvos = 2000;
+            }
 
             $tema = $db_res2['tema'];
             $description = '1)Cтатья [colvos] символов без пробелов, в тексте должн[mn] быть фраз[mn] "[ankor]",[ankor2][ankor3][ankor4][ankor5] заключенная в {} 
@@ -747,7 +749,7 @@ class admins {
                 $price = 0;
                 if ($db_res2['lay_out'] == 1) {
                     $price = 15;
-                } else if ($db_res2['sistema'] == "http://miralinks.ru/" || $db_res2['sistema'] == "http://pr.sape.ru/" || $db_res2['sistema'] == "http://getgoodlinks.ru/" || $db_res2['sistema'] == "http://rotapost.ru/") {
+                } else if ($db_res2['sistema'] == "http://miralinks.ru/" || $db_res2['sistema'] == "https://gogetlinks.net/" || $db_res2['sistema'] == "http://pr.sape.ru/" || $db_res2['sistema'] == "http://getgoodlinks.ru/" || $db_res2['sistema'] == "http://rotapost.ru/") {
                     switch ($sinfo['cena']) {
                         case 20:$price = 60;
                             break;
