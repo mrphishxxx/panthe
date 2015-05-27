@@ -1503,7 +1503,7 @@ class admins {
                 $price = 0;
                 if ($lay_out == 1 || $lay_out == "1") {
                     $price = 15;
-                } elseif ($sistema == "http://miralinks.ru/" || $sistema == "http://pr.sape.ru/" || $sistema == "http://getgoodlinks.ru/") {
+                } elseif ($sistema == "http://miralinks.ru/" || $sistema == "http://pr.sape.ru/" || $sistema == "http://getgoodlinks.ru/" || $sistema == "https://gogetlinks.net/") {
                     switch ($task_site['cena']) {
                         case 20:$price = 60;
                             break;
@@ -2060,7 +2060,7 @@ class admins {
                 $price = 0;
                 if ($lay_out == 1 || $lay_out == "1") {
                     $price = 15;
-                } elseif ($sistema == "http://miralinks.ru/" || $sistema == "http://pr.sape.ru/" || $sistema == "http://getgoodlinks.ru/") {
+                } elseif ($sistema == "http://miralinks.ru/" || $sistema == "http://pr.sape.ru/" || $sistema == "http://getgoodlinks.ru/" || $sistema == "https://gogetlinks.net/") {
                     switch ($task_site['cena']) {
                         case 20:$price = 60;
                             break;
@@ -3242,7 +3242,7 @@ class admins {
             $price = 0;
             if (@$_REQUEST['lay_out'] == 1 || @$_REQUEST['lay_out'] == "1") {
                 $price = 15;
-            } elseif ($sistema == "http://miralinks.ru/" || $sistema == "http://pr.sape.ru/" || $sistema == "http://getgoodlinks.ru/") {
+            } elseif ($sistema == "http://miralinks.ru/" || $sistema == "http://pr.sape.ru/" || $sistema == "http://getgoodlinks.ru/" || $sistema == "https://gogetlinks.net/") {
                 switch ($task_site['cena']) {
                     case 20:$price = 60;
                         break;
