@@ -1837,10 +1837,10 @@ class user {
                 echo '<script>alert("Неверный логин или пароль!"); window.location.href="/user.php?action=birj";</script>';
                 exit();
             }
-
+            
             $out = $this->executeRequest('POST', 'https://gogetlinks.net/my_sites.php', null, $cookie_jar, array(), array(), null);
             $page_my_sites = iconv("windows-1251", "utf-8", $out);
-
+            
             $open = str_get_html($page_my_sites);
             $flag = 0;
             foreach ($open->find('script,link,comment') as $tmp) {
@@ -1848,20 +1848,24 @@ class user {
                 $tmp->outertext = '';
             }
 
-            if ($open->innertext != '' and ( count($open->find('tr[id^=row_body]')))) {
-                foreach ($open->find('tr[id^=row_body]') as $tr) {
-                    foreach ($tr->find('td[class^=row_]') as $td) {
+            if ($open->innertext != '' and ( count($open->find('tr[id^=site_row]')))) {
+                foreach ($open->find('tr[id^=site_row]') as $tr) {
+                    $ggl_id = "";
+                    foreach ($tr->find('td') as $td) {
                         foreach ($td->find('div,img,font,label') as $tmp) {
                             $tmp->outertext = '';
                         }
-                        if ($td->find('a[href^=template/edit_site_info.php?site_id=]')) {
-                            foreach ($td->find('a[href^=template/edit_site_info.php?site_id=]') as $a) {
-                                $url = "http://" . str_replace("&nbsp;", "", $a->plaintext);
+                        if ($td->find('a[href^=/template/edit_site_info.php?site_id=]')) {
+                            foreach ($td->find('a[href^=/template/edit_site_info.php?site_id=]') as $a) {
+                                $ggl_id = mb_substr($a->href, 37);
+                                $url = "http://" . str_replace("&nbsp;", "", $td->innertext);
                             }
-                        } else {
-                            $url = "http://" . str_replace("&nbsp;", "", $td->innertext);
                         }
-                        $ggl_id = mb_substr("$td->class", 4);
+                        if($td->find('a[href^=row_col_]') && $ggl_id == "") {
+                            foreach ($td->find('a[href^=row_col_]') as $td_id) {
+                                $ggl_id = mb_substr($td_id->plaintext, 8);
+                            }
+                        }
                         $dubl = $db->Execute("SELECT * FROM sayty WHERE (url LIKE '" . trim($url) . "' AND gid='$ggl_id') AND uid='$uid'")->FetchRow();
                         if (!$dubl) {
                             $sites[$ggl_id] = trim($url);
@@ -1869,7 +1873,7 @@ class user {
                         break;
                     }
                 }
-
+                
                 if ($_REQUEST["check"] == 1 && count($sites) > 0) {
                     $body = "Добрый день!<br/><br/>";
                     foreach ($sites as $key => $value) {
