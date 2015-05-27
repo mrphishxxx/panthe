@@ -10,6 +10,7 @@ define("GOGETLINKS", 1);
 define("GETGOODLINKS", 2);
 define("ROTAPOST", 3);
 define("SAPE", 4);
+define("MIRALINKS", 5);
 define("WEBARTEX", 6);
 define("BLOGUN", 8);
 
@@ -18,6 +19,7 @@ define("GETGOODLINKS_URL", "http://getgoodlinks.ru/");
 define("ROTAPOST_URL", "");
 define("SAPE_URL", "http://api.pr.sape.ru/xmlrpc/");
 define("WEBARTEX_URL", "https://api.webartex.ru");
+define("MIRALINKS_URL", "http://miralinks.ru/");
 
 include_once dirname(__FILE__) . '/../' . 'config.php';
 include_once dirname(__FILE__) . '/../' . 'includes/adodb5/adodb.inc.php';
@@ -35,13 +37,14 @@ $db->Execute('SET NAMES utf8');
 $body = "";
 $tasks = $db->Execute("SELECT * FROM zadaniya WHERE "
         . "sistema IN ("
-            . "'https://gogetlinks.net/', "
-            . "'http://getgoodlinks.ru/', "
-            . "'http://pr.sape.ru/', "
-            . "'http://rotapost.ru/', "
-            . "'http://webartex.ru/', "
-            . "'https://blogun.ru/'"
-        . ") AND (b_id != 0 OR sape_id != 0 OR rotapost_id != 0 OR webartex_id != 0) AND vilojeno = 1");
+        . "'https://gogetlinks.net/', "
+        . "'http://getgoodlinks.ru/', "
+        . "'http://pr.sape.ru/', "
+        . "'http://rotapost.ru/', "
+        . "'http://webartex.ru/', "
+        . "'https://blogun.ru/', "
+        . "'http://miralinks.ru/'"
+        . ") AND (b_id != 0 OR sape_id != 0 OR rotapost_id != 0 OR webartex_id != 0 OR miralinks_id != 0) AND vilojeno = 1");
 
 $count = $tasks->NumRows();
 $yes = $no = "";
@@ -50,6 +53,7 @@ if ($count > 0) {
         $sinfo = $db->Execute("SELECT * FROM sayty WHERE id=" . $task["sid"])->FetchRow();
         $sinfo["url"] = str_replace("/", "", str_replace("http://", "", str_replace("www.", "", $sinfo["url"])));
         if ((!empty($task["url_statyi"]) && $task["url_statyi"] != "" && strstr($task["url_statyi"], $sinfo["url"])) && ($task["vipolneno"] != 1)) {
+            echo $task["id"] ." -- ";
             switch ($task["sistema"]) {
                 case 'https://gogetlinks.net/':
                     if (!empty($task["b_id"]) && $task["b_id"] != 0) {
@@ -94,6 +98,14 @@ if ($count > 0) {
                 case 'https://blogun.ru/':
                     if (!empty($task["b_id"]) && $task["b_id"] != 0) {
                         $err = setTaskBlogun($db, $task);
+                    } else {
+                        $err = "Отсутствует ID задачи. Скорей всего задача заведена руками!";
+                        continue;
+                    }
+                    break;
+                case 'http://miralinks.ru/':
+                    if (!empty($task["miralinks_id"]) && $task["miralinks_id"] != 0) {
+                        $err = setTaskMiralinks($db, $task);
                     } else {
                         $err = "Отсутствует ID задачи. Скорей всего задача заведена руками!";
                         continue;
@@ -327,6 +339,140 @@ function setTaskBlogun($db, $task) {
 
     $driver->close();
     return FALSE;
+}
+
+function setTaskMiralinks($db, $task) {
+    $birj = $db->Execute("select * from birjs where birj='" . MIRALINKS . "' AND uid=" . $task["uid"])->FetchRow();
+    $proxy_file = file(dirname(__FILE__) . '/../' . "modules/angry_curl/proxy_list.txt");
+    $proxies = array();
+    foreach ($proxy_file as $p) {
+        $proxies[] = array(
+            'domain' => substr($p, 0, strpos($p, ":")),
+            'port' => (int) substr($p, strpos($p, ":") + 1),
+            'user' => 'RUS79476',
+            'pass' => 'H987tURQLo'
+        );
+    }
+    $proxy = $proxies[rand(0, count($proxies) - 1)];
+    $host = 'http://localhost:4444/wd/hub'; // this is the default
+    $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => "firefox");
+    if (!is_null($proxy)) {
+        $proxy_capabilities = array(WebDriverCapabilityType::PROXY => array('proxyType' => 'manual',
+                'httpProxy' => '' . $proxy['domain'] . ':' . $proxy['port'] . '', 'sslProxy' => '' . $proxy['domain'] . ':' . $proxy['port'] . '', 'socksUsername' => '' . $proxy['user'] . '', 'socksPassword' => '' . $proxy['pass'] . ''));
+    }
+    $driver = RemoteWebDriver::create($host, $capabilities, 300000);
+    $driver->manage()->window()->maximize();
+    $driver->manage()->timeouts()->implicitlyWait(20);
+    $driver->manage()->deleteAllCookies();
+
+    //**************************************************LOGIN
+    $loginpage = $driver->get('http://www.miralinks.ru/users/login');
+    while (true) { // Handle timeout somewhere
+        $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
+        if ($ajaxIsComplete)
+            break;
+        sleep(1);
+    }
+    $login = $driver->findElement(WebDriverBy::xpath("//input[@id='UserLogin']"));
+    $login->sendKeys($birj['login']);
+    $pass = $driver->findElement(WebDriverBy::xpath("//input[@id='UserPassword']"));
+    $pass->sendKeys($birj['pass']);
+    while (true) { // Handle timeout somewhere
+        $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
+        if ($ajaxIsComplete)
+            break;
+        sleep(1);
+    }
+    $driver->getKeyboard()->pressKey(WebDriverKeys::ENTER);
+    while (true) { // Handle timeout somewhere
+        $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
+        if ($ajaxIsComplete)
+            break;
+        sleep(1);
+    }
+    if (count($driver->findElements(WebDriverBy::xpath("//div[@data-action='doLogout']"))) === 0) {
+        $driver->quit();
+        continue;
+    }
+    //*********************************************************END LOGIN
+    //ПЕРВЫЙ ТИП(ПРОСТО ССЫЛКА)
+    if ($task['lay_out'] == 1) {
+        $driver->get("http://www.miralinks.ru/project_articles/view/" . $task['miralinks_id']);
+
+        while (true) { // Handle timeout somewhere
+            $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
+            if ($ajaxIsComplete)
+                break;
+            sleep(1);
+        }
+
+        $places = $driver->findElements(WebDriverBy::xpath("//a[@data-actionid='aa_place']"));
+        if (count($places) === 0) {
+            return "ERROR. Нет кнопки разместить(" . $task['miralinks_id'] . ")<br>";
+            continue;
+        }
+        $places[0]->click();
+
+        while (true) { // Handle timeout somewhere
+            $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
+            if ($ajaxIsComplete)
+                break;
+            sleep(1);
+        }
+
+        $urlInput = $driver->findElement(WebDriverBy::xpath("//input[@placeholder='Введите новый URL']"));
+        $urlInput->sendKeys($task['url_statyi']);
+
+        while (true) { // Handle timeout somewhere
+            $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
+            if ($ajaxIsComplete)
+                break;
+            sleep(1);
+        }
+
+        $btns = $driver->findElements(WebDriverBy::xpath("//a[@data-action='confirm']"));
+        foreach ($btns as $btn) {
+            if ($btn->isDisplayed())
+                $btn->click();
+        }
+
+        sleep(3);
+        $driver->wait(3);
+
+        $error = $driver->findElement(WebDriverBy::xpath("//span[@class='invalidMessage']"));
+        if ($error->isDisplayed()) {
+            return "ERROR." . $error->getText() . "<br>";
+        } else {
+            return false;
+        }
+    }//end ПЕРВЫЙ ТИП
+    //ВТОРОЙ ТИП 
+    elseif ($task['lay_out'] == 0) {
+        $driver->get("http://www.miralinks.ru/ground_articles/articlePlacement/" . $task['miralinks_id']);
+        while (true) { // Handle timeout somewhere
+            $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
+            if ($ajaxIsComplete)
+                break;
+            sleep(1);
+        }
+
+        $header = $driver->findElement(WebDriverBy::xpath("//input[@name='data[Article][header]']"));
+        $header->sendKeys($task['tema']);
+
+        $url = $driver->findElement(WebDriverBy::xpath("//input[@name='data[Article][article_url]']"));
+        $url->sendKeys($task['url_statyi']);
+
+        $text = $driver->findElement(WebDriverBy::xpath("//iframe[starts-with(@id, 'textarea_for_:widget')]"));
+        $text->sendKeys($task['text']);
+
+        $btn = $driver->findElement(WebDriverBy::xpath("//a[@data-action='submit']"));
+        $btn->click();
+        if ($driver->getCurrentURL() == "http://www.miralinks.ru/ground_articles/articlePlacement/" . $task['miralinks_id']){
+            return "ERROR. Статья с написанием не размещена(" . $task['miralinks_id'] . ")<br>";
+        } else {
+            return false;
+        }
+    }//end ВТОРОЙ ТИП
 }
 
 function executeRequest($method, $url, $useragent, $cookie, $query, $body, $header) {
