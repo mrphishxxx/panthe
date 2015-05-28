@@ -115,7 +115,7 @@ if ((@$_SESSION['user']['id'] > 0) || (@$_SESSION['admin']['id'] > 0)) {
 		</div>
 	';
 } else {
-    
+
     $auth_block = '
 		<!-- login -->
 		<div id="login">
@@ -137,7 +137,12 @@ if ((@$_SESSION['user']['id'] > 0) || (@$_SESSION['admin']['id'] > 0)) {
 $content = $my->content();
 $content = str_replace('[auth_block]', $auth_block, $content);
 
-
+$admins_managers = array();
+$admins_manager = $db->Execute("SELECT id FROM admins WHERE type = 'admin' OR type = 'manager'");
+while ($user = $admins_manager->FetchRow()) {
+    $admins_managers[] = $user['id'];
+}
+$admins_managers = "(" . implode(",", $admins_managers) . ")";
 /* Тикеты ВСЕГО */
 $new_tick = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid = 1, a.id=t.to_uid, a.id=t.uid) WHERE a.id != 0 AND t.status != 0")->FetchRow();
 $all_tick = $db->Execute("SELECT COUNT(t.id) as allt FROM tickets t LEFT JOIN admins a ON IF (t.uid = 1, a.id=t.to_uid, a.id=t.uid) WHERE a.id != 0")->FetchRow();
@@ -163,8 +168,8 @@ $content = str_replace('[new_tick_copywriter]', $new_tick_copywriter['newt'], $c
 $content = str_replace('[all_tick_copywriter]', $all_tick_copywriter['newt'], $content);
 
 /* Тикеты МЕНЕДЖЕРЫ */
-$new_tick_manager = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid = 1, a.id=t.to_uid, a.id=t.uid) WHERE t.status != 0 AND a.type = 'manager'")->FetchRow();
-$all_tick_manager = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid = 1, a.id=t.to_uid, a.id=t.uid) WHERE a.type = 'manager'")->FetchRow();
+$new_tick_manager = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON (t.uid IN $admins_managers AND t.to_uid IN $admins_managers) WHERE t.status != 0 AND a.type = 'manager'")->FetchRow();
+$all_tick_manager = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON (t.uid IN $admins_managers AND t.to_uid IN $admins_managers) WHERE a.type = 'manager'")->FetchRow();
 $content = str_replace('[new_tick_manager]', $new_tick_manager['newt'], $content);
 $content = str_replace('[all_tick_manager]', $all_tick_manager['newt'], $content);
 

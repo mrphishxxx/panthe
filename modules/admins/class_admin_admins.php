@@ -2249,7 +2249,7 @@ class admins {
     function tickets($db) {
         $content = file_get_contents(PATH . 'modules/admins/tmp/admin/tickets_view.tpl');
         $type = isset($_REQUEST['type']) ? $_REQUEST['type'] : null;
-
+        $uid = $_SESSION['admin']["id"];
         $limit = 25;
         $offset = 1;
         if (isset($_GET['offset']) && !empty($_GET['offset'])) {
@@ -2260,32 +2260,22 @@ class admins {
         if (!empty($type)) {
             $condition = " a.type='$type' AND ";
             $title_page = "Тикеты для '$type'";
-            $type = "&type=$type";
         }
         $content = str_replace('[title_page]', $title_page, $content);
-        $content = str_replace('[type]', $type, $content);
-
+        $content = str_replace('[type]', "&type=$type", $content);
         $admins_managers = array();
-        if (isset($_SESSION['admin']['id']) && isset($_SESSION['manager']['id'])) {
-            switch ($_SERVER["PHP_SELF"]) {
-                case "/admin.php" : $sql_if = "admin";
-                    break;
-                case "/management.php" : $sql_if = "admin' OR type = 'manager";
-                    break;
-                default : $sql_if = "admin";
-            }
-            $admins_manager = $db->Execute("SELECT id FROM admins WHERE type = '$sql_if'");
-        } else {
-            $sql_if = "admin";
-            $admins_manager = $db->Execute("SELECT id FROM admins WHERE type = 'admin' OR type = 'manager'");
-        }
+        $admins_manager = $db->Execute("SELECT id FROM admins WHERE type = 'admin' OR type = 'manager'");
         while ($user = $admins_manager->FetchRow()) {
             $admins_managers[] = $user['id'];
         }
         $admins_managers = "(" . implode(",", $admins_managers) . ")";
-        $all = $db->Execute("SELECT t.id FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE $condition a.id != 0 ORDER BY t.id DESC");
-        $query = $db->Execute("SELECT t.* FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE $condition a.id != 0 ORDER BY t.status DESC, t.id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit);
-
+        if($type != "manager"){
+            $all = $db->Execute("SELECT t.id FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE $condition a.id != 0 ORDER BY t.id DESC");
+            $query = $db->Execute("SELECT t.* FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE $condition a.id != 0 ORDER BY t.status DESC, t.id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit);
+        } else {
+            $all = $db->Execute("SELECT t.id FROM tickets t LEFT JOIN admins a ON (t.uid IN $admins_managers AND t.to_uid IN $admins_managers) WHERE $condition a.id != 0 ORDER BY t.id DESC");
+            $query = $db->Execute("SELECT t.* FROM tickets t LEFT JOIN admins a ON (t.uid IN $admins_managers AND t.to_uid IN $admins_managers) WHERE $condition a.id != 0 ORDER BY t.status DESC, t.id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit);
+        }
         $pegination = "";
         $tickets_all = $all->NumRows();
         if ($tickets_all > $limit) {
@@ -2293,10 +2283,10 @@ class admins {
             if ($offset == 1) {
                 $pegination .= '<div style="float:left">Пред.</div>';
             } else {
-                $pegination .= "<div style='float:left'><a href='?module=admins&action=ticket$type&offset=" . ($offset - 1) . "'>Пред.</a></div>";
+                $pegination .= "<div style='float:left'><a href='?module=admins&action=ticket&type=$type&offset=" . ($offset - 1) . "'>Пред.</a></div>";
             }
             $pegination .= '<div style="float:left">&nbsp [ стр.&nbsp</div>';
-            $pegination .= '<div class="select" style="width:50px;float:left;margin-top:-7px"><select name="pagerMenu" onchange="location=\'?module=admins&action=ticket' . $type . '&offset=\'+this.options[this.selectedIndex].value+\'\'" ;="">';
+            $pegination .= '<div class="select" style="width:50px;float:left;margin-top:-7px"><select name="pagerMenu" onchange="location=\'?module=admins&action=ticket&type=' . $type . '&offset=\'+this.options[this.selectedIndex].value+\'\'" ;="">';
 
             $count_pegination = ceil($tickets_all / $limit);
             for ($i = 0; $i < $count_pegination; $i++) {
@@ -2311,7 +2301,7 @@ class admins {
             if ($query->NumRows() < $limit) {
                 $pegination .= "След.";
             } else {
-                $pegination .= "<a href='?module=admins&action=ticket$type&offset=" . ($offset + 1) . "'>След.</a>";
+                $pegination .= "<a href='?module=admins&action=ticket&type=$type&offset=" . ($offset + 1) . "'>След.</a>";
             }
             $pegination .= '</div>';
         }
@@ -2325,7 +2315,7 @@ class admins {
                 $ticket = str_replace('[q_theme]', $resw['q_theme'], $ticket);
                 $ticket = str_replace('[tdate]', $resw['date'], $ticket);
                 $ticket = str_replace('[tid]', $resw['id'], $ticket);
-                $ticket = str_replace('[module]', ($sql_if == 'admin' ? 'admins' : 'managers'), $ticket);
+                $ticket = str_replace('[module]', 'admins', $ticket);
 
                 //0 - закрыто; 1-не прочитан; 2-прочитан; 3-дан ответ;
                 if ($resw['status'] == 0) {
@@ -2522,46 +2512,52 @@ class admins {
     }
 
     function ticket_view($db) {
-        if (!@$_SESSION['admin']['id'] && !@$_SESSION['manager']['id']) {
+        if (!@$_SESSION['admin']['id']) {
             $content = file_get_contents(PATH . 'modules/admins/tmp/admin/no-rights.tpl');
             $content = str_replace('[alert]', 'Данное действие Вам недоступно', $content);
             $content = str_replace('[url]', $_SERVER["HTTP_REFERER"], $content);
             echo $content;
             exit;
         }
+        $uid = (int) $_SESSION['admin']['id'];
         $content = file_get_contents(PATH . 'modules/admins/tmp/admin/ticket_full_view.tpl');
-
-        $uid = (int) (@$_SESSION['admin']['id'] ? $_SESSION['admin']['id'] : @$_SESSION['manager']['id']);
-        $admin = $db->Execute("select * from admins where id=$uid")->FetchRow();
-        $content = str_replace('[login]', $admin['login'], $content);
         $content = str_replace('[uid]', $uid, $content);
-
+        $admin_and_manager = false;
+        $administrations = array();
+        $admins = $db->Execute("SELECT * FROM admins WHERE type='admin' OR type='manager'")->GetAll();
+        foreach ($admins as $user){
+            $administrations[$user["id"]] = $user["id"];
+        }
+        
         $tid = (int) $_REQUEST['tid'];
         $res = $db->Execute("SELECT * FROM tickets WHERE id=$tid")->FetchRow();
-
         if ($res['status'] == 1 && ($res['to_uid'] == 0 || $res['to_uid'] == $uid)) {
             $db->Execute("UPDATE tickets SET status=2 WHERE id=$tid");
         }
-
+ 
         if ($res['to_uid'] > 0 && $res['to_uid'] != $uid) {
-            $query = $db->Execute("select * from admins where id=" . $res['to_uid']);
+            $uinfo = $db->Execute("SELECT * FROM admins WHERE id=" . $res['to_uid'])->FetchRow();
         } else {
-            $query = $db->Execute("select * from admins where id=" . $res['uid']);
+            $uinfo = $db->Execute("SELECT * FROM admins WHERE id=" . $res['uid'])->FetchRow();
         }
-        $uinfo = $query->FetchRow();
+
         $content = str_replace('[assigned]', "пользователь: " . $uinfo["login"], $content);
 
         $view = file_get_contents(PATH . 'modules/admins/tmp/admin/ticket_chat_one.tpl');
         $view = str_replace('[msg]', $res['msg'], $view);
         $view = str_replace('[cdate]', $res['date'], $view);
-
-        if ($res['to_uid'] > 0 && $res['to_uid'] != $uid) {
+        if(array_search($res['uid'], $administrations) && array_search($res['to_uid'], $administrations)){
+            $admin_and_manager = true;
+        }
+        
+        if (array_search($res['uid'], $administrations) && ($admin_and_manager == false || $admin_and_manager == true && $res['uid'] == $uid)) {
             $view = str_replace('[from_class]', "support", $view);
             $view = str_replace('[from]', "Администрация", $view);
         } else {
             $view = str_replace('[from_class]', "you", $view);
             $view = str_replace('[from]', $uinfo['login'] . "<br>" . $res['site'], $view);
         }
+        
 
         $answers = $db->Execute("SELECT * FROM answers WHERE tid=$tid");
         while ($resw = $answers->FetchRow()) {
@@ -2569,7 +2565,7 @@ class admins {
 
             $view = str_replace('[msg]', $resw['msg'], $view);
             $view = str_replace('[cdate]', $resw['date'], $view);
-            if ($resw['uid'] == $uid) {
+            if (array_search($resw['uid'], $administrations) && ($admin_and_manager == false || $admin_and_manager == true && $resw['uid'] == $uid)) {
                 $view = str_replace('[from]', "Администрация", $view);
                 $view = str_replace('[from_class]', "support", $view);
             } else {
