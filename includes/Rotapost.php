@@ -1234,10 +1234,13 @@
                 curl_setopt($ch, CURLOPT_POST, true);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, ($body));
             }
-            //curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+            //curl_setopt($ch,CURLOPT_NOBODY,true);
+            //curl_setopt($ch,CURLOPT_HEADER,true);
+            
             $response = curl_exec($ch);
-            //$info = curl_getinfo($ch);
+            $info = curl_getinfo($ch);
             //print_r($info);
+            //print_r($response);
             if (!$response) {
                 die(curl_error($ch));
             }

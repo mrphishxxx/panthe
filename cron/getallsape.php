@@ -9,6 +9,7 @@ include_once dirname(__FILE__) . '/../' . 'includes/mandrill/mandrill.php';
 include_once dirname(__FILE__) . '/../' . 'modules/admins/class_admin_admins.php';
 $admins = new admins();
 error_reporting(E_ALL);
+echo "data:" . date("d-m-Y H:i:s") . " \r\n";
 
 $db = ADONewConnection(DB_TYPE);
 @$db->PConnect(DB_HOST, DB_USER, DB_PASS, DB_BASE) or die('Не удается подключиться к базе данных');
@@ -24,7 +25,7 @@ else
 
 $query = $db->Execute("SELECT a.id FROM birjs b LEFT JOIN admins a ON b.uid = a.id WHERE b.birj = 4 AND a.active=1 AND b.active=1 AND a.type='user'");
 while ($res = $query->FetchRow()) {
-    //if($res["id"] != 399)continue;
+    //if($res["id"] != 421)continue;
     $balance = $admins->getUserBalans($res['id'], $db, 1);
     if ($balance >= 60 || (($res['id'] == 20) || ($res['id'] == 55))) {
         getTask($db, $res['id']);
@@ -57,7 +58,7 @@ function getTask($db, $uid) {
         curl_close($curl);
     }
     $id_user_sape = xmlrpc_decode($out);
-
+    
     if (is_array($id_user_sape)) {
         $user = $db->Execute("SELECT * FROM admins WHERE id=$uid")->FetchRow();
         $body = "Добрый день " . $user["login"] . "! <br/>" .
@@ -80,7 +81,7 @@ function getTask($db, $uid) {
         $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
         try {
             $mandrill->messages->send($message);
-            $db->Execute("UPDATE birjs SET active='0' WHERE birj=4 AND uid=$uid");
+            //$db->Execute("UPDATE birjs SET active='0' WHERE birj=4 AND uid=$uid");
         } catch (Exception $e) {
             echo $body;
         }
@@ -238,8 +239,8 @@ $message["subject"] = $subject;
 $message["from_email"] = "news@iforget.ru";
 $message["from_name"] = "iforget";
 $message["to"] = array();
-//$message["to"][1] = array("email" => MAIL_DEVELOPER);
-$message["to"][0] = array("email" => MAIL_ADMIN);
+$message["to"][1] = array("email" => MAIL_DEVELOPER);
+//$message["to"][0] = array("email" => MAIL_ADMIN);
 $message["track_opens"] = null;
 $message["track_clicks"] = null;
 $message["auto_text"] = null;
@@ -252,7 +253,6 @@ try {
 
 $end = time();
 echo ((int) $end - (int) $start);
-echo "data:" . date("d-m-Y H:i:s") . " \r\n";
 echo "sec. \r\n";
 exit();
 ?>

@@ -173,7 +173,7 @@ function getTask($db, $uid) {
             }
         }
 
-        $exists = $db->Execute('SELECT * FROM zadaniya WHERE sistema="https://blogun.ru/" AND b_id=' . $data['id'] . ' AND uid=' . $data['uid'])->FetchRow();
+        $exists = $db->Execute('SELECT * FROM zadaniya WHERE sistema="https://blogun.ru/" AND b_id=' . $data['id'] . ' AND sid="'.array_search($data['idblog'], $sites_to_user).'" AND uid=' . $data['uid'])->FetchRow();
         if (empty($exists)) {
             $first = mb_strtoupper(mb_substr($data["ankor"], 0, 1, 'UTF-8'), 'UTF-8'); //первая буква
             $first = str_replace("?", "", $first);

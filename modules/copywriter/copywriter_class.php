@@ -776,12 +776,12 @@ class copywriter {
                                             $body .= "error = " . $err . "<br>";
                                         }
                                         $message["to"][0] = array("email" => MAIL_ADMIN);
-                                        $message["to"][1] = array("email" => MAIL_DEVELOPER);
+                                        //$message["to"][1] = array("email" => MAIL_DEVELOPER);
                                         
                                     }
                                 } else {
                                     $message["to"][0] = array("email" => MAIL_ADMIN);
-                                    $message["to"][1] = array("email" => MAIL_DEVELOPER);
+                                    //$message["to"][1] = array("email" => MAIL_DEVELOPER);
                                     $body = "Добрый день! <br/><br/>
                                              Копирайтер '" . $_SESSION['user']['login'] . "' выполнил задание # $id.<br/><br/>
                                              Данное задание <a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус на 'Готов'!<br/>
