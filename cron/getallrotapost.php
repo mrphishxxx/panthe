@@ -32,11 +32,10 @@ while ($res = $query->FetchRow()) {
 }
 $main_error = array();
 foreach ($rota_to_uid as $uid) {
-    //if ($uid != 410)continue;
+    //if ($uid != 601)continue;
     $balance = $admins->getUserBalans($uid, $db, 1);
-    echo $balance . " - balance <br>\r\n";
     if ($balance >= 60 || (($res['id'] == 20) || ($res['id'] == 55))) {
-        echo $uid . " - UID <br>\r\n";
+        echo $uid . " - UID (balans = $balance)<br>\r\n";
         $main_error[] = callback($uid, $db);
     }
 }
@@ -52,7 +51,6 @@ function callback($uid, $db) {
     $data_birjs = $db->Execute("select * from birjs where birj=3 AND uid=$uid")->FetchRow();
     $rotapost = new Rotapost\Client();
     $auth = $rotapost->loginAuth($data_birjs['login'], md5($data_birjs['login'] . $data_birjs['pass']));
-    //print_r($auth);
     if (($data_birjs['login'] == null || $data_birjs['pass'] == null) || (isset($auth->Success) && $auth->Success == "false") || !isset($auth->ApiKey)) {
         //  Если нет логина или пароля от биржи, отправляем админу письмо с ошибкой 
         $err = (array) $auth->Error;
@@ -65,20 +63,21 @@ function callback($uid, $db) {
         //  ИНАЧЕ 
         // (1) Вытаскиваем задачи в статусе Ожидает одобрения, и подтверждаем их!
         $New = $rotapost->taskWebmaster("New");
-        //print_r($New);//die();
+        //print_r($New);die();
         if ((isset($New->Success) && $New->Success == "true")) {
             $result = array();
             if (isset($New->Tasks->Task) && !empty($New->Tasks->Task)) {
                 foreach ($New->Tasks->Task as $task) {
-                    $result[$task->Id] = $rotapost->taskTake($task->Id);
+                    $task = (array) $task;
+                    $result[$task["Id"]] = $rotapost->taskTake($task["Id"]);
                 }
             }
         } elseif ($New->Success == "false") {
             //  Иначе отправляем ошибку админу  
-            $err = (array) $result->Error;
+            $err = (array) $New->Error;
             $error[] = $err["Description"];
         }
-
+        
         $buff = array();
         $result = $db->Execute("SELECT rotapost_id FROM zadaniya WHERE (rotapost_id IS NOT NULL AND rotapost_id != 0) AND uid=$uid");
         while ($add = $result->FetchRow()) {
@@ -166,7 +165,7 @@ function callback($uid, $db) {
             }
         } elseif ($ToDo->Success == "false") {
             //  Иначе отправляем ошибку админу  
-            $err = (array) $result->Error;
+            $err = (array) $ToDo->Error;
             $error[] = $err["Description"];
         }
     }
@@ -208,7 +207,7 @@ $message["subject"] = $subject;
 $message["from_email"] = "news@iforget.ru";
 $message["from_name"] = "iforget";
 $message["to"] = array();
-//$message["to"][1] = array("email" => MAIL_DEVELOPER);
+$message["to"][1] = array("email" => MAIL_DEVELOPER);
 $message["to"][0] = array("email" => MAIL_ADMIN);
 $message["track_opens"] = null;
 $message["track_clicks"] = null;

@@ -5,7 +5,7 @@ mb_internal_encoding("UTF-8");
 set_time_limit(0);
 ini_set("memory_limit", "1024M");
 ini_set("max_execution_time", "0");
-
+echo date("d-m-Y H:i:s");
 define("GOGETLINKS", 1);
 define("GETGOODLINKS", 2);
 define("ROTAPOST", 3);
@@ -42,10 +42,9 @@ $tasks = $db->Execute("SELECT * FROM zadaniya WHERE "
         . "'http://pr.sape.ru/', "
         . "'http://rotapost.ru/', "
         . "'http://webartex.ru/', "
-        . "'https://blogun.ru/', "
-        . "'http://miralinks.ru/'"
+        . "'https://blogun.ru/' "        
         . ") AND (b_id != 0 OR sape_id != 0 OR rotapost_id != 0 OR webartex_id != 0 OR miralinks_id != 0) AND vilojeno = 1");
-
+//. "'http://miralinks.ru/'"
 $count = $tasks->NumRows();
 $yes = $no = "";
 if ($count > 0) {
@@ -104,6 +103,7 @@ if ($count > 0) {
                     }
                     break;
                 case 'http://miralinks.ru/':
+                    continue;
                     if (!empty($task["miralinks_id"]) && $task["miralinks_id"] != 0) {
                         $err = setTaskMiralinks($db, $task);
                     } else {
@@ -136,7 +136,7 @@ $message["subject"] = "Повторная отправка задач в бир�
 $message["from_email"] = "news@iforget.ru";
 $message["from_name"] = "iforget";
 $message["to"] = array();
-$message["to"][1] = array("email" => MAIL_DEVELOPER);
+//$message["to"][1] = array("email" => MAIL_DEVELOPER);
 $message["to"][0] = array("email" => MAIL_ADMIN);
 $message["track_opens"] = null;
 $message["track_clicks"] = null;
@@ -342,6 +342,7 @@ function setTaskBlogun($db, $task) {
 }
 
 function setTaskMiralinks($db, $task) {
+    return "STOP";
     $birj = $db->Execute("select * from birjs where birj='" . MIRALINKS . "' AND uid=" . $task["uid"])->FetchRow();
     $proxy_file = file(dirname(__FILE__) . '/../' . "modules/angry_curl/proxy_list.txt");
     $proxies = array();
@@ -448,6 +449,7 @@ function setTaskMiralinks($db, $task) {
     }//end ПЕРВЫЙ ТИП
     //ВТОРОЙ ТИП 
     elseif ($task['lay_out'] == 0) {
+        continue;
         $driver->get("http://www.miralinks.ru/ground_articles/articlePlacement/" . $task['miralinks_id']);
         while (true) { // Handle timeout somewhere
             $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
@@ -459,15 +461,50 @@ function setTaskMiralinks($db, $task) {
         $header = $driver->findElement(WebDriverBy::xpath("//input[@name='data[Article][header]']"));
         $header->sendKeys($task['tema']);
 
+        while (true) { // Handle timeout somewhere
+            $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
+            if ($ajaxIsComplete)
+                break;
+            sleep(1);
+        }
+
+
         $url = $driver->findElement(WebDriverBy::xpath("//input[@name='data[Article][article_url]']"));
         $url->sendKeys($task['url_statyi']);
+
+        while (true) { // Handle timeout somewhere
+            $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
+            if ($ajaxIsComplete)
+                break;
+            sleep(1);
+        }
+
 
         $text = $driver->findElement(WebDriverBy::xpath("//iframe[starts-with(@id, 'textarea_for_:widget')]"));
         $text->sendKeys($task['text']);
 
+        while (true) { // Handle timeout somewhere
+            $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
+            if ($ajaxIsComplete)
+                break;
+            sleep(1);
+        }
+
+
         $btn = $driver->findElement(WebDriverBy::xpath("//a[@data-action='submit']"));
         $btn->click();
-        if ($driver->getCurrentURL() == "http://www.miralinks.ru/ground_articles/articlePlacement/" . $task['miralinks_id']){
+
+        while (true) { // Handle timeout somewhere
+            $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
+            if ($ajaxIsComplete)
+                break;
+            sleep(1);
+        }
+
+        $tmp = $driver->findElements(WebDriverBy::xpath("//input[@name='data[Article][article_url]']"));
+				
+       if(count($tmp)!=0)
+       {
             return "ERROR. Статья с написанием не размещена(" . $task['miralinks_id'] . ")<br>";
         } else {
             return false;
