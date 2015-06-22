@@ -3012,7 +3012,7 @@ class user {
         $view = str_replace('[cdate]', $res['date'], $view);
         if ($res['to_uid'] > 0) {
             $view = str_replace('[from_class]', "support", $view);
-            $view = str_replace('[from]', "admin iforget.ru", $view);
+            $view = str_replace('[from]', "Администрация", $view);
             if ($res['status'] == 1) {
                 $db->Execute("UPDATE tickets SET status=2 WHERE id=$tid");
             }

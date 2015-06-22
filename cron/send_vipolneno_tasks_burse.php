@@ -33,13 +33,14 @@ $db->Execute('set charset utf8');
 $db->Execute('SET NAMES utf8');
 
 $body = "";
-$date = time()-259200; // - 3 DAYs
+$date = time()-432000; // - 5 DAYs
 $tasks = $db->Execute("SELECT * FROM zadaniya WHERE "
         . "sistema IN ("
+            . "'https://gogetlinks.net/', "
             . "'http://pr.sape.ru/', "
             . "'http://rotapost.ru/',"
             . "'http://webartex.ru/'"
-        . ") AND (rotapost_id != 0 OR webartex_id != 0 OR sape_id != 0 OR b_id != 0) AND vipolneno = 1 AND date > '$date'");
+        . ") AND (rotapost_id != 0 OR webartex_id != 0 OR sape_id != 0 OR b_id != 0) AND vipolneno = 1 AND date > '$date' AND id=36905");
 $count = $tasks->NumRows();
 $yes = $no = "";
 
@@ -123,7 +124,7 @@ $message["from_email"] = "news@iforget.ru";
 $message["from_name"] = "iforget";
 $message["to"] = array();
 $message["to"][1] = array("email" => MAIL_DEVELOPER);
-$message["to"][0] = array("email" => MAIL_ADMIN);
+//$message["to"][0] = array("email" => MAIL_ADMIN);
 $message["track_opens"] = null;
 $message["track_clicks"] = null;
 $message["auto_text"] = null;

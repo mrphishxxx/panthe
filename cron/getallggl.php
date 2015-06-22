@@ -16,6 +16,7 @@ require_once( PATH . 'modules' . DIRECTORY_SEPARATOR . 'angry_curl' . DIRECTORY_
 require_once( PATH . 'modules' . DIRECTORY_SEPARATOR . 'angry_curl' . DIRECTORY_SEPARATOR . 'AngryCurl.class.php');
 
 global $AC;
+global $errors;
 
 function callback($response, $info, $request) {
     $db = ADONewConnection(DB_TYPE);
@@ -23,6 +24,7 @@ function callback($response, $info, $request) {
     $db->Execute('set charset utf8');
     $db->Execute('SET NAMES utf8');
     global $AC;
+    global $errors;
 
     $response = iconv("windows-1251", "utf-8", $response);
     $post = json_decode($request->post_data);
@@ -33,7 +35,7 @@ function callback($response, $info, $request) {
     $gid = $res['gid'];
     $sid = $post->sid;
     $cookie_jar = $request->options[CURLOPT_COOKIEJAR];
-
+    $errors .= "";
     if ($info['http_code'] !== 200) {
         AngryCurl::add_debug_msg("->\t" . $request->options[CURLOPT_PROXY] . "\t FAILED INTO FUNCTION(sid=" . $post->sid . ",uid=" . $uid . ") \t" . $info['http_code'] . "\t" . $info['total_time'] . "\t" . $info['url']);
         $key = array_search($request->options[CURLOPT_PROXY], $AC->array_proxy, true);
@@ -61,7 +63,7 @@ function callback($response, $info, $request) {
         }
         $rez = iconv("windows-1251", "utf-8", $rez);
         if ($rez == "Некорректный Логин или Пароль" || $rez == "Некорректный email или Пароль") {
-            continue;
+            return FALSE;
         }
 
         $urlg = "https://gogetlinks.net/web_task.php?action_change=change_count_in_page&in_site_id=" . $gid;
@@ -79,12 +81,15 @@ function callback($response, $info, $request) {
             $out = iconv("windows-1251", "utf-8", $out);
             curl_close($curl);
         }
-
-        $result = $db->Execute("SELECT b_id FROM zadaniya WHERE b_id IS NOT NULL AND (sistema = 'https://gogetlinks.net/' OR sistema = 'ГГЛ')");
-
+        $vipolneno = array();
+        $result = $db->Execute("SELECT id, b_id, vipolneno FROM zadaniya WHERE b_id IS NOT NULL AND (sistema = 'https://gogetlinks.net/' OR sistema = 'ГГЛ')");
         while ($add = $result->FetchRow()) {
             $buf3[] = $add["b_id"];
+            if ($add["vipolneno"] == 1) {
+                $vipolneno[$add["id"]] = $add["b_id"];
+            }
         }
+
 
         $open_now = str_get_html($out);
         if (!empty($open_now) && $open_now->find('script,link,comment')) {
@@ -225,6 +230,13 @@ function callback($response, $info, $request) {
                             $db->Execute("INSERT INTO zadaniya(sid, b_id, uid, sistema, ankor, url, tema, comments, vipolneno, date, keywords) VALUES ('" . $sid . "', '" . $ggl_id . "','" . $uid . "', 'https://gogetlinks.net/', '" . $ankor . "', '" . $to_url . "', '" . $tema . "', '" . mysql_real_escape_string($index . "\n" . $task_text) . "', '0', '" . $date . "', '" . $key_words . "')");
                             $j++;
                         }
+                    } else {
+                        if (in_array($ggl_id, $vipolneno)) {
+                            $task_id = array_search($ggl_id, $vipolneno);
+                            $task = $db->Execute("SELECT * FROM zadaniya WHERE id='$task_id'")->FetchRow();
+                            $db->Execute("UPDATE zadaniya SET vipolneno='0', vilojeno='1' WHERE id='$task_id'")->FetchRow();
+                            $errors .= "Задача <a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $task['uid'] . "&sid=" . $task['sid'] . "&action2=edit&id=" . $task['id'] . "'>" . $task['id'] . "</a> была в статусе 'Выполнено', но ссылка была не отправлена!! <b>Проверьте в чем причина, отправив задачу руками</b><br>";
+                        }
                     }
                 }
             }
@@ -274,8 +286,9 @@ while ($res = $sayty->FetchRow()) {
 $count = 0;
 if ($AC->get_count_proxy() == 0) {
     while ($AC->get_count_proxy() == 0) {
-        if ($count >= 2)
+        if ($count >= 2) {
             break;
+        }
         $AC->load_proxy_list(PATH . 'modules' . DIRECTORY_SEPARATOR . 'angry_curl' . DIRECTORY_SEPARATOR . 'proxy_list.txt', 30, 'http', 'https://gogetlinks.net/');
         $count++;
     }
@@ -288,11 +301,12 @@ foreach ($sid_to_uid as $sid => $uid) {
     $res2 = $db->Execute("SELECT gid FROM sayty WHERE id=$sid")->FetchRow();
     $gid = $res2['gid'];
 
-    if ($gid == 0)
+    if ($gid == 0){
         continue;
-    if ($res['login'] == null || $res['pass'] == null)
+    }
+    if ($res['login'] == null || $res['pass'] == null){
         continue;
-
+    }
     $data = array('e_mail' => $res['login'],
         'password' => $res['pass'],
         'sid' => $sid,
@@ -333,7 +347,7 @@ $message["subject"] = $subject;
 $message["from_email"] = "news@iforget.ru";
 $message["from_name"] = "iforget";
 $message["to"] = array();
-//$message["to"][1] = array("email" => "abashevav@gmail.com");
+//$message["to"][1] = array("email" => MAIL_DEVELOPER);
 $message["to"][0] = array("email" => MAIL_ADMIN);
 $message["track_opens"] = null;
 $message["track_clicks"] = null;
@@ -346,5 +360,16 @@ try {
     echo $body;
 }
 
+if ($errors != "") {
+    $message["html"] = $errors;
+    $message["to"][1] = array("email" => MAIL_DEVELOPER);
+    $message["subject"] = "[Задачи были в неправильном статусе!]";
+    try {
+        $mandrill->messages->send($message);
+    } catch (Exception $e) {
+        echo $e;
+        echo $errors;
+    }
+}
+
 exit("THE END");
-?>

@@ -150,20 +150,20 @@ $content = str_replace('[new_tick]', $new_tick['newt'], $content);
 $content = str_replace('[all_tick]', $all_tick['allt'], $content);
 
 /* Тикеты ПОЛЬЗОВАТЕЛИ */
-$new_tick_user = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid = 1, a.id=t.to_uid, a.id=t.uid) WHERE t.status != 0 AND a.type = 'user'")->FetchRow();
-$all_tick_user = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid = 1, a.id=t.to_uid, a.id=t.uid) WHERE a.type = 'user'")->FetchRow();
+$new_tick_user = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE t.status != 0 AND a.type = 'user'")->FetchRow();
+$all_tick_user = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE a.type = 'user'")->FetchRow();
 $content = str_replace('[new_tick_user]', $new_tick_user['newt'], $content);
 $content = str_replace('[all_tick_user]', $all_tick_user['newt'], $content);
 
 /* Тикеты МОДЕРАТОРЫ */
-$new_tick_moder = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid = 1, a.id=t.to_uid, a.id=t.uid) WHERE t.status != 0 AND a.type = 'moder'")->FetchRow();
-$all_tick_moder = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid = 1, a.id=t.to_uid, a.id=t.uid) WHERE a.type = 'moder'")->FetchRow();
+$new_tick_moder = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE t.status != 0 AND a.type = 'moder'")->FetchRow();
+$all_tick_moder = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE a.type = 'moder'")->FetchRow();
 $content = str_replace('[new_tick_moder]', $new_tick_moder['newt'], $content);
 $content = str_replace('[all_tick_moder]', $all_tick_moder['newt'], $content);
 
 /* Тикеты КОПИРАЙТЕРЫ */
-$new_tick_copywriter = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid = 1, a.id=t.to_uid, a.id=t.uid) WHERE t.status != 0 AND a.type = 'copywriter'")->FetchRow();
-$all_tick_copywriter = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid = 1, a.id=t.to_uid, a.id=t.uid) WHERE a.type = 'copywriter'")->FetchRow();
+$new_tick_copywriter = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE t.status != 0 AND a.type = 'copywriter'")->FetchRow();
+$all_tick_copywriter = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE a.type = 'copywriter'")->FetchRow();
 $content = str_replace('[new_tick_copywriter]', $new_tick_copywriter['newt'], $content);
 $content = str_replace('[all_tick_copywriter]', $all_tick_copywriter['newt'], $content);
 
