@@ -139,9 +139,8 @@ class admins {
             case 'birj':
                 switch (@$_REQUEST['action2']) {
                     case '':
-                        $content = $this->createAdminTicket($db);
+                        $content = $this->birj_all($db);
                         break;
-
                     case 'edit_comment':
                         $content = $this->editComment($db);
                         break;
@@ -452,25 +451,25 @@ class admins {
             $sayty = str_replace('[z7]', $navyklad[$site['id']] ? $navyklad[$site['id']] : 0, $sayty);
             $sayty = str_replace('[z5]', $vilojeno[$site['id']] ? $vilojeno[$site['id']] : 0, $sayty);
         }
-        /*$query = $db->Execute("SELECT * FROM sayty WHERE uid=$uid ORDER BY id ASC");
-        while ($res = $query->FetchRow()) {
-            $sayty .= file_get_contents(PATH . 'modules/admins/tmp/admin/sayty_one.tpl');
-            $sayty = str_replace('[url]', $res['url'], $sayty);
-            $sayty = str_replace('[id]', $res['id'], $sayty);
-            $sid = $res['id'];
-            $z1 = $db->Execute("select count(*) from zadaniya where vrabote=1 and (vipolneno=0 or vipolneno IS NULL) and (dorabotka=0 or dorabotka IS NULL) and (navyklad=0 or navyklad IS NULL) and (vilojeno=0 or vilojeno IS NULL) and sid=$sid")->FetchRow();
-            $z2 = $db->Execute("select count(*) from zadaniya where dorabotka=1 and sid=$sid")->FetchRow();
-            $z3 = $db->Execute("select count(*) from zadaniya where vipolneno=1 and sid=$sid")->FetchRow();
-            $z7 = $db->Execute("select count(*) from zadaniya where navyklad=1 and sid=$sid")->FetchRow();
-            $z5 = $db->Execute("select count(*) from zadaniya where vilojeno=1 and sid=$sid")->FetchRow();
-            $z4 = $db->Execute("select count(*) from zadaniya where sid=$sid and (vrabote=0 or vrabote IS NULL) and (dorabotka=0 or dorabotka IS NULL) and (vipolneno=0 or vipolneno IS NULL) and (navyklad=0 or navyklad IS NULL) and (vilojeno=0 or vilojeno IS NULL)")->FetchRow();
-            $sayty = str_replace('[z1]', $z1['count(*)'], $sayty);
-            $sayty = str_replace('[z2]', $z2['count(*)'], $sayty);
-            $sayty = str_replace('[z3]', $z3['count(*)'], $sayty);
-            $sayty = str_replace('[z4]', abs((int) $z4['count(*)']), $sayty);
-            $sayty = str_replace('[z5]', $z5['count(*)'], $sayty);
-            $sayty = str_replace('[z7]', $z7['count(*)'], $sayty);
-        }*/
+        /* $query = $db->Execute("SELECT * FROM sayty WHERE uid=$uid ORDER BY id ASC");
+          while ($res = $query->FetchRow()) {
+          $sayty .= file_get_contents(PATH . 'modules/admins/tmp/admin/sayty_one.tpl');
+          $sayty = str_replace('[url]', $res['url'], $sayty);
+          $sayty = str_replace('[id]', $res['id'], $sayty);
+          $sid = $res['id'];
+          $z1 = $db->Execute("select count(*) from zadaniya where vrabote=1 and (vipolneno=0 or vipolneno IS NULL) and (dorabotka=0 or dorabotka IS NULL) and (navyklad=0 or navyklad IS NULL) and (vilojeno=0 or vilojeno IS NULL) and sid=$sid")->FetchRow();
+          $z2 = $db->Execute("select count(*) from zadaniya where dorabotka=1 and sid=$sid")->FetchRow();
+          $z3 = $db->Execute("select count(*) from zadaniya where vipolneno=1 and sid=$sid")->FetchRow();
+          $z7 = $db->Execute("select count(*) from zadaniya where navyklad=1 and sid=$sid")->FetchRow();
+          $z5 = $db->Execute("select count(*) from zadaniya where vilojeno=1 and sid=$sid")->FetchRow();
+          $z4 = $db->Execute("select count(*) from zadaniya where sid=$sid and (vrabote=0 or vrabote IS NULL) and (dorabotka=0 or dorabotka IS NULL) and (vipolneno=0 or vipolneno IS NULL) and (navyklad=0 or navyklad IS NULL) and (vilojeno=0 or vilojeno IS NULL)")->FetchRow();
+          $sayty = str_replace('[z1]', $z1['count(*)'], $sayty);
+          $sayty = str_replace('[z2]', $z2['count(*)'], $sayty);
+          $sayty = str_replace('[z3]', $z3['count(*)'], $sayty);
+          $sayty = str_replace('[z4]', abs((int) $z4['count(*)']), $sayty);
+          $sayty = str_replace('[z5]', $z5['count(*)'], $sayty);
+          $sayty = str_replace('[z7]', $z7['count(*)'], $sayty);
+          } */
         if ($sayty) {
             $sayty = str_replace('[sayty]', $sayty, file_get_contents(PATH . 'modules/admins/tmp/admin/sayty_top.tpl'));
         } else {
@@ -539,7 +538,7 @@ class admins {
                     break;
                 }
             }
-            if($db_res2['sistema'] == "http://miralinks.ru/" || $db_res2['sistema'] == "https://gogetlinks.net/" || $db_res2['sistema'] == "http://pr.sape.ru/" || $db_res2['sistema'] == "http://getgoodlinks.ru/" || $db_res2['sistema'] == "http://rotapost.ru/") {
+            if ($db_res2['sistema'] == "http://miralinks.ru/" || $db_res2['sistema'] == "https://gogetlinks.net/" || $db_res2['sistema'] == "http://pr.sape.ru/" || $db_res2['sistema'] == "http://getgoodlinks.ru/" || $db_res2['sistema'] == "http://rotapost.ru/") {
                 $colvos = 2000;
             }
 
@@ -1273,16 +1272,40 @@ class admins {
         if ($_SESSION['admin']['id']) {
             $total_price = $this->getAllLeftMoney($db);
         }
+
         while ($res = $query->FetchRow()) {
-            //if($status == "not")
             $cur_balans = $users_balans[$res['id']];
             if ($status == "active" && $cur_balans <= 0 && $res['id'] != 20) {
                 continue;
             }
             $admins .= file_get_contents(PATH . 'modules/admins/tmp/admin/one.tpl');
             $admins = str_replace('[login]', mb_substr($res['login'], 0, 15), $admins);
-            $admins = str_replace('[type]', $res['type'], $admins);
             $admins = str_replace('[id]', $res['id'], $admins);
+            if ($res["type"] == "user") {
+                $admins = str_replace('[type]', '<a class="downbirgjs" href="#" onclick="return false;"><img src="/images/interface/downarrow.png" /></a>', $admins);
+                $birj = "";
+                $birjs_table = file_get_contents(PATH . 'modules/admins/tmp/admin/birj_table_top.tpl');
+                $birjs_table = str_replace("[th_comment]", '', $birjs_table);
+                $birjs_info = $db->Execute("SELECT b.*, br.url FROM birjs b LEFT JOIN birgi br ON br.id=b.birj WHERE b.uid=" . $res['id']);
+                $i = 1;
+                while ($birjs = $birjs_info->FetchRow()) {
+                    $class = ($i % 2 == 0) ? "style='background:#FFF8DC'" : "style='background:white'";
+                    $birj .= file_get_contents(PATH . 'modules/admins/tmp/admin/birja_one.tpl');
+                    $birj = str_replace('[class]', $class, $birj);
+                    $birj = str_replace('[loginb]', $birjs['login'], $birj);
+                    $birj = str_replace('[passb]', $birjs['pass'], $birj);
+                    $birj = str_replace('[birja]', $birjs['url'], $birj);
+                    $birj = str_replace('[comment_viklad]', "", $birj);
+                    $i++;
+                }
+                if ($birj == "") {
+                    $birj = "<tr style='background:#FFF8DC'><td colspan='5'>У пользователя не добавлено бирж</td></tr>";
+                }
+                $birjs_table = str_replace('[birjs]', $birj, $birjs_table);
+                $admins = str_replace('[birjs]', $birjs_table, $admins);
+            } else {
+                $admins = str_replace('[type]', $res['type'], $admins);
+            }
             $uid = $res['id'];
 
             $admins = str_replace('[z1]', (isset($tasks[$res["id"]]) ? $tasks[$res["id"]] : 0), $admins);
@@ -2269,7 +2292,7 @@ class admins {
             $admins_managers[] = $user['id'];
         }
         $admins_managers = "(" . implode(",", $admins_managers) . ")";
-        if($type != "manager"){
+        if ($type != "manager") {
             $all = $db->Execute("SELECT t.id FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE $condition a.id != 0 ORDER BY t.id DESC");
             $query = $db->Execute("SELECT t.* FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE $condition a.id != 0 ORDER BY t.status DESC, t.id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit);
         } else {
@@ -2525,16 +2548,16 @@ class admins {
         $admin_and_manager = false;
         $administrations = array();
         $admins = $db->Execute("SELECT * FROM admins WHERE type='admin' OR type='manager'")->GetAll();
-        foreach ($admins as $user){
+        foreach ($admins as $user) {
             $administrations[$user["id"]] = $user["id"];
         }
-        
+
         $tid = (int) $_REQUEST['tid'];
         $res = $db->Execute("SELECT * FROM tickets WHERE id=$tid")->FetchRow();
         if ($res['status'] == 1 && ($res['to_uid'] == 0 || $res['to_uid'] == $uid)) {
             $db->Execute("UPDATE tickets SET status=2 WHERE id=$tid");
         }
- 
+
         if ($res['to_uid'] > 0 && $res['to_uid'] != $uid) {
             $uinfo = $db->Execute("SELECT * FROM admins WHERE id=" . $res['to_uid'])->FetchRow();
         } else {
@@ -2546,10 +2569,10 @@ class admins {
         $view = file_get_contents(PATH . 'modules/admins/tmp/admin/ticket_chat_one.tpl');
         $view = str_replace('[msg]', $res['msg'], $view);
         $view = str_replace('[cdate]', $res['date'], $view);
-        if(array_search($res['uid'], $administrations) && array_search($res['to_uid'], $administrations)){
+        if (array_search($res['uid'], $administrations) && array_search($res['to_uid'], $administrations)) {
             $admin_and_manager = true;
         }
-        
+
         if (array_search($res['uid'], $administrations) && ($admin_and_manager == false || $admin_and_manager == true && $res['uid'] == $uid)) {
             $view = str_replace('[from_class]', "support", $view);
             $view = str_replace('[from]', "Администрация", $view);
@@ -2557,7 +2580,7 @@ class admins {
             $view = str_replace('[from_class]', "you", $view);
             $view = str_replace('[from]', $uinfo['login'] . "<br>" . $res['site'], $view);
         }
-        
+
 
         $answers = $db->Execute("SELECT * FROM answers WHERE tid=$tid");
         while ($resw = $answers->FetchRow()) {
@@ -2913,8 +2936,9 @@ class admins {
 
             $birj = "";
             $birjs_table = file_get_contents(PATH . 'modules/admins/tmp/admin/birj_table_top.tpl');
+            $birjs_table = str_replace("[th_comment]", '<th width="132px" style="max-width: 210px;">Комментарий</th><th width="28px"></th>', $birjs_table);
             $birjs_info = $db->Execute("SELECT b.*, br.url FROM birjs b LEFT JOIN birgi br ON br.id=b.birj WHERE b.uid=" . $site['uid']);
-            $birjs_count = $db->Execute("SELECT count(*) as count FROM birjs WHERE uid=" . $site['uid'])->FetchRow();
+            $birjs_count = $birjs_info->NumRows();
             $profil .= microtime() . "  - QUERY 2 && 3  - GET birjs FOR USER - " . $site['uid'] . "\r\n";
             $i = 1;
             while ($birjs = $birjs_info->FetchRow()) {
@@ -2925,8 +2949,8 @@ class admins {
                 $birj = str_replace('[loginb]', $birjs['login'], $birj);
                 $birj = str_replace('[passb]', $birjs['pass'], $birj);
                 $birj = str_replace('[birja]', $birjs['url'], $birj);
-                $comment = '<td class="row_tt comment_viklad" style="font-size: 11px;" rowspan="' . $birjs_count["count"] . '">';
-                $edit_comment = '<td class="edit row_tt" rowspan="' . $birjs_count["count"] . '">
+                $comment = '<td class="row_tt comment_viklad" style="font-size: 11px;" rowspan="' . $birjs_count . '">';
+                $edit_comment = '<td class="edit row_tt" rowspan="' . $birjs_count . '">
                                     <a href="?module=admins&action=birj&action2=edit_comment&id=' . $site['uid'] . '" class="ico"></a>
                                 </td>';
                 if ($i == 1) {
@@ -3406,6 +3430,51 @@ class admins {
         $url = "?module=admins&action=ticket";
         $content = file_get_contents(PATH . 'modules/admins/tmp/admin/request.tpl');
         $content = str_replace('[url]', $url, $content);
+        return $content;
+    }
+
+    function birj_all($db) {
+        $content = file_get_contents(PATH . 'modules/admins/tmp/admin/birj_all.tpl');
+        $users = array();
+        $admins_model = $db->Execute("SELECT * FROM admins WHERE active=1")->GetAll();
+        foreach ($admins_model as $admin) {
+            $users[$admin["id"]] = $admin["login"];
+        }
+        $kluchi = array_keys($users);
+        $active_users = implode(",", $kluchi);
+
+        $birj_access = array();
+        $birjs_model = $db->Execute("SELECT b.uid, b.login, b.pass, b.active, br.name FROM birjs b LEFT JOIN birgi br ON br.id=b.birj WHERE b.uid IN ($active_users) ORDER BY b.birj, b.uid")->GetAll();
+        foreach ($birjs_model as $birj) {
+            if (!isset($birj_access[$birj["name"]])) {
+                $birj_access[$birj["name"]] = array();
+            }
+            $birj_access[$birj["name"]][] = $birj;
+        }
+
+        $output = "";
+        foreach ($birj_access as $name_birj => $birjs) {
+            $output .= "<h2>$name_birj</h2><br />";
+            $output .= file_get_contents(PATH . 'modules/admins/tmp/admin/birj_table_top.tpl');
+            $output = str_replace('Биржа', "Пользователь", $output);
+            $birj = "";
+            foreach ($birjs as $key => $value) {
+                $class = ($key % 2 == 0) ? "style='background:#FFFFF0'" : "style='background:white'";
+                $birj .= file_get_contents(PATH . 'modules/admins/tmp/admin/birja_one.tpl');
+                if($value['active'] == 0){
+                    $class = "style='background:#d7d7d7'";
+                }
+                $birj = str_replace('[class]', $class, $birj);
+                $birj = str_replace('[loginb]', $value['login'], $birj);
+                $birj = str_replace('[passb]', $value['pass'], $birj);
+                $birj = str_replace('[birja]', $users[$value['uid']], $birj);
+                $birj = str_replace('[comment_viklad]', "", $birj);
+            }
+            $output = str_replace('[th_comment]', "", $output);
+            $output = str_replace('[birjs]', $birj, $output);
+            $output .= "<br /><br />";
+        }
+        $content = str_replace('[birjs]', $output, $content);
         return $content;
     }
 
@@ -5608,7 +5677,8 @@ class admins {
                     $db->Execute("UPDATE zadaniya_new SET task_id = '" . $id_task . "', etxt = 1, vrabote = 1, dorabotka = 0 WHERE id = '" . $id . "'");
                     $num++;
                 } else {
-                    $error .= 'Задание ' . $task["id"] . ' не добавилось в ETXT!<br>';
+                    //print_r($query_p);
+                    $error .= 'Задание ' . $task["id"] . ' не добавилось в ETXT! Error: ' . $new_tid_arr["error"] . '<br>';
                 }
             } else {
                 $copywriter = $db->Execute("SELECT * FROM admins WHERE id = " . $not_copywriter['copywriter'])->FetchRow();

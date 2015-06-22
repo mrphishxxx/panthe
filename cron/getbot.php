@@ -57,7 +57,7 @@ if ($balance->balance > 0) {
         }
         $data = date("d-m-Y H:i:s");
         $description = implode(", ", $ids);
-
+        
         $task = $api->taskCreate($data, $links, GetbotApi::MODE_EXPRESS_PRIORITY, $description);
         $id = $task->id;
         if ($task->can_launch) {

@@ -16,4 +16,9 @@
         <a [not_access_manager] onclick="if (confirm('Вы действительно желаете удалить пользователя')){ location.href='?module=admins&action=del&id=[id]' };return false;" href="#" class="ico"></a>
     </td>
 </tr>
+<tr style='display: none;background:#f7f7f7'>
+    <td colspan="10">
+        [birjs]
+    </td>
+</tr>
 

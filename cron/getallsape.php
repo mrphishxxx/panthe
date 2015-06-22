@@ -58,7 +58,7 @@ function getTask($db, $uid) {
         curl_close($curl);
     }
     $id_user_sape = xmlrpc_decode($out);
-    
+
     if (is_array($id_user_sape)) {
         $user = $db->Execute("SELECT * FROM admins WHERE id=$uid")->FetchRow();
         $body = "Добрый день " . $user["login"] . "! <br/>" .
@@ -80,7 +80,7 @@ function getTask($db, $uid) {
         $message["auto_text"] = null;
         $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
         try {
-            $mandrill->messages->send($message);
+            //$mandrill->messages->send($message);
             //$db->Execute("UPDATE birjs SET active='0' WHERE birj=4 AND uid=$uid");
         } catch (Exception $e) {
             echo $body;
@@ -136,7 +136,7 @@ function getTask($db, $uid) {
                     $new_task["text"] = "";
                     $lay_out = 0;
                     foreach ($adverts["links"] as $link) {
-                        $new_task["url"][] = $link["href"];
+                        $new_task["url"][] = $db->escape($link["href"]);
                         $new_task["ankor"][] = $db->escape($link["text"]);
                     }
                     if ($adverts["type"] == "news")
@@ -152,7 +152,7 @@ function getTask($db, $uid) {
                             if (strpos($new_task["comments"], $ankor) && strpos($new_task["comments"], $new_task["url"][$key_ankor])) {
                                 $new_task["text"] = $adverts["description"];
                                 $new_task["comments"] = '';
-                                $lay_out = 1;                                
+                                $lay_out = 1;
                             }
                         }
                     }
@@ -174,32 +174,24 @@ function getTask($db, $uid) {
                         $last = mb_strtolower(mb_substr($new_task["ankor"][0], 1), 'UTF-8'); //все кроме первой буквы
                         $last = ($last[0] == "?") ? mb_substr($last, 1) : $last;
                         $new_task["tema"] = mysql_real_escape_string($first . $last);
-                    } elseif(isset($new_task["url"][0])) {
+                    } elseif (isset($new_task["url"][0])) {
                         $new_task["tema"] = mysql_real_escape_string("Обзор сайта " . $new_task["url"][0]);
                     }
                     $date = time();
                     if (count($new_task["ankor"]) != 0 && count($new_task["url"]) != 0) {
-                        switch (count($new_task["url"])) {
-                            case 1:
-                                $db->Execute("INSERT INTO zadaniya (tema, text, lay_out, sid, b_id, sape_id, uid, sistema, type_task, ankor, url, comments, navyklad, date, keywords) VALUES ('" . $new_task["tema"] . "', '" . $new_task["text"] . "', '" . $lay_out . "', '" . $new_task["sid"] . "', '0', '" . $new_task["sape_id"] . "','" . $uid . "', 'http://pr.sape.ru/', '$type', '" . $new_task["ankor"][0] . "', '" . $new_task["url"][0] . "', '" . $new_task["comments"] . "', '" . $lay_out . "', '" . $date . "', '" . $new_task["keywords"] . "')");
-                                break;
-                            case 2:
-                                $db->Execute("INSERT INTO zadaniya (tema, text, lay_out, sid, b_id, sape_id, uid, sistema, type_task, ankor, ankor2, url, url2, comments, navyklad, date, keywords) VALUES ('" . $new_task["tema"] . "', '" . $new_task["text"] . "', '" . $lay_out . "', '" . $new_task["sid"] . "', '0', '" . $new_task["sape_id"] . "','" . $uid . "', 'http://pr.sape.ru/', '$type', '" . $new_task["ankor"][0] . "', '" . @$new_task["ankor"][1] . "', '" . $new_task["url"][0] . "', '" . $new_task["url"][1] . "', '" . $new_task["comments"] . "', '" . $lay_out . "', '" . $date . "', '" . $new_task["keywords"] . "')");
-                                break;
-                            case 3:
-                                $db->Execute("INSERT INTO zadaniya (tema, text, lay_out, sid, b_id, sape_id, uid, sistema, type_task, ankor, ankor2, ankor3,url, url2, url3, comments, navyklad, date, keywords) VALUES ('" . $new_task["tema"] . "', '" . $new_task["text"] . "', '" . $lay_out . "', '" . $new_task["sid"] . "', '0', '" . $new_task["sape_id"] . "','" . $uid . "', 'http://pr.sape.ru/', '$type', '" . $new_task["ankor"][0] . "', '" . @$new_task["ankor"][1] . "', '" . @$new_task["ankor"][2] . "', '" . $new_task["url"][0] . "', '" . $new_task["url"][1] . "', '" . $new_task["url"][2] . "', '" . $new_task["comments"] . "', '" . $lay_out . "', '" . $date . "', '" . $new_task["keywords"] . "')");
-                                break;
-                            case 4:
-                                $db->Execute("INSERT INTO zadaniya (tema, text, lay_out, sid, b_id, sape_id, uid, sistema, type_task, ankor, ankor2, ankor3, ankor4, url, url2, url3, url4, comments, navyklad, date, keywords) VALUES ('" . $new_task["tema"] . "', '" . $new_task["text"] . "', '" . $lay_out . "', '" . $new_task["sid"] . "', '0', '" . $new_task["sape_id"] . "','" . $uid . "', 'http://pr.sape.ru/', '$type', '" . $new_task["ankor"][0] . "', '" . @$new_task["ankor"][1] . "', '" . @$new_task["ankor"][2] . "', '" . @$new_task["ankor"][3] . "', '" . $new_task["url"][0] . "', '" . $new_task["url"][1] . "', '" . $new_task["url"][2] . "', '" . $new_task["url"][3] . "', '" . $new_task["comments"] . "', '" . $lay_out . "', '" . $date . "', '" . $new_task["keywords"] . "')");
-                                break;
-                            case 5:
-                                $db->Execute("INSERT INTO zadaniya (tema, text, lay_out, sid, b_id, sape_id, uid, sistema, type_task, ankor, ankor2, ankor3, ankor4, ankor5, url, url2, url3, url4, url5, comments, navyklad, date, keywords) VALUES ('" . $new_task["tema"] . "', '" . $new_task["text"] . "', '" . $lay_out . "', '" . $new_task["sid"] . "', '0', '" . $new_task["sape_id"] . "','" . $uid . "', 'http://pr.sape.ru/', '$type', '" . $new_task["ankor"][0] . "', '" . @$new_task["ankor"][1] . "', '" . @$new_task["ankor"][2] . "', '" . @$new_task["ankor"][3] . "', '" . @$new_task["ankor"][4] . "', '" . $new_task["url"][0] . "', '" . $new_task["url"][1] . "', '" . $new_task["url"][2] . "', '" . $new_task["url"][3] . "', '" . $new_task["url"][4] . "', '" . $new_task["comments"] . "', '" . $lay_out . "', '" . $date . "', '" . $new_task["keywords"] . "')");
-                                break;
-                            default :
-                                $db->Execute("INSERT INTO zadaniya (tema, text, lay_out, sid, b_id, sape_id, uid, sistema, type_task, ankor, ankor2, ankor3, ankor4, ankor5, url, url2, url3, url4, url5, comments, navyklad, date, keywords) VALUES ('" . $new_task["tema"] . "', '" . $new_task["text"] . "', '" . $lay_out . "', '" . $new_task["sid"] . "', '0', '" . $new_task["sape_id"] . "','" . $uid . "', 'http://pr.sape.ru/', '$type', '" . $new_task["ankor"][0] . "', '" . @$new_task["ankor"][1] . "', '" . @$new_task["ankor"][2] . "', '" . @$new_task["ankor"][3] . "', '" . @$new_task["ankor"][4] . "', '" . $new_task["url"][0] . "', '" . $new_task["url"][1] . "', '" . $new_task["url"][2] . "', '" . $new_task["url"][3] . "', '" . $new_task["url"][4] . "', '" . $new_task["comments"] . "', '" . $lay_out . "', '" . $date . "', '" . $new_task["keywords"] . "')");
-                                break;
-                        }
-                        if($lay_out == 1){
+                        $new_task["ankor"][1] = (isset($new_task["ankor"][1]) && !empty($new_task["ankor"][1])) ? $new_task["ankor"][1] : '';
+                        $new_task["ankor"][2] = (isset($new_task["ankor"][2]) && !empty($new_task["ankor"][2])) ? $new_task["ankor"][2] : '';
+                        $new_task["ankor"][3] = (isset($new_task["ankor"][3]) && !empty($new_task["ankor"][3])) ? $new_task["ankor"][3] : '';
+                        $new_task["ankor"][4] = (isset($new_task["ankor"][4]) && !empty($new_task["ankor"][4])) ? $new_task["ankor"][4] : '';
+                        
+                        $new_task["url"][1] = (isset($new_task["url"][1]) && !empty($new_task["url"][1])) ? $new_task["url"][1] : '';
+                        $new_task["url"][2] = (isset($new_task["url"][2]) && !empty($new_task["url"][2])) ? $new_task["url"][2] : '';
+                        $new_task["url"][3] = (isset($new_task["url"][3]) && !empty($new_task["url"][3])) ? $new_task["url"][3] : '';
+                        $new_task["url"][4] = (isset($new_task["url"][4]) && !empty($new_task["url"][4])) ? $new_task["url"][4] : '';
+                        
+                        $db->Execute("INSERT INTO zadaniya (tema, text, lay_out, sid, b_id, sape_id, uid, sistema, type_task, ankor, ankor2, ankor3, ankor4, ankor5, url, url2, url3, url4, url5, comments, navyklad, date, keywords) VALUES ('" . $new_task["tema"] . "', '" . $db->escape($new_task["text"]) . "', '" . $lay_out . "', '" . $new_task["sid"] . "', '0', '" . $new_task["sape_id"] . "','" . $uid . "', 'http://pr.sape.ru/', '$type', '" . $new_task["ankor"][0] . "', '" . $new_task["ankor"][1] . "', '" . $new_task["ankor"][2] . "', '" . $new_task["ankor"][3] . "', '" . $new_task["ankor"][4] . "', '" . $new_task["url"][0] . "', '" . $new_task["url"][1] . "', '" . $new_task["url"][2] . "', '" . $new_task["url"][3] . "', '" . $new_task["url"][4] . "', '" . $new_task["comments"] . "', '" . $lay_out . "', '" . $date . "', '" . $new_task["keywords"] . "')");
+
+                        if ($lay_out == 1) {
                             $lastId = $db->Insert_ID();
                             $db->Execute("INSERT INTO completed_tasks (uid, zid, date, price, status) VALUES ('$uid', '" . $lastId . "', '" . date("Y-m-d H:i:s") . "', '15', 1)");
                         }

@@ -356,7 +356,7 @@ function setTaskMiralinks($db, $task) {
     }
     $proxy = $proxies[rand(0, count($proxies) - 1)];
     $host = 'http://localhost:4444/wd/hub'; // this is the default
-    $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => "firefox");
+    $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => "chrome");
     if (!is_null($proxy)) {
         $proxy_capabilities = array(WebDriverCapabilityType::PROXY => array('proxyType' => 'manual',
                 'httpProxy' => '' . $proxy['domain'] . ':' . $proxy['port'] . '', 'sslProxy' => '' . $proxy['domain'] . ':' . $proxy['port'] . '', 'socksUsername' => '' . $proxy['user'] . '', 'socksPassword' => '' . $proxy['pass'] . ''));

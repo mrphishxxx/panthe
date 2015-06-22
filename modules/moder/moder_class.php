@@ -1295,7 +1295,7 @@ class moder {
         $message["from_name"] = "iforget";
         $message["to"] = array();
         $message["to"][0] = array("email" => MAIL_ADMIN);
-        $message["to"][1] = array("email" => MAIL_DEVELOPER);
+        //$message["to"][1] = array("email" => MAIL_DEVELOPER);
         $message["track_opens"] = null;
         $message["track_clicks"] = null;
         $message["auto_text"] = null;

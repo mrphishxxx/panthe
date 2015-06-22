@@ -145,6 +145,7 @@
                                 <h2>Дополнительно</h2>
                                 <ul>
                                     <li><a href="?module=admins&action=statistics">Статистика</a></li>
+                                    <li><a href="?module=admins&action=birj">Биржи</a></li>
                                     <li><a href="?module=admins&action=users_non_active">Неактивные пользователи</a></li>
                                     <li><a href="?module=admins&action=send_mail_users_bl_etxt">Сообщение для БЛ ETXT</a></li>
                                     <li><a href="?module=admins&action=verify_compliance_deadlines_order">Перезапуск задач в ETXT</a></li>

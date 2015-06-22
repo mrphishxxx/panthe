@@ -14,3 +14,4 @@
 </table>
 <br>
 </form>
+<script language="javascript" src="/modules/admins/tmp/admin/js/downbirgjs.js" type="text/javascript"></script>

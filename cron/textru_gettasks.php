@@ -96,9 +96,11 @@ if (!empty($check_tasks)) {
                                 $db->Execute('UPDATE zadaniya_new SET vilojeno = "1", navyklad="0" WHERE id = ' . $task["id"]);
                                 continue;
                             }
-                            foreach ($request->items as $err_arr) {
-                                foreach ($err_arr as $err) {
-                                    $errors[] = $err;
+                            if(isset($request->items)){
+                                foreach ($request->items as $err_arr) {
+                                    foreach ($err_arr as $err) {
+                                        $errors[] = $err;
+                                    }
                                 }
                             }
                             if (empty($request) && isset($accept["faultString"])) {
