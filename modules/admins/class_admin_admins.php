@@ -5310,11 +5310,16 @@ class admins {
                     curl_close($curl);
                 }
                 $accept = xmlrpc_decode($out);
+                
                 $profil .= microtime() . "  - AFTER 3(4) curl" . "\r\n";
                 if ($accept == true && !isset($accept["faultString"])) {
                     $db->Execute("UPDATE zadaniya_new SET vilojeno = '1', navyklad = '0', dorabotka = '0' WHERE id = $id");
                     $profil .= microtime() . "  - TRUE SEND task" . "\r\n";
                 } else {
+                    if($_SERVER["REMOTE_ADDR"] == "128.70.202.235"){
+                        print_r($accept);
+                        //die();
+                    }
                     $request = $data = array();
                     $errors = json_decode($accept["faultString"]);
                     foreach ($errors->items as $err_type => $err_arr) {
@@ -5330,7 +5335,7 @@ class admins {
                         if (mb_strpos("В статье не найдены требуемые ссылки", $err)) {
                             $err = "В статье не найдены требуемые ссылки. Добавьте не менее 1 ссылок из списка.";
                         }
-                        $data[] = "error[]=" . $err;
+                        $data[] = "error[]=" . str_replace('"',"", $err);
                     }
                     $query_p = implode('&', $data);
                     $profil .= microtime() . "  - FALSE SEND TASK!! OUT ERROR" . "\r\n";
