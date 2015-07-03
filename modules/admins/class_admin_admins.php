@@ -2389,7 +2389,7 @@ class admins {
             $lastId = $db->Insert_ID();
 
             // SEND Mails from Admins AND User
-            $this->_postman->admin->ticketAdd();
+            //$this->_postman->admin->ticketAdd();
             if ($user["mail_period"] > 0) {
                 switch ($user["type"]) {
                     case "user":
@@ -2557,10 +2557,14 @@ class admins {
 
             $res = $db->Execute("SELECT * FROM tickets WHERE id=$tid")->FetchRow();
             $client = $db->Execute("SELECT * FROM admins WHERE id=" . $res['uid'])->FetchRow();
+            if($client["type"] == "admin") {
+                $client = $db->Execute("SELECT * FROM admins WHERE id=" . $res['to_uid'])->FetchRow();
+            }
             if ($client["mail_period"] > 0) {
+                //echo $client["type"];die();
                 switch ($client["type"]) {
                     case "user":
-                        $this->_postman->user->ticketAnswer($client['email'], $client['login'], $tid);
+                        $result = $this->_postman->user->ticketAnswer($client['email'], $client['login'], $tid);
                         break;
                     case "copywriter":
                         $this->_postman->copywriter->ticketAnswer($client['email'], $client['login'], $tid);
@@ -4062,7 +4066,7 @@ class admins {
         $task = $db->Execute("SELECT * FROM zadaniya_new WHERE id = $id")->FetchRow();
         if (!empty($uid) && !empty($task) && !empty($status) && $status == "dorabotka") {
             $time = time();
-            $db->Execute("UPDATE zadaniya_new SET rework = 1, dorabotka = 1, navyklad = 0, vilojeno = 0, date_in_work = '$time' WHERE id = $id");
+            $db->Execute("UPDATE zadaniya_new SET rework = 1, dorabotka = 1, vipolneno = 0, navyklad = 0, vilojeno = 0, date_in_work = '$time' WHERE id = $id");
             if ($task['copywriter'] != 0) {
                 $copywriter = $db->Execute("SELECT * FROM admins WHERE id=" . $task['copywriter'])->FetchRow();
                 $this->_postman->copywriter->articlesChangeStatusDorabotka($id, $copywriter);

@@ -6,15 +6,15 @@
  * @author Abashev V. Alexey
  */
 class FromUser {
+
     private $db;
     private $smarty;
     private $mandrill;
     private $message = array();
     private $admins_mail = array();
     private $TEMPLATE_PATH;
-    
     protected $get_text = false;
-    
+
     public function __construct($template_path, $smarty, $db, $mandrill, $message, $admins_mail) {
         $this->db = $db;
         $this->smarty = $smarty;
@@ -22,14 +22,15 @@ class FromUser {
         $this->mandrill = $mandrill;
         $this->admins_mail = $admins_mail;
         $this->TEMPLATE_PATH = $template_path . "fromUser/";
-        
+
+        $this->message["to"] = array();
         $this->debugging(true);
     }
-    
+
     public function sendEmail() {
-        if($this->get_text == false) {
+        if ($this->get_text == false) {
             try {
-                $this->mandrill->messages->send($this->message);
+                $this->send();
                 return NULL;
             } catch (Exception $e) {
                 return "Письмо не отправлено! Возникли проблемы! Error: " . $e;
@@ -38,32 +39,44 @@ class FromUser {
             return $this->message["html"];
         }
     }
-    
-    public function debugging($debug) {
-        if ($debug) {
-            $this->admins_mail[] = array("email" => EMAIL_SUPPORT, "name" => "Abashev V. Alexey");
+
+    private function send() {
+        if (!empty($this->message["to"])) {
+            $this->mandrill->messages->send($this->message);
         }
     }
-    
-    public function ticketAdd($email = "", $login = "", $lastId = 0){
+
+    public function debugging($debug) {
+        if ($debug) {
+            $this->message["to"][] = array("email" => EMAIL_SUPPORT, "name" => "Abashev V. Alexey");
+        }
+    }
+
+    public function ticketAdd($email = "", $login = "", $lastId = 0) {
         $this->smarty->assign('lastId', $lastId);
-        $this->message["to"][0] = array("email" => $email, "name" => $login);
+        if ($email != "") {
+            $this->message["to"][0] = array("email" => $email, "name" => $login);
+        }
         $this->message["subject"] = "[Новый тикет в системе iforget]";
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "ticket_add.tpl");
         return $this->sendEmail();
     }
-    
+
     public function ticketAnswer($email = "", $login = "", $tid = 0) {
         $this->smarty->assign('tid', $tid);
-        $this->message["to"][0] = array("email" => $email, "name" => $login);
+        if ($email != "") {
+            $this->message["to"][0] = array("email" => $email, "name" => $login);
+        }
         $this->message["subject"] = "[Сообщение в тикете от админимстрации IFORGET]";
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "ticket_answer.tpl");
         return $this->sendEmail();
     }
-    
+
     public function priceIncrease($users = array()) {
         $this->smarty->assign('get_text', $this->get_text);
-        $this->message["to"] = $users;
+        if (!empty($users)) {
+            $this->message["to"] = $users;
+        }
         $this->message["text"] = "До поднятие цены осталось 2 дня!";
         $this->message["subject"] = "[Внимание: увеличение цен в IForget!]";
         $f1 = fopen("images/header_bg.jpg", "rb");
@@ -73,8 +86,7 @@ class FromUser {
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "price_increase.tpl");
         return $this->sendEmail();
     }
-    
-    
+
     public function getMailsName($name = null) {
         if (!empty($name)) {
             switch ($name) {
@@ -90,7 +102,8 @@ class FromUser {
             );
         }
     }
-    public function getMail($name){
+
+    public function getMail($name) {
         if (!empty($name)) {
             $this->get_text = true;
             switch ($name) {
@@ -100,4 +113,5 @@ class FromUser {
             }
         }
     }
+
 }
