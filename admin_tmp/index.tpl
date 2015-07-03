@@ -150,6 +150,8 @@
                                     <li><a href="?module=admins&action=send_mail_users_bl_etxt">Сообщение для БЛ ETXT</a></li>
                                     <li><a href="?module=admins&action=verify_compliance_deadlines_order">Перезапуск задач в ETXT</a></li>
                                 </ul>
+                                
+                                <h2><a href="/faq.php">F.A.Q.</a></h2>
 
                             </div>
 

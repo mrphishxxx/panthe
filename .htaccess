@@ -12,7 +12,7 @@ Options -Indexes
 Options +FollowSymLinks
 
 <IfModule mod_php5.c>
-php_flag display_errors off
+php_flag display_errors on
 php_value error_reporting 0
 php_value arg_separator.output "&amp;"
 php_value mbstring.internal_encoding UTF-8

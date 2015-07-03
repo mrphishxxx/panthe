@@ -36,7 +36,7 @@ if ($count > 0) {
         $sinfo = $db->Execute("SELECT * FROM sayty WHERE id=" . $task["sid"])->FetchRow();
         $sinfo["url"] = str_replace("/", "", str_replace("http://", "", str_replace("www.", "", $sinfo["url"])));
         if ((!empty($task["url_statyi"]) && $task["url_statyi"] != "" && strstr($task["url_statyi"], $sinfo["url"])) && ($task["vipolneno"] != 1)) {
-            echo $task["id"] ." -- ";
+            echo "\r\nTASK ID: ".$task["id"] ." -- \r\n";
             switch ($task["sistema"]) {
                 case 'https://blogun.ru/':
                     if (!empty($task["b_id"]) && $task["b_id"] != 0) {
@@ -110,7 +110,7 @@ function setTaskBlogun($db, $task) {
     }
 
     $proxy = $proxies[rand(0, count($proxies) - 1)];
-    $host = 'http://localhost:4444/wd/hub'; // this is the default
+    $host = 'http://127.0.0.1:4444/wd/hub'; // this is the default
     $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => "firefox");
 
     if (!is_null($proxy)) {
@@ -127,12 +127,17 @@ function setTaskBlogun($db, $task) {
 
     $driver->get('https://blogun.ru/');
     $driver->wait(15);
-    $login = $driver->findElement(WebDriverBy::xpath("//input[@name='login']"));
-    $login->sendKeys($birj['login']);
-    $pass = $driver->findElement(WebDriverBy::xpath("//input[@name='password']"));
-    $pass->sendKeys($birj['pass']);
-    $btn = $driver->findElement(WebDriverBy::xpath("//button[@type='submit']"));
-    $btn->click();
+    $logins = $driver->findElements(WebDriverBy::xpath("//input[@name='login']"));
+	if(count($logins)==0) return "Ошибка отправления, поле 'input[@name='login']' - не найдено";
+    $logins[0]->sendKeys($birj['login']);
+	
+    $pass = $driver->findElements(WebDriverBy::xpath("//input[@name='password']"));
+	if(count($pass)==0) return "Ошибка отправления, поле 'input[@name='password']' - не найдено";	
+    $pass[0]->sendKeys($birj['pass']);
+	
+    $btns = $driver->findElements(WebDriverBy::xpath("//button[@type='submit']"));
+	if(count($btns)==0) return "Ошибка отправления, поле 'input[@type='submit']' - не найдено";
+    $btns[0]->click();
 
     if (count($driver->findElements(WebDriverBy::xpath("//a[@class='amount']"))) === 0) {
         $driver->close();
@@ -141,10 +146,13 @@ function setTaskBlogun($db, $task) {
 
     $sayty = $db->Execute("SELECT * FROM sayty WHERE uid='" . $task['uid'] . "' AND id='" . $task['sid'] . "'")->FetchRow();
     $driver->get('https://blogun.ru/getcode.php?id=' . $task['b_id'] . '&idblog=' . $sayty['blogun_id'] . '&submenu=2&menu=tsk');
-    $url = $driver->findElement(WebDriverBy::xpath("//input[@id='url']"));
-    $url->sendKeys($task['url_statyi']);
-    $btn = $driver->findElement(WebDriverBy::xpath("//input[@name='submit']"));
-    $btn->click();
+	//echo 'https://blogun.ru/getcode.php?id=' . $task['b_id'] . '&idblog=' . $sayty['blogun_id'] . '&submenu=2&menu=tsk'.'\r\n';
+    $urls = $driver->findElements(WebDriverBy::xpath("//input[@id='url']"));
+	if(count($urls)==0) return "Ошибка отправления, поле 'input[@id='url']' - не найдено";
+    $url[0]->sendKeys($task['url_statyi']);
+    $btns = $driver->findElements(WebDriverBy::xpath("//input[@name='submit']"));
+	if(count($btns)==0) return "Ошибка отправления, поле 'input[@name='submit']' - не найдено";
+    $btns[0]->click();
 
     $driver->close();
     return FALSE;
@@ -163,8 +171,8 @@ function setTaskMiralinks($db, $task) {
         );
     }
     $proxy = $proxies[rand(0, count($proxies) - 1)];
-    $host = 'http://localhost:4444/wd/hub'; // this is the default
-    $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => "chrome");
+    $host = 'http://127.0.0.1:4444/wd/hub'; // this is the default
+    $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => "firefox");
     if (!is_null($proxy)) {
         $proxy_capabilities = array(WebDriverCapabilityType::PROXY => array('proxyType' => 'manual',
                 'httpProxy' => '' . $proxy['domain'] . ':' . $proxy['port'] . '', 'sslProxy' => '' . $proxy['domain'] . ':' . $proxy['port'] . '', 'socksUsername' => '' . $proxy['user'] . '', 'socksPassword' => '' . $proxy['pass'] . ''));
@@ -183,10 +191,16 @@ function setTaskMiralinks($db, $task) {
         }
         sleep(1);
     }
-    $login = $driver->findElement(WebDriverBy::xpath("//input[@id='UserLogin']"));
-    $login->sendKeys($birj['login']);
-    $pass = $driver->findElement(WebDriverBy::xpath("//input[@id='UserPassword']"));
-    $pass->sendKeys($birj['pass']);
+    $logins = $driver->findElements(WebDriverBy::xpath("//input[@id='UserLogin']"));
+	if(count($logins)==0) return "Ошибка отправления, поле 'input[@name='UserLogin']' - не найдено";
+    $logins[0]->sendKeys($birj['login']);
+	
+    $pass = $driver->findElements(WebDriverBy::xpath("//input[@id='UserPassword']"));
+	if(count($pass)==0) return "Ошибка отправления, поле 'input[@name='UserPassword']' - не найдено";
+    $pass[0]->sendKeys($birj['pass']);
+	
+	echo "MIRA: ".$birj['login']." --- ".$birj['pass']."\r\n";
+	
     while (true) { // Handle timeout somewhere
         $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
         if ($ajaxIsComplete){
@@ -233,8 +247,11 @@ function setTaskMiralinks($db, $task) {
             sleep(1);
         }
 
-        $urlInput = $driver->findElement(WebDriverBy::xpath("//input[@placeholder='Введите новый URL']"));
-        $urlInput->sendKeys($task['url_statyi']);
+        $urlInputs = $driver->findElements(WebDriverBy::xpath("//input[@placeholder='Введите новый URL']"));
+		if(count($urlInputs)==0) return "Ошибка отправления, поле 'input[@placeholder='Введите новый URL']' - не найдено";
+        $urlInputs[0]->sendKeys($task['url_statyi']);
+		
+		echo "URL statyi: ".$task['url_statyi']."<br>";
 
         while (true) { // Handle timeout somewhere
             $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
@@ -248,15 +265,34 @@ function setTaskMiralinks($db, $task) {
         foreach ($btns as $btn) {
             if ($btn->isDisplayed()){
                 $btn->click();
+				break;
+            }
+        }
+		
+		while (true) { // Handle timeout somewhere
+            $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
+            if ($ajaxIsComplete){
+                break;
+            }
+            sleep(1);
+			//echo "Sleeping a second<br>";
+        }
+		
+		$btns = $driver->findElements(WebDriverBy::xpath("//a[@data-action='confirm']"));
+        foreach ($btns as $btn) {
+            if ($btn->isDisplayed()){
+                $btn->click();
+				break;
             }
         }
 
         sleep(3);
         $driver->wait(3);
 
-        $error = $driver->findElement(WebDriverBy::xpath("//span[@class='invalidMessage']"));
-        if ($error->isDisplayed()) {
-            return "ERROR." . $error->getText() . "<br>";
+        $error = $driver->findElements(WebDriverBy::xpath("//span[@class='invalidMessage']"));
+        if ($error[0]->isDisplayed()) {
+			echo "ERROR." . $error[0]->getText() . "<br>";
+            return "ERROR." . $error[0]->getText() . "<br>";
         } else {
             return false;
         }
@@ -264,6 +300,7 @@ function setTaskMiralinks($db, $task) {
     //ВТОРОЙ ТИП 
     elseif ($task['lay_out'] == 0) {
         $driver->get("http://www.miralinks.ru/ground_articles/articlePlacement/" . $task['miralinks_id']);
+		echo "http://www.miralinks.ru/ground_articles/articlePlacement/" . $task['miralinks_id']."<br>";
         while (true) { // Handle timeout somewhere
             $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
             if ($ajaxIsComplete){
@@ -272,20 +309,9 @@ function setTaskMiralinks($db, $task) {
             sleep(1);
         }
 
-        $header = $driver->findElement(WebDriverBy::xpath("//input[@name='data[Article][header]']"));
-        $header->sendKeys($task['tema']);
-
-        while (true) { // Handle timeout somewhere
-            $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
-            if ($ajaxIsComplete){
-                break;
-            }
-            sleep(1);
-        }
-
-
-        $url = $driver->findElement(WebDriverBy::xpath("//input[@name='data[Article][article_url]']"));
-        $url->sendKeys($task['url_statyi']);
+        $headers = $driver->findElements(WebDriverBy::xpath("//input[@name='data[Article][header]']"));
+		if(count($headers)==0) return "Ошибка отправления, поле 'input[@name='data[Article][header]']' - не найдено";
+        $headers[0]->sendKeys($task['tema']);
 
         while (true) { // Handle timeout somewhere
             $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
@@ -296,8 +322,9 @@ function setTaskMiralinks($db, $task) {
         }
 
 
-        $text = $driver->findElement(WebDriverBy::xpath("//iframe[starts-with(@id, 'textarea_for_:widget')]"));
-        $text->sendKeys($task['text']);
+        $urls = $driver->findElements(WebDriverBy::xpath("//input[@name='data[Article][article_url]']"));
+		if(count($urls)==0) return "Ошибка отправления, поле 'input[@name='data[Article][article_url]']' - не найдено";
+        $urls[0]->sendKeys($task['url_statyi']);
 
         while (true) { // Handle timeout somewhere
             $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
@@ -308,8 +335,30 @@ function setTaskMiralinks($db, $task) {
         }
 
 
-        $btn = $driver->findElement(WebDriverBy::xpath("//a[@data-action='submit']"));
-        $btn->click();
+        //$texts = $driver->findElements(WebDriverBy::xpath("//iframe[starts-with(@id, 'textarea_for_:widget')]"));
+		//if(count($texts)==0) return "Ошибка отправления, поле 'iframe[starts-with(@id, 'textarea_for_:widget')]' - не найдено";
+		
+		//$frameid = $texts[0]->getID();
+		//echo "FRAMEID:".$frameid."<br>";
+		//$driver->switchTo()->frame($texts[0]);
+
+		//echo $task['text']."\r\n";
+		//$wysywigs = $driver->findElements(WebDriverBy::xpath("//body[@id='tinymce']"));
+		//if(count($wysywigs)==0) return "Ошибка отправления, поле 'input[@name='body[@id='tinymce']' - не найдено";
+        //$wysywigs[0]->sendKeys("test");
+		$task['text'] = str_replace(array("\r", "\n"), '', $task['text']);
+		$driver->executeScript("tinyMCE.activeEditor.setContent('".$task['text']."');");
+		
+		//$handles=$driver->getWindowHandles();
+		//$driver->switchTo()->window($handles[0]);
+		//$driver->switchTo()->defaultContent();
+		//echo "Switched back<br>";
+        
+		sleep(3);
+
+        $btns = $driver->findElements(WebDriverBy::xpath("//a[@data-action='submit']"));
+		if(count($btns)==0) return "Ошибка отправления, поле 'a[@data-action='submit']' - не найдено";
+        $btns[0]->click();
 
         while (true) { // Handle timeout somewhere
             $ajaxIsComplete = $driver->executeScript("return jQuery.active == 0;");
