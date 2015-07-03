@@ -8,6 +8,8 @@ class class_index {
     function content() {
         
         global $db;
+        global $smarty;
+        
         $_SESSION['no_view_modules'] = array('.', '..', 'concurs', 'write', 'admins', 'admin_fp', 'admin_auth', 'modules', 'system', 'menu', 'page404', '404', 'firstpage', 'online', 'search', 'tags');
         $this->GLOBAL['url'] = @$url;
         
@@ -79,6 +81,7 @@ class class_index {
 
     function page() {
         global $db;
+        global $smarty;
 
         $module = $_REQUEST['module'];
         $query = $db->Execute("select * from urls where url='$module'");
@@ -105,7 +108,7 @@ class class_index {
             include PATH . 'modules/' . $mod . '/class_admin_' . $mod . '.php';
 
         $class = new $mod;
-        $GLOBAL = $class->content($db);
+        $GLOBAL = $class->content($db, $smarty);
 
         $this->GLOBAL['title'] = @$GLOBAL['title'];
         $this->GLOBAL['description'] = @$GLOBAL['description'];

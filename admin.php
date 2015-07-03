@@ -3,6 +3,8 @@
 session_start();
 error_reporting(E_ALL ^ E_NOTICE);
 include('config.php');
+include('configs/setup-smarty.php');
+include('includes/postman/Postman.php');
 
 require_once 'includes/phpxls/excel_reader2.php';
 
@@ -12,6 +14,7 @@ $db = ADONewConnection(DB_TYPE);
 $db->Execute('set charset utf8');
 $db->Execute('SET NAMES utf8');
 
+$smarty = new Smarty_Project();
 //$db->debug = true;
 
 if (isset($_GET['act']) && $_GET['act'] == "getXLS") {

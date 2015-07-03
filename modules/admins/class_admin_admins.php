@@ -2,7 +2,13 @@
 
 class admins {
 
-    function content($db) {
+    public $_smarty = null;
+    public $_postman = null;
+
+    function content($db, $smarty = null) {
+        $this->_smarty = $smarty;
+        $this->_postman = new Postman($smarty, $db);
+
         $GLOBAL = array();
         $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : '';
         $action2 = isset($_REQUEST['action2']) ? $_REQUEST['action2'] : '';
@@ -571,8 +577,7 @@ class admins {
 
             if (!empty($db_res2['ankor3']) || !empty($db_res2['ankor2']) || !empty($db_res2['ankor4']) || !empty($db_res2['ankor5'])) {
                 $description = str_replace('[mn]', "ы", $description);
-            }
-            else
+            } else
                 $description = str_replace('[mn]', "а", $description);
 
 
@@ -805,7 +810,7 @@ class admins {
         $zadaniya = '';
         $array_zadanya = array();
         $array_copy = array();
-        if (@$_SESSION['sort'] == 'asc' or !@$_SESSION['sort']) {
+        if (@$_SESSION['sort'] == 'asc' or ! @$_SESSION['sort']) {
             $symb = '↓';
             $sort = 'asc';
         } else {
@@ -1122,8 +1127,7 @@ class admins {
                         echo "<b>Вы действительно хотите добавить эти сайты?</b><br>";
                         echo "<a href='?module=admins&action=sayty&uid=$uid'><input type='button' value='Нет'></a>";
                         echo "<a href='?module=admins&action=sayty&uid=$uid&action2=load&check=1'><input type='button' value='Да'></a>";
-                    }
-                    else
+                    } else
                         echo "Новых сайтов не найдено <a href='?module=admins&action=sayty&uid=$uid'><input type='button' value='Назад'></a>";
                 }
             }
@@ -1839,7 +1843,7 @@ class admins {
         $id = (int) $_REQUEST['id'];
         $uid = (int) $_REQUEST['uid'];
         $sid = (int) $_GET['sid'];
-        $query = $db->Execute("select * from zadaniya where zadaniya.id=$id");
+        $query = $db->Execute("select * from zadaniya where id=$id");
         $user = $db->Execute("select * from admins where id=$uid")->FetchRow();
         $res = $query->FetchRow();
         $profil .= microtime() . "  - AFTER 1 && 2 QUERY" . "\r\n";
@@ -1872,7 +1876,8 @@ class admins {
             if ($user["new_user"] == 1 && !$res['lay_out']) {
                 $cur_balans -= 17;
             }
-
+            $nomoney = "";
+            $stat_disabled = "";
             if ($cur_balans < 0) {
                 if (($res['dorabotka'] == 0) && ($res['vrabote'] == 0) && ($res['navyklad'] == 0) && ($res['vilojeno'] == 0) && ($res['vipolneno'] == 0)) {
                     $nomoney = "<p>Внимание! Баланс счета пользователя недостаточен для того, чтобы задание поступило в работу!</p>
@@ -1880,9 +1885,6 @@ class admins {
                     if (($uid != 20) && ($uid != 55))
                         $stat_disabled = "disabled='disabled'";
                 }
-            } else {
-                $nomoney = "";
-                $stat_disabled = "";
             }
             $profil .= microtime() . "  - OPERATIONS WITH MONEY" . "\r\n";
             $content = str_replace('[zid]', $id, $content);
@@ -1904,8 +1906,7 @@ class admins {
             while ($birga = $birgi->FetchRow()) {
                 if ($birga['url'] == $res['sistema']) {
                     $sistema .= "<option value='" . $birga['url'] . "' selected='selected'>" . $birga['url'] . "</option>";
-                }
-                else
+                } else
                     $sistema .= "<option value='" . $birga['url'] . "'>" . $birga['url'] . "</option>";
             }
             $content = str_replace('[sistema1]', $sistema, $content);
@@ -1984,18 +1985,15 @@ class admins {
                 $etxt = 1;
             }
 
-            require_once 'includes/mandrill/mandrill.php';
             if ($navyklad == 1 || $dorabotka == 1 || $vilojeno == 1) {
                 $message = array();
 
                 if ($navyklad == 1) {
-                    $subject = "[на выкладывании]";
+                    // Выкладываем текст автоматом в WORDPRESS
+                    //  --> Запрещаем отправление статьи для пользователя "me05"(id=649) и "palexa"(id = 330)
                     include 'includes/IXR_Library.php';
                     $url_connect = explode("/wp-", $task_site["url_admin"]);
                     $url_connect = $url_connect[0];
-
-                    // Выкладываем текст автоматом в WORDPRESS
-                    //  --> Запрещаем отправление статьи для пользователя "me05" (id=649)
                     if (!empty($url_connect) && !empty($text) && $uid != 330 && $uid != 649 && $res["navyklad"] != 1 && $task_site["cms"] == "Wordpress") {
                         $client = new IXR_Client($url_connect . '/xmlrpc.php');
                         if ($client->query('wp.getCategories', '', $task_site["login"], $task_site["pass"])) {
@@ -2022,55 +2020,19 @@ class admins {
 
                     if ($uid == 330) { // только для пользователя "palexa" (id = 330)
                         $moder = $db->Execute("select * from admins where id=" . $uid)->FetchRow();
-                        $mail = $moder["email"];
-                        $body = "Добрый день!<br/><br/>
-				Ваше задание для сайта " . $task_site['url'] . " на сайте iForget с номером <a href='http://iforget.ru/user.php?module=user&action=zadaniya&uid=" . $uid . "&sid=" . $sid . "&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус: &laquo;На Выкладку&raquo;!
-				";
                         $file_name = $this->createXLSForUser($id, $sistema, $ankor, $url, $url_statyi, $tema, $text);
-                        $message["attachments"] = array();
-                        $f1 = fopen($file_name, "rb");
-                        $message["attachments"][] = array("type" => "text/plain", "name" => "text_file.xlsx", "content" => base64_encode(fread($f1, filesize($file_name))));
+                        $this->_postman->moderator->taskStatusNavykladForPalexa($viklad_info, $task_site, $res, $file_name);
                     } else {
-                        $mail = $viklad_email;
-                        $body = "Добрый день!<br/><br/>
-				Ваше задание для сайта " . $task_site['url'] . " на сайте iForget с номером <a href='http://iforget.ru/user.php?module=user&action=zadaniya_moder&uid=" . $uid . "&sid=" . $sid . "&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус: &laquo;На Выкладку&raquo;!
-				";
-                        if (@$ID) {
-                            $body .= "<br />На сайте клиента создан пост под названием '" . $tema . "'. Текст задачи уже выложен. Проверьте корректность текста, соответствие рубрики и др.";
+                        $wordpress = "";
+                        if (isset($ID)) {
+                            $wordpress = "<br />На сайте клиента создан пост под названием '" . $tema . "'. Текст задачи уже выложен. Проверьте корректность текста, соответствие рубрики и др.";
                         }
+                        $this->_postman->moderator->taskStatusNavyklad($viklad_info, $task_site, $res, $wordpress);
                     }
                 } elseif ($dorabotka == 1) {
-                    $subject = "[на доработке]";
-                    $body = "Добрый день!<br/><br/>
-				Ваше задание для сайта " . $task_site['url'] . " на сайте iForget с номером <a href='http://iforget.ru/user.php?module=user&action=zadaniya_moder&uid=" . $uid . "&sid=" . $sid . "&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус: &laquo;Доработка&raquo;!<br/><br/>
-				Комментарий: <br/>" . $admin_comments . "
-				";
-                    $mail = $viklad_email;
+                    $this->_postman->moderator->taskStatusDorabotka($viklad_info, $task_site, $res, $admin_comments);
                 } else {
-                    $subject = "[выложено]";
-                    $body = "Добрый день!<br/><br/>
-				Задание для сайта " . $task_site['url'] . " на сайте iForget с номером <a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $uid . "&sid=" . $sid . "&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус: &laquo;Выложено&raquo;!<br/>
-				";
-                    $mail = MAIL_ADMIN;
-                }
-                $body .= "<br /><br /> Оставить и почитать отзывы Вы сможете в нашей ветке на <a href='http://searchengines.guru/showthread.php?p=12378271'>серчах</a><br/><br/>С уважением,<br/>Администрация проекта iForget.";
-
-                $message["html"] = $body;
-                $message["text"] = "";
-                $message["subject"] = $subject;
-                $message["from_email"] = "news@iforget.ru";
-                $message["from_name"] = "iforget";
-                $message["to"] = array();
-                $message["to"][0] = array("email" => $mail);
-                $message["track_opens"] = null;
-                $message["track_clicks"] = null;
-                $message["auto_text"] = null;
-
-                try {
-                    $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-                    $mandrill->messages->send($message);
-                } catch (Exception $e) {
-                    echo '';
+                    $this->_postman->admin->taskStatusVilojeno($task_site, $res);
                 }
                 $profil .= microtime() . "  - SEND MAIL" . "\r\n";
             }
@@ -2426,51 +2388,18 @@ class admins {
             $db->Execute("INSERT INTO tickets (uid, subject, q_theme, msg, date, status, site, tid, to_uid) VALUES ($uid, '$subject', '$theme', '$msg', '$cdate', 1, '$site', $zid, $to)");
             $lastId = $db->Insert_ID();
 
-            $body_admin = "Добрый день!<br/><br/>
-			Поступил новый тикет. Для просмотра <a href='http://iforget.ru/admin.php?module=admins&action=ticket'>перейдите данной ссылке</a>.<br /><br /> 
-			";
-
-            $body = "Добрый день!<br/><br/>
-			Вам поступил новый тикет. Для просмотра <a href='http://iforget.ru/user.php?action=ticket&action2=view&tid=" . $lastId . "'>перейдите данной ссылке</a>.<br /><br /> 
-			";
-            if ($user["type"] == "copywriter") {
-                $body .= "<p><small><a href='http://iforget.ru/copywriter.php?action=unsubscribe'>Отписаться от рассылки</a></small></p>";
-            }
-            $body .= "Оставить и почитать отзывы Вы сможете в нашей ветке на <a href='http://searchengines.guru/showthread.php?p=12378271'>серчах</a><br/><br/>С уважением,<br/>Администрация проекта iForget.";
-
-            require_once 'includes/mandrill/mandrill.php';
-            $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-            $message = array();
-            $message["html"] = $body_admin;
-            $message["text"] = "";
-            $message["subject"] = "[Новый тикет в системе]";
-            $message["from_email"] = "news@iforget.ru";
-            $message["from_name"] = "iforget";
-            $message["to"] = array();
-            $message["to"][0] = array("email" => MAIL_ADMIN);
-            $message["track_opens"] = null;
-            $message["track_clicks"] = null;
-            $message["auto_text"] = null;
-
-            try {
-                $mandrill->messages->send($message);
-                $alert = 'Тикет успешно добавлен.';
-            } catch (Exception $e) {
-                echo $e;
-                $alert = 'Письмо не отправлено! Возникли проблемы!Тикет успешно добавлен.';
-            }
-
-            $message["html"] = $body;
-            $message["subject"] = "[Новый тикет в системе iforget]";
-            $message["to"][0] = array("email" => $user['email']);
-            try {
-                if ($user["mail_period"] > 0) {
-                    $mandrill->messages->send($message);
+            // SEND Mails from Admins AND User
+            $this->_postman->admin->ticketAdd();
+            if ($user["mail_period"] > 0) {
+                switch ($user["type"]) {
+                    case "user":
+                        $this->_postman->user->ticketAdd($user['email'], $user['login'], $lastId);
+                        break;
+                    case "copywriter":
+                        $this->_postman->copywriter->ticketAdd($user['email'], $user['login'], $lastId);
+                        break;
                 }
-            } catch (Exception $e) {
-                $alert = 'Письмо не отправлено! Возникли проблемы!';
             }
-
             header("Location: ?module=admins&action=ticket");
             exit();
         }
@@ -2629,54 +2558,17 @@ class admins {
             $res = $db->Execute("SELECT * FROM tickets WHERE id=$tid")->FetchRow();
             $client = $db->Execute("SELECT * FROM admins WHERE id=" . $res['uid'])->FetchRow();
             if ($client["mail_period"] > 0) {
-                if ($client["type"] == "copywriter") {
-                    $url = "copywriter.php";
-                } else {
-                    $url = "user.php";
-                }
-                $body = '
-                    <html>
-                    <head>
-                    <meta charset="utf-8">
-                    <title>Новое сообщение в тикете</title>
-                    </head>
-                    <body style="margin: 0">
-                    <p>Добрый день!</p><br />
-                    <p>На один из Ваших тикетов пришел ответ от администрации сайта IFORGET.</p> 
-                    <p>Для просмотра <a href="http://iforget.ru/' . $url . '?action=ticket&action2=view&tid=' . $tid . '">перейдите по данной ссылке</a>.</p> 
-                    <p>Спасибо!</p>
-                    <p> Оставить и почитать отзывы Вы сможете в нашей ветке на <a href="http://searchengines.guru/showthread.php?p=12378271">серчах</a>
-                    <br/><br/>
-                    <p>С уважением,<br/>Администрация проекта iForget.</p>
-                    </body>
-                    </html>
-                    ';
-
-                require_once 'includes/mandrill/mandrill.php';
-                $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-
-                $message = array();
-                $message["html"] = $body;
-                $message["text"] = "";
-                $message["subject"] = "[Сообщение в тикете от админимстрации IFORGET]";
-                $message["from_email"] = "admin@iforget.ru";
-                $message["from_name"] = "iforget";
-                $message["to"] = array();
-                $message["to"][0] = array("email" => $client['email']);
-                $message["track_opens"] = null;
-                $message["track_clicks"] = null;
-                $message["auto_text"] = null;
-
-                try {
-                    $mandrill->messages->send($message);
-                } catch (Exception $e) {
-                    echo '';
+                switch ($client["type"]) {
+                    case "user":
+                        $this->_postman->user->ticketAnswer($client['email'], $client['login'], $tid);
+                        break;
+                    case "copywriter":
+                        $this->_postman->copywriter->ticketAnswer($client['email'], $client['login'], $tid);
+                        break;
                 }
             }
-
-            $url = "?module=admins&action=ticket&action2=view&tid=$tid";
-            $content = file_get_contents(PATH . 'modules/admins/tmp/admin/request.tpl');
-            $content = str_replace('[url]', $url, $content);
+            header("Location: ?module=admins&action=ticket&action2=view&tid=$tid");
+            exit();
         }
         return $content;
     }
@@ -2722,6 +2614,9 @@ class admins {
         //Вычитаем деньги за выполненные задачи
         $compl_tasks = $db->Execute("SELECT uid, SUM(price) as total FROM completed_tasks GROUP BY uid ORDER BY uid ASC")->GetAll();
         foreach ($compl_tasks as $task) {
+            if (!isset($user_orders[$task["uid"]])) {
+                $user_orders[$task["uid"]] = 0;
+            }
             $user_orders[$task["uid"]] -= $task["total"];
         }
 
@@ -2856,6 +2751,7 @@ class admins {
             }
             if (!isset($neobrabot[$task["sid"]])) {
                 $neobrabot[$task["sid"]] = 0;
+                //$neobrabot[$task["sid"]]["n"] = 0;
             }
 
 
@@ -2873,7 +2769,7 @@ class admins {
             }
             if (empty($task["vrabote"]) && empty($task["dorabotka"]) && empty($task["vipolneno"]) && empty($task["navyklad"]) && empty($task["vilojeno"])) {
                 $neobrabot[$task["sid"]] += 1;
-                $neobrabot[$task["sid"]]["n"] += 1;
+                //$neobrabot[$task["sid"]]["n"] += 1;
             }
         }
         arsort($navyklad);
@@ -2899,8 +2795,11 @@ class admins {
 
         usort($neo, 'cmp');
         $profil .= microtime() . "  - AFTER SORTING ARRAY" . "\r\n";
-
+        $n = 0;
         foreach ($neo as $val) {
+            if ($val["id_site"] == 0 || !isset($sites[$val["id_site"]])) {
+                continue;
+            }
             $site = $sites[$val["id_site"]];
             $balans = $users_balans[$site['uid']];
 
@@ -3183,12 +3082,12 @@ class admins {
         $b_id = @$_REQUEST['b_id'];
         $overwrite = @$_REQUEST['overwrite'];
 
-        $res = $db->Execute("select * from zadaniya LEFT JOIN admins ON admins.id=zadaniya.uid where zadaniya.id=$id")->FetchRow();
-        $uid = $res['uid'];
+        $task_old = $db->Execute("SELECT * FROM zadaniya WHERE id=$id")->FetchRow();
+        $uid = $task_old['uid'];
 
         $user = $db->Execute("select * from admins where id=$uid")->FetchRow();
-        $sid = $res['sid'];
-        $task_id = $res['task_id'];
+        $sid = $task_old['sid'];
+        $task_id = $task_old['task_id'];
         if (@$_REQUEST['morework'] && $task_id) {
             $text = $_REQUEST['morework_comment'];
             $pass = ETXT_PASS;
@@ -3221,41 +3120,27 @@ class admins {
             }
         }
 
-        $task_site_id = $res['sid'];
-        $task_site = $db->Execute("SELECT * FROM sayty WHERE id=" . $task_site_id)->FetchRow();
-        $viklad_id = $task_site['moder_id'];
-        $viklad_info = $db->Execute("SELECT * FROM admins WHERE id=" . $viklad_id)->FetchRow();
-        $viklad_email = $viklad_info['email'];
+        $site = $db->Execute("SELECT * FROM sayty WHERE id=" . $sid)->FetchRow();
+        $moder = $db->Execute("SELECT * FROM admins WHERE id=" . $site['moder_id'])->FetchRow();
 
-        $task_status = @$_REQUEST['task_status'];
-        if ($task_status == "vipolneno") {
-            $vipolneno = 1;
-        } else {
-            $vipolneno = 0;
-        }
-
-        if ($task_status == "dorabotka") {
-            $dorabotka = 1;
-        } else {
-            $dorabotka = 0;
-        }
-
-        if ($task_status == "vrabote") {
-            $vrabote = 1;
-        } else {
-            $vrabote = 0;
-        }
-
-        if ($task_status == "navyklad") {
-            $navyklad = 1;
-        } else {
-            $navyklad = 0;
-        }
-
-        if ($task_status == "vilojeno") {
-            $vilojeno = 1;
-        } else {
-            $vilojeno = 0;
+        $task_status = isset($_REQUEST['task_status']) ? $_REQUEST['task_status'] : null;
+        $vipolneno = $dorabotka = $vrabote = $navyklad = $vilojeno = 0;
+        switch ($task_status) {
+            case "vipolneno":
+                $vipolneno = 1;
+                break;
+            case "dorabotka":
+                $dorabotka = 1;
+                break;
+            case "vrabote":
+                $vrabote = 1;
+                break;
+            case "navyklad":
+                $navyklad = 1;
+                break;
+            case "vilojeno":
+                $vilojeno = 1;
+                break;
         }
 
         if (($navyklad == 1 || $dorabotka == 1 || $vilojeno == 1 || $vipolneno == 1 || $vrabote == 1)) {
@@ -3263,7 +3148,7 @@ class admins {
             if (@$_REQUEST['lay_out'] == 1 || @$_REQUEST['lay_out'] == "1") {
                 $price = 15;
             } elseif ($sistema == "http://miralinks.ru/" || $sistema == "http://pr.sape.ru/" || $sistema == "http://getgoodlinks.ru/" || $sistema == "https://gogetlinks.net/") {
-                switch ($task_site['cena']) {
+                switch ($site['cena']) {
                     case 20:$price = 60;
                         break;
                     case 30:$price = 76;
@@ -3274,7 +3159,7 @@ class admins {
                         break;
                 }
             } else {
-                $price = $task_site['price'];
+                $price = $site['price'];
             }
             if ($user["new_user"] == 1 && (!isset($_REQUEST['lay_out']) || @$_REQUEST['lay_out'] == 0)) {
                 //увеличение цен для новых пользователей на 30%
@@ -3282,90 +3167,16 @@ class admins {
             }
         }
 
-        require_once 'includes/mandrill/mandrill.php';
         if ($navyklad == 1) {
-            $res = $db->Execute("select * from admins where email='$viklad_email'")->FetchRow();
-            $body = "Добрый день!<br/><br/>
-				Ваше задание для сайта " . $task_site['url'] . " на сайте iForget с номером <a href='http://iforget.ru/user.php?module=user&action=zadaniya_moder&uid=" . $uid . "&sid=" . $sid . "&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус: &laquo;На Выкладку&raquo;!
-				";
-
-            $body .= "<br /><br /> Оставить и почитать отзывы Вы сможете в нашей ветке на <a href='http://searchengines.guru/showthread.php?p=12378271'>серчах</a><br/><br/>С уважением,<br/>Администрация проекта iForget.";
-
-            $subject = "[на выкладывании]";
-            $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-            $message = array();
-            $message["html"] = $body;
-            $message["text"] = "";
-            $message["subject"] = $subject;
-            $message["from_email"] = "news@iforget.ru";
-            $message["from_name"] = "iforget";
-            $message["to"] = array();
-            $message["to"][0] = array("email" => $viklad_email);
-            $message["track_opens"] = null;
-            $message["track_clicks"] = null;
-            $message["auto_text"] = null;
-
-            try {
-                if ($res["mail_period"] > 0)
-                    $mandrill->messages->send($message);
-            } catch (Exception $e) {
-                echo '';
-            }
+            $this->_postman->moderator->taskStatusNavyklad($moder, $site, $task_old, null);
         }
 
         if ($dorabotka == 1) {
-            $res = $db->Execute("select * from admins where email='$viklad_email'")->FetchRow();
-            $body = "Добрый день!<br/><br/>
-				Ваше задание для сайта " . $task_site['url'] . " на сайте iForget с номером <a href='http://iforget.ru/user.php?module=user&action=zadaniya_moder&uid=" . $uid . "&sid=" . $sid . "&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус: &laquo;Доработка&raquo;!<br/><br/>
-				Комментарий: <br/>" . $admin_comments . "
-				";
-            $body .= "<br /><br /> Оставить и почитать отзывы Вы сможете в нашей ветке на <a href='http://searchengines.guru/showthread.php?p=12378271'>серчах</a><br/><br/>С уважением,<br/>Администрация проекта iForget.";
-
-            $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-            $message = array();
-            $message["html"] = $body;
-            $message["text"] = "";
-            $message["subject"] = "[на доработке]";
-            $message["from_email"] = "news@iforget.ru";
-            $message["from_name"] = "iforget";
-            $message["to"] = array();
-            $message["to"][0] = array("email" => $viklad_email);
-            $message["track_opens"] = null;
-            $message["track_clicks"] = null;
-            $message["auto_text"] = null;
-
-            try {
-                if ($res["mail_period"] > 0)
-                    $mandrill->messages->send($message);
-            } catch (Exception $e) {
-                echo '';
-            }
+            $this->_postman->moderator->taskStatusDorabotka($moder, $site, $task_old, $comments);
         }
 
         if ($vilojeno == 1) {
-
-            $body = "Добрый день!<br/><br/>
-				Задание для сайта " . $task_site['url'] . " на сайте iForget с номером <a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $uid . "&sid=" . $sid . "&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус: &laquo;Выложено&raquo;!<br/>
-				";
-
-            $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-            $message = array();
-            $message["html"] = $body;
-            $message["text"] = "";
-            $message["subject"] = "[выложено]";
-            $message["from_email"] = "news@" . $_SERVER['HTTP_HOST'];
-            $message["from_name"] = "iforget";
-            $message["to"] = array();
-            $message["to"][0] = array("email" => MAIL_ADMIN);
-            $message["track_opens"] = null;
-            $message["track_clicks"] = null;
-            $message["auto_text"] = null;
-
-            try {
-                $mandrill->messages->send($message);
-            } catch (Exception $e) {
-                echo '';
-            }
+            $this->_postman->admin->taskStatusVilojeno($site, $task_old);
         }
 
         $q = "update zadaniya set b_id='$b_id', dorabotka='$dorabotka', etxt='$etxt', vipolneno='$vipolneno', vrabote='$vrabote', navyklad='$navyklad', vilojeno='$vilojeno', url_statyi='$url_statyi', text='$text', tema='$tema', sistema='$sistema', ankor='$ankor',ankor2='$ankor2',ankor3='$ankor3',ankor4='$ankor4', ankor5='$ankor5',url='$url',url2='$url2',url3='$url3',url4='$url4',url5='$url5', keywords='$keywords', price='$price', url_pic='$url_pic', comments='$comments', admin_comments='$admin_comments', overwrite='$overwrite' where id=$id";
@@ -3378,7 +3189,7 @@ class admins {
 
         $lastId = $db->Insert_ID();
         $db->Execute("INSERT INTO completed_tasks (uid, zid, date, price, status) VALUES ('$uid', '$lastId', '" . date("Y-m-d H:i:s") . "', '$price',1)");
-        echo "<script>window.location.href='?module=admins&action=zadaniya&uid=" . $uid . "&sid=" . $sid . "&action2=edit&id=" . $lastId . "';</script>";
+        header("Location: ?module=admins&action=zadaniya&uid=" . $uid . "&sid=" . $sid . "&action2=edit&id=" . $lastId);
         exit();
     }
 
@@ -3461,7 +3272,7 @@ class admins {
             foreach ($birjs as $key => $value) {
                 $class = ($key % 2 == 0) ? "style='background:#FFFFF0'" : "style='background:white'";
                 $birj .= file_get_contents(PATH . 'modules/admins/tmp/admin/birja_one.tpl');
-                if($value['active'] == 0){
+                if ($value['active'] == 0) {
                     $class = "style='background:#d7d7d7'";
                 }
                 $birj = str_replace('[class]', $class, $birj);
@@ -4254,39 +4065,7 @@ class admins {
             $db->Execute("UPDATE zadaniya_new SET rework = 1, dorabotka = 1, navyklad = 0, vilojeno = 0, date_in_work = '$time' WHERE id = $id");
             if ($task['copywriter'] != 0) {
                 $copywriter = $db->Execute("SELECT * FROM admins WHERE id=" . $task['copywriter'])->FetchRow();
-                $body = '   <html>
-                                        <head>
-                                            <meta charset="utf-8">
-                                            <title>Задание вернулось на доработку</title>
-                                        </head>
-                                        <body style="margin: 0">
-                                            <p>Добрый день!</p><br />
-                                            <p>Ваше задание <a href="http://iforget.ru/copywriter.php?action=tasks&action2=edit&id=' . $id . '">' . $id . '</a> на сайте iForget поменяло статус: &laquo;Доработка&raquo;!
-                                            <p>Что нужно изменить посмотрите в поле "История сообщений" в карточке задачи.</p>
-                                            <br /><p>С уважением!</p>
-                                            <p>Администрация iForget.</p>
-                                        </body>
-                                    </html>';
-
-                require_once 'includes/mandrill/mandrill.php';
-                $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-                $mail = array();
-                $mail["html"] = $body;
-                $mail["text"] = "";
-                $mail["subject"] = "[Задание вернулось на доработку]";
-                $mail["from_email"] = "news@iforget.ru";
-                $mail["from_name"] = "iforget";
-                $mail["to"] = array();
-                $mail["to"][0] = array("email" => $copywriter["email"]);
-                $mail["track_opens"] = null;
-                $mail["track_clicks"] = null;
-                $mail["auto_text"] = null;
-
-                try {
-                    $mandrill->messages->send($mail);
-                } catch (Exception $e) {
-                    echo 'Сообщение не отправлено!';
-                }
+                $this->_postman->copywriter->articlesChangeStatusDorabotka($id, $copywriter);
             }
         }
 
@@ -4989,8 +4768,7 @@ class admins {
         if (!empty($error)) {
             $query_p = implode(' \r\n ', $error);
             $content = str_replace('[error]', $query_p, $content);
-        }
-        else
+        } else
             $content = str_replace('[error]', "", $content);
 
         $send = @$_REQUEST['send'];
@@ -5310,13 +5088,13 @@ class admins {
                     curl_close($curl);
                 }
                 $accept = xmlrpc_decode($out);
-                
+
                 $profil .= microtime() . "  - AFTER 3(4) curl" . "\r\n";
                 if ($accept == true && !isset($accept["faultString"])) {
                     $db->Execute("UPDATE zadaniya_new SET vilojeno = '1', navyklad = '0', dorabotka = '0' WHERE id = $id");
                     $profil .= microtime() . "  - TRUE SEND task" . "\r\n";
                 } else {
-                    if($_SERVER["REMOTE_ADDR"] == "128.70.202.235"){
+                    if ($_SERVER["REMOTE_ADDR"] == "128.70.202.235") {
                         print_r($accept);
                         //die();
                     }
@@ -5335,7 +5113,7 @@ class admins {
                         if (mb_strpos("В статье не найдены требуемые ссылки", $err)) {
                             $err = "В статье не найдены требуемые ссылки. Добавьте не менее 1 ссылок из списка.";
                         }
-                        $data[] = "error[]=" . str_replace('"',"", $err);
+                        $data[] = "error[]=" . str_replace('"', "", $err);
                     }
                     $query_p = implode('&', $data);
                     $profil .= microtime() . "  - FALSE SEND TASK!! OUT ERROR" . "\r\n";
@@ -5473,7 +5251,7 @@ class admins {
             echo $content;
             exit();
         }
-        $uid = @$_SESSION['admin']['id'] ? $_SESSION['admin']['id'] : @$_SESSION['manager']['id'];
+        $uid = isset($_SESSION['admin']['id']) ? $_SESSION['admin']['id'] : $_SESSION['manager']['id'];
         $id = $_REQUEST['id'];
         $msg = $_REQUEST['message_copywriter'];
         $date = date("Y-m-d H:i:s");
@@ -5481,43 +5259,9 @@ class admins {
             $db->Execute("INSERT INTO chat_admin_copywriter (uid, zid, msg, date, status) VALUE ('$uid', '$id', '$msg', '$date', 0)");
             $copywriter = $db->Execute("SELECT a.* FROM admins a LEFT JOIN zadaniya_new z ON z.copywriter=a.id WHERE a.type = 'copywriter' AND z.id=$id")->FetchRow();
             if ($copywriter["mail_period"] > 0) {
-                $body = '   <html>
-                                <head>
-                                    <meta charset="utf-8">
-                                    <title>Новое сообщение в задаче</title>
-                                </head>
-                                <body style="margin: 0">
-                                    <p>Добрый день ' . $copywriter["login"] . '!</p><br />
-                                    <p>На одну из Ваших задач пришел ответ от администрации iForget.</p>
-                                    <p>`<em>' . $msg . '</em>`</p>
-                                    <p>Для того, чтобы посмотреть, перейдите по данной ссылке: <a href="http://iforget.ru/copywriter.php?action=tasks&action2=edit&id=' . $id . '">Задание № ' . $id . '</a>.</p>
-                                    <p><br /><small><a href="http://iforget.ru/copywriter.php?action=unsubscribe">Отписаться от рассылки</a></small></p>
-                                    <p>С уважением!</p>
-                                    <p>Администрация iForget.</p>
-                                </body>
-                            </html>';
-                require_once 'includes/mandrill/mandrill.php';
-                $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-                $message = array();
-                $message["html"] = $body;
-                $message["text"] = "Новый комментарий от администрации iForget в задачи под номером $id";
-                $message["subject"] = "[Новый комментарий]";
-                $message["from_email"] = "news@iforget.ru";
-                $message["from_name"] = "iforget";
-                $message["to"] = array();
-                $message["to"][0] = array("email" => $copywriter["email"]);
-                $message["track_opens"] = null;
-                $message["track_clicks"] = null;
-                $message["auto_text"] = null;
-
-                try {
-                    $mandrill->messages->send($message);
-                } catch (Exception $e) {
-                    echo 'Сообщение не отправлено!';
-                }
+                $this->_postman->copywriter->sendMessage($id, $copywriter, $msg);
             }
         }
-
         header('location:' . $_SERVER['HTTP_REFERER']);
     }
 
@@ -5569,8 +5313,7 @@ class admins {
 
             if (!empty($task['ankor2']) || !empty($task['ankor3']) || !empty($task['ankor4']) || !empty($task['ankor5'])) {
                 $description = str_replace('[mn]', "ы", $description);
-            }
-            else
+            } else
                 $description = str_replace('[mn]', "а", $description);
 
 
@@ -5854,7 +5597,7 @@ class admins {
             $birjs = $db->Execute("SELECT * FROM birjs WHERE uid = " . $user["id"])->FetchRow();
             $sayty = $db->Execute("SELECT * FROM orders WHERE uid = " . $user["id"])->FetchRow();
             if (
-                    (!isset($orders["id"]) OR empty($orders["id"])) OR (!isset($birjs["bid"]) OR empty($birjs["bid"])) OR (!isset($sayty["id"]) OR empty($sayty["id"]))
+                    (!isset($orders["id"]) OR empty($orders["id"])) OR ( !isset($birjs["bid"]) OR empty($birjs["bid"])) OR ( !isset($sayty["id"]) OR empty($sayty["id"]))
             ) {
                 $table .= "<tr><td><a href='?module=admins&action=edit&uid=" . $user["id"] . "'>" . $user["login"] . "</a></td><td>" . $user["email"] . "</td></tr>";
             }
@@ -5878,122 +5621,29 @@ class admins {
             exit;
         }
         $content = file_get_contents(PATH . 'modules/admins/tmp/admin/send_mail_users_non_active.tpl');
-        require_once 'includes/mandrill/mandrill.php';
-        $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
 
         $non_active_users = array();
-        $body = '<html>
-                    <head>
-                        <meta charset="utf-8">
-                        <title>Внимание: увеличение цен в IForget!</title>
-                    </head>
-                    <body style="margin: 0">
-                        <div style="text-align: center; font-family: tahoma, arial; color: #3d413d;">
-                            <div style="width: 650px; margin: 0 auto; text-align: left; background: #f1f0f0;">
-                                <div style="width: 650px; height: 89px; background: url(cid:header_bg); text-align: center;">
-                                        <div style="width: 575px; margin: 0 auto; text-align: left;">
-                                                <a style="float: left; margin: 15px 0 0 0;" target="_blank" href="http://iforget.ru">
-                                                        <img style="border: 0;" src="cid:logo_main" alt=".">
-                                                </a>
-                                                <div style="color: #fff; font-size: 22px; float: left; margin: 12px 0 0 0; line-height: 60px;">- работает сутки напролёт</div>
-                                                <a style="float: right; font-size: 16px; color: #3d413d; margin: 30px 0 0 0;" href="http://iforget.ru/user.php?action=lk">Войти</a>
-                                        </div>
-                                </div>
-                                <div style="padding: 0 38px 0 38px;">
-                                    <div style="font-size: 16px; line-height: 20px; font-weight: bold; padding: 20px 0 0 0; text-shadow: 1px 1px 0 #fff;">Здравствуйте!</div>
-                                    <div style="font-size: 16px; line-height: normal; padding: 15px 0 0 0; text-shadow: 1px 1px 0 #fff;">
-                                        Рады сообщить вам, что у нас уже более 500 довольных клиентов, которые используют сервис <a href="http://iforget.ru/">iforget.ru</a> каждый день. 
-                                        <br><br>
-                                        В связи с улучшением качества работы сервиса мы решили увеличить цену на обработку заявок. 
-                                        <br><br>
-                                        С 1 ноября стоимость обработки заявки 1500 знаков будет от 62 рублей ( как всегда уровень текста, вы сможете подобрать под себя), и 2000 знаков будет от 77 рублей.       
-                                        <br><br>
-                                        <strong>Внимание: увеличение цен не коснется текущих клиентов!</strong>
-                                        <br><br>
-                                        Для того, что бы цена осталась прежней вам надо будет:
-                                        <br><br>
-                                        <a href="http://iforget.ru/user.php?action=sayty">Добавить 1 сайт к нам в систему</a>
-                                        <br><br>
-                                        <a href="http://iforget.ru/user.php?action=birj">Добавить 1 биржу ссылок</a>
-                                        <br><br>
-                                        Пополнить баланс минимум на 500 рублей:
-
-                                        <div style="text-align: center; height: 38px; padding: 15px 0 0 0;">
-                                            <a style="float: left; font-size: 15px; color: #3d413d; text-decoration: none; height: 35px; line-height: 35px; padding: 0 15px 0 15px; background: #ffcc3d; margin: 0 0 0 215px; border-bottom: 3px solid #e3b022;" href="http://iforget.ru/user.php?action=payments">Пополнить баланс</a>
-                                        </div>
-
-                                        <br><br>
-                                        <strong>До поднятие цены осталось 2 дней. Успейте заморозить свои цены!</strong>
-                                    </div>
-
-                                    <br><br>
-                                    Желаем Вам удачи!
-                                    <br><br>
-                                    С Уважением, Администрация сервиса iforget.ru
-                                </div>
-                                <br>
-                                <div style="font-size: 13px; line-height: normal; text-shadow: 1px 1px 0 #fff; padding: 20px 60px 0 60px;">Вы получили это письмо так как зарегистрировались в системе iforget.ru<br> </div>
-                                <div style="font-size: 13px; background: #fff; border-top: 1px solid #d7d7d7; height: 50px; line-height: 50px; text-align: center; margin: 20px 0 0 0;">© 2014 iForget — система автоматической монетизации</div>
-                            </div>
-                        </div>
-                    </body>
-                </html>  ';
-        $message = array();
-        $message["html"] = $body;
-        $message["text"] = "До поднятие цены осталось 2 дня!";
-        $message["subject"] = "Внимание: увеличение цен в IForget!";
-        $message["from_email"] = "news@iforget.ru";
-        $message["from_name"] = "iforget";
-        $message["track_opens"] = null;
-        $message["track_clicks"] = null;
-        $message["auto_text"] = null;
-        $f1 = fopen("images/header_bg.jpg", "rb");
-        $f2 = fopen("images/logo_main.jpg", "rb");
-        $message["images"][] = array("type" => "image/jpg", "name" => "header_bg", "content" => base64_encode(fread($f1, filesize("images/header_bg.jpg"))));
-        $message["images"][] = array("type" => "image/jpg", "name" => "logo_main", "content" => base64_encode(fread($f2, filesize("images/logo_main.jpg"))));
-        $message["to"] = array();
-
+        $to = array();
         $admins = $db->Execute("SELECT * FROM `admins` WHERE type = 'user' ORDER BY login ASC");
         while ($user = $admins->FetchRow()) {
             $orders = $db->Execute("SELECT * FROM orders WHERE status=1 AND price!=0 AND uid = " . $user["id"])->FetchRow();
             $birjs = $db->Execute("SELECT * FROM birjs WHERE uid = " . $user["id"])->FetchRow();
             $sayty = $db->Execute("SELECT * FROM orders WHERE uid = " . $user["id"])->FetchRow();
             if (
-                    (!isset($orders["id"]) OR empty($orders["id"])) OR (!isset($birjs["bid"]) OR empty($birjs["bid"])) OR (!isset($sayty["id"]) OR empty($sayty["id"]))
+                    (!isset($orders["id"]) OR empty($orders["id"])) OR ( !isset($birjs["bid"]) OR empty($birjs["bid"])) OR ( !isset($sayty["id"]) OR empty($sayty["id"]))
             ) {
                 $non_active_users[$user["id"]] = $user;
-                $message["to"][0] = array("email" => $user["email"]);
-                $db->Execute("UPDATE admins SET new_user = '1' WHERE id=" . $user["id"]);
-                try {
-                    //$mandrill->messages->send($message);
-                } catch (Exception $e) {
-                    unset($non_active_users[$user["id"]]);
-                }
+                $to[] = array("email" => $user["email"], "name" => $user["login"]);
             }
         }
-        $body_admin = "Письмо о поднятии цен отправлено на эти почтовые ящики: <br/><br/>";
-        $message_admin = array();
-        $message_admin["to"] = array();
-        foreach ($non_active_users as $value) {
-            $body_admin .= $value["id"] . "<br/>";
-        }
-        $message_admin["html"] = $body_admin;
-        $message_admin["text"] = "";
-        $message_admin["subject"] = "Подтверждение отправки писем.";
-        $message_admin["from_email"] = "news@iforget.ru";
-        $message_admin["from_name"] = "iforget";
-        $message_admin["to"][0] = array("email" => "abashevav@gmail.com");
-        $message_admin["to"][1] = array("email" => "ostin.odept@gmail.com");
-        $message_admin["track_opens"] = null;
-        $message_admin["track_clicks"] = null;
-        $message_admin["auto_text"] = null;
+        $this->_postman->user->priceIncrease($to);
 
-        try {
-            //$mandrill->messages->send($message_admin);
-        } catch (Exception $e) {
-            //echo $body_admin;
+        $body = "Письмо о поднятии цен отправлено на эти почтовые ящики: <br/><br/>";
+        foreach ($non_active_users as $value) {
+            $body .= $value["id"] . "<br/>";
         }
-        $content = str_replace('[body_mail]', $body_admin, $content);
+        $this->_postman->admin->priceIncreaseUsers($non_active_users);
+        $content = str_replace('[body_mail]', $body, $content);
         return $content;
     }
 
@@ -6032,7 +5682,7 @@ class admins {
             $birjs = $db->Execute("SELECT * FROM birjs WHERE uid = " . $user["id"])->FetchRow();
             $sayty = $db->Execute("SELECT * FROM orders WHERE uid = " . $user["id"])->FetchRow();
             if (
-                    (!isset($orders["id"]) OR empty($orders["id"])) OR (!isset($birjs["bid"]) OR empty($birjs["bid"])) OR (!isset($sayty["id"]) OR empty($sayty["id"]))
+                    (!isset($orders["id"]) OR empty($orders["id"])) OR ( !isset($birjs["bid"]) OR empty($birjs["bid"])) OR ( !isset($sayty["id"]) OR empty($sayty["id"]))
             ) {
                 $row++;
                 $objPHPExcel->getActiveSheet()->getStyle("A$row:B$row")->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
