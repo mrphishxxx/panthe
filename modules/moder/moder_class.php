@@ -2,6 +2,8 @@
 
 class moder {
 
+    public $_smarty = null;
+    public $_postman = null;
     public $gogetlinks_id = 1;
     public $getgoodlinks_id = 2;
     public $rotapost_id = 3;
@@ -13,7 +15,10 @@ class moder {
     public $sape_url = "http://api.pr.sape.ru/xmlrpc/";
     public $webartex_url = "https://api.webartex.ru";
 
-    function content($db) {
+    function content($db, $smarty) {
+        $this->_smarty = $smarty;
+        $this->_postman = new Postman($smarty, $db);
+
         $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : '';
         $action2 = isset($_REQUEST['action2']) ? $_REQUEST['action2'] : '';
 
@@ -169,32 +174,9 @@ class moder {
 
         if ($_REQUEST['email']) {
             $email = $_REQUEST['email'];
-            $q = "UPDATE admins SET email='" . $email . "' WHERE id=" . $_SESSION['user']['id'];
-            $db->Execute($q);
+            $db->Execute("UPDATE admins SET email='" . $email . "' WHERE id=" . $_SESSION['user']['id']);
             $_SESSION['user']['email'] = $email;
-            $subject = "Пользователь сменил почту";
-            $body = "Добрый день!<br> Пользователь " . $_SESSION['user']['login'] . " сменил свою почту на '$email' !";
-            $admin_email = MAIL_ADMIN;
-
-            require_once 'includes/mandrill/mandrill.php';
-            $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-            $message = array();
-            $message["html"] = $body;
-            $message["text"] = "";
-            $message["subject"] = $subject;
-            $message["from_email"] = "news@" . $_SERVER['HTTP_HOST'];
-            $message["from_name"] = "iforget";
-            $message["to"] = array();
-            $message["to"][0] = array("email" => $admin_email);
-            $message["track_opens"] = null;
-            $message["track_clicks"] = null;
-            $message["auto_text"] = null;
-
-            try {
-                $mandrill->messages->send($message);
-            } catch (Exception $e) {
-                echo '';
-            }
+            $this->_postman->admin->userChangemail($_SESSION['user']['login'], $email);
 
             header('location:/user.php');
             exit;
@@ -628,123 +610,26 @@ class moder {
             else
                 $vilojeno = 0;
 
-            require_once 'includes/mandrill/mandrill.php';
-            $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-            $message = array();
-            $message["text"] = "отправлена ссылка задачи №" . $id;
-            $message["from_email"] = "news@iforget.ru";
-            $message["from_name"] = "iforget";
-            $message["to"] = array();
-            $message["track_opens"] = null;
-            $message["track_clicks"] = null;
-            $message["auto_text"] = null;
-
-
             $sinfo["url"] = str_replace("/", "", str_replace("http://", "", str_replace("www.", "", $sinfo["url"])));
             $vipolneno = 0;
 
-            /*  Проверяем есть ли ссылка на статью и не пустали она!
-             *  Также смотрим, чтобы URL сайта, чья задача, обязательно присутствовал в ссылке на статью!
-             *  Статус изменен на ВЫЛОЖЕНО  */
-            /*if ((!empty($url_statyi) && $url_statyi != "" && strstr($url_statyi, $sinfo["url"])) && ($vilojeno == 1 && $res["vilojeno"] != 1 && $res["vipolneno"] != 1)) {
-                $err = $not_burse = false;
-
-                switch ($res["sistema"]) {
-                    case 'https://gogetlinks.net/':
-                        $err = $this->setTaskGGL($db, $res);
-                        $subject = "[GOGETLINKS]";
-                        break;
-                    case 'http://getgoodlinks.ru/':
-                        $err = $this->setTaskGetGoodLinks($db, $res);
-                        $subject = "[GETGOODLINKS]";
-                        break;
-                    case 'http://pr.sape.ru/':
-                        $err = $this->setTaskSape($db, $res);
-                        $subject = "[PR.SAPE]";
-                        break;
-                    case 'http://rotapost.ru/':
-                        $err = $this->setTaskRotapost($db, $res);
-                        $subject = "[ROTAPOST]";
-                        break;
-                    case 'http://webartex.ru/':
-                        $err = $this->setTaskWebartex($db, $res);
-                        $subject = "[WEBARTEX]";
-                        break;
-                    default :
-                        $not_burse = true;
-                        $err = 'В данную биржу (' . $res["sistema"] . ') задания отправить не возможно!';
+            if ($vilojeno == 0) {
+                /*  Если статус не изменился, сохраняем поля и отправляем админу писомо об изменениии в задаче  */
+                $db->Execute($q = "update zadaniya set vilojeno='$vilojeno', url_statyi='$url_statyi', url_pic='$url_pic', admin_comments='$admin_comments' where id=$id");
+            } elseif ((empty($url_statyi) || $url_statyi == "" || !mb_strstr($url_statyi, $sinfo["url"]))) {
+                /*  ПРОБЛЕМА с ссылкой на статью  */
+                if (empty($url_statyi) || $url_statyi == "") { /*  Ссылка пуста или отсутствует  */
+                    $error .= ("Поле `Ссылка на статью` обязательно для заполнения, если текст выложен! ");
                 }
-
-                if (!$err) {
-                    $body = "Добрый день! Выложено задание!<br/><br/>
-                             Задание на сайте iForget с номером <a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $res['uid'] . "&sid=" . $sid . "&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус: &laquo;Выполнено&raquo;!<br/>
-                             Ссылка отправлена в $subject.";
-
-                    $vilojeno = 0;
-                    $vipolneno = 1;
-                    //if($res["sistema"] == 'http://webartex.ru/' || $res["sistema"] == 'http://getgoodlinks.ru/'){
-                    $message["to"][1] = array("email" => MAIL_DEVELOPER);
-                    //}
-                } elseif (!$not_burse) {
-                    $message["to"][1] = array("email" => MAIL_DEVELOPER);
-                    $message["to"][0] = array("email" => MAIL_ADMIN);
-                    $body = "Добрый день!<br/><br/>
-                             Возникли проблемы с выкладывание URL статьи в $subject<br/>
-                             Error = '<strong>" . $err . "</strong>'<br/><br/>
-                             Задание на сайте iForget с номером <a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $res['uid'] . "&sid=" . $sid . "&action2=edit&id=" . $id . "'>" . $id . "</a> 
-                             поменяло статус: &laquo;Выложено&raquo;!<br/>";
-                    $subject .= "Выложено задание, ссылка НЕ ОТПРАВЛЕНА!";
+                if (!mb_strstr($url_statyi, $sinfo["url"])) { /*  Ссылка и URL сайта не совпадают  */
+                    $error .= "В поле `Ссылка на статью` url не соответствует сайту!";
                 }
-
-                //var_dump($body);die();
-                $message["html"] = $body;
-                $message["subject"] = $subject;
-
-                try {
-                    if (!empty($message["to"]))
-                        $mandrill->messages->send($message);
-                } catch (Exception $e) {
-                    echo '';
-                }
-            } else {*/
-                /*  Если одно из требований не совпало, значит:
-                 * либо статус не изменялся (остался На выкладывании)
-                 * либо статус задачи уже Выполнено или Выложено
-                 * либо ссылка отсутствует
-                 * либо в ссылке нет URL сайта  */
-
-                if ($vilojeno == 0) {
-                    /*  Если статус не изменился, сохраняем поля и отправляем админу писомо об изменениии в задаче  */
-                    $db->Execute($q = "update zadaniya set vilojeno='$vilojeno', url_statyi='$url_statyi', url_pic='$url_pic', admin_comments='$admin_comments' where id=$id");
-                    if (($res['text'] != $text) || ($res['admin_comments'] != $admin_comments)) {
-                        $body = "Добрый день!<br/><br/>
-				 Задание на сайте iForget с номером <a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $res['uid'] . "&sid=" . $sid . "
-                                     &action2=edit&id=" . $id . "'>" . $id . "</a> было изменено выкладывальщиком (" . $uinfo['email'] . ")!<br/>";
-                        $subject = "Модератор изменил задание";
-                        $message["html"] = $body;
-                        $message["subject"] = $subject;
-
-                        try {
-                            //$mandrill->messages->send($message);
-                        } catch (Exception $e) {
-                            echo '';
-                        }
-                    }
-                } elseif((empty($url_statyi) || $url_statyi == "" || !mb_strstr($url_statyi, $sinfo["url"]))) {
-                    /*  ПРОБЛЕМА с ссылкой на статью  */
-                    if (empty($url_statyi) || $url_statyi == "") { /*  Ссылка пуста или отсутствует  */
-                        $error .= ("Поле `Ссылка на статью` обязательно для заполнения, если текст выложен! ");
-                    }
-                    if (!mb_strstr($url_statyi, $sinfo["url"])) { /*  Ссылка и URL сайта не совпадают  */
-                        $error .= "В поле `Ссылка на статью` url не соответствует сайту!";
-                    }
-                    /*  отправляем ошибку МОДЕРАТОРУ об этом  */
-                    header("Location: /user.php?module=user&action=zadaniya_moder&action2=edit&uid=$uid&sid=$sid&id=$id&error=$error'");
-                    exit();
-                } else {
-                    $db->Execute($q = "update zadaniya set dorabotka=0, vrabote=0, navyklad=0, vilojeno='$vilojeno', who_posted='$uid', url_statyi='$url_statyi', url_pic='$url_pic', admin_comments='$admin_comments' where id=$id");
-                }
-            /*}*/
+                /*  отправляем ошибку МОДЕРАТОРУ об этом  */
+                header("Location: /user.php?module=user&action=zadaniya_moder&action2=edit&uid=$uid&sid=$sid&id=$id&error=$error'");
+                exit();
+            } else {
+                $db->Execute($q = "update zadaniya set dorabotka=0, vrabote=0, navyklad=0, vilojeno='$vilojeno', who_posted='$uid', url_statyi='$url_statyi', url_pic='$url_pic', admin_comments='$admin_comments' where id=$id");
+            }
             //  Если проблем с ссылкой не было, то изменения были уже сохранены, и редиректим на главную страницу  */
             echo "<script>window.location.href='/user.php';</script>";
             exit();
@@ -1082,51 +967,19 @@ class moder {
         $send = $_REQUEST['send'];
         $sid = ($_GET['sid'] ? $_GET['sid'] : $_REQUEST['s_id']);
 
-        $query = $db->Execute("select * from sayty where id=$sid");
-        $res = $query->FetchRow();
-
-        $uid = $res['uid'];
-        $uinfo = $db->Execute("SELECT * FROM admins WHERE id=" . $uid);
-        $uinfo = $uinfo->FetchRow();
-
+        $site = $db->Execute("SELECT * FROM sayty WHERE id=$sid")->FetchRow();
+        $uid = $site['uid'];
+        $uinfo = $db->Execute("SELECT * FROM admins WHERE id=" . $uid)->FetchRow();
         if (!$send) {
-
             $content = file_get_contents(PATH . 'modules/moder/tmp/site_moder_edit.tpl');
-
             $content = str_replace('[question_viklad]', $uinfo['comment_viklad'], $content);
             $content = str_replace('[s_id]', $sid, $content);
         } else {
             $qv = $_REQUEST['question_viklad'];
 
-            $subject = "Выкладывальщик оставил комментарий к сайту";
-            $body = "Добрый день!<br/><br/>
-			Выкладывальщик оставил комментарий к сайту <a href='http://iforget.ru/admin.php?module=admins&action=edit&id=" . $uid . "'>" . $res['url'] . "</a><br/>
-			";
-
-            $admin_mail = MAIL_ADMIN;
-            require_once 'includes/mandrill/mandrill.php';
-            $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-            $message = array();
-            $message["html"] = $body;
-            $message["text"] = "";
-            $message["subject"] = $subject;
-            $message["from_email"] = "news@" . $_SERVER['HTTP_HOST'];
-            $message["from_name"] = "iforget";
-            $message["to"] = array();
-            $message["to"][0] = array("email" => $admin_mail);
-            $message["track_opens"] = null;
-            $message["track_clicks"] = null;
-            $message["auto_text"] = null;
-
-            try {
-                $mandrill->messages->send($message);
-            } catch (Exception $e) {
-                echo '';
-            }
-
-            $q = "update admins set comment_viklad='" . $qv . "' where id=$uid";
-            $db->Execute($q);
-            echo "<script>window.location.href='/user.php';</script>";
+            $db->Execute("UPDATE admins SET comment_viklad='" . $qv . "' WHERE id=$uid");
+            $this->_postman->admin->moderChangeVikladComment($uid, $site['url']);
+            header("Location: /user.php");
             exit();
         }
 
@@ -1278,70 +1131,31 @@ class moder {
 
         $db->Execute("INSERT INTO tickets (uid, subject, q_theme, msg, date, status, site, tid) VALUES ($uid, '$subject', '$theme', '$msg', '$cdate', 1, '$site', $zid)");
 
-        $body = "Добрый день!<br/><br/>
-		Поступил новый тикет. Для просмотра <a href='http://iforget.ru/admin.php?module=admins&action=ticket'>перейдите данной ссылке</a>.
-		";
-
-        if(!mb_stristr($subject, "Вопрос по задаче")) {
-            $subject = "[Новый тикет в системе]";
+        if (!mb_stristr($subject, "Вопрос по задаче")) {
+            $this->_postman->admin->ticketAdd();
+        } else {
+            $this->_postman->admin->ticketAdd($subject);
         }
-        require_once 'includes/mandrill/mandrill.php';
-        $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-        $message = array();
-        $message["html"] = $body;
-        $message["text"] = "";
-        $message["subject"] = $subject;
-        $message["from_email"] = "news@iforget.ru";
-        $message["from_name"] = "iforget";
-        $message["to"] = array();
-        $message["to"][0] = array("email" => MAIL_ADMIN);
-        //$message["to"][1] = array("email" => MAIL_DEVELOPER);
-        $message["track_opens"] = null;
-        $message["track_clicks"] = null;
-        $message["auto_text"] = null;
-
-        try {
-            $mandrill->messages->send($message);
-        } catch (Exception $e) {
-            echo '';
-        }
-
-        $alert = 'Тикет успешно добавлен.';
-        $url = "?module=user&action=ticket";
-
-        $content = file_get_contents(PATH . 'modules/admins/tmp/admin/request.tpl');
-        $content = str_replace('[alert]', $alert, $content);
-        $content = str_replace('[url]', $url, $content);
-
-
-        $query = $db->Execute("select * from admins where id=$uid");
-        $res = $query->FetchRow();
-        $content = str_replace('[login]', $res['login'], $content);
-
-        return $content;
+        header("Location: ?module=user&action=ticket");
+        exit();
     }
 
     function ticket_edit($db) {
-
-        $send = $_REQUEST['send'];
         $id = (int) $_REQUEST['tid'];
-        $uid = (int) $_SESSION['user']['id'];
-        $query2 = $db->Execute("select * from tickets where id=$id");
-        $res = $query2->FetchRow();
-
-        if (!$send) {
+        $ticket = $db->Execute("select * from tickets where id=$id")->FetchRow();
+        
+        if (!isset($_REQUEST['send'])) {
             $content = file_get_contents(PATH . 'modules/moder/tmp/ticket_edit.tpl');
 
-            $ticket_subjects = $db->Execute("SELECT * FROM Message2008");
-            $ticket_subjects = $ticket_subjects->FetchRow();
+            $ticket_subjects = $db->Execute("SELECT * FROM Message2008")->FetchRow();
             $content = str_replace('[ticket_subjects]', $ticket_subjects['Name'], $content);
-
-            foreach ($res as $k => $v) {
+            $content = str_replace("[tid]", $id, $content);
+            
+            foreach ($ticket as $k => $v) {
                 if ($k == "q_theme") {
                     $content = str_replace("[$v]", "selected", $content);
                 }
                 $content = str_replace("[$k]", $v, $content);
-                $content = str_replace("[tid]", $id, $content);
             }
         } else {
             $subject = $_REQUEST['subject'];
@@ -1350,38 +1164,10 @@ class moder {
             $msg = $_REQUEST['msg'];
 
             $db->Execute("UPDATE tickets SET subject='$subject', q_theme='$theme', msg='$msg', site='$site' WHERE id=$id");
-
-            $alert = 'Тикет успешно отредактирован.';
-            $url = "?module=user&action=ticket";
-
-            $admin_mail = MAIL_ADMIN;
-            $subj_mail = "[Тикет отредактирован]";
-            $body = "Добрый день!<br>
-                Тикет '" . $subject . "' успешно отредактирован! Для просмотра <a href='http://iforget.ru/admin.php?module=admins&action=ticket&action2=view&tid=$id'>перейдите по ссылке</a>";
-
-            require_once 'includes/mandrill/mandrill.php';
-            $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-            $message = array();
-            $message["html"] = $body;
-            $message["text"] = "";
-            $message["subject"] = $subj_mail;
-            $message["from_email"] = "news@iforget.ru";
-            $message["from_name"] = "iforget";
-            $message["to"] = array();
-            $message["to"][0] = array("email" => $admin_mail);
-            $message["track_opens"] = null;
-            $message["track_clicks"] = null;
-            $message["auto_text"] = null;
-
-            try {
-                $mandrill->messages->send($message);
-            } catch (Exception $e) {
-                echo '';
-            }
-
-            $content = file_get_contents(PATH . 'modules/admins/tmp/admin/request.tpl');
-            $content = str_replace('[alert]', $alert, $content);
-            $content = str_replace('[url]', $url, $content);
+            
+            $this->_postman->admin->ticketEdit($id, $subject);
+            header("Location: ?module=user&action=ticket");
+            exit();
         }
         return $content;
     }
@@ -1462,46 +1248,9 @@ class moder {
         if (!empty($msg)) {
             $db->Execute("UPDATE tickets SET status='1' WHERE id=$tid");
             $db->Execute("INSERT INTO answers (uid, tid, msg, date) VALUES ($uid, $tid, '$msg', '$adate')");
-            $body = '
-                <html>
-                <head>
-                <meta charset="utf-8">
-                <title>Новое сообщение в тикете</title>
-                </head>
-                <body style="margin: 0">
-                <p>Добрый день!</p><br />
-		<p>На один из тикетов пришел ответ от пользователя.</p> 
-                <p>Для просмотра <a href="http://iforget.ru/admin.php?module=admins&action=ticket&action2=view&tid=' . $tid . '">перейдите по данной ссылке</a>.</p> 
-                <p>Спасибо!</p>
-                </body>
-                </html>
-		';
-            $subject = "[Новое сообщение от пользователя]";
-            $admin_mail = MAIL_ADMIN;
+            $this->_postman->admin->ticketAnswer($tid, "user");
 
-            require_once 'includes/mandrill/mandrill.php';
-            $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-
-            $message = array();
-            $message["html"] = $body;
-            $message["text"] = "";
-            $message["subject"] = $subject;
-            $message["from_email"] = "news@iforget.ru";
-            $message["from_name"] = "iforget";
-            $message["to"] = array();
-            $message["to"][0] = array("email" => $admin_mail);
-            $message["track_opens"] = null;
-            $message["track_clicks"] = null;
-            $message["auto_text"] = null;
-
-            try {
-                $mandrill->messages->send($message);
-            } catch (Exception $e) {
-                echo '';
-            }
-
-            $content = file_get_contents(PATH . 'modules/admins/tmp/admin/request.tpl');
-            $content = str_replace('[url]', "?module=user&action=ticket", $content);
+            header("Location: ?module=user&action=ticket");
         } else {
             $content = file_get_contents(PATH . 'modules/admins/tmp/admin/request.tpl');
             $content = str_replace('[alert]', "Пустой текст ответа!", $content);
@@ -1586,7 +1335,6 @@ class moder {
 
             if ($sum <= $balance) {
                 $msg = "Добрый день! Модератор " . $user["login"] . " просит вывести деньги. <br> Запрашиваемая сумма: $sum руб. <br> Кошелек: " . (!empty($user["wallet"]) ? $user["wallet"] : "Не указан") . "";
-
                 $db->Execute("INSERT INTO tickets (uid, subject, q_theme, msg, date, status, site, tid) 
                                                 VALUES (
                                                         " . $user["id"] . ", 
@@ -1599,31 +1347,7 @@ class moder {
                                                         '')");
                 $lastId = $db->Insert_ID();
 
-                $body = "Добрый день!<br/><br/>
-                        Поступил новый тикет (Прозьба вывести деньги модератору).<br>
-                        Для просмотра <a href='http://iforget.ru/admin.php?module=admins&action=ticket&action2=view&tid=$lastId'>перейдите по данной ссылке</a>.
-                        ";
-
-                require_once 'includes/mandrill/mandrill.php';
-                $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-                $message = array();
-                $message["html"] = $body;
-                $message["text"] = "";
-                $message["subject"] = "[Новый тикет в системе]";
-                $message["from_email"] = "news@iforget.ru";
-                $message["from_name"] = "iforget";
-                $message["to"] = array();
-                $message["to"][0] = array("email" => MAIL_ADMIN);
-                //$message["to"][1] = array("email" => MAIL_DEVELOPER);
-                $message["track_opens"] = null;
-                $message["track_clicks"] = null;
-                $message["auto_text"] = null;
-
-                try {
-                    $mandrill->messages->send($message);
-                } catch (Exception $e) {
-                    echo $e;
-                }
+                $this->_postman->admin->moderOutputMoney($user, $sum, $lastId);
                 header('location: /user.php?action=money&action2=output&query=Запрос успешно отправлен');
                 exit();
             } else {
@@ -1636,7 +1360,7 @@ class moder {
 
     function lk($db) {
         $uid = (int) $_SESSION['user']['id'];
-
+        $uinfo = $db->Execute("SELECT * FROM admins WHERE id=$uid")->FetchRow();
         if (@$_REQUEST['send']) {
             $fio = $db->escape($_REQUEST['fio']);
             $fio = "fio" . $fio;
@@ -1651,10 +1375,10 @@ class moder {
             if ($pass) {
                 $pass = md5($pass);
                 $db->Execute("UPDATE admins SET pass='$pass', contacts='$fio', dostupy='$knowus', wallet_type='$wallet_type', wallet='$wallet', mail_period='$mail_period', icq='$icq', scype='$scype' WHERE id=$uid");
-            }
-            else
+            } else {
                 $db->Execute("UPDATE admins SET contacts='$fio', dostupy='$knowus', wallet_type='$wallet_type', wallet='$wallet', mail_period='$mail_period', icq='$icq', scype='$scype' WHERE id=$uid");
-
+            }
+            
             switch ($mail_period) {
                 case 43200: $period = "Два раза в день";
                     break;
@@ -1668,48 +1392,12 @@ class moder {
                     break;
             }
 
-            $admin_mail = MAIL_ADMIN;
-            $subject = "[Пользователь изменил свои данные]";
-            $body = "Добрый день!<br />
-                     Пользователь изменил свои данные:<br /><br />
-                     Полное имя: $fio <br />
-                     Кошелек Webmoney: $wallet <br />
-                     Периодичность системных уведомлений: $period <br /> <br />  
-                     
-                     С уважением, Админимстрация сайта iforget!
-            ";
-
-            require_once 'includes/mandrill/mandrill.php';
-            $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-            $message = array();
-            $message["html"] = $body;
-            $message["text"] = "";
-            $message["subject"] = $subject;
-            $message["from_email"] = "news@iforget.ru";
-            $message["from_name"] = "iforget";
-            $message["to"] = array();
-            $message["to"][0] = array("email" => $admin_mail);
-            $message["track_opens"] = null;
-            $message["track_clicks"] = null;
-            $message["auto_text"] = null;
-
-            try {
-                $mandrill->messages->send($message);
-            } catch (Exception $e) {
-                echo '';
-            }
-
-            // build URL
-            $url = "/user.php?action=lk";
-
-            header("Location:" . $url);
+            $this->_postman->admin->userChangeData($uinfo);
+            header("Location: /user.php?action=lk");
             exit();
         } else {
             $content = file_get_contents(PATH . 'modules/moder/tmp/lk.tpl');
-
-            $uinfo = $db->Execute("SELECT * FROM admins WHERE id=$uid");
-            $uinfo = $uinfo->FetchRow();
-
+            
             $content = str_replace('[fio]', substr($uinfo['contacts'], 3), $content);
             $content = str_replace('[knowus]', $uinfo['dostupy'], $content);
             $content = str_replace('[checked_' . $uinfo["wallet_type"] . ']', "selected='selected'", $content);

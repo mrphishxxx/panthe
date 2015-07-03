@@ -1,13 +1,17 @@
 <?php
 
 //21232f297a57a5a743894a0e4a801fc3
-include('config.php');
+include 'config.php';
+include 'configs/setup-smarty.php';
+include 'includes/postman/Postman.php';
 include 'includes/adodb5/adodb.inc.php';
 include 'system/class_user.php';
 include 'modules/user/user_class.php';
 include 'modules/moder/moder_class.php';
 session_start();
 error_reporting(E_ALL);
+
+$smarty = new Smarty_Project();
 
 $db = ADONewConnection(DB_TYPE);
 @$db->PConnect(DB_HOST, DB_USER, DB_PASS, DB_BASE) or die('Не удается подключиться к базе данных');
@@ -22,7 +26,7 @@ if (!isset($_SESSION['user']['id']) || ($_SESSION['user']['type'] != "user" && $
     $user->login($db);
     exit();
 }
-
+$template = "";
 if (isset($_SESSION['user']['id']) && $_SESSION['user']['id'] > 0) {
     $template .= $my->content($db);
 }
@@ -31,9 +35,9 @@ if (isset($_REQUEST['q']) && !empty($_REQUEST['q'])) {
     $content = $my->search->search1($db, $_SESSION['user']);
 } else {
     if ($_SESSION['user']["type"] == "user") {
-        $content = $user->content($db);
+        $content = $user->content($db, $smarty);
     } else {
-        $content = $moder->content($db);
+        $content = $moder->content($db, $smarty);
     }
 }
 

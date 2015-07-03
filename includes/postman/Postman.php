@@ -8,7 +8,7 @@ require_once 'FromModerator.php';
 
 // Настройки почтальона
 define('EMAIL_SUPPORT', 'abashevav@gmail.com');
-define('EMAIL_ADMIN', 'abashevav@gmail.com'); //iforget.ru@gmail.com
+define('EMAIL_ADMIN', 'iforget.ru@gmail.com');
 define('EMAIL_FROM', 'news@iforget.ru');
 define('EMAIL_ROBOT', 'robot@iforget.ru');
 define('EMAIL_NOREPLY', 'noreply@iforget.ru');
