@@ -2428,8 +2428,8 @@ class user {
             $theme = $_REQUEST['theme'];
             $msg = $_REQUEST['msg'];
 
-            $db->Execute("UPDATE tickets SET subject='$subject', q_theme='$theme', msg='$msg', site='$site' WHERE id=$id");
-            $this->_postman->admin->ticketEdit($id, $subject);
+            //$db->Execute("UPDATE tickets SET subject='$subject', q_theme='$theme', msg='$msg', site='$site' WHERE id=$id");
+            //$this->_postman->admin->ticketEdit($id, $subject);
 
             header("Location: ?module=user&action=ticket");
         }

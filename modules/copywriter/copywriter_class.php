@@ -1260,7 +1260,7 @@ class copywriter {
             $theme = $_REQUEST['theme'];
             $msg = $_REQUEST['msg'];
 
-            $db->Execute("UPDATE tickets SET subject='$subject', q_theme='$theme', msg='$msg', site='$site' WHERE id=$id");
+            //$db->Execute("UPDATE tickets SET subject='$subject', q_theme='$theme', msg='$msg', site='$site' WHERE id=$id");
 
             $body = "Добрый день!<br>
                 Тикет '" . $subject . "' успешно отредактирован! Для просмотра <a href='http://iforget.ru/admin.php?module=admins&action=ticket&action2=view&tid=$id'>перейдите по ссылке</a>";
