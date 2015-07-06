@@ -9,7 +9,6 @@
                     <th class="tickets-title">Тема</th>
                     <th class="tickets-state-text">Статус</th>
                     <th class="tickets-date">Дата</th>
-                    <th class="edit"></th>
                 </tr>
             </thead>
             <tbody>
