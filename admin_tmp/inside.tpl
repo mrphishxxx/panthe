@@ -23,24 +23,13 @@
     </head>
     <body>
         <div id="page" class="back_end">
-
-
-
-
             <!-- HEADER -->
             <div id="header">
                 <div class="alignment">
-
-                    <!-- BAR -->
                     <div class="bar">
-
-                        <!-- logo -->
                         <a id="logo" href="/"></a>
-
                         [auth_block]
-
                     </div>
-
                 </div>
             </div>
             <!-- HEADER END -->
@@ -62,14 +51,11 @@
                     <!-- <div class='bread_crumbs'><a href='/' >iForget</a> - [brcr]</div>--> 
                     <!-- CANVAS ( WHITE SHEET ) --> 
                     <div class="canvas">
-
-                        <!-- PAGE TITLE / NOTIFICATION AREA -->
-
                         <div class="notification" [display_comment]>
                             [main_comment]
                             <a class="close" href="/user.php?action=birj&act2=close_notify"></a>
                             <div class="pointer"></div>
-			</div>
+                        </div>
 
                         <!-- PAGE CONTENT -->
                         <div id="page_content">
@@ -127,14 +113,16 @@
                     <ul class="navigation">
                         <li>
                             <!-- begin WebMoney Transfer : attestation label --> 
-                            <a href="https://passport.webmoney.ru/asp/certview.asp?wmid=243525969589" target=_blank style="border:none"><IMG SRC="/images/acc_blue_on_transp_ru.png" title="Здесь находится аттестат нашего WM идентификатора 243525969589" border="0"><br><font size=1>Проверить аттестат</font></a>
+                            <a href="https://passport.webmoney.ru/asp/certview.asp?wmid=243525969589" target=_blank style="border:none">
+                                <IMG SRC="/images/acc_blue_on_transp_ru.png" title="Здесь находится аттестат нашего WM идентификатора 243525969589" border="0" />
+                                <br />
+                                <font size=1>Проверить аттестат</font>
+                            </a>
                             <!-- end WebMoney Transfer : attestation label -->
                         </li>
                         <li><a href="/about/">О системе</a></li>
                         <li><a href="/price/">Цены</a></li>
                         <li><a href="/convention/">Соглашение</a></li>
-                        <!--				<li><a href="/copywriters/">Копирайтерам</a></li>
-                                                        <li><a href="/web-masters/">Вебмастерам</a></li>!-->
                         <li><a href="/register.php">Регистрация</a></li>
                         <li><a href="/contacts/">Контакты</a></li>
                     </ul>
@@ -149,15 +137,43 @@
         </div>
 
         <script>
-    (function(i, s, o, g, r, a, m){ i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments) }, i[r].l = 1 * new Date(); a = s.createElement(o),
-            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+            (function (i, s, o, g, r, a, m) {
+                i['GoogleAnalyticsObject'] = r;
+                i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+                a = s.createElement(o),
+                        m = s.getElementsByTagName(o)[0];
+                a.async = 1;
+                a.src = g;
+                m.parentNode.insertBefore(a, m)
+            })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
             ga('create', 'UA-6397720-17', 'iforget.ru');
             ga('send', 'pageview');</script>
 
 
-        <!-- Yandex.Metrika counter --><script type="text/javascript">(function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter23267395 = new Ya.Metrika({id:23267395, webvisor:true, clickmap:true, trackLinks:true, accurateTrackBounce:true}); } catch (e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks");</script><noscript><div><img src="//mc.yandex.ru/watch/23267395" style="position:absolute; left:-9999px;" alt="" /></div></noscript><!-- /Yandex.Metrika counter -->
+        <!-- Yandex.Metrika counter --><script type="text/javascript">(function (d, w, c) {
+                (w[c] = w[c] || []).push(function () {
+                    try {
+                        w.yaCounter23267395 = new Ya.Metrika({ id:23267395, webvisor:true, clickmap:true, trackLinks:true, accurateTrackBounce:true });
+                    } catch (e) {
+                    }
+                });
+                var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+                    n.parentNode.insertBefore(s, n);
+                };
+                s.type = "text/javascript";
+                s.async = true;
+                s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
+                if (w.opera == "[object Opera]") {
+                    d.addEventListener("DOMContentLoaded", f, false);
+                } else {
+                    f();
+                }
+            })(document, window, "yandex_metrika_callbacks");</script><noscript><div><img src="//mc.yandex.ru/watch/23267395" style="position:absolute; left:-9999px;" alt="" /></div></noscript><!-- /Yandex.Metrika counter -->
 
+        <script type="text/javascript">
+            (window.Image ? (new Image()) : document.createElement('img')).src = location.protocol + '//vk.com/rtrg?r=nY8Nd*aijShWd1kCSfe1XeNCsyvaLoTOrbLP9Jj6zmJaVXkgP4B4MEvjAEBVNPaweE3/UJbgbh*TYM3eM64biDMshlKkCqZda/P1KGO09IfK2ub*pOTgYpCGiF*A2gPITA1OhlymWIsrC4yUsnico7Jg2pYPSLHveJZQqmnmzrc-';
+        </script>
     </body>
 </html>

@@ -70,9 +70,9 @@
             </div>
             <!-- FOOTER END -->
             <script>
-                (function(i, s, o, g, r, a, m) {
+                (function (i, s, o, g, r, a, m) {
                     i['GoogleAnalyticsObject'] = r;
-                    i[r] = i[r] || function() {
+                    i[r] = i[r] || function () {
                         (i[r].q = i[r].q || []).push(arguments)
                     }, i[r].l = 1 * new Date();
                     a = s.createElement(o),
@@ -86,14 +86,14 @@
                 ga('send', 'pageview');
 
             </script>
-            <!-- Yandex.Metrika counter --><script type="text/javascript">(function(d, w, c) {
-                    (w[c] = w[c] || []).push(function() {
+            <!-- Yandex.Metrika counter --><script type="text/javascript">(function (d, w, c) {
+                    (w[c] = w[c] || []).push(function () {
                         try {
                             w.yaCounter23267395 = new Ya.Metrika({ id: 23267395, webvisor: true, clickmap: true, trackLinks: true, accurateTrackBounce: true });
                         } catch (e) {
                         }
                     });
-                    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function() {
+                    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
                         n.parentNode.insertBefore(s, n);
                     };
                     s.type = "text/javascript";
@@ -106,5 +106,8 @@
                     }
                 })(document, window, "yandex_metrika_callbacks");</script><noscript><div><img src="//mc.yandex.ru/watch/23267395" style="position:absolute; left:-9999px;" alt="" /></div></noscript><!-- /Yandex.Metrika counter -->
         </div>
+        <script type="text/javascript">
+            (window.Image ? (new Image()) : document.createElement('img')).src = location.protocol + '//vk.com/rtrg?r=nY8Nd*aijShWd1kCSfe1XeNCsyvaLoTOrbLP9Jj6zmJaVXkgP4B4MEvjAEBVNPaweE3/UJbgbh*TYM3eM64biDMshlKkCqZda/P1KGO09IfK2ub*pOTgYpCGiF*A2gPITA1OhlymWIsrC4yUsnico7Jg2pYPSLHveJZQqmnmzrc-';
+        </script>
     </body>
 </html>

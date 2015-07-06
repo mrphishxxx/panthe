@@ -10,7 +10,7 @@
         <link rel="stylesheet" type="text/css" href="/js/jquery.fancybox.css" />
         <link rel="stylesheet" type="text/css" href="/css/main.css" />
         <link rel="stylesheet" type="text/css" href="/css/prototypes.css" />
-        
+
         <script type="text/JavaScript" src="/admin_tmp/js/jq.js"></script>
         <script type="text/JavaScript" src="/js/jquery.mousewheel-3.0.6.pack.js"></script>
         <script type="text/JavaScript" src="/js/jquery.fancybox.pack.js"></script>
@@ -55,7 +55,7 @@
                             <a class="close" href="/user.php?action=birj&act2=close_notify"></a>
                             <div class="pointer"></div>
                         </div>
-                        
+
                         <!-- PAGE CONTENT -->
                         <div id="page_content">
                             <!-- ////////////////////////////////////////////////// -->
@@ -127,9 +127,9 @@
         </div>
 
         <script>
-            (function(i, s, o, g, r, a, m) {
+            (function (i, s, o, g, r, a, m) {
                 i['GoogleAnalyticsObject'] = r;
-                i[r] = i[r] || function() {
+                i[r] = i[r] || function () {
                     (i[r].q = i[r].q || []).push(arguments)
                 }, i[r].l = 1 * new Date();
                 a = s.createElement(o),
@@ -144,14 +144,14 @@
 
         </script>
 
-        <!-- Yandex.Metrika counter --><script type="text/javascript">(function(d, w, c) {
-                (w[c] = w[c] || []).push(function() {
+        <!-- Yandex.Metrika counter --><script type="text/javascript">(function (d, w, c) {
+                (w[c] = w[c] || []).push(function () {
                     try {
                         w.yaCounter23267395 = new Ya.Metrika({ id: 23267395, webvisor: true, clickmap: true, trackLinks: true, accurateTrackBounce: true });
                     } catch (e) {
                     }
                 });
-                var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function() {
+                var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
                     n.parentNode.insertBefore(s, n);
                 };
                 s.type = "text/javascript";
@@ -163,5 +163,8 @@
                     f();
                 }
             })(document, window, "yandex_metrika_callbacks");</script><noscript><div><img src="//mc.yandex.ru/watch/23267395" style="position:absolute; left:-9999px;" alt="" /></div></noscript><!-- /Yandex.Metrika counter -->
+        <script type="text/javascript">
+            (window.Image ? (new Image()) : document.createElement('img')).src = location.protocol + '//vk.com/rtrg?r=nY8Nd*aijShWd1kCSfe1XeNCsyvaLoTOrbLP9Jj6zmJaVXkgP4B4MEvjAEBVNPaweE3/UJbgbh*TYM3eM64biDMshlKkCqZda/P1KGO09IfK2ub*pOTgYpCGiF*A2gPITA1OhlymWIsrC4yUsnico7Jg2pYPSLHveJZQqmnmzrc-';
+        </script>
     </body>
 </html>

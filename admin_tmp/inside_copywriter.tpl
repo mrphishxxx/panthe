@@ -41,7 +41,7 @@
             <!-- CONTENT AREA -->
             <div id="content_area">
                 <div class="alignment">
-                    
+
                     <!-- CANVAS ( WHITE SHEET ) --> 
                     <div class="canvas">
 
@@ -61,7 +61,7 @@
                             <!-- navigation -->
                             <div class="navigation">
                                 <h2>Баланс <span class="balance"><a href="/copywriter.php?action=money&action2=output">[balance]</a></span></h2>
-                                
+
                                 <ul>
                                     <li><a href="/copywriter.php?action=money&action2=output">Вывод средств</a></li>
 
@@ -72,23 +72,23 @@
                                     <li><a href="/copywriter.php">Новые задачи</a></li>
                                     <li><a href="/copywriter.php?action=tasks">Мои задачи</a></li>
                                 </ul>
-                                
+
                                 <h2>Коммуникация</h2>
                                 <ul>
                                     <li><a href="/copywriter.php?action=ticket">Тикеты</a><span>([new_tick]/[all_tick])</span></li>
                                 </ul>
-                                
+
                                 <h2>Статистика</h2>
                                 <ul>
                                     <li>Выполнено задач <span>[vipolneno]</span></li>
                                     <li>Задач в работе <span>[vrabote]</span></li>
                                 </ul>
-                                
+
                                 <h2>Помощь</h2>
                                 <ul>
                                     <li><a href="/copywriter.php?action=help&action2=work">Как выполнять задачи?</a></li>
                                 </ul>
-                                    
+
                             </div>
 
                         </div>
@@ -114,7 +114,10 @@
 
                     <ul class="navigation">
                         <li><!-- begin WebMoney Transfer : attestation label --> 
-                            <a href="https://passport.webmoney.ru/asp/certview.asp?wmid=243525969589" target=_blank style="border:none"><IMG SRC="/images/acc_blue_on_transp_ru.png" title="Здесь находится аттестат нашего WM идентификатора 243525969589" border="0" /><br><font size=1>Проверить аттестат</font></a>
+                            <a href="https://passport.webmoney.ru/asp/certview.asp?wmid=243525969589" target=_blank style="border:none">
+                                <IMG SRC="/images/acc_blue_on_transp_ru.png" title="Здесь находится аттестат нашего WM идентификатора 243525969589" border="0" /><br />
+                                <font size=1>Проверить аттестат</font>
+                            </a>
                             <!-- end WebMoney Transfer : attestation label -->
                         </li>
                         <li><a href="/about/">О системе</a></li>
@@ -129,7 +132,28 @@
             </div>
             <!-- FOOTER END -->
 
-            <!-- Yandex.Metrika counter --><script type="text/javascript">(function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter23267395 = new Ya.Metrika({ id:23267395, webvisor:true, clickmap:true, trackLinks:true, accurateTrackBounce:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks");</script><noscript><div><img src="//mc.yandex.ru/watch/23267395" style="position:absolute; left:-9999px;" alt="" /></div></noscript><!-- /Yandex.Metrika counter -->
+            <!-- Yandex.Metrika counter --><script type="text/javascript">(function (d, w, c) {
+                    (w[c] = w[c] || []).push(function () {
+                        try {
+                            w.yaCounter23267395 = new Ya.Metrika({ id: 23267395, webvisor: true, clickmap: true, trackLinks: true, accurateTrackBounce: true });
+                        } catch (e) {
+                        }
+                    });
+                    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+                        n.parentNode.insertBefore(s, n);
+                    };
+                    s.type = "text/javascript";
+                    s.async = true;
+                    s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
+                    if (w.opera == "[object Opera]") {
+                        d.addEventListener("DOMContentLoaded", f, false);
+                    } else {
+                        f();
+                    }
+                })(document, window, "yandex_metrika_callbacks");</script><noscript><div><img src="//mc.yandex.ru/watch/23267395" style="position:absolute; left:-9999px;" alt="" /></div></noscript><!-- /Yandex.Metrika counter -->
+            <script type="text/javascript">
+                (window.Image ? (new Image()) : document.createElement('img')).src = location.protocol + '//vk.com/rtrg?r=nY8Nd*aijShWd1kCSfe1XeNCsyvaLoTOrbLP9Jj6zmJaVXkgP4B4MEvjAEBVNPaweE3/UJbgbh*TYM3eM64biDMshlKkCqZda/P1KGO09IfK2ub*pOTgYpCGiF*A2gPITA1OhlymWIsrC4yUsnico7Jg2pYPSLHveJZQqmnmzrc-';
+            </script>
         </div>
     </body>
 </html>

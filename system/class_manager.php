@@ -7,7 +7,8 @@ class class_manager {
 
     function content() {
 
-        global $db;
+        global $db;        
+        global $smarty;
         $auth_block = "";
         $module = isset($_REQUEST['module']) ? $_REQUEST['module'] : "admins";
         //загружаем шаблон
@@ -63,7 +64,7 @@ class class_manager {
         } else {
             include PATH . 'modules/' . $module . '/class_admin_' . $module . '.php';
             $class = new $module;
-            $GLOBAL = $class->content($db);
+            $GLOBAL = $class->content($db, $smarty);
             $this->GLOBAL['title'] = @$GLOBAL['title'];
             $this->GLOBAL['description'] = @$GLOBAL['description'];
             $this->GLOBAL['keywords'] = @$GLOBAL['keywords'];

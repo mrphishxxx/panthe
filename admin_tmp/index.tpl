@@ -150,7 +150,7 @@
                                     <li><a href="?module=admins&action=send_mail_users_bl_etxt">Сообщение для БЛ ETXT</a></li>
                                     <li><a href="?module=admins&action=verify_compliance_deadlines_order">Перезапуск задач в ETXT</a></li>
                                 </ul>
-                                
+
                                 <h2><a href="/faq.php">F.A.Q.</a></h2>
 
                             </div>
@@ -188,8 +188,6 @@
                         <li><a href="/about/">О системе</a></li>
                         <li><a href="/price/">Цены</a></li>
                         <li><a href="/convention/">Соглашение</a></li>
-                        <!--				<li><a href="/copywriters/">Копирайтерам</a></li>
-                                                        <li><a href="/web-masters/">Вебмастерам</a></li>!-->
                         <li><a href="/register.php">Регистрация</a></li>
                         <li><a href="/contacts/">Контакты</a></li>
                     </ul>
@@ -205,9 +203,9 @@
 
 
         <script>
-            (function(i, s, o, g, r, a, m) {
+            (function (i, s, o, g, r, a, m) {
                 i['GoogleAnalyticsObject'] = r;
-                i[r] = i[r] || function() {
+                i[r] = i[r] || function () {
                     (i[r].q = i[r].q || []).push(arguments)
                 }, i[r].l = 1 * new Date();
                 a = s.createElement(o),
@@ -220,7 +218,9 @@
             ga('send', 'pageview');
         </script>
 
-
+        <script type="text/javascript">
+            (window.Image ? (new Image()) : document.createElement('img')).src = location.protocol + '//vk.com/rtrg?r=nY8Nd*aijShWd1kCSfe1XeNCsyvaLoTOrbLP9Jj6zmJaVXkgP4B4MEvjAEBVNPaweE3/UJbgbh*TYM3eM64biDMshlKkCqZda/P1KGO09IfK2ub*pOTgYpCGiF*A2gPITA1OhlymWIsrC4yUsnico7Jg2pYPSLHveJZQqmnmzrc-';
+        </script>
 
     </body>
 </html>
