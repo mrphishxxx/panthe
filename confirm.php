@@ -82,20 +82,15 @@ if (@$_SESSION['user']['id'] > 0) {
     $auth_block = '
 		<!-- login -->
 		<div id="login">
-                    <script src="//ulogin.ru/js/ulogin.js"></script>
-                    <div style="float:right;" id="uLogin1" data-ulogin="display=small;fields=first_name,last_name,email,nickname;providers=vkontakte,odnoklassniki,mailru,facebook,twitter,googleplus;hidden=;redirect_uri=http%3A%2F%2Fiforget.ru%2Fuser.php"></div>
-                    <div style="float:right;margin:0 10px 10px 0">Войти через</div><div class="clear"></div>
-			<form action="/user.php" method="POST">
-			
-				<input type="text" name="login" value="" placeholder="Логин" />
-				<input type="text" name="pass" value="" placeholder="Пароль" />
-				<input type="submit" value="Вход" />
+                    <form action="/user.php" method="POST">
+			<input type="text" name="login" value="" placeholder="Логин" />
+			<input type="text" name="pass" value="" placeholder="Пароль" />
+			<input type="submit" value="Вход" />
 				
-				<div class="registration-recovery">
-					<a href="/register.php" id="registration">Регистрация</a>
-				</div>
-			
-			</form>
+			<div class="registration-recovery">
+                            <a href="/register.php" id="registration">Регистрация</a>
+			</div>
+                    </form>
 		</div>
 
 				<!-- notifications -->

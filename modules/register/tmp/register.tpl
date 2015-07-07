@@ -5,15 +5,8 @@
             <h1>Регистрация</h1>
             [error]
             <a href="/pages/registration/" target="_blank">Для чего нужна регистрация?</a><br/><br/>
-            
-            <div id="socseti">
-                <script src="//ulogin.ru/js/ulogin.js"></script>
-                <h3>Через социальные сети (в статусе Вебмастера)</h3>
-                <div id="uLogin2" data-ulogin="display=panel;fields=first_name,last_name,email,nickname;providers=vkontakte,odnoklassniki,mailru,facebook,twitter,googleplus;hidden=;redirect_uri=http%3A%2F%2Fiforget.ru%2Fregister.php"></div>
-                <br />
-            </div>
 
-            <h3>Самостоятельная регистрация</h3>
+            <h3>Регистрация</h3>
             <ul>
                 <li>
                     <span class="title">Логин:*</span>

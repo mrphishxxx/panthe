@@ -6,12 +6,7 @@
             [error]
             <a href="/pages/registration/" target="_blank">Для чего нужна регистрация?</a><br/><br/>
 
-            <script src="//ulogin.ru/js/ulogin.js"></script>
-            <h3>Через социальные сети</h3>
-            <div id="uLogin" data-ulogin="display=panel;fields=first_name,last_name,email,nickname;providers=vkontakte,odnoklassniki,mailru,facebook,twitter,googleplus;hidden=;redirect_uri=http%3A%2F%2Fiforget.ru%2Fregister.php"></div>
-            <br />
-            
-            <h3>Самостоятельная регистрация</h3>
+            <h3>Регистрация</h3>
             <ul>
                 <li>
                     <span class="title">Логин:*</span>

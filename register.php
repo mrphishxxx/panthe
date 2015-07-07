@@ -98,33 +98,23 @@ if (@$_SESSION['user']['id'] > 0) {
 
     $auth_block = '
 		<!-- login -->
-                    <div style="position:absolute;top:-12px;right:480px;">Войти через</div>
 		<div id="login">
-                    <script src="//ulogin.ru/js/ulogin.js"></script>
-                    <div style="float: left;padding: 0 0 0 10px;" id="uLogin" data-ulogin="display=small;fields=first_name,last_name,email,nickname;providers=vkontakte,odnoklassniki,mailru,facebook,twitter,googleplus;hidden=;redirect_uri=http%3A%2F%2Fiforget.ru%2Fuser.php"></div>
-                                    
                     <p id="fast_connection">
                         Быстрая связь: 
                         <img src="/images/openid/skype16x16.png" /> <a href="skype:roman.vetes?chat">Roman.vetes</a>
                         <img src="/images/openid/icq16x16.gif" /> 133-215 
                     </p>
-                        <form action="/user.php" method="POST">
-			
-				<input type="text" name="login" value="" placeholder="Логин" />
-                                <div class="textfield">
-                                    <input type="password" name="pass" class="" value="" placeholder="Пароль" />
-				</div>
-				<input type="submit" value="Вход" />
-				
-				<div class="registration-recovery">
-                                        <a href="/forgot/" id="registration">Забыли пароль?</a>
-				</div>
-			
-			</form>
+                    <form action="/user.php" method="POST">
+                        <input type="text" name="login" value="" placeholder="Логин" />
+                        <div class="textfield">
+                            <input type="password" name="pass" class="" value="" placeholder="Пароль" />
+                        </div>
+                        <input type="submit" value="Вход" />	
+                        <div class="registration-recovery">
+                            <a href="/forgot/" id="registration">Забыли пароль?</a>
+			</div>
+                    </form>
 		</div>
-
-				<!-- notifications -->
-
 	';
 }
 $content = str_replace('[auth_block]', $auth_block, $content);

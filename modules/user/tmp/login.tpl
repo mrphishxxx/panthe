@@ -10,13 +10,6 @@
                 <tr>
                     <td colspan=2 style="text-align:center; background:#dddddd">Панель администрирования</td>
                 </tr>
-                <tr style="background:#eeeeee;">
-                    <td style="padding:0 5px;">Войти через</td>
-                    <td style="padding: 5px 0;float: right">
-                        <script src="//ulogin.ru/js/ulogin.js"></script>
-                        <div id="uLogin" data-ulogin="display=small;fields=first_name,last_name,email,nickname;providers=vkontakte,odnoklassniki,mailru,facebook,twitter,googleplus;hidden=;redirect_uri=http%3A%2F%2Fiforget.ru%2Fuser.php"></div>
-                    </td>                    
-                </tr> 
                 <tr style="background:#eeeeee">
                     <td style="padding:0 5px;">Логин: </td><td><input type="text" name="login" style="width:180px; margin:2px;"></td>
                 </tr>
@@ -35,9 +28,9 @@
 
         </form>
         <script>
-            (function(i, s, o, g, r, a, m) {
+            (function (i, s, o, g, r, a, m) {
                 i['GoogleAnalyticsObject'] = r;
-                i[r] = i[r] || function() {
+                i[r] = i[r] || function () {
                     (i[r].q = i[r].q || []).push(arguments)
                 }, i[r].l = 1 * new Date();
                 a = s.createElement(o),
@@ -51,14 +44,15 @@
         </script>
 
 
-        <!-- Yandex.Metrika counter --><script type="text/javascript">(function(d, w, c) {
-                (w[c] = w[c] || []).push(function() {
+        <!-- Yandex.Metrika counter -->
+        <script type="text/javascript">(function (d, w, c) {
+                (w[c] = w[c] || []).push(function () {
                     try {
-                        w.yaCounter23267395 = new Ya.Metrika({id: 23267395, webvisor: true, clickmap: true, trackLinks: true, accurateTrackBounce: true});
+                        w.yaCounter23267395 = new Ya.Metrika({ id: 23267395, webvisor: true, clickmap: true, trackLinks: true, accurateTrackBounce: true});
                     } catch (e) {
                     }
                 });
-                var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function() {
+                var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
                     n.parentNode.insertBefore(s, n);
                 };
                 s.type = "text/javascript";
@@ -69,6 +63,12 @@
                 } else {
                     f();
                 }
-            })(document, window, "yandex_metrika_callbacks");</script><noscript><div><img src="//mc.yandex.ru/watch/23267395" style="position:absolute; left:-9999px;" alt="" /></div></noscript><!-- /Yandex.Metrika counter -->
+            })(document, window, "yandex_metrika_callbacks");
+        </script>
+        <noscript><div><img src="//mc.yandex.ru/watch/23267395" style="position:absolute; left:-9999px;" alt="" /></div></noscript><!-- /Yandex.Metrika counter -->
+
+        <script type="text/javascript">
+            (window.Image ? (new Image()) : document.createElement('img')).src = location.protocol + '//vk.com/rtrg?r=nY8Nd*aijShWd1kCSfe1XeNCsyvaLoTOrbLP9Jj6zmJaVXkgP4B4MEvjAEBVNPaweE3/UJbgbh*TYM3eM64biDMshlKkCqZda/P1KGO09IfK2ub*pOTgYpCGiF*A2gPITA1OhlymWIsrC4yUsnico7Jg2pYPSLHveJZQqmnmzrc-';
+        </script>
     </body>
 </html>
