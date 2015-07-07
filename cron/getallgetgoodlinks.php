@@ -223,7 +223,7 @@ function callback($response, $info, $request) {
                     // То, что не записывается в базу данных
                     // $type, $out_url, $int_url, $int_lvl, $alt, $title, $index
                     if (!empty($ankor) && !empty($to_url)) {
-                        $db->Execute("INSERT INTO zadaniya(sid, b_id, uid, sistema, ankor, url, tema, comments, vipolneno, date, keywords, vrabote, navyklad, overwrite) VALUES ('" . $sid . "', '" . $ggl_id . "','" . $uid . "', 'http://getgoodlinks.ru/', '" . $db->escape(trim($ankor)) . "', '" . $db->escape($to_url) . "', '" . $tema . "', '" . $db->escape($task_text) . "', '0', '" . $date . "', '" . $key_words . "', 0, 0, 0)");
+                        $db->Execute("INSERT INTO zadaniya(sid, b_id, uid, sistema, ankor, url, tema, comments, vipolneno, date, keywords, vrabote, navyklad, overwrite, nof_chars) VALUES ('" . $sid . "', '" . $ggl_id . "','" . $uid . "', 'http://getgoodlinks.ru/', '" . $db->escape(trim($ankor)) . "', '" . $db->escape($to_url) . "', '" . $tema . "', '" . $db->escape($task_text) . "', '0', '" . $date . "', '" . $key_words . "', 0, 0, 0, '2000')");
                         $j++;
                     }
                 }

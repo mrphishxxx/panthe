@@ -227,7 +227,7 @@ function callback($response, $info, $request) {
                             $ankor .= " (!ссылка-картинка!)";
                         }
                         if (!empty($ankor) && !empty($to_url)) {
-                            $db->Execute("INSERT INTO zadaniya(sid, b_id, uid, sistema, ankor, url, tema, comments, vipolneno, date, keywords) VALUES ('" . $sid . "', '" . $ggl_id . "','" . $uid . "', 'https://gogetlinks.net/', '" . $ankor . "', '" . $to_url . "', '" . $tema . "', '" . mysql_real_escape_string($index . "\n" . $task_text) . "', '0', '" . $date . "', '" . $key_words . "')");
+                            $db->Execute("INSERT INTO zadaniya(sid, b_id, uid, sistema, ankor, url, tema, comments, vipolneno, date, keywords, nof_chars) VALUES ('" . $sid . "', '" . $ggl_id . "','" . $uid . "', 'https://gogetlinks.net/', '" . $ankor . "', '" . $to_url . "', '" . $tema . "', '" . mysql_real_escape_string($index . "\n" . $task_text) . "', '0', '" . $date . "', '" . $key_words . "', '2000')");
                             $j++;
                         }
                     } else {

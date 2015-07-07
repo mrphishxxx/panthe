@@ -54,13 +54,14 @@ function getTask($db, $uid) {
     $proxy = $proxies[rand(0, count($proxies) - 1)];
     $data = array();
 
-    $host = 'http://localhost:4444/wd/hub'; // this is the default
+    $host = 'http://127.0.0.1:4444/wd/hub'; // this is the default
     $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => "firefox");
     if (!is_null($proxy)) {
-        $proxy_capabilities = array(WebDriverCapabilityType::PROXY => array('proxyType' => 'manual',
+        /*$proxy_capabilities = array(WebDriverCapabilityType::PROXY => array('proxyType' => 'manual',
                 'httpProxy' => '' . $proxy['proxy_host'] . ':' . $proxy['proxy_port'] . '', 'sslProxy' => '' . $proxy['proxy_host'] . ':' . $proxy['proxy_port'] . '', 'socksUsername' => '' . $proxy['proxy_user'] . '', 'socksPassword' => '' . $proxy['proxy_pass'] . ''));
 
         array_push($capabilities, $proxy_capabilities);
+		*/
     }
     $driver = RemoteWebDriver::create($host, $capabilities, 300000);
     $driver->manage()->window()->maximize();
@@ -74,12 +75,18 @@ function getTask($db, $uid) {
 
     $loginpage = $driver->get('https://blogun.ru/');
     $driver->wait(15);
-    $login = $driver->findElement(WebDriverBy::xpath("//input[@name='login']"));
-    $login->sendKeys($data['login']);
-    $pass = $driver->findElement(WebDriverBy::xpath("//input[@name='password']"));
-    $pass->sendKeys($data['pass']);
-    $btn = $driver->findElement(WebDriverBy::xpath("//button[@type='submit']"));
-    $btn->click();
+    
+	$logins = $driver->findElements(WebDriverBy::xpath("//input[@name='login']"));
+	if(count($logins)==0) return null;
+    $logins[0]->sendKeys($data['login']);
+	
+    $pass = $driver->findElements(WebDriverBy::xpath("//input[@name='password']"));
+	if(count($pass)==0) return null;
+    $pass[0]->sendKeys($data['pass']);
+	
+    $btns = $driver->findElements(WebDriverBy::xpath("//button[@type='submit']"));
+	if(count($btns)==0) return null;
+    $btns[0]->click();
 
     if (count($driver->findElements(WebDriverBy::xpath("//a[@class='amount']"))) === 0) {
         $driver->close();
@@ -94,8 +101,12 @@ function getTask($db, $uid) {
     $types = array();
     $hrefs = array();
     for ($i = 0; $i < count($rows); $i++) {
-        array_push($hrefs, $rows[$i]->findElement(WebDriverBy::xpath(".//a[@class='descript_text']"))->getAttribute('href'));
-        array_push($types, $rows[$i]->findElement(WebDriverBy::xpath(".//td[7]"))->getText());
+		$hs = $rows[$i]->findElements(WebDriverBy::xpath(".//a[@class='descript_text']"))->getAttribute('href');
+		if(count($hs)==0) continue;
+		$ts = $rows[$i]->findElements(WebDriverBy::xpath(".//td[7]"))->getText();
+		if(count($ts)==0) continue;
+        array_push($hrefs, $hs[0]);
+        array_push($types, $ts[0]);
     }
 
     if (count($rows) === 0) {
@@ -132,8 +143,10 @@ function getTask($db, $uid) {
         }
 
         $driver->get($href);
-        $description = $driver->findElement(WebDriverBy::xpath("//p[@class='getcodeText']"));
-        $data['comments'] = $description->getText();
+        $description = $driver->findElements(WebDriverBy::xpath("//p[@class='getcodeText']"));
+		if(count($description)==0) continue;
+		
+        $data['comments'] = $description[0]->getText();
         $data['url'] = '*';
         $data['url2'] = '*';
         $data['url3'] = '*';

@@ -139,7 +139,8 @@ function callback($uid, $db) {
                                                             ankor, 
                                                             url,
                                                             comments, 
-                                                            date
+                                                            date,
+                                                            nof_chars
                                                             ) 
                                                     VALUES (
                                                             '" . $sid . "',
@@ -150,7 +151,8 @@ function callback($uid, $db) {
                                                             '" . $ankor . "', 
                                                             '" . $url . "', 
                                                             '" . $comments . "',
-                                                            '" . time() . "'
+                                                            '" . time() . "',
+                                                            '2000'
                         )");
                         $buff[] = $task->Id;
                     } else {

@@ -194,7 +194,8 @@ if ($balance < 60) {
                                             keywords,
                                             tema,
                                             navyklad,
-                                            lay_out
+                                            lay_out,
+                                            nof_chars
                                             ) VALUES (
                                                 '" . $site["id"] . "', 
                                                 '" . $add_task["id"] . "',
@@ -208,7 +209,7 @@ if ($balance < 60) {
                                                 '" . addslashes($add_task["keywords"]) . "',
                                                 '" . addslashes($add_task["tema"]) . "',
                                                 '" . $add_task["lay_out"] . "',
-                                                '" . $add_task["lay_out"] . "')");
+                                                '" . $add_task["lay_out"] . "', '2000')");
                     if ($add_task["lay_out"] == 1) {
                         $lastId = $db->Insert_ID();
                         $db->Execute("INSERT INTO completed_tasks (uid, zid, date, price, status) VALUES ('" . $site["uid"] . "', '" . $lastId . "', '" . date("Y-m-d H:i:s") . "', '15', 1)");
