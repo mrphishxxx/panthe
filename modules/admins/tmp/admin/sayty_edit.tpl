@@ -123,10 +123,6 @@
                 </select>
             </li>
             <li>
-                <span class="title">Кол-во символов для ETXT:</span>
-                <input type="text" name="colvos" id="colvos" value="[colvos]" class="full-length">
-            </li>
-            <li>
                 <span class="title">Выкладывальщик:</span>
                 <select name="viklad" id="viklad"  class="full-length">
                     [str_v]

@@ -1311,19 +1311,19 @@ class user {
             $content = str_replace('[subj_' . $site["subj_flag"] . ']', "selected", $content);
             $content = str_replace('[bad_' . $site["bad_flag"] . ']', "selected", $content);
 
-            $option = '<option value="20-45" [cena_45]>45 руб. - 1500 знаков (econom)</option>
-                     <option value="30-61" [cena_61]>61 руб. - 1500 знаков (medium)</option>
-                     <option value="50-93" [cena_93]>93 руб. - 1500 знаков (elit)</option>
-                     <option value="20-60" [cena_60]>60 руб. - 2000 знаков (econom)</option>
-                     <option value="30-76" [cena_76]>76 руб. - 2000 знаков (medium)</option>
-                     <option value="45-111" [cena_111]>111 руб. - 2000 знаков (elit)</option>';
+            $option = '<option value="20-45-1500" [cena_45]>45 руб. - 1500 знаков (econom)</option>
+                     <option value="30-61-1500" [cena_61]>61 руб. - 1500 знаков (medium)</option>
+                     <option value="50-93-1500" [cena_93]>93 руб. - 1500 знаков (elit)</option>
+                     <option value="20-60-2000" [cena_60]>60 руб. - 2000 знаков (econom)</option>
+                     <option value="30-76-2000" [cena_76]>76 руб. - 2000 знаков (medium)</option>
+                     <option value="45-111-2000" [cena_111]>111 руб. - 2000 знаков (elit)</option>';
 
-            $option_newUser = '<option value="20-45" [cena_45]>62 рубл. - 1500 знаков (econom)</option>
-                     <option value="30-61" [cena_61]>78 рубл. - 1500 знаков (medium)</option>
-                     <option value="50-93" [cena_93]>110 рубл. - 1500 знаков (elit)</option>
-                     <option value="20-60" [cena_60]>77 руб. - 2000 знаков (econom)</option>
-                     <option value="30-76" [cena_76]>93 руб. - 2000 знаков (medium)</option>
-                     <option value="45-111" [cena_111]>128 руб. - 2000 знаков (elit)</option>';
+            $option_newUser = '<option value="20-45-1500" [cena_45]>62 рубл. - 1500 знаков (econom)</option>
+                     <option value="30-61-1500" [cena_61]>78 рубл. - 1500 знаков (medium)</option>
+                     <option value="50-93-1500" [cena_93]>110 рубл. - 1500 знаков (elit)</option>
+                     <option value="20-60-2000" [cena_60]>77 руб. - 2000 знаков (econom)</option>
+                     <option value="30-76-2000" [cena_76]>93 руб. - 2000 знаков (medium)</option>
+                     <option value="45-111-2000" [cena_111]>128 руб. - 2000 знаков (elit)</option>';
 
             if ($user["new_user"]) {
                 $content = str_replace('[prices_option]', $option_newUser, $content);
@@ -1362,6 +1362,11 @@ class user {
                 $tmp_price = explode('-', $tmp_price);
                 $price_iforget = $tmp_price[1];
                 $price_etxt = $tmp_price[0];
+                $colvos = $tmp_price[2];
+            } else {
+                $price_iforget = 45;
+                $price_etxt = 20;
+                $colvos = 1500;
             }
             //####################################################################
             //cena - etxt; price - iforget	
@@ -1370,7 +1375,7 @@ class user {
             }
 
             $q = "update sayty set login='$login', pass='$pass',gid='$gid', getgoodlinks_id='$getgoodlinks_id', sape_id='$sape_id', miralinks_id='$miralinks_id', rotapost_id='$rotapost_id', webartex_id='$webartex_id', blogun_id='$blogun_id',
-                                        url='$url', url_admin='$url_admin', cena='$price_etxt', price='$price_iforget', site_subject='$site_subject', site_subject_more='$site_subject_more', 
+                                        url='$url', url_admin='$url_admin', colvos='$colvos', cena='$price_etxt', price='$price_iforget', site_subject='$site_subject', site_subject_more='$site_subject_more', 
                                         cms='$cms', subj_flag='$subj_flag', obzor_flag='$obzor_flag', news_flag='$news_flag', bad_flag='$bad_flag', anons_size='$anons_size', 
                                         pic_width='$pic_width', pic_height='$pic_height', pic_position='$pic_position', site_comments='$site_comments' where id=$id";
             $db->Execute($q);
@@ -1544,7 +1549,7 @@ class user {
                     foreach ($sites as $key => $value) {
                         $dubl = $db->Execute("SELECT * FROM sayty WHERE (url LIKE '" . trim($value) . "' OR gid='$key') AND uid='$uid'")->FetchRow();
                         if (!$dubl) {
-                            $db->Execute("INSERT INTO sayty(uid,url,gid) values('" . $uid . "','" . $value . "','" . $key . "')");
+                            $db->Execute("INSERT INTO sayty(uid,url,gid,cena,price,colvos) VALUES ('" . $uid . "','" . $value . "','" . $key . "', '20', '60', '2000')");
                             $sid = $db->Insert_ID();
                         } else {
                             if ($dubl["url"] != trim($value)) {
@@ -1569,7 +1574,6 @@ class user {
                             if (empty($value)) {
                                 continue;
                             }
-                            //echo "SELECT * FROM sayty WHERE (url LIKE '" . trim($value) . "' OR gid='$key') AND uid='$uid' <br>";
                             $dubl = $db->Execute("SELECT * FROM sayty WHERE (url LIKE '" . trim($value) . "' OR gid='$key') AND uid='$uid'")->FetchRow();
                             if (!$dubl) {
                                 $table .= "<tr><td style='border-right:1px solid #ccc'>$key</td><td style='border-right:1px solid #ccc'>" . $value . "</td>";
@@ -1599,7 +1603,6 @@ class user {
         }
 
         return $content;
-        exit();
     }
 
     function sayty_load_getgoodlinks($db) {
@@ -1663,7 +1666,7 @@ class user {
                     foreach ($sites as $key => $value) {
                         $dubl = $db->Execute("SELECT * FROM sayty WHERE (url LIKE '" . trim($value) . "' OR getgoodlinks_id='$key') AND uid='$uid'")->FetchRow();
                         if (!$dubl) {
-                            $db->Execute("INSERT INTO sayty(uid,url,getgoodlinks_id) values('" . $uid . "','" . $value . "','" . $key . "')");
+                            $db->Execute("INSERT INTO sayty(uid,url,getgoodlinks_id,cena,price,colvos) VALUES ('" . $uid . "','" . $value . "','" . $key . "', '20', '60', '2000')");
                             $sid = $db->Insert_ID();
                         } else {
                             if ($dubl["url"] != trim($value)) {
@@ -1689,7 +1692,6 @@ class user {
                             if (empty($value)) {
                                 continue;
                             }
-                            //echo "SELECT * FROM sayty WHERE (url LIKE '" . trim($value) . "' OR getgoodlinks_id='$key') AND uid='$uid' <br>";
                             $dubl = $db->Execute("SELECT * FROM sayty WHERE (url LIKE '" . trim($value) . "' OR getgoodlinks_id='$key') AND uid='$uid'")->FetchRow();
                             if (!$dubl) {
                                 $table .= "<tr><td style='border-right:1px solid #ccc'>$key</td><td style='border-right:1px solid #ccc'>" . $value . "</td>";
@@ -1718,7 +1720,6 @@ class user {
         }
 
         return $content;
-        exit();
     }
 
     function sayty_load_sape($db) {
@@ -1767,7 +1768,7 @@ class user {
                 foreach ($site_ownlist as $value) {
                     $dubl = $db->Execute("SELECT * FROM sayty WHERE (url LIKE '" . $value["url"] . "' OR sape_id='" . $value["id"] . "') AND uid='$uid'")->FetchRow();
                     if (!$dubl) {
-                        $db->Execute("INSERT INTO sayty(uid,url,sape_id) values('" . $uid . "','" . $value["url"] . "','" . $value["id"] . "')");
+                        $db->Execute("INSERT INTO sayty(uid,url,sape_id,cena,price,colvos) VALUES ('" . $uid . "','" . $value["url"] . "','" . $value["id"] . "', '20', '60', '2000')");
                         $sid = $db->Insert_ID();
                     } else {
                         if ($dubl["url"] != $value["url"]) {
@@ -1815,7 +1816,6 @@ class user {
         }
 
         return $content;
-        exit();
     }
 
     function sayty_load_rotapost($db) {
@@ -1850,7 +1850,7 @@ class user {
                             if ($site->Status == "Active") {
                                 $dubl = $db->Execute("SELECT * FROM sayty WHERE (url LIKE '" . $site->Url . "' OR rotapost_id='" . $site->Id . "') AND uid='$uid'")->FetchRow();
                                 if (!$dubl) {
-                                    $db->Execute("INSERT INTO sayty(uid,url,rotapost_id) values('" . $uid . "','" . $site->Url . "','" . $site->Id . "')");
+                                    $db->Execute("INSERT INTO sayty(uid,url,rotapost_id,cena,price,colvos) VALUES ('" . $uid . "','" . $site->Url . "','" . $site->Id . "', '20', '60', '2000')");
                                     $sid = $db->Insert_ID();
                                 } else {
                                     if ($dubl["url"] != $site->Url) {
@@ -1908,7 +1908,6 @@ class user {
         }
 
         return $content;
-        exit();
     }
 
     function zadaniya($db) {

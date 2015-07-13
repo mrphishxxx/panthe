@@ -9,7 +9,7 @@
 
 [themes]
 <form action="" method="post" id="admin_form">
-
+    <input type="hidden" name="id" value="[id]" />
     <div class="form">
 
         <ul>
@@ -133,10 +133,14 @@
                 <span class="title">Webartex_ID:</span>
                 <input type="text" name="webartex_id" value='[webartex_id]' id="webartex_id" class="full-length">
             </li>
-            
+
             <li>
                 <span class="title">Статус:</span>
-                <input type="radio" name="task_status" value="dorabotka" [dorabotka] [stat_disabled]> На доработке
+                <input type="radio" name="task_status" value="dorabotka" [dorabotka] [stat_disabled]> На доработке (модератор)
+            </li>
+            <li [rework_display]>
+                <span class="title"></span>
+                <input type="radio" name="task_status" value="rework" [rework] [stat_disabled] /> На доработке (копирайтер)
             </li>
             <li>
                 <span class="title"></span>
@@ -156,7 +160,37 @@
             </li>
         </ul>
     </div>
+    <div [display_for_copywriter]>
+        <div id="rework">
+            <div style="background: #d0dde7; padding: 10px 5px;" class="form">
+                <ul>
+                    <li style="float:left; margin: 10px; width: 100%">
+                        <span>Напишите комментарий копирайтеру, чтобы он знал, что ему нужно переделать. Затем нажмите кнопку "Отправить задачу на доработку Копирайтеру"!</span>
+                    </li>
+                    <input id="send_task_to_copywriter" type="button" class="button" value="Отправить задачу на доработку Копирайтеру" onclick="return false;" style="margin: 0 10px;"> 
+                </ul>
+            </div>
+        </div>
 
+
+        <div>
+            <div style="background: #e7e7e7; padding: 10px 5px;" class="form">
+                <ul>
+                    <li style="float:left; margin-right: 20px;">
+                        <span class="title">Написать копирайтеру:</span>
+                        <input type="text" class="half-length" id="message_copywriter" name="message_copywriter" value='' />
+                    </li>
+                    <input id="send_message_copywriter" type="button" class="button" value="Отправить сообщение" onclick="return false;" style="margin-top: -3px;">
+                    <div class="clear"></div>
+
+                    <li>
+                        <span class="title">История сообщений с копирайтером:</span>
+                        <textarea class="full-length" readonly='readonly' rows="[message_copywriter_count]">[message_copywriter]</textarea>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
     <div class="action_bar">
         <input type="hidden" name="send" value="1">
@@ -166,13 +200,29 @@
     </div>
 </form>
 <script>
-$( document ).ready(function() {
-    $("#dulb").click(function(){
-        $("#admin_form").attr("action","?module=admins&action=zadaniya&action2=dubl&zid=[zid]");
-        $('#admin_form').submit();
+    $(document).ready(function () {
+        $("#dulb").click(function () {
+            $("#admin_form").attr("action", "?module=admins&action=zadaniya&action2=dubl&zid=[zid]");
+            $('#admin_form').submit();
+        });
+
+        $("#send_message_copywriter").click(function () {
+            var message = $("#message_copywriter").val();
+            if (message === "") {
+                alert("Поле 'Написать заказчику пустое'\r\n");
+            } else {
+                $("#admin_form").attr("action", "?module=admins&action=chat&action2=send_message_copywriter&burse=1");
+                $("#admin_form").submit();
+            }
+        });
+
+        $("#send_task_to_copywriter").click(function () {
+            $("#admin_form").attr("action", "?module=admins&action=copywriters&action2=change_status_task&burse=1&status=dorabotka");
+            $("#admin_form").submit();
+        });
+        
+        if($("input:radio:checked").val() === "rework") {
+            $("#rework").remove();
+        }
     });
-  
-   
-  
-});
 </script>

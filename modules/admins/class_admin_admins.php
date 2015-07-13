@@ -82,6 +82,9 @@ class admins {
                     case 'etxt':
                         $content = $this->etxt($db);
                         break;
+                    case 'copywriters':
+                        $content = $this->task_for_copywriters($db);
+                        break;
                     case 'moreworkETXT':
                         $content = $this->moreworkETXT($db);
                         break;
@@ -444,38 +447,19 @@ class admins {
             }
             if (empty($task["vrabote"]) && empty($task["dorabotka"]) && empty($task["vipolneno"]) && empty($task["navyklad"]) && empty($task["vilojeno"])) {
                 $neobrabot[$task["sid"]] += 1;
-                $neobrabot[$task["sid"]]["n"] += 1;
             }
         }
         foreach ($sites as $site) {
             $sayty .= file_get_contents(PATH . 'modules/admins/tmp/admin/sayty_one.tpl');
             $sayty = str_replace('[url]', $site['url'], $sayty);
             $sayty = str_replace('[id]', $site['id'], $sayty);
-            $sayty = str_replace('[z1]', $vrabote[$site['id']] ? $vrabote[$site['id']] : 0, $sayty);
-            $sayty = str_replace('[z2]', $dorabotka[$site['id']] ? $dorabotka[$site['id']] : 0, $sayty);
-            $sayty = str_replace('[z4]', $neobrabot[$site['id']] ? $neobrabot[$site['id']] : 0, $sayty);
-            $sayty = str_replace('[z7]', $navyklad[$site['id']] ? $navyklad[$site['id']] : 0, $sayty);
-            $sayty = str_replace('[z5]', $vilojeno[$site['id']] ? $vilojeno[$site['id']] : 0, $sayty);
+            $sayty = str_replace('[z1]', isset($vrabote[$site['id']]) ? $vrabote[$site['id']] : 0, $sayty);
+            $sayty = str_replace('[z2]', isset($dorabotka[$site['id']]) ? $dorabotka[$site['id']] : 0, $sayty);
+            $sayty = str_replace('[z4]', isset($neobrabot[$site['id']]) ? $neobrabot[$site['id']] : 0, $sayty);
+            $sayty = str_replace('[z7]', isset($navyklad[$site['id']]) ? $navyklad[$site['id']] : 0, $sayty);
+            $sayty = str_replace('[z5]', isset($vilojeno[$site['id']]) ? $vilojeno[$site['id']] : 0, $sayty);
         }
-        /* $query = $db->Execute("SELECT * FROM sayty WHERE uid=$uid ORDER BY id ASC");
-          while ($res = $query->FetchRow()) {
-          $sayty .= file_get_contents(PATH . 'modules/admins/tmp/admin/sayty_one.tpl');
-          $sayty = str_replace('[url]', $res['url'], $sayty);
-          $sayty = str_replace('[id]', $res['id'], $sayty);
-          $sid = $res['id'];
-          $z1 = $db->Execute("select count(*) from zadaniya where vrabote=1 and (vipolneno=0 or vipolneno IS NULL) and (dorabotka=0 or dorabotka IS NULL) and (navyklad=0 or navyklad IS NULL) and (vilojeno=0 or vilojeno IS NULL) and sid=$sid")->FetchRow();
-          $z2 = $db->Execute("select count(*) from zadaniya where dorabotka=1 and sid=$sid")->FetchRow();
-          $z3 = $db->Execute("select count(*) from zadaniya where vipolneno=1 and sid=$sid")->FetchRow();
-          $z7 = $db->Execute("select count(*) from zadaniya where navyklad=1 and sid=$sid")->FetchRow();
-          $z5 = $db->Execute("select count(*) from zadaniya where vilojeno=1 and sid=$sid")->FetchRow();
-          $z4 = $db->Execute("select count(*) from zadaniya where sid=$sid and (vrabote=0 or vrabote IS NULL) and (dorabotka=0 or dorabotka IS NULL) and (vipolneno=0 or vipolneno IS NULL) and (navyklad=0 or navyklad IS NULL) and (vilojeno=0 or vilojeno IS NULL)")->FetchRow();
-          $sayty = str_replace('[z1]', $z1['count(*)'], $sayty);
-          $sayty = str_replace('[z2]', $z2['count(*)'], $sayty);
-          $sayty = str_replace('[z3]', $z3['count(*)'], $sayty);
-          $sayty = str_replace('[z4]', abs((int) $z4['count(*)']), $sayty);
-          $sayty = str_replace('[z5]', $z5['count(*)'], $sayty);
-          $sayty = str_replace('[z7]', $z7['count(*)'], $sayty);
-          } */
+
         if ($sayty) {
             $sayty = str_replace('[sayty]', $sayty, file_get_contents(PATH . 'modules/admins/tmp/admin/sayty_top.tpl'));
         } else {
@@ -498,7 +482,7 @@ class admins {
         $uid = (int) $_REQUEST['uid'];
         $sid = (int) $_GET['sid'];
         $pass = ETXT_PASS;
-        $db_res = $db->Execute("SELECT * FROM `zadaniya` WHERE sid='" . $sid . "' AND uid='" . $uid . "' AND etxt=0 AND lay_out=0");
+        $db_res = $db->Execute("SELECT * FROM `zadaniya` WHERE sid='" . $sid . "' AND uid='" . $uid . "' AND tema!=''  AND etxt=0 AND copywriter=0 AND for_copywriter=0 AND lay_out=0");
         $sinfo = $db->Execute("SELECT * FROM `sayty` WHERE id='" . $sid . "'")->FetchRow();
         $user = $db->Execute("SELECT * FROM `admins` WHERE id='" . $uid . "'")->FetchRow();
         if (!empty($sinfo)) {
@@ -506,7 +490,6 @@ class admins {
             $colvos = $sinfo['colvos'];
             $site_subject = $sinfo['site_subject'];
         }
-
         if ($colvos == 0 OR $cena == 0) {
             echo "<script>
                     alert(\"Не указано кол-во симовлов или цена\");
@@ -555,7 +538,8 @@ class admins {
                             4)Фразу употребить ТОЛЬКО ОДИН раз, в остальном - заменять синонимами 
                             5)Высылать готовый заказ просто текстом, в формате word не принимаем
                             6)Вручную проверить уникальность текста по Адвего Плагиатус (выше 95%), в Комментариях к заказу проставить % уникальности по данной программе. Без этого пункта автоматически задание отправляется на доработку.
-                            7)После того как заказ будет принят и оплачен все авторские права принадлежат аккаунту ifoget.ru (то есть статьи могут быть опубликованы на сайтах под различным именем, на выбор владельца текста).';
+                            7)После того как заказ будет принят и оплачен все авторские права принадлежат аккаунту ifoget.ru (то есть статьи могут быть опубликованы на сайтах под различным именем, на выбор владельца текста).
+                            8)Тексты писать только на русском языке.';
             $tittle = $db_res2['ankor'];
             $description = str_replace('[ankor]', $tittle, $description);
             if (!empty($db_res2['ankor2']))
@@ -788,6 +772,17 @@ class admins {
         }
     }
 
+    function task_for_copywriters($db) {
+        $uid = (int) $_REQUEST['uid'];
+        $sid = (int) $_REQUEST['sid'];
+
+        $tasks = $db->Execute("SELECT id FROM `zadaniya` WHERE sid='" . $sid . "' AND uid='" . $uid . "' AND tema!='' AND etxt=0 AND copywriter=0 AND for_copywriter=0 AND lay_out=0");
+        while ($task = $tasks->FetchRow()) {
+            $db->Execute("UPDATE zadaniya SET for_copywriter = 1 WHERE id = " . $task["id"]);
+        }
+        header("Location: " . $_SERVER["HTTP_REFERER"]);
+    }
+
     function zadaniya($db) {
         $starttime = time();
         $profil = "";
@@ -819,6 +814,34 @@ class admins {
         }
 
         $from = $to = null;
+        if (isset($_GET["status_z"])) {
+            switch ($_GET["status_z"]) {
+                case "vipolneno":
+                    $condition = " AND vipolneno = 1";
+                    break;
+                case "dorabotka":
+                    $condition = " AND (dorabotka = 1 OR rework = 1)";
+                    break;
+                case "navyklad":
+                    $condition = " AND navyklad = 1";
+                    break;
+                case "vilojeno":
+                    $condition = " AND vilojeno = 1";
+                    break;
+                case "vrabote":
+                    $condition = " AND vrabote = 1";
+                    break;
+                case "new":
+                    $condition = " AND rectificate='0' AND (vrabote='0' OR vrabote IS NULL) AND vipolneno='0' AND dorabotka='0' AND navyklad='0' AND vilojeno='0' AND rework='0'";
+                    break;
+                default: $condition = "";
+                    break;
+            }
+        } else {
+            $condition = "";
+        }
+
+
         if (@$_POST['date-from'] || @$_POST['date-to'] || @$_GET['date-from'] || @$_GET['date-to']) {
             if (@$_POST['date-from'])
                 $from = strtotime($db->escape($_POST['date-from']));
@@ -830,24 +853,24 @@ class admins {
                 $to = $_GET['date-to'];
 
             if ($from && $to) {
-                $query = $db->Execute("select * from zadaniya where sid=$sid AND date BETWEEN '" . $from . "' AND '" . $to . "' order by date DESC, id $sort LIMIT " . ($offset - 1) * $limit . "," . $limit);
-                $all = $db->Execute("select * from zadaniya where sid=$sid AND date BETWEEN '" . $from . "' AND '" . $to . "' order by date DESC, id $sort");
+                $query = $db->Execute("select * from zadaniya where sid=$sid AND date BETWEEN '" . $from . "' AND '" . $to . "' $condition order by date DESC, id $sort LIMIT " . ($offset - 1) * $limit . "," . $limit);
+                $all = $db->Execute("select * from zadaniya where sid=$sid AND date BETWEEN '" . $from . "' AND '" . $to . "' $condition order by date DESC, id $sort");
             } else {
                 if ($from) {
-                    $query = $db->Execute("select * from zadaniya where sid=$sid AND date >= '" . $from . "' order by date DESC, id $sort LIMIT " . ($offset - 1) * $limit . "," . $limit);
-                    $all = $db->Execute("select * from zadaniya where sid=$sid AND date >= '" . $from . "' order by date DESC, id $sort");
+                    $query = $db->Execute("select * from zadaniya where sid=$sid AND date >= '" . $from . "' $condition order by date DESC, id $sort LIMIT " . ($offset - 1) * $limit . "," . $limit);
+                    $all = $db->Execute("select * from zadaniya where sid=$sid AND date >= '" . $from . "' $condition order by date DESC, id $sort");
                 } else {
-                    $query = $db->Execute("select * from zadaniya where sid=$sid AND date <= '" . $to . "' order by date DESC, id $sort LIMIT " . ($offset - 1) * $limit . "," . $limit);
-                    $all = $db->Execute("select * from zadaniya where sid=$sid AND date <= '" . $to . "' order by date DESC, id $sort");
+                    $query = $db->Execute("select * from zadaniya where sid=$sid AND date <= '" . $to . "' $condition order by date DESC, id $sort LIMIT " . ($offset - 1) * $limit . "," . $limit);
+                    $all = $db->Execute("select * from zadaniya where sid=$sid AND date <= '" . $to . "' $condition order by date DESC, id $sort");
                 }
             }
         } else {
-            if (!@$_GET['showall']) {
-                $q = "select * from zadaniya where sid=$sid AND date >= '" . (strtotime(date("Y-m-d")) - 86400 * 30) . "' order by date DESC, id $sort LIMIT " . ($offset - 1) * $limit . "," . $limit;
-                $all = "SELECT * FROM zadaniya WHERE sid=$sid AND date >= '" . (strtotime(date("Y-m-d")) - 86400 * 30) . "' ORDER BY date DESC, id $sort";
+            if (!isset($_GET['showall'])) {
+                $q = "SELECT * FROM zadaniya WHERE sid=$sid AND date >= '" . (strtotime(date("Y-m-d")) - 86400 * 30) . "' $condition ORDER BY date DESC, id $sort LIMIT " . ($offset - 1) * $limit . "," . $limit;
+                $all = "SELECT * FROM zadaniya WHERE sid=$sid AND date >= '" . (strtotime(date("Y-m-d")) - 86400 * 30) . "' $condition ORDER BY date DESC, id $sort";
             } else {
-                $q = "select * from zadaniya where sid=$sid order by date DESC, id $sort LIMIT " . ($offset - 1) * $limit . "," . $limit;
-                $all = "SELECT * FROM zadaniya WHERE sid=$sid ORDER BY date DESC, id $sort";
+                $q = "SELECT * FROM zadaniya WHERE sid=$sid $condition ORDER BY date DESC, id $sort LIMIT " . ($offset - 1) * $limit . "," . $limit;
+                $all = "SELECT * FROM zadaniya WHERE sid=$sid $condition ORDER BY date DESC, id $sort";
             }
             $query = $db->Execute($q);
             $all = $db->Execute($all);
@@ -889,12 +912,22 @@ class admins {
             if (($numberDays >= 30) && !$_GET['showall']) {
                 //continue;
             }
+            $worker = "";
 
             $zadaniya = file_get_contents(PATH . 'modules/admins/tmp/admin/zadaniya_one.tpl');
+            if (empty($res["task_id"]) && (!empty($res["copywriter"]) && $res["copywriter"] != 0)) {
+                $copywriter = $db->Execute("SELECT login FROM admins WHERE id = " . $res["copywriter"])->FetchRow();
+                $worker = isset($copywriter["login"]) ? $copywriter["login"] : "Не известный Копирайтер!";
+            } elseif (!empty($res["task_id"])) {
+                $worker = $res["task_id"];
+            } elseif ((empty($res["task_id"]) && empty($res["copywriter"])) && $res["for_copywriter"] == 1) {
+                $worker = "Отдано копирайтерам";
+            }
+
             $url = (mb_substr(mb_substr($res['url'], mb_strpos($res['url'], "http")), 0, 30));
             $zadaniya = str_replace('[url]', $url, $zadaniya);
             $zadaniya = str_replace('[id]', $res['id'], $zadaniya);
-            $zadaniya = str_replace('[etxt_id]', $res['task_id'], $zadaniya);
+            $zadaniya = str_replace('[etxt_id]', $worker, $zadaniya);
             $zadaniya = str_replace('[date]', date('d.m.Y', $res['date']), $zadaniya);
             $zadaniya = str_replace('[tema]', mb_substr($res['tema'], 0, 50), $zadaniya);
 
@@ -963,7 +996,7 @@ class admins {
         $content = str_replace('[symb]', $symb, $content);
         $content = str_replace('[dfrom]', (!empty($from)) ? date("m/d/Y", $from) : "", $content);
         $content = str_replace('[dto]', (!empty($to)) ? date("m/d/Y", $to) : "", $content);
-
+        $content = str_replace('[cur_url]', "?module=admins&action=zadaniya&uid=$uid&sid=$sid&offset=" . $offset . ((!isset($_GET['showall'])) ? '' : '&showall=1') . ((!$from) ? '' : '&date-from=' . $from) . ((!$to) ? '' : '&date-to=' . $to) . "", $content);
         $endtime = time() - $starttime;
         if ($endtime > 3) {
             $profil .= "ALL TIME - " . $endtime;
@@ -1112,7 +1145,7 @@ class admins {
 
                 if ($_REQUEST["check"] == 1 && count($buf2) > 0) {
                     while ($j < count($buf2)) {
-                        $db->Execute("Insert INTO sayty(uid,url,login,pass) values('" . $uid . "','http://" . $buf2[$j] . "','" . $data["e_mail"] . "','" . $data["password"] . "')");
+                        $db->Execute("Insert INTO sayty(uid,url,login,pass,cena,price,colvos) values('" . $uid . "','http://" . $buf2[$j] . "','" . $data["e_mail"] . "','" . $data["password"] . "', '20', '60', '2000')");
                         $j++;
                     }
                     echo "Сайты добавлены!  <a href='?module=admins&action=sayty&uid=$uid&whyedit=1'><input type='button' value='Назад'></a>";
@@ -1278,7 +1311,7 @@ class admins {
         }
 
         while ($res = $query->FetchRow()) {
-            $cur_balans = $users_balans[$res['id']];
+            $cur_balans = isset($users_balans[$res['id']]) ? $users_balans[$res['id']] : 0;
             if ($status == "active" && $cur_balans <= 0 && $res['id'] != 20) {
                 continue;
             }
@@ -1317,7 +1350,7 @@ class admins {
             $admins = str_replace('[balans]', ($cur_balans ? $cur_balans : 0) . 'р.', $admins);
 
             if ($_SESSION['admin']['id']) {
-                $total = $total_price[$res['id']] - $cur_balans;
+                $total = (isset($total_price[$res['id']]) ? $total_price[$res['id']] : 0) - $cur_balans;
                 if ($status == "not") {
                     $total .= "<input type=hidden name=notact value=1>";
                 }
@@ -1758,19 +1791,19 @@ class admins {
                 $content = str_replace('[rights]', 'style="display:none"', $content);
             } else {
 
-                $option = '<option value="20-45" [cena_45]>45 руб. - 1500 знаков (econom)</option>
-                        <option value="30-61" [cena_61]>61 руб. - 1500 знаков (medium)</option>
-                        <option value="50-93" [cena_93]>93 руб. - 1500 знаков (elit)</option>
-                        <option value="20-60" [cena_60]>60 руб. - 2000 знаков (econom)</option>
-                        <option value="30-76" [cena_76]>76 руб. - 2000 знаков (medium)</option>
-                        <option value="45-111" [cena_111]>111 руб. - 2000 знаков (elit)</option>';
+                $option = '<option value="20-45-1500" [cena_45]>45 руб. - 1500 знаков (econom)</option>
+                        <option value="30-61-1500" [cena_61]>61 руб. - 1500 знаков (medium)</option>
+                        <option value="50-93-1500" [cena_93]>93 руб. - 1500 знаков (elit)</option>
+                        <option value="20-60-2000" [cena_60]>60 руб. - 2000 знаков (econom)</option>
+                        <option value="30-76-2000" [cena_76]>76 руб. - 2000 знаков (medium)</option>
+                        <option value="45-111-2000" [cena_111]>111 руб. - 2000 знаков (elit)</option>';
 
-                $option_newUser = '<option value="20-45" [cena_45]>62 рубл. - 1500 знаков (econom)</option>
-                        <option value="30-61" [cena_61]>78 рубл. - 1500 знаков (medium)</option>
-                        <option value="50-93" [cena_93]>110 рубл. - 1500 знаков (elit)</option>
-                        <option value="20-60" [cena_60]>77 руб. - 2000 знаков (econom)</option>
-                        <option value="30-76" [cena_76]>93 руб. - 2000 знаков (medium)</option>
-                        <option value="45-111" [cena_111]>128 руб. - 2000 знаков (elit)</option>';
+                $option_newUser = '<option value="20-45-1500" [cena_45]>62 рубл. - 1500 знаков (econom)</option>
+                        <option value="30-61-1500" [cena_61]>78 рубл. - 1500 знаков (medium)</option>
+                        <option value="50-93-1500" [cena_93]>110 рубл. - 1500 знаков (elit)</option>
+                        <option value="20-60-2000" [cena_60]>77 руб. - 2000 знаков (econom)</option>
+                        <option value="30-76-2000" [cena_76]>93 руб. - 2000 знаков (medium)</option>
+                        <option value="45-111-2000" [cena_111]>128 руб. - 2000 знаков (elit)</option>';
 
                 if ($user["new_user"]) {
                     $content = str_replace('[prices_option]', $option_newUser, $content);
@@ -1790,7 +1823,6 @@ class admins {
             $webartex_id = $_REQUEST['webartex_id'];
             $blogun_id = $_REQUEST['blogun_id'];
             $url_admin = $_REQUEST['url_admin'];
-            $colvos = $_REQUEST['colvos'];
             $moder_id = $_REQUEST['viklad'];
             $owner_id = $_REQUEST['owner'];
             $price_viklad = $_REQUEST['price_viklad'];
@@ -1814,9 +1846,11 @@ class admins {
                 $tmp_price = explode('-', $tmp_price);
                 $price_iforget = $tmp_price[1];
                 $price_etxt = $tmp_price[0];
+                $colvos = $tmp_price[2];
             } else {
-                $price_iforget = $res["price"];
-                $price_etxt = $res["cena"];
+                $price_iforget = !empty($res["price"]) ? $res["price"] : 45;
+                $price_etxt = !empty($res["cena"]) ? $res["cena"] : 20;
+                $colvos = !empty($res["colvos"]) ? $res["colvos"] : 1500;
             }
             if ($owner_id == 330 && $id == 8192495) {
                 $price_iforget = 40;
@@ -1887,6 +1921,7 @@ class admins {
                 }
             }
             $profil .= microtime() . "  - OPERATIONS WITH MONEY" . "\r\n";
+            $content = str_replace("[id]", $res["id"], $content);
             $content = str_replace('[zid]', $id, $content);
             $content = str_replace('[nomoney]', $nomoney, $content);
             $content = str_replace('[stat_disabled]', $stat_disabled, $content);
@@ -1896,6 +1931,7 @@ class admins {
             $res['vrabote'] = $res['vrabote'] ? 'checked="checked"' : '';
             $res['navyklad'] = $res['navyklad'] ? 'checked="checked"' : '';
             $res['vilojeno'] = $res['vilojeno'] ? 'checked="checked"' : '';
+            $res['rework'] = $res['rework'] ? 'checked="checked"' : '';
 
             $url_sayta = '<a href="?module=admins&action=sayty&uid=' . $sinfo['uid'] . '&action2=edit&id=' . $sinfo['id'] . '" target="_blank">' . $sinfo['url'] . '</a>';
             $content = str_replace('[url_sayta]', $url_sayta, $content);
@@ -1910,7 +1946,6 @@ class admins {
                     $sistema .= "<option value='" . $birga['url'] . "'>" . $birga['url'] . "</option>";
             }
             $content = str_replace('[sistema1]', $sistema, $content);
-            $content = str_replace('[display]', (($res['sistema'] != "http://miralinks.ru/" && $res['sistema'] != "http://pr.sape.ru/") ? "style='display:none'" : ""), $content);
             $content = str_replace("[burse]", (($res['sistema'] == "https://blogun.ru/") ? "Blogun_id" : "GGL_ID"), $content);
             if ((int) $res['type_task'] == 0) {
                 $content = str_replace('[type0]', "selected='selected'", $content);
@@ -1929,6 +1964,27 @@ class admins {
             foreach ($res as $k => $v) {
                 $content = str_replace("[$k]", htmlspecialchars($v), $content);
             }
+            if ($res['copywriter'] != 0) {
+                $chat = $db->Execute("SELECT ch.*, a.login FROM chat_admin_copywriter ch LEFT JOIN admins a ON ch.uid=a.id WHERE zid='$id' AND burse=1 ORDER BY ch.date DESC");
+                $message_copywriter = "";
+                $message_copywriter_count = 2;
+                while ($value = $chat->FetchRow()) {
+                    if ($message_copywriter_count < 10)
+                        $message_copywriter_count += 2;
+                    $message_copywriter .= $value['login'] . " (" . $value['date'] . ")" . "\n";
+                    $message_copywriter .= $value['msg'] . "\n\n";
+                }
+                $message_copywriter = trim($message_copywriter, "\n\n");
+                $content = str_replace('[message_copywriter]', $message_copywriter, $content);
+                $content = str_replace('[message_copywriter_count]', $message_copywriter_count == 0 ? 2 : $message_copywriter_count, $content);
+                $content = str_replace('[display_for_copywriter]', "", $content);
+                $content = str_replace('[rework_display]', ($res["rework"] == 'checked="checked"' ? "" : "style='display:none'"), $content);
+                $db->Execute("UPDATE chat_admin_copywriter SET status=1 WHERE uid!='" . $_SESSION["admin"]["id"] . "' AND zid='$id' AND burse=1");
+            } else {
+                $content = str_replace('[display_for_copywriter]', " style='display:none' ", $content);
+                $content = str_replace('[rework_display]', " style='display:none' ", $content);
+            }
+
             $content = str_replace('[uid]', $uid, $content);
             $content = str_replace('[sid]', $sid, $content);
             $content = str_replace('[lay_out_text]', (($lay_out) ? "checked" : ""), $content);
@@ -1978,10 +2034,13 @@ class admins {
             $navyklad = ($task_status == "navyklad") ? 1 : 0;
             $vilojeno = ($task_status == "vilojeno") ? 1 : 0;
 
+            $rework = ($vipolneno == 1 || $dorabotka == 1 || $vrabote == 1 || $navyklad == 1 || $vilojeno == 1) ? 0 : $res["rework"];
+
             if ($lay_out == 1) {
                 $vrabote = 0;
-                if ($navyklad == 0 && $vilojeno == 0 && $dorabotka == 0 && $vipolneno == 0)
+                if ($navyklad == 0 && $vilojeno == 0 && $dorabotka == 0 && $vipolneno == 0) {
                     $navyklad = 1;
+                }
                 $etxt = 1;
             }
 
@@ -2037,7 +2096,7 @@ class admins {
                 $profil .= microtime() . "  - SEND MAIL" . "\r\n";
             }
 
-            $q = "update zadaniya set b_id='$b_id',sape_id='$sape_id',rotapost_id='$rotapost_id', dorabotka='$dorabotka', etxt='$etxt', vipolneno='$vipolneno', vrabote='$vrabote', navyklad='$navyklad', vilojeno='$vilojeno', type_task='$type_task', url_statyi='$url_statyi', text='$text', tema='$tema', sistema='$sistema', ankor='$ankor', ankor2='$ankor2', ankor3='$ankor3', ankor4='$ankor4', ankor5='$ankor5', url='$url', url2='$url2', url3='$url3', url4='$url4', url5='$url5', keywords='$keywords', price='$price', url_pic='$url_pic', comments='$comments', admin_comments='$admin_comments', overwrite='$overwrite', lay_out='$lay_out' where id=$id";
+            $q = "update zadaniya set b_id='$b_id',sape_id='$sape_id',rotapost_id='$rotapost_id', dorabotka='$dorabotka', rework='$rework', etxt='$etxt', vipolneno='$vipolneno', vrabote='$vrabote', navyklad='$navyklad', vilojeno='$vilojeno', type_task='$type_task', url_statyi='$url_statyi', text='$text', tema='$tema', sistema='$sistema', ankor='$ankor', ankor2='$ankor2', ankor3='$ankor3', ankor4='$ankor4', ankor5='$ankor5', url='$url', url2='$url2', url3='$url3', url4='$url4', url5='$url5', keywords='$keywords', price='$price', url_pic='$url_pic', comments='$comments', admin_comments='$admin_comments', lay_out='$lay_out' where id=$id";
             $db->Execute($q);
             $profil .= microtime() . "  - QUERY #5 UPDATE task" . "\r\n";
             $compl = $db->Execute("SELECT * FROM completed_tasks WHERE uid = $uid AND zid=" . $id)->FetchRow();
@@ -2066,11 +2125,12 @@ class admins {
                     //увеличение цен для новых пользователей на 30%
                     $price = (int) $price + 17;
                 }
-            }
-            if (empty($compl)) {
-                $db->Execute("INSERT INTO completed_tasks (uid, zid, date, price, status) VALUES ('$uid', '$id', '" . date("Y-m-d H:i:s") . "', '$price',1)");
-            } else {
-                $db->Execute("UPDATE completed_tasks SET date='" . date("Y-m-d H:i:s") . "', price = '$price' WHERE uid = '$uid' AND zid = '$id'");
+
+                if (empty($compl)) {
+                    $db->Execute("INSERT INTO completed_tasks (uid, zid, date, price, status) VALUES ('$uid', '$id', '" . date("Y-m-d H:i:s") . "', '$price',1)");
+                } else {
+                    $db->Execute("UPDATE completed_tasks SET date='" . date("Y-m-d H:i:s") . "', price = '$price' WHERE uid = '$uid' AND zid = '$id'");
+                }
             }
             $profil .= microtime() . "  - QUERY 6 - INSERT/UPDATE completed_tasks" . "\r\n";
 
@@ -2557,7 +2617,7 @@ class admins {
 
             $res = $db->Execute("SELECT * FROM tickets WHERE id=$tid")->FetchRow();
             $client = $db->Execute("SELECT * FROM admins WHERE id=" . $res['uid'])->FetchRow();
-            if($client["type"] == "admin") {
+            if ($client["type"] == "admin") {
                 $client = $db->Execute("SELECT * FROM admins WHERE id=" . $res['to_uid'])->FetchRow();
             }
             if ($client["mail_period"] > 0) {
@@ -4063,10 +4123,22 @@ class admins {
         $uid = $_SESSION['admin']['id'];
         $id = $_REQUEST['id'];
         $status = $_REQUEST['status'];
-        $task = $db->Execute("SELECT * FROM zadaniya_new WHERE id = $id")->FetchRow();
+        if (isset($_REQUEST['burse'])) {
+            $table = "zadaniya";
+        } else {
+            $table = "zadaniya_new";
+        }
+        $dorabotka = 0;
+        if (isset($_REQUEST['burse']) && $status == "dorabotka") {
+            $dorabotka = 0;
+        } else {
+            $dorabotka = 1;
+        }
+
+        $task = $db->Execute("SELECT * FROM $table WHERE id = $id")->FetchRow();
         if (!empty($uid) && !empty($task) && !empty($status) && $status == "dorabotka") {
             $time = time();
-            $db->Execute("UPDATE zadaniya_new SET rework = 1, dorabotka = 1, vipolneno = 0, navyklad = 0, vilojeno = 0, date_in_work = '$time' WHERE id = $id");
+            $db->Execute("UPDATE $table SET rework = 1, dorabotka = $dorabotka, vipolneno = 0, navyklad = 0, vilojeno = 0, date_in_work = '$time' WHERE id = $id");
             if ($task['copywriter'] != 0) {
                 $copywriter = $db->Execute("SELECT * FROM admins WHERE id=" . $task['copywriter'])->FetchRow();
                 $this->_postman->copywriter->articlesChangeStatusDorabotka($id, $copywriter);
@@ -4121,15 +4193,20 @@ class admins {
                 $sort = "weeks";
         }
         $content = str_replace('[name_col]', "#", $content);
-
+        $tasks_burse_for_copywriter = array();
         if (!empty($date)) {
             $tasks = $db->Execute("SELECT ct.* FROM completed_tasks ct  WHERE ct.date >= '$date' ORDER BY ct.date ASC"); // AND date < '2014-10-28 00:00:00'
+            $tasks_burse_copywriter = $db->Execute("SELECT id, nof_chars FROM zadaniya WHERE for_copywriter = 1 AND copywriter != 0 AND date >= '$date'");
             $sapes = $db->Execute("SELECT * FROM zadaniya_new WHERE (etxt = 1 OR copywriter != 0) AND date >= '$time' ORDER BY date ASC");
         } else {
             $tasks = $db->Execute("SELECT ct.* FROM completed_tasks ct ORDER BY ct.date ASC");
+            $tasks_burse_copywriter = $db->Execute("SELECT id, nof_chars FROM zadaniya WHERE for_copywriter = 1 AND copywriter != 0");
             $sapes = $db->Execute("SELECT * FROM zadaniya_new WHERE (etxt = 1 OR copywriter != 0) ORDER BY date ASC");
         }
-
+        while ($task_copywriter = $tasks_burse_copywriter->FetchRow()) {
+            $tasks_burse_for_copywriter[$task_copywriter["id"]] = $task_copywriter["nof_chars"];
+        }
+        //print_r($tasks->GetAll());die();
         $stat = $money = array(0 => 0);
         $count = $sum = 0;
         while ($task = $tasks->FetchRow()) {
@@ -4156,40 +4233,47 @@ class admins {
                     $stat[$date_time_array[$filter]][$task['price']] += 1;
                 }
                 $price = 0;
-                switch ($task['price']) {
-                    case 15 : $price = 15;
-                        break;
-                    case 45 : $price = 13.5;
-                        break;
-                    case 61 : $price = 13.75;
-                        break;
-                    case 93 : $price = 22.12;
-                        break;
-                    case 60 : $price = 18;
-                        break;
-                    case 76 : $price = 13;
-                        break;
-                    case 111 : $price = 16.5;
-                        break;
-                    case 62 : $price = 30.5;
-                        break;
-                    case 78 : $price = 30.75;
-                        break;
-                    case 110 : $price = 39.12;
-                        break;
-                    case 77 : $price = 35;
-                        break;
-                    case 128 : $price = 33.5;
-                        break;
+                if (array_key_exists($task["zid"], $tasks_burse_for_copywriter)) {
+                    $price = $task['price'] - (COPYWRITER_PRICE_FOR_1000_CHAR * ($tasks_burse_for_copywriter[$task["zid"]] / 1000));
+                } else {
+                    switch ($task['price']) {
+                        case 15 : $price = 15;
+                            break;
+                        case 45 : $price = 13.5;
+                            break;
+                        case 61 : $price = 13.75;
+                            break;
+                        case 93 : $price = 22.12;
+                            break;
+                        case 60 : $price = 18;
+                            break;
+                        case 76 : $price = 13;
+                            break;
+                        case 111 : $price = 16.5;
+                            break;
+                        case 62 : $price = 30.5;
+                            break;
+                        case 78 : $price = 30.75;
+                            break;
+                        case 110 : $price = 39.12;
+                            break;
+                        case 77 : $price = 35;
+                            break;
+                        case 128 : $price = 33.5;
+                            break;
+                    }
+                    if ($task['price'] == 93 && $task['date'] > "2015-02-01 00:00:00") {
+                        $price += 17;
+                    }
                 }
 
-                if ($task['price'] == 93 && $task['date'] > "2015-02-01 00:00:00") {
-                    $price += 17;
-                }
+                // Вычитаем деньги за выкладывание (Модератору)
                 if ($price > 0 && !empty($price_viklad)) {
                     $price_viklad = (!empty($price_viklad["summa"])) ? $price_viklad["summa"] : 0;
                     $price -= $price_viklad;
                 }
+
+                // Вычитаем деньги (ВРОДЕ БЫ) за индексацию в ГетБот и за работу в ЕТХТ
                 if ($price > 0 && $task['price'] == 15) {
                     $price -= 0.4;
                 } elseif ($price > 0) {
@@ -4201,7 +4285,7 @@ class admins {
 
             unset($date_time_array);
         }
-        //print_r($stat); die();
+
         $table = "";
         foreach ($money as $key => $value) {
             if ($key == 0)
@@ -4546,6 +4630,7 @@ class admins {
             if (empty($points)) {
                 $points[0] = 0;
             } elseif (count($points) > 2) {
+                $points[0] = isset($points[0]) ? $points[0] : 0;
                 if ($points[0] == 0)
                     unset($points[0]);
             }
@@ -4614,7 +4699,7 @@ class admins {
                         $condition = " AND z.vipolneno = 1";
                         break;
                     case "dorabotka":
-                        $condition = " AND z.dorabotka = 1";
+                        $condition = " AND (z.dorabotka = 1)";
                         break;
                     case "navyklad":
                         $condition = " AND z.navyklad = 1";
@@ -4627,7 +4712,7 @@ class admins {
                         break;
                     case "new":
                         $content = str_replace('[check_all]', "", $content);
-                        $condition = " AND z.rectificate='0' AND z.vrabote='0' AND z.vipolneno='0' AND z.dorabotka='0' AND z.navyklad='0' AND z.vilojeno='0'";
+                        $condition = " AND z.rectificate='0' AND z.vrabote='0' AND z.vipolneno='0' AND z.dorabotka='0' AND z.navyklad='0' AND z.vilojeno='0' AND z.rework='0'";
                         break;
                     default: $condition = "";
                         break;
@@ -5255,31 +5340,36 @@ class admins {
             echo $content;
             exit();
         }
-        $uid = isset($_SESSION['admin']['id']) ? $_SESSION['admin']['id'] : $_SESSION['manager']['id'];
         $id = $_REQUEST['id'];
+        $uid = isset($_SESSION['admin']['id']) ? $_SESSION['admin']['id'] : $_SESSION['manager']['id'];
+        if (isset($_REQUEST['id'])) {
+            $burse = 1;
+        } else {
+            $burse = 0;
+        }
         $msg = $_REQUEST['message_copywriter'];
         $date = date("Y-m-d H:i:s");
         if (!empty($uid) && !empty($id) && !empty($msg)) {
-            $db->Execute("INSERT INTO chat_admin_copywriter (uid, zid, msg, date, status) VALUE ('$uid', '$id', '$msg', '$date', 0)");
+            $db->Execute("INSERT INTO chat_admin_copywriter (uid, zid, msg, date, status, burse) VALUE ('$uid', '$id', '$msg', '$date', 0, $burse)");
             $copywriter = $db->Execute("SELECT a.* FROM admins a LEFT JOIN zadaniya_new z ON z.copywriter=a.id WHERE a.type = 'copywriter' AND z.id=$id")->FetchRow();
             if ($copywriter["mail_period"] > 0) {
                 $this->_postman->copywriter->sendMessage($id, $copywriter, $msg);
             }
         }
-        header('location:' . $_SERVER['HTTP_REFERER']);
+        header('Location:' . $_SERVER['HTTP_REFERER']);
     }
 
     function articles_to_etxt($db) {
         $error = "";
         $num = 0;
         $tasks = $db->Execute("SELECT * FROM zadaniya_new WHERE 
-                                                                rectificate=0 AND 
-                                                                vipolneno=0 AND 
-                                                                from_sape=1 AND 
-                                                                for_copywriter=0 AND 
-                                                                (task_id = 0 OR task_id IS NULL) AND 
-                                                                etxt=0 AND 
-                                                                copywriter=0");
+                                        rectificate=0 AND 
+                                        vipolneno=0 AND 
+                                        from_sape=1 AND 
+                                        for_copywriter=0 AND 
+                                        (task_id = 0 OR task_id IS NULL) AND 
+                                        etxt=0 AND 
+                                        copywriter=0");
         $cena = 20;
         $order_accept = array();
         while ($task = $tasks->FetchRow()) {
@@ -5295,7 +5385,8 @@ class admins {
                             4)Фразу употребить ТОЛЬКО ОДИН раз, в остальном - заменять синонимами 
                             5)Высылать готовый заказ просто текстом, в формате word не принимаем
                             6)Вручную проверить уникальность текста по Адвего Плагиатус (выше 95%), в Комментариях к заказу проставить % уникальности по данной программе. Без этого пункта автоматически задание отправляется на доработку.
-                            7)После того как заказ будет принят и оплачен все авторские права принадлежат аккаунту ifoget.ru (то есть статьи могут быть опубликованы на сайтах под различным именем, на выбор владельца текста).';
+                            7)После того как заказ будет принят и оплачен все авторские права принадлежат аккаунту ifoget.ru (то есть статьи могут быть опубликованы на сайтах под различным именем, на выбор владельца текста).
+                            8)Тексты писать только на русском языке.';
 
             $description = str_replace('[ankor]', $task['ankor'], $description);
             if (!empty($task['ankor2']))

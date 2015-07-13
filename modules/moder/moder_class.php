@@ -192,8 +192,8 @@ class moder {
     function zadaniya_moder($db) {
         $uid = (int) $_SESSION['user']['id'];
         $moder = $db->Execute("SELECT * FROM admins WHERE id=$uid")->FetchRow();
-        $cur_url = (@$_GET['domain_f'] ? "/user.php?domain_f=" . $_GET['domain_f'] : "/user.php?");
-        $url = $cur_url . (@$_GET['status_z'] ? ($_GET['domain_f'] ? "&" : "") . "status_z=" . $_GET['status_z'] : "");
+        $cur_url = (isset($_GET['domain_f']) ? ("/user.php?domain_f=" . $_GET['domain_f']) : "/user.php?");
+        $url = $cur_url . (@$_GET['status_z'] ? (isset($_GET['domain_f']) ? "&" : "") . "status_z=" . $_GET['status_z'] : "");
         $content = "";
         $limit = 25;
         $offset = 1;
@@ -209,7 +209,7 @@ class moder {
         while ($res = $query->FetchRow()) {
             $n++;
             $sids[] = $res['id'];
-            $domain_f .= '<option value="' . $res['id'] . '" ' . (@$_GET['domain_f'] == $res['id'] ? 'selected' : '') . '>' . $res['url'] . '</option>';
+            $domain_f .= '<option value="' . $res['id'] . '" ' . (isset($_GET['domain_f']) == $res['id'] ? 'selected' : '') . '>' . $res['url'] . '</option>';
             if (!in_array($res['uid'], $uids))
                 $uids[] = $res['uid'];
 
@@ -232,12 +232,13 @@ class moder {
 
         $sids = "(" . implode(",", $sids) . ")";
         $uids = "(" . implode(",", $uids) . ")";
-        if (@$_GET['domain_f'])
+        if (isset($_GET['domain_f'])){
             $sids = " (" . $db->escape($_GET["domain_f"]) . ") ";
+        }
 
         if (!@$_GET['status_z']) {
-            $query = $db->Execute("SELECT * FROM zadaniya WHERE sid IN $sids AND ((dorabotka = 1) OR (navyklad=1)) order by date ASC, id $sort LIMIT " . (($offset - 1) * $limit) . ",$limit");
-            $all = $db->Execute("select * from zadaniya where sid IN $sids AND ((dorabotka = 1) OR (navyklad=1)) order by date ASC, id $sort");
+            $query = $db->Execute("SELECT * FROM zadaniya WHERE sid IN $sids AND ((dorabotka = 1) OR (navyklad=1)) order by date DESC, id $sort LIMIT " . (($offset - 1) * $limit) . ",$limit");
+            $all = $db->Execute("select * from zadaniya where sid IN $sids AND ((dorabotka = 1) OR (navyklad=1)) order by date DESC, id $sort");
         } elseif (@$_GET['status_z'] && ($_GET['status_z'] != 'all')) {
             $who_posted = "";
             if (@$_GET['status_z'] == "vipolneno") {
@@ -245,11 +246,11 @@ class moder {
             }
             $status_f = $db->escape(@$_GET['status_z']);
 
-            $query = $db->Execute("select * from zadaniya where ($status_f=1) AND (sid IN $sids) AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1)) $who_posted order by date ASC, id $sort LIMIT " . (($offset - 1) * $limit) . ",$limit");
-            $all = $db->Execute("select * from zadaniya where ($status_f=1) AND (sid IN $sids) AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1)) $who_posted order by date ASC, id $sort");
+            $query = $db->Execute("select * from zadaniya where ($status_f=1) AND (sid IN $sids) AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1)) $who_posted order by date DESC, id $sort LIMIT " . (($offset - 1) * $limit) . ",$limit");
+            $all = $db->Execute("select * from zadaniya where ($status_f=1) AND (sid IN $sids) AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1)) $who_posted order by date DESC, id $sort");
         } else {
-            $all = $db->Execute("select * from zadaniya where sid IN $sids AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1 AND who_posted = $uid)) order by date ASC, id $sort");
-            $query = $db->Execute("select * from zadaniya where sid IN $sids AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1 AND who_posted = $uid)) order by date ASC, id $sort LIMIT " . (($offset - 1) * $limit) . ",$limit");
+            $all = $db->Execute("select * from zadaniya where sid IN $sids AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1 AND who_posted = $uid)) order by date DESC, id $sort");
+            $query = $db->Execute("select * from zadaniya where sid IN $sids AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1 AND who_posted = $uid)) order by date DESC, id $sort LIMIT " . (($offset - 1) * $limit) . ",$limit");
         }
         //print_r($all->GetAll());
         $all_zadanya = (!empty($all)) ? $all->NumRows() : 0;

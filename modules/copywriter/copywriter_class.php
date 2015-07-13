@@ -267,15 +267,22 @@ class copywriter {
         $condition = " AND rectificate='0' AND vrabote='0' AND vipolneno='0' AND dorabotka='0' AND navyklad='0' AND vilojeno='0'";
         $uid = $_SESSION['user']['id'];
         $user = $db->Execute("SELECT * FROM admins WHERE id=$uid")->FetchRow();
-        $all = $db->Execute("SELECT * FROM zadaniya_new WHERE 
-            tema != '' AND 
-            from_sape=1 AND 
+        $for_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE 
+            tema != '' AND  
             for_copywriter=1 AND 
             etxt=0 AND 
             copywriter=0 AND 
             (sape_id IS NOT NULL AND sape_id != 0) AND 
             sistema = 'http://pr.sape.ru/' 
-            $condition ORDER BY date ASC, id DESC");
+            $condition ORDER BY date ASC, id DESC")->GetAll();
+
+        $for_burse = $db->Execute("SELECT * FROM zadaniya WHERE 
+            tema != '' AND  
+            for_copywriter=1 AND 
+            etxt=0 AND 
+            copywriter=0 
+            $condition ORDER BY date ASC, id DESC")->GetAll();
+        $all = array_merge($for_sape, $for_burse);
 
         $prohibition_tasks = array();
         $prohibition_taking_tasks = $db->Execute("SELECT * FROM prohibition_taking_tasks WHERE user_id=$uid");
@@ -286,7 +293,7 @@ class copywriter {
         $table = "";
         $num_task = 0;
         if ($user["banned"] == 0) {
-            while ($res = $all->FetchRow()) {
+            foreach ($all as $res) {
                 if (!in_array($res["id"], $prohibition_tasks)) {
                     $num_task++;
                     switch ($res["type_task"]) {
@@ -300,11 +307,11 @@ class copywriter {
                     }
 
                     $tr = "<tr>";
-                    $tr .= "<td><a href='/copywriter.php?action=tasks&action2=view&id=" . $res["id"] . "'>" . $res["tema"] . "</a></td>";
+                    $tr .= "<td><a href='/copywriter.php?action=tasks&action2=view&id=" . $res["id"] . (!isset($res["from_sape"]) ? "&burse=1" : "") . "'>" . $res["tema"] . "</a></td>";
                     $tr .= "<td>" . $res["nof_chars"] . "</td>";
                     $tr .= "<td>" . $type . "</td>";
                     $tr .= "<td>" . date("Y-m-d", $res["date"]) . "</td>";
-                    $tr .= "<td class='add'><a href='/copywriter.php?action=tasks&action2=add&id=" . $res["id"] . "' class='ico'></a></td>";
+                    $tr .= "<td class='add'><a href='/copywriter.php?action=tasks&action2=add&id=" . $res["id"] . (!isset($res["from_sape"]) ? "&burse=1" : "") . "' class='ico'></a></td>";
                     $tr .= "</tr>";
                     $table .= $tr;
                 }
@@ -327,7 +334,7 @@ class copywriter {
     function tasks($db) {
         $content = file_get_contents(PATH . 'modules/copywriter/tmp/tasks.tpl');
         $uid = $_SESSION['user']['id'];
-        $limit = 50;
+        $limit = 25;
         $offset = 1;
         $pegination = "";
         if (isset($_GET['offset']) && !empty($_GET['offset'])) {
@@ -336,7 +343,9 @@ class copywriter {
 
         if (isset($_GET["status_z"])) {
             if ($_GET["status_z"] == "all") {
-                $tasks = $all = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter=$uid ORDER BY date DESC, id DESC");
+                $tasks_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter=$uid ORDER BY date DESC, id DESC")->GetAll();
+                $tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter=$uid ORDER BY date DESC, id DESC")->GetAll();
+                $all = $tasks = array_merge($tasks_sape, $tasks_burse);
             } else {
                 switch ($_GET["status_z"]) {
                     case "vipolneno":
@@ -358,12 +367,22 @@ class copywriter {
                         break;
                 }
 
-                $tasks = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='$uid' $condition ORDER BY date DESC, id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit);
-                $all = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='$uid' $condition ORDER BY date DESC, id DESC");
+                $tasks_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='$uid' $condition ORDER BY date DESC, id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit)->GetAll();
+                $tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='$uid' $condition ORDER BY date DESC, id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit)->GetAll();
+                $tasks = array_merge($tasks_sape, $tasks_burse);
+
+                $all_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='$uid' $condition ORDER BY date DESC, id DESC")->GetAll();
+                $all_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='$uid' $condition ORDER BY date DESC, id DESC")->GetAll();
+                $all = array_merge($all_sape, $all_burse);
             }
         } else {
-            $tasks = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='$uid' ORDER BY date DESC, id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit);
-            $all = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='$uid' ORDER BY date DESC, id DESC");
+            $tasks_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='$uid' ORDER BY date DESC, id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit)->GetAll();
+            $tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='$uid' ORDER BY date DESC, id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit)->GetAll();
+            $tasks = array_merge($tasks_sape, $tasks_burse);
+
+            $all_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='$uid' ORDER BY date DESC, id DESC")->GetAll();
+            $all_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='$uid' ORDER BY date DESC, id DESC")->GetAll();
+            $all = array_merge($all_sape, $all_burse);
         }
 
         if (!isset($_GET["status_z"]) || (isset($_GET["status_z"]) && $_GET["status_z"] != "all")) {
@@ -376,7 +395,7 @@ class copywriter {
             $pegination .= '<div style="float:left">&nbsp [ стр.&nbsp</div>';
             $pegination .= '<div class="select" style="width:50px;float:left;margin-top:-7px"><select name="pagerMenu" onchange="location=\'/copywriter.php?action=tasks' . (isset($_GET["status_z"]) ? '&status_z=' . $_GET["status_z"] : '') . '&offset=\'+this.options[this.selectedIndex].value+\'\'" ;="">';
 
-            $all_zadanya = $all->NumRows();
+            $all_zadanya = count($all);
             $count_pegination = ceil($all_zadanya / $limit);
             for ($i = 1; $i < $count_pegination + 1; $i++) {
                 if ($i == $offset) {
@@ -387,7 +406,7 @@ class copywriter {
             }
             $pegination .= '</select></div>';
             $pegination .= '&nbsp из ' . $count_pegination . ' ] &nbsp';
-            if ($tasks->NumRows() < $limit) {
+            if (count($tasks) < $limit) {
                 $pegination .= "След.";
             } else {
                 $pegination .= "<a href='/copywriter.php?action=tasks" . (isset($_GET["status_z"]) ? '&status_z=' . $_GET["status_z"] : '') . "&offset=" . ($offset + 1) . "'>След.</a>";
@@ -397,8 +416,17 @@ class copywriter {
                 $pegination = "";
         }
 
+        function compare($v1, $v2) {
+            if ($v1["date"] == $v2["date"]) {
+                return 0;
+            }
+            return ($v1["date"] > $v2["date"]) ? -1 : 1;
+        }
+
+        usort($tasks, "compare");
+
         $table = "";
-        while ($res = $tasks->FetchRow()) {
+        foreach ($tasks as $res) {
             switch ($res["type_task"]) {
                 case 0: $type = "Статья";
                     break;
@@ -435,7 +463,7 @@ class copywriter {
                 $bg = '#999';
                 $status = "Отклонен";
             }
-            $chat = $db->Execute("SELECT * FROM chat_admin_copywriter WHERE status=0 AND uid!=$uid AND zid='" . $res["id"] . "' LIMIT 1")->FetchRow();
+            $chat = $db->Execute("SELECT * FROM chat_admin_copywriter WHERE status=0 AND uid!=$uid AND zid='" . $res["id"] . "' AND burse='" . (!isset($res["from_sape"]) ? "1" : "0") . "' LIMIT 1")->FetchRow();
 
             $tr = "<tr style='background:$bg'>";
             $tr .= "<td>" . $res["tema"] . "</td>";
@@ -443,12 +471,13 @@ class copywriter {
             $tr .= "<td>" . $type . "</td>";
             $tr .= "<td>" . $status . "</td>";
             $tr .= "<td>" . date("Y-m-d", $res["date"]) . "</td>";
-            if (!empty($chat))
+            if (!empty($chat)) {
                 $tr .= "<td class='state processed' style='padding-top:15px'><span class='ico'></span></td>";
-            else
+            } else {
                 $tr .= "<td></td>";
-            $tr .= "<td class='edit' style='padding:0 7px;'><a href='?action=tasks&action2=edit&id=" . $res["id"] . "' class='ico'></a></td>";
-            $tr .= ($res['vipolneno'] ? "<td></td>" : "<td class='close'><a href='?action=tasks&action2=delete&id=" . $res["id"] . "' class='ico'></a></td>");
+            }
+            $tr .= "<td class='edit' style='padding:0 7px;'><a href='?action=tasks&action2=edit&id=" . $res["id"] . (!isset($res["from_sape"]) ? "&burse=1" : "") . "' class='ico'></a></td>";
+            $tr .= ($res['vipolneno'] ? "<td></td>" : "<td class='close'><a href='?action=tasks&action2=delete&id=" . $res["id"] . (!isset($res["from_sape"]) ? "&burse=1" : "") . "' class='ico'></a></td>");
             $tr .= "</tr>";
             $table .= $tr;
         }
@@ -465,40 +494,75 @@ class copywriter {
     function task_add($db) {
         $id = $_REQUEST['id'];
         $uid = $_SESSION['user']['id'];
+        if (isset($_REQUEST['burse'])) {
+            $table = "zadaniya";
+        } else {
+            $table = "zadaniya_new";
+        }
 
         if (!empty($id) && !empty($uid)) {
-            $task = $db->Execute("SELECT * FROM zadaniya_new WHERE (sape_id IS NOT NULL AND sape_id != 0) AND id = $id")->FetchRow();
+            $task = $db->Execute("SELECT * FROM $table WHERE id = $id")->FetchRow();
+            $sinfo = $db->Execute("SELECT * FROM sayty WHERE id = " . $task["sid"])->FetchRow();
             if (!empty($task) && $task["etxt"] != 1 && ($task["task_id"] == 0 || $task["task_id"] == NULL) && $task["for_copywriter"] == 1 && $task["copywriter"] == 0) {
                 $date = time();
 
-                $cookie_jar = tempnam(PATH . 'temp', "cookie");
-                if ($curl = curl_init()) {
-                    curl_setopt($curl, CURLOPT_URL, "http://api.articles.sape.ru/performer/index/");
-                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($curl, CURLOPT_POST, true);
-                    curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
-                    curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
-                    @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, xmlrpc_encode_request('performer.login', array(LOGIN_IN_SAPE, PASS_IN_SAPE)));
-                    curl_exec($curl);
-                    curl_close($curl);
+                if ($table == "zadaniya_new" && !empty($task["sape_id"])) {
+                    // Если задача из САПЫ, то отправляем подтверждение о ПРИНЯТИИ задачи
+                    $cookie_jar = tempnam(PATH . 'temp', "cookie");
+                    if ($curl = curl_init()) {
+                        curl_setopt($curl, CURLOPT_URL, "http://api.articles.sape.ru/performer/index/");
+                        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($curl, CURLOPT_POST, true);
+                        curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
+                        curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
+                        @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+                        curl_setopt($curl, CURLOPT_POSTFIELDS, xmlrpc_encode_request('performer.login', array(LOGIN_IN_SAPE, PASS_IN_SAPE)));
+                        curl_exec($curl);
+                        curl_close($curl);
+                    }
+
+                    $data = xmlrpc_encode_request('performer.orderAccept', array(array($task["sape_id"])));
+                    if ($curl = curl_init()) {
+                        curl_setopt($curl, CURLOPT_URL, "http://api.articles.sape.ru/performer/index/");
+                        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($curl, CURLOPT_POST, true);
+                        curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
+                        curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
+                        @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+                        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+                        $out = curl_exec($curl);
+                        curl_close($curl);
+                    }
+                    $accept = xmlrpc_decode($out);
+                } else {                    
+                    // Если задача из БИРЖИ, то снимаем деньги со счета Вебмастера
+                    $price = 0;
+                    if ($task['sistema'] == "http://miralinks.ru/" || $task['sistema'] == "https://gogetlinks.net/" || $task['sistema'] == "http://pr.sape.ru/" || $task['sistema'] == "http://getgoodlinks.ru/" || $task['sistema'] == "http://rotapost.ru/") {
+                        switch ($sinfo['cena']) {
+                            case 20:$price = 60;
+                                break;
+                            case 30:$price = 76;
+                                break;
+                            case 45:$price = 111;
+                                break;
+                            default:$price = 60;
+                                break;
+                        }
+                    } else {
+                        $price = $sinfo['price'];
+                    }
+                    $price += 17;
+                    
+                    // Проверка: Возможно уже снимали деньги за эту задачу, если так, то просто обновляем цену, иначе добавляем снятие
+                    $compl = $db->Execute("SELECT * FROM completed_tasks WHERE uid = '".$task['uid']."' AND zid=" . $task['id'])->FetchRow();
+                    if (empty($compl)) {
+                        $db->Execute("INSERT INTO completed_tasks (uid, zid, date, price, status) VALUES ('".$task['uid']."', '" . $task['id'] . "', '" . date("Y-m-d H:i:s") . "', '$price',1)");
+                    } else {
+                        $db->Execute("UPDATE completed_tasks SET price = '" . $price . "' WHERE id = '" . $compl["id"] . "'");
+                    }
                 }
 
-                $data = xmlrpc_encode_request('performer.orderAccept', array(array($task["sape_id"])));
-                if ($curl = curl_init()) {
-                    curl_setopt($curl, CURLOPT_URL, "http://api.articles.sape.ru/performer/index/");
-                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($curl, CURLOPT_POST, true);
-                    curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
-                    curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
-                    @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-                    $out = curl_exec($curl);
-                    curl_close($curl);
-                }
-                $accept = xmlrpc_decode($out);
-
-                $task = $db->Execute("UPDATE zadaniya_new SET copywriter = '$uid', vrabote='1', date_in_work='$date' WHERE (sape_id IS NOT NULL AND sape_id != 0) AND id = '$id'");
+                $task = $db->Execute("UPDATE $table SET copywriter = '$uid', vrabote='1', date_in_work='$date' WHERE id = '$id'");
 
                 require_once 'includes/mandrill/mandrill.php';
                 $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
@@ -512,7 +576,6 @@ class copywriter {
                 $message["from_name"] = "iforget";
                 $message["to"] = array();
                 $message["to"][0] = array("email" => MAIL_ADMIN);
-                //$message["to"][1] = array("email" => "abashevav@gmail.com");
                 $message["track_opens"] = null;
                 $message["track_clicks"] = null;
                 $message["auto_text"] = null;
@@ -543,12 +606,18 @@ class copywriter {
 
     function task_delete($db) {
         $id = $_REQUEST['id'];
-
+        if (isset($_REQUEST['burse'])) {
+            $table = "zadaniya";
+            $burse = 1;
+        } else {
+            $table = "zadaniya_new";
+            $burse = 0;
+        }
         if (!empty($id)) {
-            $task = $db->Execute("SELECT * FROM zadaniya_new WHERE id = $id")->FetchRow();
+            $task = $db->Execute("SELECT * FROM $table WHERE id = $id")->FetchRow();
             if (!empty($task)) {
                 $banned = "";
-                $db->Execute("UPDATE zadaniya_new SET copywriter = '0', 
+                $db->Execute("UPDATE $table SET copywriter = '0', 
                                                       vrabote='0',
                                                       vipolneno='0',
                                                       dorabotka='0',
@@ -559,7 +628,7 @@ class copywriter {
                                                       for_copywriter='0',
                                                       date_in_work='NULL' WHERE id = $id");
 
-                $db->Execute("INSERT INTO prohibition_taking_tasks (user_id, task_id) VALUE ('" . $task['copywriter'] . "', '" . $id . "')");
+                $db->Execute("INSERT INTO prohibition_taking_tasks (user_id, task_id, burse) VALUE ('" . $task['copywriter'] . "', '" . $id . "', $burse)");
                 $prohibition = $db->Execute("SELECT COUNT(*) AS cnt, `user_id` FROM `prohibition_taking_tasks` WHERE `user_id` = '" . $task['copywriter'] . "' GROUP BY `user_id`")->FetchRow();
                 if ($prohibition["cnt"] == LIMIT_ERROR_FROM_COPYWRITER) {
                     $db->Execute("UPDATE admins SET banned = '1' WHERE id = '" . $task['copywriter'] . "' AND type='copywriter'");
@@ -580,7 +649,6 @@ class copywriter {
                 $message["from_name"] = "iforget";
                 $message["to"] = array();
                 $message["to"][0] = array("email" => MAIL_ADMIN);
-                //$message["to"][1] = array("email" => MAIL_DEVELOPER);
                 $message["track_opens"] = null;
                 $message["track_clicks"] = null;
                 $message["auto_text"] = null;
@@ -604,102 +672,111 @@ class copywriter {
 
     function task_edit($db) {
         $content = file_get_contents(PATH . 'modules/copywriter/tmp/task_edit.tpl');
+        $id = $_REQUEST['id'];
         $uid = $_SESSION['user']['id'];
         $send = isset($_REQUEST['send']) ? $_REQUEST['send'] : null;
-        $id = $_REQUEST['id'];
+        if (isset($_REQUEST['burse'])) {
+            $table = "zadaniya";
+            $burse = 1;
+        } else {
+            $table = "zadaniya_new";
+            $burse = 0;
+        }
         $display = $read = "";
         $copywriter = $db->Execute("SELECT * FROM admins WHERE id='$uid'")->FetchRow();
-        $task = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='$uid' AND id='$id'")->FetchRow();
-        if (!empty($id)) {
-            if (!$send) { 
-                if ($task['navyklad']) {
-                    $task['navyklad'] = 'checked';
-                } else {
-                    $task['navyklad'] = '';
-                }
-                if ($task['vilojeno'] || $task['vipolneno'] || ($task['dorabotka'] && !$task['rework'])) {
-                    $display = "style='display:none'";
-                    $read = "readonly='readonly'";
-                }
-
-                switch ($task["type_task"]) {
-                    case 0: $type = "Статья";
-                        break;
-                    case 1: $type = "Обзор";
-                        break;
-                    case 2: $type = "Новость";
-                        break;
-                    default : $type = "Статья";
-                }
-                $content = str_replace('[read]', $read, $content);
-                $content = str_replace('[display]', $display, $content);
-                $content = str_replace('[type]', $type, $content);
-                $content = str_replace('[date]', date("Y-m-d", $task['date']), $content);
-                foreach ($task as $k => $v) {
-                    $content = str_replace("[$k]", htmlspecialchars($v), $content);
-                }
-                $chat = $db->Execute("SELECT ch.*, a.login FROM chat_admin_copywriter ch LEFT JOIN admins a ON ch.uid=a.id WHERE zid='$id' ORDER BY ch.date DESC");
-                $message = "";
-                $message_copywriter_count = 2;
-                while ($value = $chat->FetchRow()) {
-                    if ($message_copywriter_count < 10)
-                        $message_copywriter_count += 2;
-                    $message .= $value['login'] . " (" . $value['date'] . ")" . "\n";
-                    $message .= $value['msg'] . "\n\n";
-                }
-                $message = trim($message, "\n\n");
-                $content = str_replace('[message]', $message, $content);
-                $content = str_replace('[message_copywriter_count]', $message_copywriter_count == 0 ? 2 : $message_copywriter_count, $content);
-                $db->Execute("UPDATE chat_admin_copywriter SET status=1 WHERE uid != '" . $_SESSION["user"]["id"] . "' AND zid='$id'");
-                if (!empty($task['ankor3']) || !empty($task['ankor2']) || !empty($task['ankor4']) || !empty($task['ankor5'])) {
-                    $content = str_replace('[mn]', "ы", $content);
-                } else {
-                    $content = str_replace('[mn]', "а", $content);
-                }
-                
-                if ($copywriter["trust"] == 0) {
-                    $content = str_replace('[trust]', "readonly='readonly' disabled", $content);
-                    $content = str_replace('[trust_text]', "style='display:none'", $content);
-                } else {
-                    $content = str_replace('[trust]', "", $content);
-                    $content = str_replace('[trust_text]', "", $content);
-                }
-
-                $content = str_replace('[ankor_url]', (!empty($task['ankor'])) ? htmlspecialchars(' <a href="' . $task['url'] . '">' . $task['ankor'] . '</a>') : '', $content);
-                $content = str_replace('[ankor2_url2]', (!empty($task['ankor2'])) ? "<br>" . htmlspecialchars('<a href="' . $task['url2'] . '">' . $task['ankor2'] . '</a>') : '', $content);
-                $content = str_replace('[ankor3_url3]', (!empty($task['ankor3'])) ? "<br>" . htmlspecialchars('<a href="' . $task['url3'] . '">' . $task['ankor3'] . '</a>') : '', $content);
-                $content = str_replace('[ankor4_url4]', (!empty($task['ankor4'])) ? "<br>" . htmlspecialchars('<a href="' . $task['url4'] . '">' . $task['ankor4'] . '</a>') : '', $content);
-                $content = str_replace('[ankor5_url5]', (!empty($task['ankor5'])) ? "<br>" . htmlspecialchars('<a href="' . $task['url5'] . '">' . $task['ankor5'] . '</a>') : '', $content);
-
-                $content = str_replace('[error]', ((isset($_REQUEST['error']) && !empty($_REQUEST['error'])) ? $_REQUEST['error'] : ""), $content);
+        $task = $db->Execute("SELECT * FROM $table WHERE copywriter='$uid' AND id='$id'")->FetchRow();
+        if (empty($id) || empty($task)) {
+            $error = "Не верный ID задачи!";
+            header('Location: /copywriter.php?action=tasks');
+        }
+        if (!$send) {
+            if ($task['navyklad']) {
+                $task['navyklad'] = 'checked';
             } else {
-                $tema = ($_REQUEST['tema']);
-                $title = ($_REQUEST['title']);
-                $keywords = ($_REQUEST['keywords']);
-                $description = ($_REQUEST['description']);
-                $text = ($_REQUEST['text']);
-                $uniq = ($_REQUEST['uniq']);
-                $url_pic = @$_REQUEST['url_pic'];
-                $navyklad = isset($_REQUEST['task_status']) ? 1 : 0;
-                $rework = isset($_REQUEST['task_status']) ? 0 : 1;
-                $dorabotka = isset($_REQUEST['task_status']) ? 0 : 1;
-                $vilojeno = $task["vilojeno"];
-                $vrabote = isset($_REQUEST['task_status']) ? 0 : $task["vrabote"];
-                
-                //$arr = explode("\n", $text);
-                //$num_line = count($arr);
-                //$num_symbol = mb_strlen(str_replace("\r", "", str_replace("\n", "", $text)), "UTF-8");
-                $text_without_links = preg_replace('~<a\b[^>]*+>|</a\b[^>]*+>~', '', $text);
-                $num_symbol_without_space = mb_strlen(str_replace(" ", "", str_replace("\r", "", str_replace("\n", "", $text_without_links))), "UTF-8");
-                $message = array();
-                if ($navyklad == 1 && $copywriter['trust'] == 1) {
-                    if ($num_symbol_without_space < (int) $task["nof_chars"] || (empty($uniq) || $uniq < 95)) {
-                        if ($uniq < 95) {
-                            $error = "Уникальность статьи должна быть больше 95%! Читайте Описание задачи!";
-                        } else {
-                            $error = "Количество символов ($num_symbol_without_space) в статье меньше, чем требуется в задании! Количество символов считается без учета ссылок!";
-                        }
-                        $db->Execute("UPDATE zadaniya_new SET title='" . mysql_real_escape_string($title) . "', 
+                $task['navyklad'] = '';
+            }
+            if ($task['vilojeno'] || $task['vipolneno'] || ($task['dorabotka'] && !$task['rework'])) {
+                $display = "style='display:none'";
+                $read = "readonly='readonly'";
+            }
+
+            switch ($task["type_task"]) {
+                case 0: $type = "Статья";
+                    break;
+                case 1: $type = "Обзор";
+                    break;
+                case 2: $type = "Новость";
+                    break;
+                default : $type = "Статья";
+            }
+            $content = str_replace('[read]', $read, $content);
+            $content = str_replace('[display]', $display, $content);
+            $content = str_replace('[type]', $type, $content);
+            $content = str_replace('[date]', date("Y-m-d", $task['date']), $content);
+            foreach ($task as $k => $v) {
+                $content = str_replace("[$k]", htmlspecialchars($v), $content);
+            }
+            $chat = $db->Execute("SELECT ch.*, a.login FROM chat_admin_copywriter ch LEFT JOIN admins a ON ch.uid=a.id WHERE zid='$id' AND burse='$burse' ORDER BY ch.date DESC");
+            $message = "";
+            $message_copywriter_count = 2;
+            while ($value = $chat->FetchRow()) {
+                if ($message_copywriter_count < 10)
+                    $message_copywriter_count += 2;
+                $message .= $value['login'] . " (" . $value['date'] . ")" . "\n";
+                $message .= $value['msg'] . "\n\n";
+            }
+            $message = trim($message, "\n\n");
+            $content = str_replace('[message]', $message, $content);
+            $content = str_replace('[message_copywriter_count]', $message_copywriter_count == 0 ? 2 : $message_copywriter_count, $content);
+            $db->Execute("UPDATE chat_admin_copywriter SET status=1 WHERE uid != '" . $_SESSION["user"]["id"] . "' AND zid='$id'");
+            if (!empty($task['ankor3']) || !empty($task['ankor2']) || !empty($task['ankor4']) || !empty($task['ankor5'])) {
+                $content = str_replace('[mn]', "ы", $content);
+            } else {
+                $content = str_replace('[mn]', "а", $content);
+            }
+
+            if ($copywriter["trust"] == 0 && $burse == 0) {
+                $content = str_replace('[trust]', "readonly='readonly' disabled", $content);
+                $content = str_replace('[trust_text]', "style='display:none'", $content);
+            } else {
+                $content = str_replace('[trust]', "", $content);
+                $content = str_replace('[trust_text]', "", $content);
+            }
+            $content = str_replace('[id]', $task['id'], $content);
+            $content = str_replace('[ankor_url]', (!empty($task['ankor'])) ? htmlspecialchars(' <a href="' . $task['url'] . '">' . $task['ankor'] . '</a>') : '', $content);
+            $content = str_replace('[ankor2_url2]', (!empty($task['ankor2'])) ? "<br>" . htmlspecialchars('<a href="' . $task['url2'] . '">' . $task['ankor2'] . '</a>') : '', $content);
+            $content = str_replace('[ankor3_url3]', (!empty($task['ankor3'])) ? "<br>" . htmlspecialchars('<a href="' . $task['url3'] . '">' . $task['ankor3'] . '</a>') : '', $content);
+            $content = str_replace('[ankor4_url4]', (!empty($task['ankor4'])) ? "<br>" . htmlspecialchars('<a href="' . $task['url4'] . '">' . $task['ankor4'] . '</a>') : '', $content);
+            $content = str_replace('[ankor5_url5]', (!empty($task['ankor5'])) ? "<br>" . htmlspecialchars('<a href="' . $task['url5'] . '">' . $task['ankor5'] . '</a>') : '', $content);
+
+            $content = str_replace('[burse]', (($burse == 1) ? "&burse=1" : ""), $content);
+            $content = str_replace('[error]', ((isset($_REQUEST['error']) && !empty($_REQUEST['error'])) ? $_REQUEST['error'] : ""), $content);
+        } else {
+            $tema = ($_REQUEST['tema']);
+            $title = ($_REQUEST['title']);
+            $keywords = ($_REQUEST['keywords']);
+            $description = ($_REQUEST['description']);
+            $text = ($_REQUEST['text']);
+            $uniq = isset($_REQUEST['uniq']) ? $_REQUEST['uniq'] : $task['uniq'];
+            $url_pic = @$_REQUEST['url_pic'];
+            $navyklad = isset($_REQUEST['task_status']) ? 1 : 0;
+            $rework = isset($_REQUEST['task_status']) ? 0 : $task['rework'];
+            $dorabotka = $task['dorabotka'];
+            $vilojeno = $task["vilojeno"];
+            $vrabote = isset($_REQUEST['task_status']) ? 0 : $task["vrabote"];
+
+            $text_without_links = preg_replace('~<a\b[^>]*+>|</a\b[^>]*+>~', '', $text);
+            $num_symbol_without_space = mb_strlen(str_replace(" ", "", str_replace("\r", "", str_replace("\n", "", $text_without_links))), "UTF-8");
+            $message = array();
+            
+            if ($navyklad == 1 && $copywriter['trust'] == 1) {
+                if ($num_symbol_without_space < (int) $task["nof_chars"] || (empty($uniq) || $uniq < 95)) {
+                    if ($uniq < 95) {
+                        $error = "Уникальность статьи должна быть больше 95%! Читайте Описание задачи!";
+                    } else {
+                        $error = "Количество символов ($num_symbol_without_space) в статье меньше, чем требуется в задании! Количество символов считается без учета ссылок!";
+                    }
+                    $db->Execute("UPDATE $table SET title='" . mysql_real_escape_string($title) . "', 
                                               keywords='" . mysql_real_escape_string($keywords) . "', 
                                               description='" . mysql_real_escape_string($description) . "', 
                                               text='" . mysql_real_escape_string($text) . "', 
@@ -708,110 +785,142 @@ class copywriter {
                                               uniq='$uniq'
                                               WHERE id=$id");
 
-                        header('Location: /copywriter.php?action=tasks&action2=edit&id=' . $id . '&error=' . $error);
-                        exit();
-                    } else {
-                        if (empty($description) || mb_strlen($description) > 255) {
-                            $description = mb_substr(substr($text, 0, strpos($text, ".")), 0, 225);
-                        }
-                        if ($task["navyklad"] != 1 && $task["vipolneno"] != 1 && $task["vilojeno"] != 1) {
-                            $message["to"] = array();
-                            
-                            if ($task["dorabotka"] == 1 || $task["rework"] == 1) {
-                                $body = "Добрый день! <br/><br/>
+                    header('Location: /copywriter.php?action=tasks&action2=edit&id=' . $id . ($burse == 1 ? "&burse=1" : "") . '&error=' . $error);
+                    exit();
+                } else {
+                    $dorabotka = 0;
+                    if (empty($description) || mb_strlen($description) > 255) {
+                        $description = mb_substr(substr($text, 0, strpos($text, ".")), 0, 225);
+                    }
+                    if ($task["navyklad"] != 1 && $task["vipolneno"] != 1 && $task["vilojeno"] != 1) {
+                        $message["to"] = array();
+
+                        if ($task["dorabotka"] == 1 || $task["rework"] == 1) {
+                            $body = "Добрый день! <br/><br/>
                                          Копирайтер '" . $_SESSION['user']['login'] . "' выполнил задание # $id.<br/><br/>
                                          Данное задание <a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус на 'Готов'!<br/>";
-                            } else {
-                                if (!empty($title) && !empty($tema) && !empty($keywords) && !empty($description) && !empty($text)) {
-                                    $cookie_jar = tempnam(PATH . 'temp', "cookie");
-                                    if ($curl = curl_init()) {
-                                        curl_setopt($curl, CURLOPT_URL, "http://api.articles.sape.ru/performer/index/");
-                                        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                                        curl_setopt($curl, CURLOPT_POST, true);
-                                        curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
-                                        curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
-                                        @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-                                        curl_setopt($curl, CURLOPT_POSTFIELDS, xmlrpc_encode_request('performer.login', array(LOGIN_IN_SAPE, PASS_IN_SAPE)));
-                                        $login_sape = curl_exec($curl);
-                                        curl_close($curl);
-                                    }
-                                    
-                                    $data = xmlrpc_encode_request('performer.orderComplite', array((int) $task["sape_id"], array("title" => $title, "header" => $tema, "keywords" => $keywords, "description" => $description, "text" => $text)), array('encoding' => 'UTF-8', 'escaping' => 'markup'));
-                                    if ($curl = curl_init()) {
-                                        curl_setopt($curl, CURLOPT_URL, "http://api.articles.sape.ru/performer/index/");
-                                        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                                        curl_setopt($curl, CURLOPT_POST, true);
-                                        curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
-                                        curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
-                                        @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-                                        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-                                        $out = curl_exec($curl);
-                                        curl_close($curl);
-                                    }
-                                    $accept = xmlrpc_decode($out);
-                                    if ($accept == true && !isset($accept["faultString"])) {
-                                        $vilojeno = 1;
-                                        $navyklad = 0;
-                                        $body = "Добрый день! <br/><br/>
+                        } else {
+                            if (!empty($title) && !empty($tema) && !empty($keywords) && !empty($description) && !empty($text) && $burse == 0) {
+                                $cookie_jar = tempnam(PATH . 'temp', "cookie");
+                                if ($curl = curl_init()) {
+                                    curl_setopt($curl, CURLOPT_URL, "http://api.articles.sape.ru/performer/index/");
+                                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                                    curl_setopt($curl, CURLOPT_POST, true);
+                                    curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
+                                    curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
+                                    @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+                                    curl_setopt($curl, CURLOPT_POSTFIELDS, xmlrpc_encode_request('performer.login', array(LOGIN_IN_SAPE, PASS_IN_SAPE)));
+                                    $login_sape = curl_exec($curl);
+                                    curl_close($curl);
+                                }
+
+                                $data = xmlrpc_encode_request('performer.orderComplite', array((int) $task["sape_id"], array("title" => $title, "header" => $tema, "keywords" => $keywords, "description" => $description, "text" => $text)), array('encoding' => 'UTF-8', 'escaping' => 'markup'));
+                                if ($curl = curl_init()) {
+                                    curl_setopt($curl, CURLOPT_URL, "http://api.articles.sape.ru/performer/index/");
+                                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                                    curl_setopt($curl, CURLOPT_POST, true);
+                                    curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
+                                    curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
+                                    @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+                                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+                                    $out = curl_exec($curl);
+                                    curl_close($curl);
+                                }
+                                $accept = xmlrpc_decode($out);
+                                if ($accept == true && !isset($accept["faultString"])) {
+                                    $vilojeno = 1;
+                                    $navyklad = 0;
+                                    $body = "Добрый день! <br/><br/>
                                                  Копирайтер '" . $_SESSION['user']['login'] . "' выполнил задание # $id.<br/><br/>
                                                  Готовый текст отправлен в Sape на проверку.<br />
                                                  Данное задание <a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус на 'Выложено'!<br/>
                                                 ";
-                                    } else {
-                                        $request = array();
-                                        $errors = json_decode($accept["faultString"]);
-                                        foreach ($errors->items as $err_arr) {
-                                            foreach ($err_arr as $err) {
-                                                $request[] = $err;
-                                            }
+                                    $message["to"][1] = array("email" => MAIL_DEVELOPER);
+                                } else {
+                                    $request = array();
+                                    $errors = json_decode($accept["faultString"]);
+                                    foreach ($errors->items as $err_arr) {
+                                        foreach ($err_arr as $err) {
+                                            $request[] = $err;
                                         }
-                                        if (empty($request) && isset($accept["faultString"])) {
-                                            $request[] = $accept["faultString"];
-                                        }
-                                        $body = "Добрый день! <br/><br/>
+                                    }
+                                    if (empty($request) && isset($accept["faultString"])) {
+                                        $request[] = $accept["faultString"];
+                                    }
+                                    $body = "Добрый день! <br/><br/>
                                                 Копирайтер '" . $_SESSION['user']['login'] . "' выполнил задание # $id.<br/><br/>
                                                 Данное задание <a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус на 'Готов'!<br/>
                                                 <br>Во время автоматической загрузке задачи в Sape произошли ошибки:<br>";
-                                        foreach ($request as $err) {
-                                            $body .= "error = " . $err . "<br>";
-                                        }
-                                        $message["to"][0] = array("email" => MAIL_ADMIN);
-                                        //$message["to"][1] = array("email" => MAIL_DEVELOPER);
-                                        
+                                    foreach ($request as $err) {
+                                        $body .= "error = " . $err . "<br>";
                                     }
-                                } else {
                                     $message["to"][0] = array("email" => MAIL_ADMIN);
-                                    //$message["to"][1] = array("email" => MAIL_DEVELOPER);
-                                    $body = "Добрый день! <br/><br/>
+                                }
+                            } else {
+                                $message["to"][0] = array("email" => MAIL_ADMIN);
+                                $message["to"][1] = array("email" => MAIL_DEVELOPER);
+                                $body = "Добрый день! <br/><br/>
                                              Копирайтер '" . $_SESSION['user']['login'] . "' выполнил задание # $id.<br/><br/>
                                              Данное задание <a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус на 'Готов'!<br/>
-                                             Задача НЕ ОТПРАВЛЕНА в Sape из-за не полных данных. Какое то из полей пустое (title, tema, keywords, description, text)!";
+                                             ";
+                                $body .= ($burse == 0) ? "Задача НЕ ОТПРАВЛЕНА в Sape из-за не полных данных. Какое то из полей пустое (title, tema, keywords, description, text)!" : "";
+                            
+                                if(empty($title)){
+                                    $body .= "Title empty<br>";
                                 }
-                            }
-
-                            require_once 'includes/mandrill/mandrill.php';
-                            $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-                            $message["text"] = "Копирайтер отправил текст на выкладывание.";
-                            $message["subject"] = "[Ошибка отправки в Sape]";
-                            $message["html"] = $body;
-                            $message["from_email"] = "news@iforget.ru";
-                            $message["from_name"] = "iforget";
-                            $message["track_opens"] = null;
-                            $message["track_clicks"] = null;
-                            $message["auto_text"] = null;
-
-                            try {
-                                if (!empty($message["to"])){
-                                    $mandrill->messages->send($message);
+                                if(empty($tema)){
+                                    $body .= "Tema empty<br>";
                                 }
-                            } catch (Exception $e) {
-                                echo 'Сообщение не отправлено!';
+                                if(empty($keywords)){
+                                    $body .= "Keywords empty<br>";
+                                }
+                                if(empty($description)){
+                                    $body .= "Description empty<br>";
+                                }
+                                if(empty($text)){
+                                    $body .= "Text empty<br>";
+                                }
+                                $body .= "Burse = $burse<br>";
                             }
+                        }
+
+                        require_once 'includes/mandrill/mandrill.php';
+                        $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
+                        $message["text"] = "Копирайтер отправил текст на выкладывание.";
+                        $message["subject"] = "[Ошибка отправки в Sape]";
+                        $message["html"] = $body;
+                        $message["from_email"] = "news@iforget.ru";
+                        $message["from_name"] = "iforget";
+                        $message["track_opens"] = null;
+                        $message["track_clicks"] = null;
+                        $message["auto_text"] = null;
+
+                        try {
+                            if (!empty($message["to"])) {
+                                $mandrill->messages->send($message);
+                            }
+                        } catch (Exception $e) {
+                            echo 'Сообщение не отправлено!';
                         }
                     }
                 }
+            }
+            
+            
 
-                $q = "UPDATE zadaniya_new SET title='" . mysql_real_escape_string($title) . "', 
+            if ($navyklad == 1 && $burse == 1 && ($num_symbol_without_space < (int) $task["nof_chars"] || $uniq < 95)) {
+                if ($uniq < 95) {
+                    $error = "Уникальность статьи должна быть больше 95%! Читайте Описание задачи!";
+                } else {
+                    $error = "Количество символов ($num_symbol_without_space) в статье меньше, чем требуется в задании! Количество символов считается без учета ссылок!";
+                }
+                header('Location: /copywriter.php?action=tasks&action2=edit&id=' . $id . "&burse=1" . '&error=' . $error);
+                die();
+            } elseif ($navyklad == 1 && $burse == 1) {
+                $dorabotka = 0;
+            }
+
+            $q = "UPDATE $table SET title='" . mysql_real_escape_string($title) . "', 
                                               keywords='" . mysql_real_escape_string($keywords) . "', 
                                               description='" . mysql_real_escape_string($description) . "', 
                                               text='" . mysql_real_escape_string($text) . "', 
@@ -824,11 +933,9 @@ class copywriter {
                                               dorabotka='$dorabotka',
                                               vrabote='$vrabote'
                                               WHERE id=$id";
-                $db->Execute($q);
+            $db->Execute($q);
 
-
-                header('location: /copywriter.php?action=tasks');
-            }
+            header('location: /copywriter.php?action=tasks');
         }
 
         return $content;
@@ -837,7 +944,14 @@ class copywriter {
     function task_view($db) {
         $content = file_get_contents(PATH . 'modules/copywriter/tmp/task_view.tpl');
         $id = $_REQUEST['id'];
-        $task = $db->Execute("SELECT * FROM zadaniya_new WHERE id='$id'")->FetchRow();
+        if (isset($_REQUEST['burse'])) {
+            $table = "zadaniya";
+            $burse = 1;
+        } else {
+            $table = "zadaniya_new";
+            $burse = 0;
+        }
+        $task = $db->Execute("SELECT * FROM $table WHERE id='$id'")->FetchRow();
         if (!empty($id)) {
             switch ($task["type_task"]) {
                 case 0: $type = "Статья";
@@ -857,8 +971,7 @@ class copywriter {
 
             if (!empty($task['ankor3']) || !empty($task['ankor2']) || !empty($task['ankor4']) || !empty($task['ankor5'])) {
                 $content = str_replace('[mn]', "ы", $content);
-            }
-            else
+            } else
                 $content = str_replace('[mn]', "а", $content);
 
             $content = str_replace('[ankor_url]', (!empty($task['ankor'])) ? htmlspecialchars(' "<a href=\'' . $task['url'] . '\'>' . $task['ankor'] . '</a>"') : '', $content);
@@ -867,6 +980,7 @@ class copywriter {
             $content = str_replace('[ankor4_url4]', (!empty($task['ankor4'])) ? "<br>" . htmlspecialchars('"<a href=\'' . $task['url4'] . '\'>' . $task['ankor4'] . '</a>"') : '', $content);
             $content = str_replace('[ankor5_url5]', (!empty($task['ankor5'])) ? "<br>" . htmlspecialchars('"<a href=\'' . $task['url5'] . '\'>' . $task['ankor5'] . '</a>"') : '', $content);
 
+            $content = str_replace('[burse]', (($burse == 1) ? "&burse=1" : ""), $content);
             $content = str_replace('[error]', ((isset($_REQUEST['error']) && !empty($_REQUEST['error'])) ? $_REQUEST['error'] : ""), $content);
         }
 
@@ -878,8 +992,13 @@ class copywriter {
         $id = $_REQUEST['id'];
         $msg = $_REQUEST['msg'];
         $date = date("Y-m-d H:i:s");
+        if (isset($_REQUEST['burse'])) {
+            $burse = 1;
+        } else {
+            $burse = 0;
+        }
         if (!empty($uid) && !empty($id)) {
-            $db->Execute("INSERT INTO chat_admin_copywriter (uid, zid, msg, date, status) VALUE ('$uid', '$id', '$msg', '$date', 0)");
+            $db->Execute("INSERT INTO chat_admin_copywriter (uid, zid, msg, date, status, burse) VALUE ('$uid', '$id', '$msg', '$date', 0, '$burse')");
             $body = '   <html>
                             <head>
                                 <meta charset="utf-8">
@@ -889,7 +1008,7 @@ class copywriter {
                                 <p>Добрый день!</p><br />
                                 <p>На одну из задач пришел ответ от копирайтера <strong>' . $_SESSION['user']['login'] . '</strong>.</p>
                                 <p>`<em>' . $msg . '</em>`</p>
-                                <p>Для того, чтобы ответить копирайтеру перейдите по данной ссылке: <a href="http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=' . $id . '">Задание № ' . $id . '</a>.</p> 
+                                <p>Для того, чтобы ответить копирайтеру перейдите по данной ссылке: <a href="http://iforget.ru/admin.php?module=admins&action=' . (($burse == 0) ? 'articles' : 'zadaniya') . '&action2=edit&id=' . $id . '">Задание № ' . $id . '</a>.</p> 
                                 <p>Спасибо!</p>
                             </body>
                         </html>';
@@ -903,7 +1022,6 @@ class copywriter {
             $message["from_name"] = "iforget";
             $message["to"] = array();
             $message["to"][0] = array("email" => MAIL_ADMIN);
-            //$message["to"][1] = array("email" => "abashevav@gmail.com");
             $message["track_opens"] = null;
             $message["track_clicks"] = null;
             $message["auto_text"] = null;
@@ -914,7 +1032,7 @@ class copywriter {
                 echo 'Сообщение не отправлено!';
             }
         }
-        header('location: /copywriter.php?action=tasks&action2=edit&id=' . $id);
+        header('location: /copywriter.php?action=tasks&action2=edit&id=' . $id . ($burse == 1 ? '&burse=1' : ''));
     }
 
     function statistics_done_tasks($db) {
@@ -950,8 +1068,10 @@ class copywriter {
             $content = str_replace('[dto]', "", $content);
         }
 
-        $tasks = $db->Execute("SELECT count(id) as num FROM zadaniya_new WHERE copywriter = " . $uid . " AND vipolneno = 1" . $condition)->FetchRow();
-        $content = str_replace('[num]', $tasks["num"], $content);
+        $tasks_sape = $db->Execute("SELECT count(id) as num FROM zadaniya_new WHERE copywriter = " . $uid . " AND vipolneno = 1" . $condition)->FetchRow();
+        $tasks_burse = $db->Execute("SELECT count(id) as num FROM zadaniya WHERE copywriter = " . $uid . " AND vipolneno = 1" . $condition)->FetchRow();
+        $all = $tasks_sape["num"] + $tasks_burse["num"];
+        $content = str_replace('[num]', $all, $content);
         return $content;
     }
 
@@ -982,7 +1102,11 @@ class copywriter {
             $withdrawal_first = null;
             $tasks = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='" . $user['id'] . "' AND vipolneno=1");
             while ($res = $tasks->FetchRow()) {
-                $balance += ($res["nof_chars"] / 1000) * 21;
+                $balance += ($res["nof_chars"] / 1000) * COPYWRITER_PRICE_FOR_1000_CHAR;
+            }
+            $tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='" . $user['id'] . "' AND vipolneno=1");
+            while ($res = $tasks_burse->FetchRow()) {
+                $balance += ($res["nof_chars"] / 1000) * COPYWRITER_PRICE_FOR_1000_CHAR;
             }
             $withdrawal = $db->Execute("SELECT * FROM withdrawal WHERE uid='" . $user['id'] . "' ORDER BY date DESC");
             while ($res = $withdrawal->FetchRow()) {
@@ -1059,7 +1183,6 @@ class copywriter {
                 $message["from_name"] = "iforget";
                 $message["to"] = array();
                 $message["to"][0] = array("email" => MAIL_ADMIN);
-                //$message["to"][1] = array("email" => "abashevav@gmail.com");
                 $message["track_opens"] = null;
                 $message["track_clicks"] = null;
                 $message["auto_text"] = null;

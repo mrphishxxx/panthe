@@ -1,4 +1,4 @@
-<h1>Редактировать задание</h1>
+<h1>Редактировать задание #[id]</h1>
 <span class="span-title">Описание задачи</span>
 <p>
     1) Cтатья [nof_chars] символов без пробелов, в тексте должн[mn] быть фраз[mn] <br>[ankor_url][ankor2_url2][ankor3_url3][ankor4_url4][ankor5_url5]
@@ -145,7 +145,7 @@
                         if (message === "") {
                             alert("Поле 'Написать заказчику пустое'\r\n");
                         } else {
-                            $("#form").attr("action", "?action=chat&action2=send_message");
+                            $("#form").attr("action", "?action=chat&action2=send_message[burse]");
                             $("#form").submit();
                         }
                     });

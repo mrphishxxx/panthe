@@ -29,7 +29,7 @@ error_reporting(E_ALL & ~(E_NOTICE | E_STRICT));
 $MYSQL_HOST = "localhost";
 $MYSQL_USER = "root";
 $MYSQL_PASSWORD = "";
-$MYSQL_DB_NAME = "live.iforget";
+$MYSQL_DB_NAME = "iforget";
 $MYSQL_CHARSET = "utf8";
 $MYSQL_ENCRYPT = "MD5";
 

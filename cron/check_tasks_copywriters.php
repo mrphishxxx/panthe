@@ -16,18 +16,25 @@ $body = "Несколько задач были сняты с копирайте
 // если прошло - снимает с него задачу, убирает статус В работе, задача становится сбодной для других копирайтеров
 // 
 // Осуществляется проверка: если до снятия осталось 2 часа, то отправляется напоминание Копирайтеру, о том, что надо сдать задачу
-$tasks = $tasks2 = $db->Execute("SELECT z.*, a.login, a.email, a.mail_period FROM zadaniya_new z LEFT JOIN admins a ON a.id=z.copywriter WHERE z.copywriter!=0 AND (z.vrabote=1 OR z.rework=1) AND z.date_in_work IS NOT NULL");
+$tasks_sape = $db->Execute("SELECT z.*, a.login, a.email, a.mail_period FROM zadaniya_new z LEFT JOIN admins a ON a.id=z.copywriter WHERE z.copywriter!=0 AND (z.vrabote=1 OR z.rework=1) AND z.date_in_work IS NOT NULL")->GetAll();
+$tasks_burse = $db->Execute("SELECT z.*, a.login, a.email, a.mail_period FROM zadaniya z LEFT JOIN admins a ON a.id=z.copywriter WHERE z.copywriter!=0 AND (z.vrabote=1 OR z.rework=1) AND z.date_in_work IS NOT NULL")->GetAll();
+$tasks = array_merge($tasks_sape, $tasks_burse);
 if(!empty($tasks)) {
-    while ($row = $tasks->FetchRow()) {
+    foreach ($tasks as $row) {
         $now = time();
         $in_work_time = $row['date_in_work'];
         $timeDiff = abs($now - $in_work_time);
         $numberDays = $timeDiff / 86400;  // 86400 seconds in one day
         if ($numberDays >= 1) {
+            if(isset($row["from_sape"])){
+                $table = "zadaniya_new";
+            } else {
+                $table = "zadaniya";
+            }
             $arr[] = $row['id'];
-            $db->Execute("UPDATE zadaniya_new SET date_in_work=NULL, vrabote=0, rework=0, dorabotka=0, copywriter=0 WHERE id=" . $row['id']); //text='', 
+            $db->Execute("UPDATE $table SET date_in_work=NULL, vrabote=0, rework=0, dorabotka=0, copywriter=0 WHERE id=" . $row['id']); //text='', 
             $db->Execute("INSERT INTO prohibition_taking_tasks (user_id, task_id) VALUE ('".$row['copywriter']."', '".$row['id']."')");
-            $body .= "Задача <a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=" . $row['id'] . "'>" . $row['id'] . "</a> снята с копирайтера '" . $row['login'] . "'<br/>";
+            $body .= "Задача <a href='http://iforget.ru/admin.php?module=admins&action=".($table == "zadaniya" ? 'zadaniya' : 'articles')."&action2=edit&id=" . $row['id'] . "'>" . $row['id'] . "</a> снята с копирайтера '" . $row['login'] . "'<br/>";
         
             /*$prohibition = $db->Execute("SELECT COUNT(*) AS cnt, `user_id` FROM `prohibition_taking_tasks` WHERE `user_id` = '".$row['copywriter']."' GROUP BY `user_id`")->FetchRow();
             if($prohibition["cnt"] == LIMIT_ERROR_FROM_COPYWRITER) {
@@ -46,7 +53,7 @@ if(!empty($tasks)) {
         $message["from_name"] = "iforget";
         $message["to"] = array();
         $message["to"][0] = array("email" => MAIL_ADMIN);
-        //$message["to"][1] = array("email" => MAIL_DEVELOPER);
+        $message["to"][1] = array("email" => DEVELOPER);
         $message["track_opens"] = null;
         $message["track_clicks"] = null;
         $message["auto_text"] = null;
@@ -60,19 +67,24 @@ if(!empty($tasks)) {
         }
     }
     
-    while ($row = $tasks2->FetchRow()) {
+    foreach ($tasks as $row) {
         $now = time();
         $in_work_time = $row['date_in_work'];
         $timeDiff = abs($now - $in_work_time);
         $numberDays = $timeDiff / 86400;  // 86400 seconds in one day
         if ($timeDiff < 7200 && $numberDays < 1) { // 7200 seconds in two hours
+            if(isset($row["from_sape"])){
+                $burse = "";
+            } else {
+                $burse = "&burse=1";
+            }
             $body = "<p>Добрый день ".$row['login'] ."!</p>";
             if(empty($row["text"])){
-                $body .= "<p>До сдачи задания <a href='http://iforget.ru/copywriter.php?action=tasks&action2=edit&id=" . $row['id'] . "'>" . $row['id'] . "</a> осталось 2 часа!</p>
+                $body .= "<p>До сдачи задания <a href='http://iforget.ru/copywriter.php?action=tasks&action2=edit&id=" . $row['id'] . "$burse'>" . $row['id'] . "</a> осталось 2 часа!</p>
                           <p>Поторопитесь! Иначе задача уйдет к другому копирайтеру!</p>
                           <p><br /><small><a href='http://iforget.ru/copywriter.php?action=unsubscribe'>Отписаться от рассылки</a></small></p>";
             } else {
-                $body .= "<p>До сдачи задания <a href='http://iforget.ru/copywriter.php?action=tasks&action2=edit&id=" . $row['id'] . "'>" . $row['id'] . "</a> осталось 2 часа!</p>
+                $body .= "<p>До сдачи задания <a href='http://iforget.ru/copywriter.php?action=tasks&action2=edit&id=" . $row['id'] . "$burse'>" . $row['id'] . "</a> осталось 2 часа!</p>
                           <p>Если текст готов, то измените статус задачи на 'Готов'!</p> 
                           <p>Иначе задача уйдет к другому копирайтеру, текст удалится и задача не будет засчитана!</p>
                           <p><br /><small><a href='http://iforget.ru/copywriter.php?action=unsubscribe'>Отписаться от рассылки</a></small></p>";

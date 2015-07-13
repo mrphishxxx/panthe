@@ -26,27 +26,33 @@ class class_index {
 	';
         /* Вывод баланса и количества выволненых задач */
         $balance = $vipolneno = 0;
-        $tasks = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vipolneno=1");
-        if (!empty($tasks)) {
-            $vipolneno = $tasks->NumRows();
-            while ($res = $tasks->FetchRow()) {
-                $balance += ($res["nof_chars"] / 1000) * 21;
-            }
-            $withdrawal = $db->Execute("SELECT * FROM withdrawal WHERE uid='" . $_SESSION['user']['id'] . "'");
-            while ($res = $withdrawal->FetchRow()) {
-                $balance -= $res["sum"];
+        $tables = array(0 => "zadaniya_new", 1 => "zadaniya");
+        foreach ($tables as $table) {
+            $tasks = $db->Execute("SELECT * FROM $table WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vipolneno=1");
+            if (!empty($tasks)) {
+                $vipolneno += $tasks->NumRows();
+                while ($res = $tasks->FetchRow()) {
+                    $balance += ($res["nof_chars"] / 1000) * COPYWRITER_PRICE_FOR_1000_CHAR;
+                }
             }
         }
+        /* Минус выведенные средства*/
+        $withdrawal = $db->Execute("SELECT * FROM withdrawal WHERE uid='" . $_SESSION['user']['id'] . "'");
+        while ($res = $withdrawal->FetchRow()) {
+            $balance -= $res["sum"];
+        }
+        
         $content = str_replace('[balance]', $balance, $content);
         $content = str_replace('[vipolneno]', $vipolneno, $content);
         /* ------- */
 
-        $other_tasks = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vipolneno!=1");
-        $content = str_replace('[vrabote]', $other_tasks->NumRows(), $content);
+        $other_tasks_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vipolneno!=1  AND rectificate!=1");
+        $other_tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vipolneno!=1  AND rectificate!=1");
+        $content = str_replace('[vrabote]', ($other_tasks_sape->NumRows()) + ($other_tasks_burse->NumRows()), $content);
 
         $content = str_replace('[auth_block]', $auth_block, $content);
         $content = str_replace('[page_title]', "Index", $content);
-        
+
         $new_tick = $db->Execute("SELECT COUNT(id) as newt FROM tickets WHERE (uid='" . $_SESSION['user']["id"] . "' OR to_uid='" . $_SESSION['user']["id"] . "') AND status != 0")->FetchRow();
         $content = str_replace('[new_tick]', $new_tick['newt'], $content);
 

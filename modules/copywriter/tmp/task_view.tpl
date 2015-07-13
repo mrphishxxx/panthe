@@ -60,5 +60,5 @@
 <div class="action_bar">
     <input type="hidden" id="error" value="[error]">
     <input type="button" class="button" value="Вернуться" onclick="location.href = '/copywriter.php';" style="width:100px;">
-    <input type="button" class="button" value="Взять задание" onclick="location.href = '/copywriter.php?action=tasks&action2=add&id=[id]';" style="width:150px;">
+    <input type="button" class="button" value="Взять задание" onclick="location.href = '/copywriter.php?action=tasks&action2=add&id=[id][burse]';" style="width:150px;">
 </div>

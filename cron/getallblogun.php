@@ -101,12 +101,12 @@ function getTask($db, $uid) {
     $types = array();
     $hrefs = array();
     for ($i = 0; $i < count($rows); $i++) {
-		$hs = $rows[$i]->findElements(WebDriverBy::xpath(".//a[@class='descript_text']"))->getAttribute('href');
+		$hs = $rows[$i]->findElements(WebDriverBy::xpath(".//a[@class='descript_text']"));
 		if(count($hs)==0) continue;
-		$ts = $rows[$i]->findElements(WebDriverBy::xpath(".//td[7]"))->getText();
+		$ts = $rows[$i]->findElements(WebDriverBy::xpath(".//td[7]"));
 		if(count($ts)==0) continue;
-        array_push($hrefs, $hs[0]);
-        array_push($types, $ts[0]);
+        array_push($hrefs, $hs[0]->getAttribute('href'));
+        array_push($types, $ts[0]->getText());
     }
 
     if (count($rows) === 0) {
@@ -191,7 +191,7 @@ function getTask($db, $uid) {
             $first = mb_strtoupper(mb_substr($data["ankor"], 0, 1, 'UTF-8'), 'UTF-8'); //первая буква
             $first = str_replace("?", "", $first);
             $last = mb_strtolower(mb_substr($data["ankor"], 1), 'UTF-8'); //все кроме первой буквы
-            $last = ($last[0] == "?") ? mb_substr($last, 1) : $last;
+            $last = (isset($last[0]) && $last[0] == "?") ? mb_substr($last, 1) : $last;
             $data["tema"] = mysql_real_escape_string($first . $last);
             $data["keywords"] = implode($keywords, ",");
             $db->Execute("INSERT into zadaniya(sistema, sid, b_id, comments, 
