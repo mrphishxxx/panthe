@@ -86,12 +86,13 @@ class RollingCurl {
      * Set your base options that you want to be used with EVERY request.
      */
     protected $options = array(
-        CURLOPT_SSL_VERIFYPEER => 0,
         CURLOPT_RETURNTRANSFER => 1,
-        CURLOPT_CONNECTTIMEOUT => 30,
-        CURLOPT_TIMEOUT => 30,
+        CURLOPT_SSL_VERIFYPEER => 1,
+        CURLOPT_SSLVERSION => 4,
+        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_TIMEOUT => 10,
         CURLOPT_FOLLOWLOCATION => 1
-    );
+    );/*CURLOPT_VERBOSE => true,*/
 
     /**
      * @var array
