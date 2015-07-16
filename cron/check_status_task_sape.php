@@ -51,13 +51,11 @@ if (!empty($id_user_sape) && !empty($tasks)) {
         $task = xmlrpc_decode($detail);
         $body .= $sape_id."(".$task["status"].");<br> ";
         if ($task["status"] == 50 || $task["status"] == 0) {
-            //echo "Выполнена задача, ID = ".$id."<br>";
             $body .= "Выполнена задача, ID = ".$id."<br>";
-            $db->Execute("UPDATE zadaniya_new SET vilojeno='0', vipolneno='1', dorabotka = '0', navyklad = '0' WHERE id=" . $id);
+            $db->Execute("UPDATE zadaniya_new SET vilojeno='0', vipolneno='1', dorabotka = '0', navyklad = '0', vrabote='0', rework='0', rectificate='0' WHERE id=" . $id);
         } else if ($task["status"] == 20) {
-            //echo "Вернулась на доработку, ID = ".$id."<br>";
             $body .= "Вернулась на доработку, ID = ".$id."<br>";
-            $db->Execute("UPDATE zadaniya_new SET vilojeno='0', dorabotka='1' WHERE id=" . $id);
+            $db->Execute("UPDATE zadaniya_new SET vilojeno='0', dorabotka='1', vipolneno='0', navyklad = '0', vrabote='0', rework='0', rectificate='0' WHERE id=" . $id);
         }
 
     }
@@ -70,8 +68,8 @@ $message["subject"] = "Проверка заданий из Сапы";
 $message["from_email"] = "news@iforget.ru";
 $message["from_name"] = "iforget";
 $message["to"] = array();
-$message["to"][0] = array("email" => "abashevav@gmail.com");
-//$message["to"][1] = array("email" => MAIL_ADMIN);
+$message["to"][0] = array("email" => MAIL_DEVELOPER);
+$message["to"][1] = array("email" => MAIL_ADMIN);
 $message["track_opens"] = null;
 $message["track_clicks"] = null;
 $message["auto_text"] = null;
@@ -83,4 +81,3 @@ try {
     echo $body;
 }
 die("END");
-?>

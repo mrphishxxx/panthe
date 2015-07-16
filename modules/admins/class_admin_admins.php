@@ -4128,17 +4128,18 @@ class admins {
         } else {
             $table = "zadaniya_new";
         }
-        $dorabotka = 0;
-        if (isset($_REQUEST['burse']) && $status == "dorabotka") {
-            $dorabotka = 0;
-        } else {
-            $dorabotka = 1;
-        }
 
         $task = $db->Execute("SELECT * FROM $table WHERE id = $id")->FetchRow();
         if (!empty($uid) && !empty($task) && !empty($status) && $status == "dorabotka") {
+            /* $dorabotka = 0;
+              if (isset($_REQUEST['burse']) && $status == "dorabotka") {
+              $dorabotka = 0;
+              } else {
+              $dorabotka = 1;
+              } */
+
             $time = time();
-            $db->Execute("UPDATE $table SET rework = 1, dorabotka = $dorabotka, vipolneno = 0, navyklad = 0, vilojeno = 0, date_in_work = '$time' WHERE id = $id");
+            $db->Execute("UPDATE $table SET rework = 1, vipolneno = 0, navyklad = 0, vilojeno = 0, date_in_work = '$time' WHERE id = $id");
             if ($task['copywriter'] != 0) {
                 $copywriter = $db->Execute("SELECT * FROM admins WHERE id=" . $task['copywriter'])->FetchRow();
                 $this->_postman->copywriter->articlesChangeStatusDorabotka($id, $copywriter);
@@ -4924,6 +4925,7 @@ class admins {
                 $task['vilojeno'] = 'checked';
                 $content = str_replace('[activen]', 'disabled', $content);
                 $content = str_replace("[display_vilojeno]", '', $content);
+                $content = str_replace("[display]", 'style="display:none"', $content);
             } else {
                 $content = str_replace("[display_vilojeno]", 'style="display:none"', $content);
             }
@@ -4933,52 +4935,7 @@ class admins {
                 $content = str_replace('[activen]', "", $content);
             }
 
-            /* $profil .= microtime() . "  - BEFORE 1 curl - login in sape" . "\r\n";
-              $cookie_jar = tempnam(PATH . 'temp', "cookie");
-              $url = "http://api.articles.sape.ru/performer/index/";
-              if ($curl = curl_init()) {
-              curl_setopt($curl, CURLOPT_URL, $url);
-              curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-              curl_setopt($curl, CURLOPT_POST, true);
-              curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
-              curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
-              @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-              curl_setopt($curl, CURLOPT_POSTFIELDS, xmlrpc_encode_request('performer.login', array(LOGIN_IN_SAPE, PASS_IN_SAPE)));
-              curl_exec($curl);
-              curl_close($curl);
-              }
-              $profil .= microtime() . "  - AFTER 2 curl" . "\r\n";
-              $data = xmlrpc_encode_request('performer.messageList', array(array("order_id" => (int) $task["sape_id"]), array("date" => "DESC"), 0, 100));
-              $profil .= microtime() . "  - BEFORE 3 curl - messageList" . "\r\n";
-              if ($curl = curl_init()) {
-              curl_setopt($curl, CURLOPT_URL, $url);
-              curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-              curl_setopt($curl, CURLOPT_POST, true);
-              curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
-              curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
-              @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-              curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-              $out = curl_exec($curl);
-              curl_close($curl);
-              }
-              $messages = xmlrpc_decode($out);
-              $profil .= microtime() . "  - AFTER 3 curl" . "\r\n";
-              $message_text = "";
-              if (isset($messages["items"]) && !empty($messages["items"])) {
-              foreach ($messages["items"] as $item) {
-              $message_text .= $item["message_date"] . PHP_EOL;
-              $message_text .= $item["message_text"];
-              $message_text .= PHP_EOL . PHP_EOL;
-              }
-              $content = str_replace('[message]', $message_text, $content);
-              if ($task['admin_comments'] != $message_text) {
-              $db->Execute("UPDATE zadaniya_new SET admin_comments='$message_text', new_comment=0 WHERE id=" . $id);
-              } else {
-              $db->Execute("UPDATE zadaniya_new SET new_comment=0 WHERE id=" . $id);
-              }
-              $profil .= microtime() . "  - AFTER query - UPDATE new_comment AND admin_comments" . "\r\n";
-              }
-              $content = str_replace('[message]', "", $content); */
+
             $db->Execute("UPDATE zadaniya_new SET new_comment=0 WHERE id=" . $id);
             $content = str_replace('[message]', $task["admin_comments"], $content);
             $content = str_replace('[date]', date("Y-m-d", $task['date']), $content);
@@ -5095,24 +5052,24 @@ class admins {
             }
 
             $task_status = @$_REQUEST['task_status'];
-            if ($task_status == "vrabote") {
-                $vrabote = 1;
-            } else {
-                $vrabote = 0;
+            $vrabote = $navyklad = $dorabotka = $rework = $rectificate = $vilojeno = 0;
+            switch ($task_status) {
+                case "vrabote": $vrabote = 1;
+                    break;
+                case "navyklad": $navyklad = 1;
+                    break;
+                case "dorabotka": $dorabotka = 1; $rework = $task["rework"];
+                    break;
+                case "rework": $rework = 1; $dorabotka = $task["dorabotka"];
+                    break;
+                case "vilojeno": $vilojeno = 1;
+                    break;
+                case "rectificate": $rectificate = 1;
+                    break;
             }
-            if ($task_status == "navyklad") {
-                $navyklad = 1;
-            } else {
-                $navyklad = 0;
-            }
-            if ($task_status == "dorabotka") {
-                $dorabotka = 1;
-            } else {
-                $dorabotka = 0;
-            }
-            if ($task_status == "rectificate" && !empty($message)) {
+
+            if ($rectificate == 1 && !empty($message)) {
                 $profil .= microtime() . "  - Task = rectificate BEFORE 2 curl - login" . "\r\n";
-                $rectificate = 1;
                 if ($curl = curl_init()) {
                     curl_setopt($curl, CURLOPT_URL, "http://api.articles.sape.ru/performer/index/");
                     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -5138,12 +5095,10 @@ class admins {
                     curl_close($curl);
                 }
                 $profil .= microtime() . "  - AFTER 3 curl" . "\r\n";
-            } else {
-                $rectificate = 0;
             }
             $profil .= microtime() . "  - BEFORE UPDATE task" . "\r\n";
 
-            $q = "UPDATE zadaniya_new SET $task_id etxt='$etxt', title='$title', keywords='$keywords', description='" . mysql_real_escape_string($description) . "', vrabote='$vrabote', navyklad='$navyklad', rectificate='$rectificate', dorabotka='$dorabotka', type_task='$type_task', text='" . mysql_real_escape_string($text) . "', tema='" . mysql_real_escape_string($tema) . "', ankor='$ankor', ankor2='$ankor2', ankor3='$ankor3', ankor4='$ankor4', ankor5='$ankor5', url='$url', url2='$url2', url3='$url3', url4='$url4', url5='$url5', comments='$comments', admin_comments='$admin_comments', lay_out='$lay_out', overwrite='$overwrite' WHERE id=$id";
+            $q = "UPDATE zadaniya_new SET $task_id etxt='$etxt', title='$title', keywords='$keywords', description='" . mysql_real_escape_string($description) . "', rework ='$rework', vrabote='$vrabote', navyklad='$navyklad', rectificate='$rectificate', dorabotka='$dorabotka', type_task='$type_task', text='" . mysql_real_escape_string($text) . "', tema='" . mysql_real_escape_string($tema) . "', ankor='$ankor', ankor2='$ankor2', ankor3='$ankor3', ankor4='$ankor4', ankor5='$ankor5', url='$url', url2='$url2', url3='$url3', url4='$url4', url5='$url5', comments='$comments', admin_comments='$admin_comments', lay_out='$lay_out', overwrite='$overwrite' WHERE id=$id";
             $db->Execute($q);
             $profil .= microtime() . "  - AFTER UPDATE task" . "\r\n";
             if ($send_task) {
@@ -5183,15 +5138,14 @@ class admins {
                     $db->Execute("UPDATE zadaniya_new SET vilojeno = '1', navyklad = '0', dorabotka = '0' WHERE id = $id");
                     $profil .= microtime() . "  - TRUE SEND task" . "\r\n";
                 } else {
-                    if ($_SERVER["REMOTE_ADDR"] == "128.70.202.235") {
-                        print_r($accept);
-                        //die();
-                    }
+                        
                     $request = $data = array();
                     $errors = json_decode($accept["faultString"]);
-                    foreach ($errors->items as $err_type => $err_arr) {
-                        foreach ($err_arr as $key_err => $err) {
-                            $request[] = $err;
+                    if(!empty($errors)){
+                        foreach ($errors->items as $err_type => $err_arr) {
+                            foreach ($err_arr as $key_err => $err) {
+                                $request[] = $err;
+                            }
                         }
                     }
                     if (empty($request) && isset($accept["faultString"])) {

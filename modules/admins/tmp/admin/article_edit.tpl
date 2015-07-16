@@ -137,15 +137,15 @@
             </li>
             <li [display_vilojeno]>
                 <span class="title"></span>
-                <input type="radio" [vilojeno]> Выложено
+                <input type="radio" name="task_status" value="vilojeno" [vilojeno]> Выложено
             </li>
             <li [display_dorabotka]>
                 <span class="title"></span>
-                <input type="radio" [dorabotka]> На доработке из Sape
+                <input type="radio" name="task_status" value="dorabotka" [dorabotka]> На доработке из Sape
             </li>
             <li [display_rework]>
                 <span class="title"></span>
-                <input type="radio" [rework]> На доработке у Копирайтера
+                <input type="radio" name="task_status" value="rework" [rework]> На доработке у Копирайтера
             </li>
             
             <li>

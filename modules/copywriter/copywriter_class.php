@@ -736,11 +736,9 @@ class copywriter {
             }
 
             if ($copywriter["trust"] == 0 && $burse == 0) {
-                $content = str_replace('[trust]', "readonly='readonly' disabled", $content);
-                $content = str_replace('[trust_text]', "style='display:none'", $content);
+                $content = str_replace('[trust]', "style='display:none'", $content);
             } else {
                 $content = str_replace('[trust]', "", $content);
-                $content = str_replace('[trust_text]', "", $content);
             }
             $content = str_replace('[id]', $task['id'], $content);
             $content = str_replace('[ankor_url]', (!empty($task['ankor'])) ? htmlspecialchars(' <a href="' . $task['url'] . '">' . $task['ankor'] . '</a>') : '', $content);
@@ -761,8 +759,8 @@ class copywriter {
             $url_pic = @$_REQUEST['url_pic'];
             $navyklad = isset($_REQUEST['task_status']) ? 1 : 0;
             $rework = isset($_REQUEST['task_status']) ? 0 : $task['rework'];
-            $dorabotka = $task['dorabotka'];
-            $vilojeno = $task["vilojeno"];
+            $dorabotka = (isset($_REQUEST['task_status']) && $burse == 0) ? 0 : $task['dorabotka'];
+            $vilojeno = isset($_REQUEST['task_status']) ? 0 : $task["vilojeno"];
             $vrabote = isset($_REQUEST['task_status']) ? 0 : $task["vrabote"];
 
             $text_without_links = preg_replace('~<a\b[^>]*+>|</a\b[^>]*+>~', '', $text);
