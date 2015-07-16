@@ -155,7 +155,7 @@ if ($body != "") {
     $message_for_admin["subject"] = "[Ошибки отправления задач в Sape]";
     $message_for_admin["html"] = $body;
     $message_for_admin["to"][0] = array("email" => MAIL_ADMIN);
-    $message_for_admin["to"][1] = array("email" => MAIL_DEVELOPER);
+    //$message_for_admin["to"][1] = array("email" => MAIL_DEVELOPER);
     try {
         $mandrill->messages->send($message_for_admin);
         echo $body;
