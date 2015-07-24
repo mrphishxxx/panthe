@@ -51,7 +51,17 @@ class FromAdmin {
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "test.tpl");
         return $this->sendEmail();
     }
-    //echo $this->message["html"];die();
+    
+    public function newUser($id = 0, $login = "LOGIN", $email = "EMAIL"){
+        $this->smarty->assign('id', $id);
+        $this->smarty->assign('login', $login);
+        $this->smarty->assign('email', $email);
+        
+        $this->message["to"] = $this->admins_mail;
+        $this->message["subject"] = "[Зарегистрировался новый пользователь]";
+        $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "new_user.tpl");
+        return $this->sendEmail();
+    }
     
     public function ticketAdd($subject = null){
         $this->message["to"] = $this->admins_mail;
@@ -99,6 +109,17 @@ class FromAdmin {
         $this->message["to"] = $this->admins_mail;
         $this->message["to"][] = array("email" => "ostin.odept@gmail.com", "name" => "Роман");
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "price_increase_users.tpl");
+        return $this->sendEmail();
+    }
+    
+    public function userUsedPromoCode($user = array(), $promocode = "PROMOCODE"){
+        $this->smarty->assign('user_id', (isset($user["id"]) ? $user["id"] : 0));
+        $this->smarty->assign('user_login', (isset($user["login"]) ? $user["login"] : "LOGIN"));
+        $this->smarty->assign('promocode', $promocode);
+        
+        $this->message["to"] = $this->admins_mail;
+        $this->message["subject"] = "[Вебмастер воспользовался промокодом]";
+        $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "user_used_promocode.tpl");
         return $this->sendEmail();
     }
     
@@ -257,6 +278,79 @@ class FromAdmin {
         return $this->sendEmail();
     }
     
+    public function copywriterChangedData($old = array("id" => 0)) {
+        $new = $this->db->Execute("SELECT * FROM admins WHERE id=" . $old["id"])->FetchRow();
+        $this->smarty->assign('new', $new);
+        $this->smarty->assign('old', $old);
+        $this->smarty->assign('login', (isset($old["login"])? $old["login"] : "'LOGIN'"));
+        
+        $this->message["subject"] = "[Копирайтер изменил свои данные]";
+        $this->message["to"] = $this->admins_mail;
+        $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "copywriter_change_data.tpl");
+        return $this->sendEmail();
+    }
+    
+    public function copywriterAddedTask($id_task = "#", $login = "COPYWRITER") {
+        $this->smarty->assign('id', $id_task);
+        $this->smarty->assign('login', $login);
+        
+        $this->message["subject"] = "[Копирайтер взял задачу]";
+        $this->message["to"] = $this->admins_mail;
+        $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "copywriter_added_task.tpl");
+        return $this->sendEmail();
+    }
+    
+    public function copywriterCanceledTask($id_task = "#", $login = "COPYWRITER", $limit = 3, $banned = false) {
+        $this->smarty->assign('id', $id_task);
+        $this->smarty->assign('login', $login);
+        $this->smarty->assign('banned', $banned);
+        $this->smarty->assign('limit', $limit);
+        
+        $this->message["subject"] = "[Копирайтер отменил задачу]";
+        $this->message["to"] = $this->admins_mail;
+        $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "copywriter_canceled_task.tpl");
+        return $this->sendEmail();
+    }
+    
+    public function copywriterFinishedTask($id_task = "#", $login = "COPYWRITER", $status = "Готов", $request = array(), $empty_data = FALSE) {
+        $this->smarty->assign('id', $id_task);
+        $this->smarty->assign('login', $login);
+        $this->smarty->assign('status', $status);
+        $this->smarty->assign('errors', $request);
+        $this->smarty->assign('empty_data', $empty_data);
+        
+        $this->message["subject"] = ($status = "Выложено") ? "[Задача отправлена в Sape]" : ((!$empty_data && empty($request))? "[Задача доработана копирайтером]" : "[Ошибка отправки в Sape]");
+        $this->message["text"] = "Копирайтер отправил текст на выкладывание";
+                        
+        $this->message["to"] = $this->admins_mail;
+        $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "copywriter_finished_task.tpl");
+        return $this->sendEmail();
+    }
+    
+    public function copywriterSentMessage($id_task = "#", $login = "COPYWRITER", $message = "TEXT MESSAGE", $burse = FALSE) {
+        $this->smarty->assign('id', $id_task);
+        $this->smarty->assign('login', $login);
+        $this->smarty->assign('message', $message);
+        $this->smarty->assign('burse', $burse);
+        
+        $this->message["subject"] = "[Новое сообщение от копирайтера]";                        
+        $this->message["to"] = $this->admins_mail;
+        $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "copywriter_sent_message.tpl");
+        return $this->sendEmail();
+    }
+    
+    public function copywriterOutputMoney($user = array(), $summ = 0, $lastId = 0) {
+        $this->smarty->assign('login', (isset($user["login"]) ? $user["login"] : "'LOGIN'"));
+        $this->smarty->assign('wallet', (isset($user["wallet"]) ? $user["wallet"] : "Не известно"));
+        $this->smarty->assign('summ', $summ);
+        $this->smarty->assign('lastId', $lastId);
+        
+        $this->message["subject"] = "[Запрос на вывод средств копирайтером]";                        
+        $this->message["to"] = $this->admins_mail;
+        $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "copywriter_output_money.tpl");
+        return $this->sendEmail();
+    }
+    
     
     public function getMailsName($name = null) {
         if (!empty($name)) {
@@ -266,6 +360,7 @@ class FromAdmin {
                 case "ticketAnswer": return "[Новое сообщение от пользователя]";
                 case "taskStatusVilojeno": return "[Статус задачи изменился на Выложено]";
                 case "priceIncreaseUsers": return "[Изменение цен для пользователей]";
+                case "userUsedPromoCode": return "[Вебмастер воспользовался промокодом]";
                 case "userChangemail": return "[Пользователь сменил почту]";
                 case "userAddBurse": return "[Добавилась биржа]";
                 case "userEditBurse": return "[Пользователь 'Login' изменил данные от биржи]";
@@ -279,6 +374,13 @@ class FromAdmin {
                 case "moderChangeTask": return "[Модератор изменил задание]";
                 case "moderChangeVikladComment": return "[Выкладывальщик оставил комментарий к сайту]";
                 case "moderOutputMoney": return "[Запрос на вывод средств модератором]";
+                case "copywriterChangedData": return "[Копирайтер изменил свои данные]";
+                case "copywriterAddedTask": return "[Копирайтер взял задачу]";
+                case "copywriterCanceledTask": return "[Копирайтер отменил задачу]";
+                case "copywriterFinishedTask": return "[Копирайтер выполнил задачу]";
+                case "copywriterSentMessage": return "[Новое сообщение от копирайтера]";
+                case "copywriterOutputMoney": return "[Запрос на вывод средств копирайтером]";
+                    
             }
         } else {
             return array(
@@ -287,6 +389,7 @@ class FromAdmin {
                 "ticketAnswer" => '[Новое сообщение от пользователя]',
                 "taskStatusVilojeno" => '[Статус задачи изменился на "Выложено"]',
                 "priceIncreaseUsers" => '[Изменение цен для пользователей]',
+                "userUsedPromoCode" => "[Вебмастер воспользовался промокодом]",
                 "userChangemail" => "[Пользователь сменил почту]",
                 "userAddBurse" => "[Добавилась биржа]",
                 "userEditBurse" => "[Пользователь 'Login' изменил данные от биржи]",
@@ -300,6 +403,13 @@ class FromAdmin {
                 "moderChangeTask" => "[Модератор изменил задание]",
                 "moderChangeVikladComment" => "[Выкладывальщик оставил комментарий к сайту]",
                 "moderOutputMoney" => "[Запрос на вывод средств модератором]",
+                "copywriterChangedData" => "[Копирайтер изменил свои данные]",
+                "copywriterAddedTask" => "[Копирайтер взял задачу]",
+                "copywriterCanceledTask" => "[Копирайтер отменил задачу]",
+                "copywriterFinishedTask" => "[Копирайтер выполнил задачу]",
+                "copywriterSentMessage" => "[Новое сообщение от копирайтера]",
+                "copywriterOutputMoney" => "[Запрос на вывод средств копирайтером]",
+                
             );
         }
     }
@@ -313,6 +423,7 @@ class FromAdmin {
                 case "ticketAnswer": return $this->ticketAnswer();
                 case "taskStatusVilojeno": return $this->taskStatusVilojeno();
                 case "priceIncreaseUsers": return $this->priceIncreaseUsers();
+                case "userUsedPromoCode": return $this->userUsedPromoCode();
                 case "userChangemail": return $this->userChangemail();
                 case "userAddBurse": return $this->userAddBurse();
                 case "userEditBurse": return $this->userEditBurse();
@@ -326,6 +437,12 @@ class FromAdmin {
                 case "moderChangeTask": return $this->moderChangeTask();
                 case "moderChangeVikladComment": return $this->moderChangeVikladComment();
                 case "moderOutputMoney": return $this->moderOutputMoney();
+                case "copywriterChangedData": return $this->copywriterChangedData();
+                case "copywriterAddedTask": return $this->copywriterAddedTask();
+                case "copywriterCanceledTask": return $this->copywriterCanceledTask();
+                case "copywriterFinishedTask": return $this->copywriterFinishedTask();
+                case "copywriterSentMessage": return $this->copywriterSentMessage();
+                case "copywriterOutputMoney": return $this->copywriterOutputMoney();
                 
             }
         }

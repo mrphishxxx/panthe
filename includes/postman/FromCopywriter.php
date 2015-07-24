@@ -24,6 +24,7 @@ class FromCopywriter {
         $this->TEMPLATE_PATH = $template_path . "fromCopywriter/";
 
         $this->message["to"] = array();
+        $this->message["images"] = array();
         $this->debugging(true);
     }
 
@@ -50,6 +51,25 @@ class FromCopywriter {
         if ($debug) {
             $this->message["to"][] = array("email" => EMAIL_SUPPORT, "name" => "Abashev V. Alexey");
         }
+    }
+    
+    public function registration($id = 0, $email = "", $login = "LOGIN", $password = "PASSWORD", $network = NULL) {
+        $this->smarty->assign('id', $id);
+        $this->smarty->assign('login', $login);
+        $this->smarty->assign('password', $password);
+        $this->smarty->assign('network', $network);
+        $this->smarty->assign('get_text', $this->get_text);
+        
+        $f1 = fopen("images/header_bg.jpg", "rb");
+        $f2 = fopen("images/logo_main.jpg", "rb");
+        if ($email != "") {
+            $this->message["to"][0] = array("email" => $email, "name" => $login);
+        }
+        $this->message["subject"] = "Поздравляем Вас с успешной регистрацией iforget.ru";
+        $this->message["images"][] = array("type" => "image/jpg", "name" => "header_bg", "content" => base64_encode(fread($f1, filesize("images/header_bg.jpg"))));
+        $this->message["images"][] = array("type" => "image/jpg", "name" => "logo_main", "content" => base64_encode(fread($f2, filesize("images/logo_main.jpg"))));
+        $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "registration.tpl");
+        return $this->sendEmail();
     }
 
     public function ticketAdd($email = "", $login = "", $lastId = 0) {
@@ -103,6 +123,7 @@ class FromCopywriter {
     public function getMailsName($name = null) {
         if (!empty($name)) {
             switch ($name) {
+                case "registration": return "[Регистрация в iforget.ru!]";
                 case "ticketAdd": return "[Новый тикет в системе iforget]";
                 case "ticketAnswer": return "[Сообщение в тикете от админимстрации IFORGET]";
                 case "sendMessage": return "[Новый комментарий]";
@@ -110,6 +131,7 @@ class FromCopywriter {
             }
         } else {
             return array(
+                "registration" => "[Регистрация в iforget.ru!]",
                 "ticketAdd" => "[Новый тикет в системе iforget]",
                 "ticketAnswer" => "[Сообщение в тикете от админимстрации IFORGET]",
                 "sendMessage" => "[Новый комментарий]",
@@ -122,6 +144,7 @@ class FromCopywriter {
         if (!empty($name)) {
             $this->get_text = true;
             switch ($name) {
+                case "registration": return $this->registration();
                 case "ticketAdd": return $this->ticketAdd();
                 case "ticketAnswer": return $this->ticketAnswer();
                 case "sendMessage": return $this->sendMessage();
