@@ -82,5 +82,20 @@ class FaqController {
         $this->_smarty->assign('mail_name', $mail_name);
         $this->_smarty->display("faq/get_mail.tpl");
     }
+    
+    public function exampleUserAction() {
+        $this->_smarty->display("faq/user/dashboard.tpl");
+    }
+    
+    public function userBurseAction() {
+        $this->_smarty->display("faq/user/burse.tpl");
+    }
+    
+    public function userAddBurseAction() {
+        $this->_smarty->display("faq/user/burse-add.tpl");
+    }
+    public function userFaqAction() {
+        $this->_smarty->display("faq/user/faq.tpl");
+    }
 
 }
