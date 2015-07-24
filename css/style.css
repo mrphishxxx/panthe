@@ -2,12 +2,19 @@ html{
     font-family: "Roboto", sans-serif;    
 }
 body {
-    display: flex;
-    min-height: 100vh;
-    flex-direction: column;
+    
 }
-section {
-    flex: 1 0 auto;
+.nav-wrapper {
+    padding: 0 25px;
+}
+.nav-wrapper .collection .collection-item.avatar {
+    min-height: 50px;
+}
+.side-nav i {
+   margin-top: 17px;
+}
+#dropdown1 {
+    width: 250px;
 }
 /* Include Material Icons */
 @font-face {
@@ -32,5 +39,22 @@ section {
 
 .logo {
     margin-top: 13px;
-    margin-left: 10px;
+}
+.top-menu-icon {
+    font-size: 70px;
+    margin: 0 auto;
+}
+.help-menu-icon {
+    font-size: 35px;
+    margin: 0 auto;
+}
+.hover-tooltip {
+    color: #e57373;
+}
+.hover-tooltip:hover {
+    color: #c62828;
+}
+.preloader-all, .preloader-month {
+    display: block;
+    margin: 0 auto;
 }
