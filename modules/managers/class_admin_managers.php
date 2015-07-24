@@ -1,8 +1,13 @@
 <?php
 
 class managers {
-
-    function content($db) {
+    public $_smarty = null;
+    public $_postman = null;
+    
+    function content($db, $smarty) {
+        $this->_smarty = $smarty;
+        $this->_postman = new Postman($smarty, $db);
+        
         $GLOBAL = array();
         $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : '';
         $action2 = isset($_REQUEST['action2']) ? $_REQUEST['action2'] : '';
@@ -138,7 +143,7 @@ class managers {
 
         return $content;
     }
-    
+
     function tickets($db) {
         if (!@$_SESSION['manager']['id']) {
             $content = file_get_contents(PATH . 'modules/admins/tmp/admin/no-rights.tpl');
@@ -168,7 +173,7 @@ class managers {
             $admins_managers[] = $user['id'];
         }
         $admins_managers = "(" . implode(",", $admins_managers) . ")";
-        if($type != "admin"){
+        if ($type != "admin") {
             $all = $db->Execute("SELECT t.id FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE $condition a.id != 0 ORDER BY t.id DESC");
             $query = $db->Execute("SELECT t.* FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE $condition a.id != 0 ORDER BY t.status DESC, t.id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit);
         } else {
@@ -214,7 +219,7 @@ class managers {
                 $ticket = str_replace('[q_theme]', $resw['q_theme'], $ticket);
                 $ticket = str_replace('[tdate]', $resw['date'], $ticket);
                 $ticket = str_replace('[tid]', $resw['id'], $ticket);
-                $ticket = str_replace('[module]', ($sql_if == 'admin' ? 'admins' : 'managers'), $ticket);
+                $ticket = str_replace('[module]', 'managers', $ticket);
 
                 //0 - закрыто; 1-не прочитан; 2-прочитан; 3-дан ответ;
                 if ($resw['status'] == 0) {
@@ -253,7 +258,7 @@ class managers {
             exit;
         }
         $content = file_get_contents(PATH . 'modules/managers/tmp/ticket_full_view.tpl');
-        
+
         $uid = (int) @$_SESSION['manager']['id'];
         $admin = $db->Execute("select * from admins where id=$uid")->FetchRow();
         $content = str_replace('[login]', $admin['login'], $content);
@@ -261,11 +266,11 @@ class managers {
 
         $tid = (int) $_REQUEST['tid'];
         $res = $db->Execute("SELECT * FROM tickets WHERE id=$tid")->FetchRow();
-        
+
         $admin_and_manager = false;
         $administrations = array();
         $admins = $db->Execute("SELECT * FROM admins WHERE type='admin' OR type='manager'")->GetAll();
-        foreach ($admins as $user){
+        foreach ($admins as $user) {
             $administrations[$user["id"]] = $user["id"];
         }
 
@@ -283,7 +288,7 @@ class managers {
         $view = file_get_contents(PATH . 'modules/managers/tmp/ticket_chat_one.tpl');
         $view = str_replace('[msg]', $res['msg'], $view);
         $view = str_replace('[cdate]', $res['date'], $view);
-        if(array_search($res['uid'], $administrations) && array_search($res['to_uid'], $administrations)){
+        if (array_search($res['uid'], $administrations) && array_search($res['to_uid'], $administrations)) {
             $admin_and_manager = true;
         }
         if (array_search($res['uid'], $administrations) && ($admin_and_manager == false || $admin_and_manager == true && $res['uid'] == $uid)) {
@@ -293,8 +298,8 @@ class managers {
             $view = str_replace('[from_class]', "you", $view);
             $view = str_replace('[from]', $uinfo['login'] . "<br>" . $res['site'], $view);
         }
-        
-        
+
+
         $answers = $db->Execute("SELECT * FROM answers WHERE tid=$tid");
         while ($resw = $answers->FetchRow()) {
             $view .= file_get_contents(PATH . 'modules/managers/tmp/ticket_chat_one.tpl');
@@ -337,7 +342,7 @@ class managers {
             echo $content;
             exit();
         }
-        
+
         $uid = (int) $_SESSION['manager']['id'];
         $content = file_get_contents(PATH . 'modules/managers/tmp/ticket_create.tpl');
         $type = isset($_REQUEST['type']) ? "type='" . $_REQUEST['type'] . "' AND " : "";
@@ -378,51 +383,13 @@ class managers {
             $db->Execute("INSERT INTO tickets (uid, subject, q_theme, msg, date, status, site, tid, to_uid) VALUES ($uid, '$subject', '$theme', '$msg', '$cdate', 1, '$site', $zid, $to)");
             $lastId = $db->Insert_ID();
 
-            $body_admin = "Добрый день!<br/><br/>
-			Поступил новый тикет. Для просмотра <a href='http://iforget.ru/admin.php?module=admins&action=ticket'>перейдите данной ссылке</a>.<br /><br /> 
-			";
-
-            $body = "Добрый день!<br/><br/>
-			Вам поступил новый тикет. Для просмотра <a href='http://iforget.ru/user.php?action=ticket&action2=view&tid=" . $lastId . "'>перейдите данной ссылке</a>.<br /><br /> 
-			";
             if ($user["type"] == "copywriter") {
-                $body .= "<p><small><a href='http://iforget.ru/copywriter.php?action=unsubscribe'>Отписаться от рассылки</a></small></p>";
-            }
-            $body .= "Оставить и почитать отзывы Вы сможете в нашей ветке на <a href='http://searchengines.guru/showthread.php?p=12378271'>серчах</a><br/><br/>С уважением,<br/>Администрация проекта iForget.";
-
-            require_once 'includes/mandrill/mandrill.php';
-            $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-            $message = array();
-            $message["html"] = $body_admin;
-            $message["text"] = "";
-            $message["subject"] = "[Новый тикет в системе]";
-            $message["from_email"] = "news@iforget.ru";
-            $message["from_name"] = "iforget";
-            $message["to"] = array();
-            $message["to"][0] = array("email" => MAIL_ADMIN);
-            $message["track_opens"] = null;
-            $message["track_clicks"] = null;
-            $message["auto_text"] = null;
-
-            try {
-                $mandrill->messages->send($message);
-                $alert = 'Тикет успешно добавлен.';
-            } catch (Exception $e) {
-                echo $e;
-                $alert = 'Письмо не отправлено! Возникли проблемы!Тикет успешно добавлен.';
+                $this->_postman->copywriter->ticketAdd($user['email'], $user['login'], $lastId);
+            } elseif($user["mail_period"] > 0) {
+                $this->_postman->user->ticketAdd($user['email'], $user['login'], $lastId);
             }
 
-            $message["html"] = $body;
-            $message["subject"] = "[Новый тикет в системе iforget]";
-            $message["to"][0] = array("email" => $user['email']);
-            try {
-                if ($user["mail_period"] > 0) {
-                    $mandrill->messages->send($message);
-                }
-            } catch (Exception $e) {
-                $alert = 'Письмо не отправлено! Возникли проблемы!';
-            }
-
+            $this->_postman->admin->ticketAdd();
             header("Location: ?module=managers&action=ticket");
             exit();
         }
@@ -450,7 +417,7 @@ class managers {
 
         return $content;
     }
-    
+
     function ticket_edit($db) {
 
         $send = $_REQUEST['send'];
@@ -486,7 +453,6 @@ class managers {
         return $content;
     }
 
-    
     function ticket_answer($db) {
         $uid = (int) $_SESSION['manager']['id'];
         $tid = (int) $_REQUEST['tid'];
@@ -498,59 +464,18 @@ class managers {
 
             $res = $db->Execute("SELECT * FROM tickets WHERE id=$tid")->FetchRow();
             $client = $db->Execute("SELECT * FROM admins WHERE id=" . $res['uid'])->FetchRow();
-            if ($client["mail_period"] > 0) {
-                if ($client["type"] == "copywriter") {
-                    $url = "copywriter.php";
-                } else {
-                    $url = "user.php";
-                }
-                $body = '
-                    <html>
-                    <head>
-                    <meta charset="utf-8">
-                    <title>Новое сообщение в тикете</title>
-                    </head>
-                    <body style="margin: 0">
-                    <p>Добрый день!</p><br />
-                    <p>На один из Ваших тикетов пришел ответ от администрации сайта IFORGET.</p> 
-                    <p>Для просмотра <a href="http://iforget.ru/' . $url . '?action=ticket&action2=view&tid=' . $tid . '">перейдите по данной ссылке</a>.</p> 
-                    <p>Спасибо!</p>
-                    <p> Оставить и почитать отзывы Вы сможете в нашей ветке на <a href="http://searchengines.guru/showthread.php?p=12378271">серчах</a>
-                    <br/><br/>
-                    <p>С уважением,<br/>Администрация проекта iForget.</p>
-                    </body>
-                    </html>
-                    ';
-
-                require_once 'includes/mandrill/mandrill.php';
-                $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-
-                $message = array();
-                $message["html"] = $body;
-                $message["text"] = "";
-                $message["subject"] = "[Сообщение в тикете от админимстрации IFORGET]";
-                $message["from_email"] = "admin@iforget.ru";
-                $message["from_name"] = "iforget";
-                $message["to"] = array();
-                $message["to"][0] = array("email" => $client['email']);
-                $message["track_opens"] = null;
-                $message["track_clicks"] = null;
-                $message["auto_text"] = null;
-
-                try {
-                    $mandrill->messages->send($message);
-                } catch (Exception $e) {
-                    echo '';
-                }
+            if ($client["mail_period"] > 0 && $client["type"] == "copywriter") {
+                $this->_postman->copywriter->ticketAnswer($client['email'], $client['login'], $tid);
+            } elseif($client["mail_period"] > 0) {
+                $this->_postman->user->ticketAnswer($client['email'], $client['login'], $tid);
             }
-
-            $url = "?module=managers&action=ticket&action2=view&tid=$tid";
-            $content = file_get_contents(PATH . 'modules/admins/tmp/admin/request.tpl');
-            $content = str_replace('[url]', $url, $content);
+            header("Location: ?module=managers&action=ticket&action2=view&tid=$tid");
+            exit();
+        } else {
+            header("Location: " . $_SERVER["HTTP_REFERER"]);
         }
-        return $content;
     }
-    
+
     function ticket_close($db) {
         $tid = (int) $_REQUEST['tid'];
         $db->Execute("UPDATE tickets SET status=0 WHERE id=$tid");
@@ -559,5 +484,3 @@ class managers {
         return $content;
     }
 }
-
-?>

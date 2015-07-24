@@ -3,9 +3,13 @@
 session_start();
 error_reporting(E_ALL);
 include 'config.php';
+include 'configs/setup-smarty.php';
 include 'system/class_copywriter.php';
+include 'includes/postman/Postman.php';
 include 'includes/adodb5/adodb.inc.php';
 include 'modules/copywriter/copywriter_class.php';
+
+$smarty = new Smarty_Project();
 
 $db = ADONewConnection(DB_TYPE);
 @$db->PConnect(DB_HOST, DB_USER, DB_PASS, DB_BASE) or die('Не удается подключиться к базе данных');
@@ -18,7 +22,7 @@ $template = $content = "";
 
 if (isset($_SESSION['user']['id']) && $_SESSION['user']['id'] > 0) {
     if ($_SESSION['user']['type'] == "copywriter"){
-        $template .= $my->content($db);
+        $template .= $my->content($db, $smarty);
     }
 }
 
@@ -27,7 +31,7 @@ if(!isset($_SESSION['user']['id']) || $_SESSION['user']['type'] != "copywriter")
     $copy_user->login($db);
     exit();
 }
-$content .= $copy_user->content($db);
+$content .= $copy_user->content($db, $smarty);
 
        
 

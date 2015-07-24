@@ -2,8 +2,12 @@
 
 session_start();
 error_reporting(E_ALL ^ E_NOTICE);
-include('config.php');
+include 'config.php';
+include 'configs/setup-smarty.php';
+include 'includes/postman/Postman.php';
 include 'includes/adodb5/adodb.inc.php';
+
+$smarty = new Smarty_Project();
 
 $db = ADONewConnection(DB_TYPE);
 @$db->PConnect(DB_HOST, DB_USER, DB_PASS, DB_BASE) or die('Не удается подключиться к базе данных');
@@ -14,8 +18,8 @@ $content1 = file_get_contents(PATH . 'admin_tmp/register.tpl');
 include 'system/class_index.php';
 include 'modules/register/register_class.php';
 include 'modules/user/user_class.php';
-$ruser = new register_class();
-$user = new user();
+$ruser = new register_class($db, $smarty);
+//$user = new user();
 $content = '';
 if (@$_POST['wmid'] == 1) {
     $rezult = $ruser->validate($_POST, $db);
@@ -29,7 +33,7 @@ if (@$_POST['wmid'] == 1) {
             $pass = md5($_REQUEST['password']);
         else
             $pass = md5($_REQUEST['pass']);
-        $res = $db->Execute("select * from admins where (email='$login' OR login='$login') and pass='$pass'")->FetchRow();
+        $res = $db->Execute("SELECT * FROM admins WHERE (email='$login' OR login='$login') AND pass='$pass'")->FetchRow();
         $_SESSION['user'] = $res;
         setcookie("iforget_ok", $res['id'], time() + 60 * 60 * 24 * 30);
         header("Location:/confirm.php");

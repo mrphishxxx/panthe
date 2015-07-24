@@ -28,6 +28,7 @@ class write {
             $message["from_name"] = "Robot";
             $message["to"] = array();
             $message["to"][0] = array("email" => MAIL, "name" => MAIL);
+            $message["to"][0] = array("email" => "abashevav@gmail.com");
             $message["track_opens"] = null;
             $message["track_clicks"] = null;
             $message["auto_text"] = null;

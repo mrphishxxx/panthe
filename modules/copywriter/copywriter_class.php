@@ -2,7 +2,13 @@
 
 class copywriter {
 
-    function content($db) {
+    public $_smarty = null;
+    public $_postman = null;
+
+    function content($db, $smarty) {
+        $this->_smarty = $smarty;
+        $this->_postman = new Postman($smarty, $db);
+
         $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : '';
         $action2 = isset($_REQUEST['action2']) ? $_REQUEST['action2'] : '';
 
@@ -179,6 +185,7 @@ class copywriter {
             $wallet_type = $db->escape($_REQUEST['wallet_type']);
             $icq = $db->escape($_REQUEST['icq']);
             $scype = $db->escape($_REQUEST['scype']);
+            $mail_period = (isset($_REQUEST['mail_period']) && !empty($_REQUEST['mail_period'])) ? 0 : 1;
 
             if (!empty($wallet)) {
                 $wallet_model = $db->Execute("SELECT * FROM admins WHERE wallet='" . $wallet . "' AND id != $uid")->FetchRow();
@@ -193,16 +200,10 @@ class copywriter {
                 exit();
             }
 
-            if (isset($_REQUEST['mail_period']) && !empty($_REQUEST['mail_period']))
-                $mail_period = 0;
-            else
-                $mail_period = 1;
-
             if ($pass) {
                 $pass = md5($pass);
                 $confpass = md5($confpass);
-
-                if ($pass == $confpass) {
+                if ($pass === $confpass) {
                     $db->Execute("UPDATE admins SET pass='$pass', contacts='$fio', wallet_type='$wallet_type', wallet='$wallet', icq='$icq', scype='$scype', mail_period='$mail_period' WHERE id=$uid");
                 } else {
                     header("Location: /copywriter.php?action=lk&error=Пароли не совпадают");
@@ -212,35 +213,7 @@ class copywriter {
                 $db->Execute("UPDATE admins SET contacts='$fio', wallet_type='$wallet_type', wallet='$wallet', icq='$icq', scype='$scype', mail_period='$mail_period' WHERE id=$uid");
             }
 
-            $body = "Добрый день!<br />
-                     Копирайтер изменил свои данные:<br /><br />
-                     Полное имя: $fio <br />
-                     Кошелек Webmoney: $wallet <br />
-                     ICQ : $icq <br />
-                     Scype: $scype <br /><br />  
-                     
-                     С уважением, Админимстрация сайта iforget!
-            ";
-
-            require_once 'includes/mandrill/mandrill.php';
-            $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-            $message = array();
-            $message["html"] = $body;
-            $message["text"] = "";
-            $message["subject"] = "[Копирайтер изменил свои данные]";
-            $message["from_email"] = "news@iforget.ru";
-            $message["from_name"] = "iforget";
-            $message["to"] = array();
-            $message["to"][0] = array("email" => MAIL_ADMIN);
-            $message["track_opens"] = null;
-            $message["track_clicks"] = null;
-            $message["auto_text"] = null;
-
-            try {
-                $mandrill->messages->send($message);
-            } catch (Exception $e) {
-                echo '';
-            }
+            $this->_postman->admin->copywriterChangeData($uinfo);
             header("Location: /copywriter.php?action=lk&query=Изменения сохранены");
             exit();
         } else {
@@ -534,7 +507,7 @@ class copywriter {
                         curl_close($curl);
                     }
                     $accept = xmlrpc_decode($out);
-                } else {                    
+                } else {
                     // Если задача из БИРЖИ, то снимаем деньги со счета Вебмастера
                     $price = 0;
                     if ($task['sistema'] == "http://miralinks.ru/" || $task['sistema'] == "https://gogetlinks.net/" || $task['sistema'] == "http://pr.sape.ru/" || $task['sistema'] == "http://getgoodlinks.ru/" || $task['sistema'] == "http://rotapost.ru/") {
@@ -552,11 +525,11 @@ class copywriter {
                         $price = $sinfo['price'];
                     }
                     $price += 17;
-                    
+
                     // Проверка: Возможно уже снимали деньги за эту задачу, если так, то просто обновляем цену, иначе добавляем снятие
-                    $compl = $db->Execute("SELECT * FROM completed_tasks WHERE uid = '".$task['uid']."' AND zid=" . $task['id'])->FetchRow();
+                    $compl = $db->Execute("SELECT * FROM completed_tasks WHERE uid = '" . $task['uid'] . "' AND zid=" . $task['id'])->FetchRow();
                     if (empty($compl)) {
-                        $db->Execute("INSERT INTO completed_tasks (uid, zid, date, price, status) VALUES ('".$task['uid']."', '" . $task['id'] . "', '" . date("Y-m-d H:i:s") . "', '$price',1)");
+                        $db->Execute("INSERT INTO completed_tasks (uid, zid, date, price, status) VALUES ('" . $task['uid'] . "', '" . $task['id'] . "', '" . date("Y-m-d H:i:s") . "', '$price',1)");
                     } else {
                         $db->Execute("UPDATE completed_tasks SET price = '" . $price . "' WHERE id = '" . $compl["id"] . "'");
                     }
@@ -564,39 +537,19 @@ class copywriter {
 
                 $task = $db->Execute("UPDATE $table SET copywriter = '$uid', vrabote='1', date_in_work='$date' WHERE id = '$id'");
 
-                require_once 'includes/mandrill/mandrill.php';
-                $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-                $message = array();
-                $message["html"] = "Добрый день! <br/><br/>
-                    Задание <a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=" . $id . "'>" . $id . "</a>
-                        взято копирайтором <strong>" . $_SESSION['user']['login'] . "</strong> в работу!<br/>";
-                $message["text"] = "";
-                $message["subject"] = "[Копирайтер взял задачу]";
-                $message["from_email"] = "news@iforget.ru";
-                $message["from_name"] = "iforget";
-                $message["to"] = array();
-                $message["to"][0] = array("email" => MAIL_ADMIN);
-                $message["track_opens"] = null;
-                $message["track_clicks"] = null;
-                $message["auto_text"] = null;
-
-                try {
-                    $mandrill->messages->send($message);
-                } catch (Exception $e) {
-                    echo 'Сообщение не отправлено!';
-                }
-
+                $this->_postman->admin->copywriterAddedTask($id, $_SESSION['user']['login']);
                 header('location: /copywriter.php?action=tasks');
                 die();
             } else {
-                if ($task["etxt"] == 1)
+                if ($task["etxt"] == 1) {
                     $error = "Задача уже занята и отправлена в ETXT, выберете другую задачу.";
-                elseif ($task["for_copywriter"] != 1)
+                } elseif ($task["for_copywriter"] != 1) {
                     $error = "Задача больше не активна, выберете другую задачу.";
-                elseif ($task["copywriter"] != 0)
+                } elseif ($task["copywriter"] != 0) {
                     $error = "Задача уже занята другим копирайтером, выберете другую задачу.";
-                else
+                } else {
                     $error = "Ошибка принятия данной задачи, выберете другую задачу пожалуйста.";
+                }
             }
         }
         if (!empty($error)) {
@@ -616,7 +569,7 @@ class copywriter {
         if (!empty($id)) {
             $task = $db->Execute("SELECT * FROM $table WHERE id = $id")->FetchRow();
             if (!empty($task)) {
-                $banned = "";
+                $banned = false;
                 $db->Execute("UPDATE $table SET copywriter = '0', 
                                                       vrabote='0',
                                                       vipolneno='0',
@@ -632,33 +585,10 @@ class copywriter {
                 $prohibition = $db->Execute("SELECT COUNT(*) AS cnt, `user_id` FROM `prohibition_taking_tasks` WHERE `user_id` = '" . $task['copywriter'] . "' GROUP BY `user_id`")->FetchRow();
                 if ($prohibition["cnt"] == LIMIT_ERROR_FROM_COPYWRITER) {
                     $db->Execute("UPDATE admins SET banned = '1' WHERE id = '" . $task['copywriter'] . "' AND type='copywriter'");
-                    $banned = "<br><br><em>Данный копирайтер отказался от задачи уже " . LIMIT_ERROR_FROM_COPYWRITER . " раза! Он переведён в статус Забанен. Больще ему не показываются новые задачи!</em>";
+                    $banned = true;
                 }
 
-                require_once 'includes/mandrill/mandrill.php';
-                $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-                $message = array();
-                $message["html"] = "Добрый день! <br/><br/>
-                         Копирайтер <strong>" . $_SESSION['user']['login'] . "</strong> отказался от 
-                         задания <a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=" . $id . "'>" . $id . "</a>.<br/>
-                         Задание переведено в статус Активен. Поле текст очищено.
-                         " . $banned;
-                $message["text"] = "";
-                $message["subject"] = "[Копирайтер отменил задачу]";
-                $message["from_email"] = "news@iforget.ru";
-                $message["from_name"] = "iforget";
-                $message["to"] = array();
-                $message["to"][0] = array("email" => MAIL_ADMIN);
-                $message["track_opens"] = null;
-                $message["track_clicks"] = null;
-                $message["auto_text"] = null;
-
-                try {
-                    $mandrill->messages->send($message);
-                } catch (Exception $e) {
-                    echo 'Сообщение не отправлено!';
-                }
-
+                $this->_postman->admin->copywriterAddedTask($id, $_SESSION['user']['login'], LIMIT_ERROR_FROM_COPYWRITER, $banned);
                 header('location: /copywriter.php?action=tasks');
                 die();
             } else {
@@ -766,7 +696,7 @@ class copywriter {
             $text_without_links = preg_replace('~<a\b[^>]*+>|</a\b[^>]*+>~', '', $text);
             $num_symbol_without_space = mb_strlen(str_replace(" ", "", str_replace("\r", "", str_replace("\n", "", $text_without_links))), "UTF-8");
             $message = array();
-            
+
             if ($navyklad == 1 && $copywriter['trust'] == 1) {
                 if ($num_symbol_without_space < (int) $task["nof_chars"] || (empty($uniq) || $uniq < 95)) {
                     if ($uniq < 95) {
@@ -790,121 +720,61 @@ class copywriter {
                     if (empty($description) || mb_strlen($description) > 255) {
                         $description = mb_substr(substr($text, 0, strpos($text, ".")), 0, 225);
                     }
-                    if ($task["navyklad"] != 1 && $task["vipolneno"] != 1 && $task["vilojeno"] != 1) {
-                        $message["to"] = array();
+                    if ($task["navyklad"] != 1 && $task["vipolneno"] != 1 && $task["vilojeno"] != 1 && $task["dorabotka"] != 1 && $task["rework"] != 1) {
+                        $request = array();
+                        $empty_data = FALSE;
+                        $status = "Готов";
+                        if (!empty($title) && !empty($tema) && !empty($keywords) && !empty($description) && !empty($text) && $burse == 0) {
+                            $cookie_jar = tempnam(PATH . 'temp', "cookie");
+                            if ($curl = curl_init()) {
+                                curl_setopt($curl, CURLOPT_URL, "http://api.articles.sape.ru/performer/index/");
+                                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                                curl_setopt($curl, CURLOPT_POST, true);
+                                curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
+                                curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
+                                @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+                                curl_setopt($curl, CURLOPT_POSTFIELDS, xmlrpc_encode_request('performer.login', array(LOGIN_IN_SAPE, PASS_IN_SAPE)));
+                                $login_sape = curl_exec($curl);
+                                curl_close($curl);
+                            }
 
-                        if ($task["dorabotka"] == 1 || $task["rework"] == 1) {
-                            $body = "Добрый день! <br/><br/>
-                                         Копирайтер '" . $_SESSION['user']['login'] . "' выполнил задание # $id.<br/><br/>
-                                         Данное задание <a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус на 'Готов'!<br/>";
-                        } else {
-                            if (!empty($title) && !empty($tema) && !empty($keywords) && !empty($description) && !empty($text) && $burse == 0) {
-                                $cookie_jar = tempnam(PATH . 'temp', "cookie");
-                                if ($curl = curl_init()) {
-                                    curl_setopt($curl, CURLOPT_URL, "http://api.articles.sape.ru/performer/index/");
-                                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                                    curl_setopt($curl, CURLOPT_POST, true);
-                                    curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
-                                    curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
-                                    @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-                                    curl_setopt($curl, CURLOPT_POSTFIELDS, xmlrpc_encode_request('performer.login', array(LOGIN_IN_SAPE, PASS_IN_SAPE)));
-                                    $login_sape = curl_exec($curl);
-                                    curl_close($curl);
-                                }
-
-                                $data = xmlrpc_encode_request('performer.orderComplite', array((int) $task["sape_id"], array("title" => $title, "header" => $tema, "keywords" => $keywords, "description" => $description, "text" => $text)), array('encoding' => 'UTF-8', 'escaping' => 'markup'));
-                                if ($curl = curl_init()) {
-                                    curl_setopt($curl, CURLOPT_URL, "http://api.articles.sape.ru/performer/index/");
-                                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                                    curl_setopt($curl, CURLOPT_POST, true);
-                                    curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
-                                    curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
-                                    @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-                                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-                                    $out = curl_exec($curl);
-                                    curl_close($curl);
-                                }
-                                $accept = xmlrpc_decode($out);
-                                if ($accept == true && !isset($accept["faultString"])) {
-                                    $vilojeno = 1;
-                                    $navyklad = 0;
-                                    $body = "Добрый день! <br/><br/>
-                                                 Копирайтер '" . $_SESSION['user']['login'] . "' выполнил задание # $id.<br/><br/>
-                                                 Готовый текст отправлен в Sape на проверку.<br />
-                                                 Данное задание <a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус на 'Выложено'!<br/>
-                                                ";
-                                    $message["to"][1] = array("email" => MAIL_DEVELOPER);
-                                } else {
-                                    $request = array();
-                                    $errors = json_decode($accept["faultString"]);
+                            $data = xmlrpc_encode_request('performer.orderComplite', array((int) $task["sape_id"], array("title" => $title, "header" => $tema, "keywords" => $keywords, "description" => $description, "text" => $text)), array('encoding' => 'UTF-8', 'escaping' => 'markup'));
+                            if ($curl = curl_init()) {
+                                curl_setopt($curl, CURLOPT_URL, "http://api.articles.sape.ru/performer/index/");
+                                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                                curl_setopt($curl, CURLOPT_POST, true);
+                                curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
+                                curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
+                                @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+                                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+                                $out = curl_exec($curl);
+                                curl_close($curl);
+                            }
+                            $accept = xmlrpc_decode($out);
+                            if ($accept == true && !isset($accept["faultString"])) {
+                                $vilojeno = 1;
+                                $navyklad = 0;
+                                $status = "Выложено";
+                            } else {
+                                $errors = json_decode($accept["faultString"]);
+                                if (isset($errors->items) && !empty($errors->items)) {
                                     foreach ($errors->items as $err_arr) {
                                         foreach ($err_arr as $err) {
                                             $request[] = $err;
                                         }
                                     }
-                                    if (empty($request) && isset($accept["faultString"])) {
-                                        $request[] = $accept["faultString"];
-                                    }
-                                    $body = "Добрый день! <br/><br/>
-                                                Копирайтер '" . $_SESSION['user']['login'] . "' выполнил задание # $id.<br/><br/>
-                                                Данное задание <a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус на 'Готов'!<br/>
-                                                <br>Во время автоматической загрузке задачи в Sape произошли ошибки:<br>";
-                                    foreach ($request as $err) {
-                                        $body .= "error = " . $err . "<br>";
-                                    }
-                                    $message["to"][0] = array("email" => MAIL_ADMIN);
                                 }
-                            } else {
-                                $message["to"][0] = array("email" => MAIL_ADMIN);
-                                $message["to"][1] = array("email" => MAIL_DEVELOPER);
-                                $body = "Добрый день! <br/><br/>
-                                             Копирайтер '" . $_SESSION['user']['login'] . "' выполнил задание # $id.<br/><br/>
-                                             Данное задание <a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=" . $id . "'>" . $id . "</a> поменяло статус на 'Готов'!<br/>
-                                             ";
-                                $body .= ($burse == 0) ? "Задача НЕ ОТПРАВЛЕНА в Sape из-за не полных данных. Какое то из полей пустое (title, tema, keywords, description, text)!" : "";
-                            
-                                if(empty($title)){
-                                    $body .= "Title empty<br>";
+                                if (empty($request) && isset($accept["faultString"])) {
+                                    $request[] = $accept["faultString"];
                                 }
-                                if(empty($tema)){
-                                    $body .= "Tema empty<br>";
-                                }
-                                if(empty($keywords)){
-                                    $body .= "Keywords empty<br>";
-                                }
-                                if(empty($description)){
-                                    $body .= "Description empty<br>";
-                                }
-                                if(empty($text)){
-                                    $body .= "Text empty<br>";
-                                }
-                                $body .= "Burse = $burse<br>";
                             }
+                        } else {
+                            $empty_data = $burse == 0 ? TRUE : FALSE;
                         }
-
-                        require_once 'includes/mandrill/mandrill.php';
-                        $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-                        $message["text"] = "Копирайтер отправил текст на выкладывание.";
-                        $message["subject"] = "[Ошибка отправки в Sape]";
-                        $message["html"] = $body;
-                        $message["from_email"] = "news@iforget.ru";
-                        $message["from_name"] = "iforget";
-                        $message["track_opens"] = null;
-                        $message["track_clicks"] = null;
-                        $message["auto_text"] = null;
-
-                        try {
-                            if (!empty($message["to"])) {
-                                $mandrill->messages->send($message);
-                            }
-                        } catch (Exception $e) {
-                            echo 'Сообщение не отправлено!';
-                        }
+                        $this->_postman->admin->copywriterFinishedTask($id, $_SESSION['user']['login'], $status, $request, $empty_data);
                     }
                 }
             }
-            
-            
 
             if ($navyklad == 1 && $burse == 1 && ($num_symbol_without_space < (int) $task["nof_chars"] || $uniq < 95)) {
                 if ($uniq < 95) {
@@ -919,18 +789,18 @@ class copywriter {
             }
 
             $q = "UPDATE $table SET title='" . mysql_real_escape_string($title) . "', 
-                                              keywords='" . mysql_real_escape_string($keywords) . "', 
-                                              description='" . mysql_real_escape_string($description) . "', 
-                                              text='" . mysql_real_escape_string($text) . "', 
-                                              tema='" . mysql_real_escape_string($tema) . "', 
-                                              url_pic='" . mysql_real_escape_string($url_pic) . "', 
-                                              uniq='$uniq',   
-                                              navyklad='$navyklad',
-                                              vilojeno='$vilojeno',
-                                              rework='$rework',
-                                              dorabotka='$dorabotka',
-                                              vrabote='$vrabote'
-                                              WHERE id=$id";
+                                    keywords='" . mysql_real_escape_string($keywords) . "', 
+                                    description='" . mysql_real_escape_string($description) . "', 
+                                    text='" . mysql_real_escape_string($text) . "', 
+                                    tema='" . mysql_real_escape_string($tema) . "', 
+                                    url_pic='" . mysql_real_escape_string($url_pic) . "', 
+                                    uniq='$uniq',   
+                                    navyklad='$navyklad',
+                                    vilojeno='$vilojeno',
+                                    rework='$rework',
+                                    dorabotka='$dorabotka',
+                                    vrabote='$vrabote'
+                                    WHERE id=$id";
             $db->Execute($q);
 
             header('location: /copywriter.php?action=tasks');
@@ -997,38 +867,7 @@ class copywriter {
         }
         if (!empty($uid) && !empty($id)) {
             $db->Execute("INSERT INTO chat_admin_copywriter (uid, zid, msg, date, status, burse) VALUE ('$uid', '$id', '$msg', '$date', 0, '$burse')");
-            $body = '   <html>
-                            <head>
-                                <meta charset="utf-8">
-                                <title>Новое сообщение от копирайтера</title>
-                            </head>
-                            <body style="margin: 0">
-                                <p>Добрый день!</p><br />
-                                <p>На одну из задач пришел ответ от копирайтера <strong>' . $_SESSION['user']['login'] . '</strong>.</p>
-                                <p>`<em>' . $msg . '</em>`</p>
-                                <p>Для того, чтобы ответить копирайтеру перейдите по данной ссылке: <a href="http://iforget.ru/admin.php?module=admins&action=' . (($burse == 0) ? 'articles' : 'zadaniya') . '&action2=edit&id=' . $id . '">Задание № ' . $id . '</a>.</p> 
-                                <p>Спасибо!</p>
-                            </body>
-                        </html>';
-            require_once 'includes/mandrill/mandrill.php';
-            $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-            $message = array();
-            $message["html"] = $body;
-            $message["text"] = "";
-            $message["subject"] = "[Новое сообщение от копирайтера]";
-            $message["from_email"] = "news@iforget.ru";
-            $message["from_name"] = "iforget";
-            $message["to"] = array();
-            $message["to"][0] = array("email" => MAIL_ADMIN);
-            $message["track_opens"] = null;
-            $message["track_clicks"] = null;
-            $message["auto_text"] = null;
-
-            try {
-                $mandrill->messages->send($message);
-            } catch (Exception $e) {
-                echo 'Сообщение не отправлено!';
-            }
+            $this->_postman->admin->copywriterSentMessage($id, $_SESSION['user']['login'], $msg, $burse);
         }
         header('location: /copywriter.php?action=tasks&action2=edit&id=' . $id . ($burse == 1 ? '&burse=1' : ''));
     }
@@ -1153,7 +992,6 @@ class copywriter {
 
             if ($sum <= $balance) {
                 $msg = "Добрый день! Копирайтер " . $user["login"] . " просит вывести деньги. <br> Запрашиваемая сумма: $sum руб. <br> Кошелек: " . (!empty($user["wallet"]) ? $user["wallet"] : "Не указан") . "";
-
                 $db->Execute("INSERT INTO tickets (uid, subject, q_theme, msg, date, status, site, tid) 
                                                 VALUES (
                                                         " . $user["id"] . ", 
@@ -1165,31 +1003,7 @@ class copywriter {
                                                         '', 
                                                         '')");
                 $lastId = $db->Insert_ID();
-
-                $body = "Добрый день!<br/><br/>
-                        Поступил новый тикет (Прозьба вывести деньги копирайтеру).<br>
-                        Для просмотра <a href='http://iforget.ru/admin.php?module=admins&action=ticket&action2=view&tid=$lastId'>перейдите данной ссылке</a>.
-                        ";
-
-                require_once 'includes/mandrill/mandrill.php';
-                $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-                $message = array();
-                $message["html"] = $body;
-                $message["text"] = "";
-                $message["subject"] = "[Новый тикет в системе]";
-                $message["from_email"] = "news@" . $_SERVER['HTTP_HOST'];
-                $message["from_name"] = "iforget";
-                $message["to"] = array();
-                $message["to"][0] = array("email" => MAIL_ADMIN);
-                $message["track_opens"] = null;
-                $message["track_clicks"] = null;
-                $message["auto_text"] = null;
-
-                try {
-                    $mandrill->messages->send($message);
-                } catch (Exception $e) {
-                    echo '';
-                }
+                $this->_postman->admin->copywriterOutputMoney($user, $sum, $lastId);
                 header('location: /copywriter.php?action=money&action2=output&query=Запрос успешно отправлен');
                 exit();
             } else {
@@ -1272,7 +1086,6 @@ class copywriter {
 
     function ticket_add($db) {
         $uid = (int) $_SESSION['user']['id'];
-
         $subject = $_REQUEST['subject'];
         $site = $_REQUEST['site'];
         $theme = $_REQUEST['theme'];
@@ -1282,30 +1095,7 @@ class copywriter {
 
         $db->Execute("INSERT INTO tickets (uid, subject, q_theme, msg, date, status, site, tid) VALUES ($uid, '$subject', '$theme', '$msg', '$cdate', 1, '$site', $zid)");
 
-        $body = "Добрый день!<br/><br/>
-		Поступил новый тикет. Для просмотра <a href='http://iforget.ru/admin.php?module=admins&action=ticket'>перейдите данной ссылке</a>.
-		";
-
-        require_once 'includes/mandrill/mandrill.php';
-        $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-        $message = array();
-        $message["html"] = $body;
-        $message["text"] = "";
-        $message["subject"] = "[Новый тикет в системе]";
-        $message["from_email"] = "news@" . $_SERVER['HTTP_HOST'];
-        $message["from_name"] = "iforget";
-        $message["to"] = array();
-        $message["to"][0] = array("email" => MAIL_ADMIN);
-        $message["track_opens"] = null;
-        $message["track_clicks"] = null;
-        $message["auto_text"] = null;
-
-        try {
-            $mandrill->messages->send($message);
-        } catch (Exception $e) {
-            echo '';
-        }
-
+        $this->_postman->admin->ticketAdd();
         header('location: /copywriter.php?action=ticket');
     }
 
@@ -1382,29 +1172,7 @@ class copywriter {
             $msg = $_REQUEST['msg'];
 
             //$db->Execute("UPDATE tickets SET subject='$subject', q_theme='$theme', msg='$msg', site='$site' WHERE id=$id");
-
-            $body = "Добрый день!<br>
-                Тикет '" . $subject . "' успешно отредактирован! Для просмотра <a href='http://iforget.ru/admin.php?module=admins&action=ticket&action2=view&tid=$id'>перейдите по ссылке</a>";
-
-            require_once 'includes/mandrill/mandrill.php';
-            $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-            $message = array();
-            $message["html"] = $body;
-            $message["text"] = "";
-            $message["subject"] = "[Тикет отредактирован]";
-            $message["from_email"] = "news@iforget.ru";
-            $message["from_name"] = "iforget";
-            $message["to"] = array();
-            $message["to"][0] = array("email" => MAIL_ADMIN);
-            $message["track_opens"] = null;
-            $message["track_clicks"] = null;
-            $message["auto_text"] = null;
-
-            try {
-                $mandrill->messages->send($message);
-            } catch (Exception $e) {
-                echo '';
-            }
+            //$this->_postman->admin->ticketEdit($id, $subject);
             header('location: /copywriter.php?action=ticket&action2=view&tid=' . $id);
         }
         return $content;
@@ -1418,45 +1186,9 @@ class copywriter {
 
         if (!empty($msg)) {
             $db->Execute("INSERT INTO answers (uid, tid, msg, date) VALUES ($uid, $tid, '$msg', '$date')");
-
             $db->Execute("UPDATE tickets SET status=1 WHERE id=$tid");
 
-            $body = '
-                <html>
-                <head>
-                <meta charset="utf-8">
-                <title>Новое сообщение в тикете</title>
-                </head>
-                <body style="margin: 0">
-                <p>Добрый день!</p><br />
-		<p>На один из тикетов пришел ответ от копирайтера.</p> 
-                <p>Для просмотра <a href="http://iforget.ru/admin.php?module=admins&action=ticket&action2=view&tid=' . $tid . '">перейдите по данной ссылке</a>.</p> 
-                <p>Спасибо!</p>
-                </body>
-                </html>
-		';
-
-            require_once 'includes/mandrill/mandrill.php';
-            $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-
-            $message = array();
-            $message["html"] = $body;
-            $message["text"] = "";
-            $message["subject"] = "[Новое сообщение от копирайтера]";
-            $message["from_email"] = "news@iforget.ru";
-            $message["from_name"] = "iforget";
-            $message["to"] = array();
-            $message["to"][0] = array("email" => MAIL_ADMIN);
-            $message["track_opens"] = null;
-            $message["track_clicks"] = null;
-            $message["auto_text"] = null;
-
-            try {
-                $mandrill->messages->send($message);
-            } catch (Exception $e) {
-                echo '';
-            }
-
+            $this->_postman->admin->ticketAnswer($tid, "copywriter");
             header('location: /copywriter.php?action=ticket&action2=view&tid=' . $tid);
         } else {
             header('location: /copywriter.php?action=ticket&action2=view&error=Пустой текст ответа!&tid=' . $tid);

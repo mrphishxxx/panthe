@@ -4925,7 +4925,7 @@ class admins {
                 $task['vilojeno'] = 'checked';
                 $content = str_replace('[activen]', 'disabled', $content);
                 $content = str_replace("[display_vilojeno]", '', $content);
-                $content = str_replace("[display]", 'style="display:none"', $content);
+                //$content = str_replace("[display]", 'style="display:none"', $content);
             } else {
                 $content = str_replace("[display_vilojeno]", 'style="display:none"', $content);
             }

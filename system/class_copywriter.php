@@ -4,7 +4,7 @@ class class_index {
 
     public $GLOBAL;
 
-    function content($db) {
+    function content($db, $smarty) {
         //загружаем шаблон
         $content = file_get_contents(PATH . 'admin_tmp/inside_copywriter.tpl');
 
