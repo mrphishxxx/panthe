@@ -11,7 +11,7 @@
         <a class="waves-effect waves-light btn-large" href="/faq.php?action=mails&type=admin"><i class="material-icons right">person_pin</i>Admin</a>
         <a class="waves-effect waves-light btn-large" href="/faq.php?action=mails&type=user"><i class="material-icons right">supervisor_account</i>User</a>
         <a class="waves-effect waves-light btn-large" href="/faq.php?action=mails&type=copywriter"><i class="material-icons right">edit</i>Copywriter</a>
-        <a class="waves-effect waves-light btn-large" href="/faq.php?action=mails&type=moderator"><i class="material-icons right">visibility</i>moderator</a>
+        <a class="waves-effect waves-light btn-large" href="/faq.php?action=mails&type=moderator"><i class="material-icons right">toys</i>moderator</a>
     </div>
     <br />
     {if isset($mails)}

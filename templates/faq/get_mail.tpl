@@ -11,7 +11,7 @@
 <div class="row">
     {if isset($mail)}
         <div class="col s7">
-            <div class="card">
+            <div class="card hoverable">
                 <div class="card-content">
                     <p>
                         {$mail}
