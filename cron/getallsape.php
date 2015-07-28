@@ -118,7 +118,6 @@ function getTask($db, $uid) {
             curl_close($curl);
         }
         $site_adverts = xmlrpc_decode($out);
-
         if (!empty($site_adverts)) {
             foreach ($site_adverts as $key => $adverts) {
                 if (!in_array($adverts["site_id"], $sites_to_user)) {
@@ -139,13 +138,15 @@ function getTask($db, $uid) {
                         $new_task["url"][] = $db->escape($link["href"]);
                         $new_task["ankor"][] = $db->escape($link["text"]);
                     }
-                    if ($adverts["type"] == "news")
+                    $nof_chars = 2000;
+                    if ($adverts["type"] == "news") {
                         $type = 0;
-                    elseif ($adverts["type"] == "link")
+                    } elseif ($adverts["type"] == "link") {
                         $type = 2;
-                    else
+                        $nof_chars = 1500;
+                    } else {
                         $type = 1;
-
+                    }
                     $new_task["comments"] = $adverts["description"];
                     if (!empty($new_task["comments"]) && $type == 0) {
                         foreach ($new_task["ankor"] as $key_ankor => $ankor) {
@@ -183,13 +184,13 @@ function getTask($db, $uid) {
                         $new_task["ankor"][2] = (isset($new_task["ankor"][2]) && !empty($new_task["ankor"][2])) ? $new_task["ankor"][2] : '';
                         $new_task["ankor"][3] = (isset($new_task["ankor"][3]) && !empty($new_task["ankor"][3])) ? $new_task["ankor"][3] : '';
                         $new_task["ankor"][4] = (isset($new_task["ankor"][4]) && !empty($new_task["ankor"][4])) ? $new_task["ankor"][4] : '';
-                        
+
                         $new_task["url"][1] = (isset($new_task["url"][1]) && !empty($new_task["url"][1])) ? $new_task["url"][1] : '';
                         $new_task["url"][2] = (isset($new_task["url"][2]) && !empty($new_task["url"][2])) ? $new_task["url"][2] : '';
                         $new_task["url"][3] = (isset($new_task["url"][3]) && !empty($new_task["url"][3])) ? $new_task["url"][3] : '';
                         $new_task["url"][4] = (isset($new_task["url"][4]) && !empty($new_task["url"][4])) ? $new_task["url"][4] : '';
-                        
-                        $db->Execute("INSERT INTO zadaniya (tema, text, lay_out, sid, b_id, sape_id, uid, sistema, type_task, ankor, ankor2, ankor3, ankor4, ankor5, url, url2, url3, url4, url5, comments, navyklad, date, keywords, nof_chars) VALUES ('" . $new_task["tema"] . "', '" . $db->escape($new_task["text"]) . "', '" . $lay_out . "', '" . $new_task["sid"] . "', '0', '" . $new_task["sape_id"] . "','" . $uid . "', 'http://pr.sape.ru/', '$type', '" . $new_task["ankor"][0] . "', '" . $new_task["ankor"][1] . "', '" . $new_task["ankor"][2] . "', '" . $new_task["ankor"][3] . "', '" . $new_task["ankor"][4] . "', '" . $new_task["url"][0] . "', '" . $new_task["url"][1] . "', '" . $new_task["url"][2] . "', '" . $new_task["url"][3] . "', '" . $new_task["url"][4] . "', '" . $new_task["comments"] . "', '" . $lay_out . "', '" . $date . "', '" . $new_task["keywords"] . "', '2000')");
+
+                        $db->Execute("INSERT INTO zadaniya (tema, text, lay_out, sid, b_id, sape_id, uid, sistema, type_task, ankor, ankor2, ankor3, ankor4, ankor5, url, url2, url3, url4, url5, comments, navyklad, date, keywords, nof_chars) VALUES ('" . $new_task["tema"] . "', '" . $db->escape($new_task["text"]) . "', '" . $lay_out . "', '" . $new_task["sid"] . "', '0', '" . $new_task["sape_id"] . "','" . $uid . "', 'http://pr.sape.ru/', '$type', '" . $new_task["ankor"][0] . "', '" . $new_task["ankor"][1] . "', '" . $new_task["ankor"][2] . "', '" . $new_task["ankor"][3] . "', '" . $new_task["ankor"][4] . "', '" . $new_task["url"][0] . "', '" . $new_task["url"][1] . "', '" . $new_task["url"][2] . "', '" . $new_task["url"][3] . "', '" . $new_task["url"][4] . "', '" . $new_task["comments"] . "', '" . $lay_out . "', '" . $date . "', '" . $new_task["keywords"] . "', '" . $nof_chars . "')");
 
                         if ($lay_out == 1) {
                             $lastId = $db->Insert_ID();

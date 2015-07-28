@@ -507,24 +507,9 @@ class copywriter {
                         curl_close($curl);
                     }
                     $accept = xmlrpc_decode($out);
-                } else {
+                } elseif($table == "zadaniya") {
                     // Если задача из БИРЖИ, то снимаем деньги со счета Вебмастера
-                    $price = 0;
-                    if ($task['sistema'] == "http://miralinks.ru/" || $task['sistema'] == "https://gogetlinks.net/" || $task['sistema'] == "http://pr.sape.ru/" || $task['sistema'] == "http://getgoodlinks.ru/" || $task['sistema'] == "http://rotapost.ru/") {
-                        switch ($sinfo['cena']) {
-                            case 20:$price = 60;
-                                break;
-                            case 30:$price = 76;
-                                break;
-                            case 45:$price = 111;
-                                break;
-                            default:$price = 60;
-                                break;
-                        }
-                    } else {
-                        $price = $sinfo['price'];
-                    }
-                    $price += 17;
+                    $price = $this->getTaskPrice(0, $task["nof_chars"], $sinfo);
 
                     // Проверка: Возможно уже снимали деньги за эту задачу, если так, то просто обновляем цену, иначе добавляем снятие
                     $compl = $db->Execute("SELECT * FROM completed_tasks WHERE uid = '" . $task['uid'] . "' AND zid=" . $task['id'])->FetchRow();
@@ -588,7 +573,7 @@ class copywriter {
                     $banned = true;
                 }
 
-                $this->_postman->admin->copywriterAddedTask($id, $_SESSION['user']['login'], LIMIT_ERROR_FROM_COPYWRITER, $banned);
+                $this->_postman->admin->copywriterCanceledTask($id, $_SESSION['user']['login'], LIMIT_ERROR_FROM_COPYWRITER, $banned);
                 header('location: /copywriter.php?action=tasks');
                 die();
             } else {
@@ -1199,6 +1184,48 @@ class copywriter {
         $tid = (int) $_REQUEST['tid'];
         $db->Execute("UPDATE tickets SET status=0 WHERE id=$tid");
         header('location: /copywriter.php?action=ticket');
+    }
+    
+    function getTaskPrice($lay_out = 0, $nof_chars = 0, $site = array()) {
+        $price = 0;
+        if ($lay_out == 1) {
+            $price = 15;
+        } else {
+            if ((int) $nof_chars == 2000) {
+                $price = $this->getPrice($site['cena'], $nof_chars);
+            } else {
+                $price = $this->getPrice($site['cena']);
+            }
+        }
+        return $price;
+    }
+
+    function getPrice($tarif, $type = 1500) {
+        $price = 0;
+        if ($type == 1500) {
+            switch ($tarif) {
+                case 20: $price = 62;
+                    break;
+                case 30: $price = 78;
+                    break;
+                case 45: $price = 110;
+                    break;
+                default: $price = 62;
+                    break;
+            }
+        } else {
+            switch ($tarif) {
+                case 20: $price = 77;
+                    break;
+                case 30: $price = 93;
+                    break;
+                case 45: $price = 128;
+                    break;
+                default: $price = 77;
+                    break;
+            }
+        }
+        return $price;
     }
 
 }

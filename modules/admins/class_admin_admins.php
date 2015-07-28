@@ -476,13 +476,127 @@ class admins {
         return $content;
     }
 
+    function getCategoryForETXT($category) {
+        $category_id = 1828;
+        switch ($category) {
+            case NULL: $category_id = 1828;
+                break;
+            case "": $category_id = 1828;
+                break;
+            case "Авто и Мото": $category_id = 368;
+                break;
+            case "Бизнес/Финансы/Реклама": $category_id = 371;
+                break;
+            case "Бытовая техника": $category_id = 1714;
+                break;
+            case "Дети": $category_id = 1791;
+                break;
+            case "Дом и быт": $category_id = 1790;
+                break;
+            case "Другое": $category_id = 1828;
+                break;
+            case "Животные и растительный мир": $category_id = 1673;
+                break;
+            case "Закон и право": $category_id = 390;
+                break;
+            case "Здоровье/Медицина": $category_id = 294;
+                break;
+            case "Компьютерная и цифровая техника": $category_id = 1828;
+                break;
+            case "Красота/Косметика/Парфюмерия": $category_id = 1880;
+                break;
+            case "Кулинария и продукты питания": $category_id = 254;
+                break;
+            case "Культура и искусство": $category_id = 1647;
+                break;
+            case "Мебель и интерьер": $category_id = 1792;
+                break;
+            case "Мода и стиль": $category_id = 115;
+                break;
+            case "Недвижимость": $category_id = 1839;
+                break;
+            case "Непознанное": $category_id = 513;
+                break;
+            case "Новости": $category_id = 1828;
+                break;
+            case "Образование и наука": $category_id = 1786;
+                break;
+            case "Отдых и туризм": $category_id = 1773;
+                break;
+            case "Под анкор заявки": $category_id = 1828;
+                break;
+            case "Производство и промышленность": $category_id = 1893;
+                break;
+            case "Психология": $category_id = 1832;
+                break;
+            case "Развлечения/Игры/Юмор/Знакомства": $category_id = 1821;
+                break;
+            case "Связь и коммуникации": $category_id = 1828;
+                break;
+            case "Семья и отношения": $category_id = 1793;
+                break;
+            case "Спорт": $category_id = 345;
+                break;
+            case "Строительство и ремонт": $category_id = 1838;
+                break;
+            case "Товары и Услуги": $category_id = 1794;
+                break;
+
+            default : $category_id = 1828;
+                break;
+        }
+        return $category_id;
+    }
+
+    function getTaskPrice($lay_out = 0, $nof_chars = 0, $site = array()) {
+        $price = 0;
+        if ($lay_out == 1) {
+            $price = 15;
+        } else {
+            if ((int) $nof_chars == 2000) {
+                $price = $this->getPrice($site['cena'], $nof_chars);
+            } else {
+                $price = $this->getPrice($site['cena']);
+            }
+        }
+        return $price;
+    }
+
+    function getPrice($tarif, $type = 1500) {
+        $price = 0;
+        if ($type == 1500) {
+            switch ($tarif) {
+                case 20: $price = 62;
+                    break;
+                case 30: $price = 78;
+                    break;
+                case 45: $price = 110;
+                    break;
+                default: $price = 62;
+                    break;
+            }
+        } else {
+            switch ($tarif) {
+                case 20: $price = 77;
+                    break;
+                case 30: $price = 93;
+                    break;
+                case 45: $price = 128;
+                    break;
+                default: $price = 77;
+                    break;
+            }
+        }
+        return $price;
+    }
+
     function etxt($db) {
         $cena = $colvos = 0;
         $site_subject = "";
         $uid = (int) $_REQUEST['uid'];
         $sid = (int) $_GET['sid'];
         $pass = ETXT_PASS;
-        $db_res = $db->Execute("SELECT * FROM `zadaniya` WHERE sid='" . $sid . "' AND uid='" . $uid . "' AND tema!=''  AND etxt=0 AND copywriter=0 AND for_copywriter=0 AND lay_out=0");
+        $tasks = $db->Execute("SELECT * FROM `zadaniya` WHERE sid='" . $sid . "' AND uid='" . $uid . "' AND tema!=''  AND etxt=0 AND copywriter=0 AND for_copywriter=0 AND lay_out=0");
         $sinfo = $db->Execute("SELECT * FROM `sayty` WHERE id='" . $sid . "'")->FetchRow();
         $user = $db->Execute("SELECT * FROM `admins` WHERE id='" . $uid . "'")->FetchRow();
         if (!empty($sinfo)) {
@@ -498,37 +612,14 @@ class admins {
                   </script>";
             exit();
         }
-        while ($db_res2 = $db_res->FetchRow()) {
+        while ($db_res2 = $tasks->FetchRow()) {
             //Смотрим на баланс и проверяем, может ли создать пользователь заявку (хватит ли денег)
-            if (($uid != 20) && ($uid != 55)) {
-                $cur_balans = $this->getUserBalans($uid, $db, 1);
-                if ($db_res2['lay_out'] == 1) {
-                    $cur_balans -= 15;
-                } else if ($db_res2['sistema'] == "http://miralinks.ru/" || $db_res2['sistema'] == "https://gogetlinks.net/" || $db_res2['sistema'] == "http://pr.sape.ru/" || $db_res2['sistema'] == "http://getgoodlinks.ru/" || $db_res2['sistema'] == "http://rotapost.ru/") {
-                    $colvos = 2000;
-                    switch ($sinfo['cena']) {
-                        case 20:$cur_balans -= 60;
-                            break;
-                        case 30:$cur_balans -= 76;
-                            break;
-                        case 45:$cur_balans -= 111;
-                            break;
-                        default:$cur_balans -= 60;
-                            break;
-                    }
-                } else {
-                    $cur_balans -= $sinfo['price'];
-                }
-                if ($user["new_user"] == 1 && $db_res2['lay_out'] != 1) {
-                    //увеличение цен для новых пользователей на 30%
-                    $cur_balans -= 17;
-                }
-                if ($cur_balans < 0) {
-                    break;
-                }
-            }
-            if ($db_res2['sistema'] == "http://miralinks.ru/" || $db_res2['sistema'] == "https://gogetlinks.net/" || $db_res2['sistema'] == "http://pr.sape.ru/" || $db_res2['sistema'] == "http://getgoodlinks.ru/" || $db_res2['sistema'] == "http://rotapost.ru/") {
-                $colvos = 2000;
+            $colvos = $db_res2['nof_chars'];
+            $cur_balans = $this->getUserBalans($uid, $db, 1);
+            $price = $this->getTaskPrice($db_res2['lay_out'], $colvos, $sinfo);
+            $cur_balans -= $price;
+            if ($cur_balans < 0 && (($uid != 20) && ($uid != 55))) {
+                break;
             }
 
             $tema = $db_res2['tema'];
@@ -619,81 +710,12 @@ class admins {
 		Даже если вы «в теме» не стоит выдумывать что-то самостоятельно. Основывайтесь на реальных фактах.
 		Не используйте избитые фразы и выражения - текст короткий и уникальность сразу упадет. 
 		Смотрите информацию о фразе, особенно если это слово вам незнакомо. Если фраза, например, монурал (название лекарства) НЕЛЬЗЯ писать, что это модная прическа или деталь трактора.
-	';
+            ';
 
-            $category_id = 1828;
-            switch ($site_subject) {
-                case NULL: $category_id = 1828;
-                    break;
-                case "": $category_id = 1828;
-                    break;
-                case "Авто и Мото": $category_id = 368;
-                    break;
-                case "Бизнес/Финансы/Реклама": $category_id = 371;
-                    break;
-                case "Бытовая техника": $category_id = 1714;
-                    break;
-                case "Дети": $category_id = 1791;
-                    break;
-                case "Дом и быт": $category_id = 1790;
-                    break;
-                case "Другое": $category_id = 1828;
-                    break;
-                case "Животные и растительный мир": $category_id = 1673;
-                    break;
-                case "Закон и право": $category_id = 390;
-                    break;
-                case "Здоровье/Медицина": $category_id = 294;
-                    break;
-                case "Компьютерная и цифровая техника": $category_id = 1828;
-                    break;
-                case "Красота/Косметика/Парфюмерия": $category_id = 1880;
-                    break;
-                case "Кулинария и продукты питания": $category_id = 254;
-                    break;
-                case "Культура и искусство": $category_id = 1647;
-                    break;
-                case "Мебель и интерьер": $category_id = 1792;
-                    break;
-                case "Мода и стиль": $category_id = 115;
-                    break;
-                case "Недвижимость": $category_id = 1839;
-                    break;
-                case "Непознанное": $category_id = 513;
-                    break;
-                case "Новости": $category_id = 1828;
-                    break;
-                case "Образование и наука": $category_id = 1786;
-                    break;
-                case "Отдых и туризм": $category_id = 1773;
-                    break;
-                case "Под анкор заявки": $category_id = 1828;
-                    break;
-                case "Производство и промышленность": $category_id = 1893;
-                    break;
-                case "Психология": $category_id = 1832;
-                    break;
-                case "Развлечения/Игры/Юмор/Знакомства": $category_id = 1821;
-                    break;
-                case "Связь и коммуникации": $category_id = 1828;
-                    break;
-                case "Семья и отношения": $category_id = 1793;
-                    break;
-                case "Спорт": $category_id = 345;
-                    break;
-                case "Строительство и ремонт": $category_id = 1838;
-                    break;
-                case "Товары и Услуги": $category_id = 1794;
-                    break;
-
-                default : $category_id = 1828;
-                    break;
-            }
-
+            $category_id = $this->getCategoryForETXT($site_subject);
             $pass = ETXT_PASS;
             $query_sign = "method=tasks.saveTasktoken=29aa0eec2c77dd6d06e23b3faaef9eed";
             $sign = md5($query_sign . md5($pass . 'api-pass'));
-
             $params = array('auto_work' => 1,
                 'id_category' => $category_id,
                 'deadline' => $date,
@@ -713,48 +735,23 @@ class admins {
                 'auto_rate' => 100,
                 'size' => $colvos,
                 'uniq' => 95);
-
             $query_p = $params;
-
             $url_etxt = "https://www.etxt.ru/api/json/?method=tasks.saveTask&token=29aa0eec2c77dd6d06e23b3faaef9eed&sign=" . $sign;
-
             if ($curl = curl_init()) {
                 curl_setopt($curl, CURLOPT_URL, $url_etxt);
                 curl_setopt($curl, CURLOPT_POST, true);
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($curl, CURLOPT_POSTFIELDS, $query_p);
-                $new_tid = curl_exec($curl);
+                $out = curl_exec($curl);
                 curl_close($curl);
             }
-            $new_tid = json_decode($new_tid);
+            $new_tid = json_decode($out);
             unset($description);
 
             $new_tid = (array) $new_tid;
             $id_task = $new_tid['id_task'];
             if (isset($id_task)) {
                 $db->Execute("UPDATE zadaniya SET task_id = '" . $id_task . "', etxt = 1, vrabote = 1 WHERE id = '" . $id . "'");
-
-                $price = 0;
-                if ($db_res2['lay_out'] == 1) {
-                    $price = 15;
-                } else if ($db_res2['sistema'] == "http://miralinks.ru/" || $db_res2['sistema'] == "https://gogetlinks.net/" || $db_res2['sistema'] == "http://pr.sape.ru/" || $db_res2['sistema'] == "http://getgoodlinks.ru/" || $db_res2['sistema'] == "http://rotapost.ru/") {
-                    switch ($sinfo['cena']) {
-                        case 20:$price = 60;
-                            break;
-                        case 30:$price = 76;
-                            break;
-                        case 45:$price = 111;
-                            break;
-                        default:$price = 60;
-                            break;
-                    }
-                } else {
-                    $price = $sinfo['price'];
-                }
-                if ($user["new_user"] == 1 && $db_res2['lay_out'] != 1) {
-                    //увеличение цен для новых пользователей на 30%
-                    $price = (int) $price + 17;
-                }
 
                 $compl = $db->Execute("SELECT * FROM completed_tasks WHERE uid = $uid AND zid=" . $db_res2['id'])->FetchRow();
                 if (empty($compl)) {
@@ -1525,7 +1522,7 @@ class admins {
             $comments = mysql_real_escape_string($_REQUEST['comments']);
             $admin_comments = $_REQUEST['admin_comments'];
             $type_task = @$_REQUEST['type'];
-            $task_status = $_REQUEST['task_status'];
+            $task_status = @$_REQUEST['task_status'];
             $etxt = 0;
             if ($lay_out == 0) {
                 if ($task_status == "vipolneno")
@@ -1553,35 +1550,19 @@ class admins {
                 $navyklad = 1;
                 $etxt = 1;
             }
+            if ($sistema == "http://miralinks.ru/" || ($sistema == "http://pr.sape.ru/" && $type_task != 2) || $sistema == "http://getgoodlinks.ru/" || $sistema == "https://gogetlinks.net/") {
+                $nof_chars = 2000;
+            } else {
+                $nof_chars = 1500;
+            }
             $profil .= microtime() . "  - GET DATA" . "\r\n";
             $date = time();
-            $db->Execute("insert into zadaniya(etxt, dorabotka, date, uid, sid, sistema, type_task, ankor, ankor2, ankor3, ankor4, ankor5, url, url2, url3, url4, url5, keywords, tema, text, url_statyi, vipolneno, price, vrabote, url_pic, navyklad, comments, admin_comments, lay_out) values($etxt, $dorabotka, $date, $uid, $sid, '$sistema', '$type_task', '$ankor', '$ankor2', '$ankor3', '$ankor4', '$ankor5', '$url', '$url2', '$url3', '$url4', '$url5', '$keywords', '$tema', '$text', '$url_statyi', $vipolneno, '$price', $vrabote, '$url_pic', $navyklad, '$comments', '$admin_comments', '$lay_out')");
+            $db->Execute("insert into zadaniya(etxt, dorabotka, date, uid, sid, sistema, type_task, ankor, ankor2, ankor3, ankor4, ankor5, url, url2, url3, url4, url5, keywords, tema, text, url_statyi, vipolneno, price, vrabote, url_pic, navyklad, comments, admin_comments, lay_out, nof_chars) values($etxt, $dorabotka, $date, $uid, $sid, '$sistema', '$type_task', '$ankor', '$ankor2', '$ankor3', '$ankor4', '$ankor5', '$url', '$url2', '$url3', '$url4', '$url5', '$keywords', '$tema', '$text', '$url_statyi', $vipolneno, '$price', $vrabote, '$url_pic', $navyklad, '$comments', '$admin_comments', '$lay_out', '$nof_chars')");
             $lastId = $db->Insert_ID();
             $profil .= microtime() . "  - AFTER QUERY 1 UPDATE" . "\r\n";
             $compl = $db->Execute("SELECT * FROM completed_tasks WHERE uid = $uid AND zid=" . $lastId)->FetchRow();
             if (($navyklad == 1 || $dorabotka == 1 || $vipolneno == 1 || $vilojeno == 1 || $vrabote == 1) && empty($compl)) {
-                $price = 0;
-                if ($lay_out == 1 || $lay_out == "1") {
-                    $price = 15;
-                } elseif ($sistema == "http://miralinks.ru/" || $sistema == "http://pr.sape.ru/" || $sistema == "http://getgoodlinks.ru/" || $sistema == "https://gogetlinks.net/") {
-                    switch ($task_site['cena']) {
-                        case 20:$price = 60;
-                            break;
-                        case 30:$price = 76;
-                            break;
-                        case 45:$price = 111;
-                            break;
-                        default:$price = 60;
-                            break;
-                    }
-                } else {
-                    $price = $task_site['price'];
-                }
-                if ($user["new_user"] == 1 && !$lay_out) {
-                    //увеличение цен для новых пользователей на 30%
-                    $price = (int) $price + 17;
-                }
-
+                $price = $this->getTaskPrice($lay_out, $nof_chars, $task_site);
                 $db->Execute("INSERT INTO completed_tasks (uid, zid, date, price, status) VALUES ('$uid', '$lastId', '" . date("Y-m-d H:i:s") . "', '$price', '1')");
                 $profil .= microtime() . "  - AFTER QUERY 2 INSERT compl_tasks" . "\r\n";
             }
@@ -1882,6 +1863,7 @@ class admins {
         $res = $query->FetchRow();
         $profil .= microtime() . "  - AFTER 1 && 2 QUERY" . "\r\n";
         if (!$send) {
+            $type_disabled = false;
             $profil .= microtime() . "  - NOT SEND" . "\r\n";
             $_SESSION["HTTP_REFERER"] = @$_SERVER["HTTP_REFERER"];
             $content = file_get_contents(PATH . 'modules/admins/tmp/admin/zadaniya_edit.tpl');
@@ -1889,37 +1871,22 @@ class admins {
             //Смотрим на баланс и проверяем, может ли создать пользователь заявку (хватит ли денег)
             $cur_balans = $this->getUserBalans($uid, $db, 1);
             $sinfo = $db->Execute("SELECT * FROM sayty WHERE id=$sid")->FetchRow();
-            $lay_out = $res['lay_out'];
-            if ($res['lay_out'] == 1) {
-                $cur_balans -= 15;
-            } else if ($res['sistema'] == "http://miralinks.ru/" || $res['sistema'] == "http://pr.sape.ru/" || $res['sistema'] == "http://getgoodlinks.ru/") {
-                //$cur_balans -= (2 * $sinfo['cena']) + (round($sinfo['cena'] / 10)) + 13;
-                switch ($sinfo['cena']) {
-                    case 20:$cur_balans -= 60;
-                        break;
-                    case 30:$cur_balans -= 76;
-                        break;
-                    case 45:$cur_balans -= 111;
-                        break;
-                    default:$cur_balans -= 60;
-                        break;
-                }
-            } else {
-                $cur_balans -= $sinfo['price'];
-            }
-            if ($user["new_user"] == 1 && !$res['lay_out']) {
-                $cur_balans -= 17;
-            }
+            $price = $this->getTaskPrice($res['lay_out'], $res['nof_chars'], $sinfo);
+            $cur_balans -= $price;
+
             $nomoney = "";
             $stat_disabled = "";
-            if ($cur_balans < 0) {
-                if (($res['dorabotka'] == 0) && ($res['vrabote'] == 0) && ($res['navyklad'] == 0) && ($res['vilojeno'] == 0) && ($res['vipolneno'] == 0)) {
-                    $nomoney = "<p>Внимание! Баланс счета пользователя недостаточен для того, чтобы задание поступило в работу!</p>
-								<p>Возможность перевода заявки в статус &laquo;В работе&raquo отключена!</p>";
-                    if (($uid != 20) && ($uid != 55))
-                        $stat_disabled = "disabled='disabled'";
+
+            if ($cur_balans < 0 && (($res['dorabotka'] == 0) && ($res['rework'] == 0) && ($res['vrabote'] == 0) && ($res['navyklad'] == 0) && ($res['vilojeno'] == 0) && ($res['vipolneno'] == 0))) {
+                $nomoney = "<p>Внимание! Баланс счета пользователя недостаточен для того, чтобы задание поступило в работу!</p>
+                            <p>Возможность перевода заявки в статус &laquo;В работе&raquo отключена!</p>";
+                if (($uid != 20) && ($uid != 55)) {
+                    $stat_disabled = "disabled='disabled'";
                 }
+            } elseif((($res['dorabotka'] != 0) || ($res['rework'] != 0) || ($res['vrabote'] != 0) || ($res['navyklad'] != 0) || ($res['vilojeno'] != 0) || ($res['vipolneno'] != 0))){
+                $type_disabled = true;
             }
+            $content = str_replace("[type_disabled]", ($type_disabled == true ? "disabled='disabled'" : ""), $content);
             $profil .= microtime() . "  - OPERATIONS WITH MONEY" . "\r\n";
             $content = str_replace("[id]", $res["id"], $content);
             $content = str_replace('[zid]', $id, $content);
@@ -1987,7 +1954,7 @@ class admins {
 
             $content = str_replace('[uid]', $uid, $content);
             $content = str_replace('[sid]', $sid, $content);
-            $content = str_replace('[lay_out_text]', (($lay_out) ? "checked" : ""), $content);
+            $content = str_replace('[lay_out_text]', (($res['lay_out']) ? "checked" : ""), $content);
             $content = str_replace('[noporno]', (($sinfo["bad_flag"] == 0) ? "<span class='small red'>Не принимать задания секс, порно и тд.</span><br>" : ""), $content);
             $content = str_replace('[themes]', (($sinfo["subj_flag"] == 1) ? "<span class='small red'>Берутся только тематичные задания (" . $sinfo["site_subject"] . (!empty($sinfo["site_subject_more"]) ? '(' . $sinfo["site_subject_more"] . ')' : '') . ")</span>" : "<span class='small red'>Берутся все задания.</span>"), $content);
             $profil .= microtime() . "  - AFTER GET DATA" . "\r\n";
@@ -2020,6 +1987,15 @@ class admins {
             $rotapost_id = $_REQUEST['rotapost_id'];
             $task_id = $res['task_id'];
             $type_task = (int) $_REQUEST['type'];
+            if($type_task != $res['type_task'] && $sistema == "http://pr.sape.ru/"){
+                if($type_task == 2) {
+                    $nof_chars = 1500;
+                } else {
+                    $nof_chars = 2000;
+                }
+            } else {
+                $nof_chars = $res['nof_chars'];
+            }
             $profil .= microtime() . "  - GET DATA" . "\r\n";
 
             $task_site = $db->Execute("SELECT * FROM sayty WHERE id=" . $res['sid'])->FetchRow();
@@ -2096,36 +2072,12 @@ class admins {
                 $profil .= microtime() . "  - SEND MAIL" . "\r\n";
             }
 
-            $q = "update zadaniya set b_id='$b_id',sape_id='$sape_id',rotapost_id='$rotapost_id', dorabotka='$dorabotka', rework='$rework', etxt='$etxt', vipolneno='$vipolneno', vrabote='$vrabote', navyklad='$navyklad', vilojeno='$vilojeno', type_task='$type_task', url_statyi='$url_statyi', text='$text', tema='$tema', sistema='$sistema', ankor='$ankor', ankor2='$ankor2', ankor3='$ankor3', ankor4='$ankor4', ankor5='$ankor5', url='$url', url2='$url2', url3='$url3', url4='$url4', url5='$url5', keywords='$keywords', price='$price', url_pic='$url_pic', comments='$comments', admin_comments='$admin_comments', lay_out='$lay_out' where id=$id";
+            $q = "update zadaniya set b_id='$b_id',sape_id='$sape_id',rotapost_id='$rotapost_id', dorabotka='$dorabotka', rework='$rework', etxt='$etxt', vipolneno='$vipolneno', vrabote='$vrabote', navyklad='$navyklad', vilojeno='$vilojeno', type_task='$type_task', url_statyi='$url_statyi', text='$text', tema='$tema', sistema='$sistema', ankor='$ankor', ankor2='$ankor2', ankor3='$ankor3', ankor4='$ankor4', ankor5='$ankor5', url='$url', url2='$url2', url3='$url3', url4='$url4', url5='$url5', keywords='$keywords', price='$price', url_pic='$url_pic', comments='$comments', admin_comments='$admin_comments', lay_out='$lay_out', nof_chars='$nof_chars' where id=$id";
             $db->Execute($q);
             $profil .= microtime() . "  - QUERY #5 UPDATE task" . "\r\n";
-            $compl = $db->Execute("SELECT * FROM completed_tasks WHERE uid = $uid AND zid=" . $id)->FetchRow();
             if (($navyklad == 1 || $dorabotka == 1 || $vilojeno == 1 || $vipolneno == 1 || $vrabote == 1)) {
-                $price = 0;
-                if ($lay_out == 1 || $lay_out == "1") {
-                    $price = 15;
-                } elseif ($sistema == "http://miralinks.ru/" || $sistema == "http://pr.sape.ru/" || $sistema == "http://getgoodlinks.ru/" || $sistema == "https://gogetlinks.net/") {
-                    switch ($task_site['cena']) {
-                        case 20:$price = 60;
-                            break;
-                        case 30:$price = 76;
-                            break;
-                        case 45:$price = 111;
-                            break;
-                        default:$price = 60;
-                            break;
-                    }
-                    if ($lay_out == 1) {
-                        $price = 15;
-                    }
-                } else {
-                    $price = $task_site['price'];
-                }
-                if ($user["new_user"] == 1 && !$lay_out) {
-                    //увеличение цен для новых пользователей на 30%
-                    $price = (int) $price + 17;
-                }
-
+                $price = $this->getTaskPrice($lay_out, $res['nof_chars'], $task_site);
+                $compl = $db->Execute("SELECT * FROM completed_tasks WHERE uid = $uid AND zid=" . $id)->FetchRow();
                 if (empty($compl)) {
                     $db->Execute("INSERT INTO completed_tasks (uid, zid, date, price, status) VALUES ('$uid', '$id', '" . date("Y-m-d H:i:s") . "', '$price',1)");
                 } else {
@@ -3208,27 +3160,8 @@ class admins {
         }
 
         if (($navyklad == 1 || $dorabotka == 1 || $vilojeno == 1 || $vipolneno == 1 || $vrabote == 1)) {
-            $price = 0;
-            if (@$_REQUEST['lay_out'] == 1 || @$_REQUEST['lay_out'] == "1") {
-                $price = 15;
-            } elseif ($sistema == "http://miralinks.ru/" || $sistema == "http://pr.sape.ru/" || $sistema == "http://getgoodlinks.ru/" || $sistema == "https://gogetlinks.net/") {
-                switch ($site['cena']) {
-                    case 20:$price = 60;
-                        break;
-                    case 30:$price = 76;
-                        break;
-                    case 45:$price = 111;
-                        break;
-                    default:$price = 60;
-                        break;
-                }
-            } else {
-                $price = $site['price'];
-            }
-            if ($user["new_user"] == 1 && (!isset($_REQUEST['lay_out']) || @$_REQUEST['lay_out'] == 0)) {
-                //увеличение цен для новых пользователей на 30%
-                $price = (int) $price + 17;
-            }
+            $lay_out = (isset($_REQUEST['lay_out']) && $_REQUEST['lay_out'] == "1") ? 1 : 0;
+            $price = $this->getTaskPrice($lay_out, 1500, $site);
         }
 
         if ($navyklad == 1) {
@@ -4125,8 +4058,10 @@ class admins {
         $status = $_REQUEST['status'];
         if (isset($_REQUEST['burse'])) {
             $table = "zadaniya";
+            $dorabotka = "";
         } else {
             $table = "zadaniya_new";
+            $dorabotka = "dorabotka = 1,";
         }
 
         $task = $db->Execute("SELECT * FROM $table WHERE id = $id")->FetchRow();
@@ -4139,7 +4074,7 @@ class admins {
               } */
 
             $time = time();
-            $db->Execute("UPDATE $table SET rework = 1, vipolneno = 0, navyklad = 0, vilojeno = 0, date_in_work = '$time' WHERE id = $id");
+            $db->Execute("UPDATE $table SET $dorabotka rework = 1, vipolneno = 0, vrabote = 0, navyklad = 0, vilojeno = 0, date_in_work = '$time' WHERE id = $id");
             if ($task['copywriter'] != 0) {
                 $copywriter = $db->Execute("SELECT * FROM admins WHERE id=" . $task['copywriter'])->FetchRow();
                 $this->_postman->copywriter->articlesChangeStatusDorabotka($id, $copywriter);
@@ -5058,9 +4993,11 @@ class admins {
                     break;
                 case "navyklad": $navyklad = 1;
                     break;
-                case "dorabotka": $dorabotka = 1; $rework = $task["rework"];
+                case "dorabotka": $dorabotka = 1;
+                    $rework = $task["rework"];
                     break;
-                case "rework": $rework = 1; $dorabotka = $task["dorabotka"];
+                case "rework": $rework = 1;
+                    $dorabotka = $task["dorabotka"];
                     break;
                 case "vilojeno": $vilojeno = 1;
                     break;
@@ -5138,10 +5075,10 @@ class admins {
                     $db->Execute("UPDATE zadaniya_new SET vilojeno = '1', navyklad = '0', dorabotka = '0' WHERE id = $id");
                     $profil .= microtime() . "  - TRUE SEND task" . "\r\n";
                 } else {
-                        
+
                     $request = $data = array();
                     $errors = json_decode($accept["faultString"]);
-                    if(!empty($errors)){
+                    if (!empty($errors)) {
                         foreach ($errors->items as $err_type => $err_arr) {
                             foreach ($err_arr as $key_err => $err) {
                                 $request[] = $err;

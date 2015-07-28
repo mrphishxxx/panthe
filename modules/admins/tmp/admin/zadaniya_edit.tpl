@@ -26,7 +26,7 @@
             </li>
             <li>
                 <span class="title" >Тип задания:</span>
-                <select id="type" name="type">
+                <select id="type" name="type" [type_disabled]>
                     <option value="0" [type0]>Статья</option>
                     <option value="1" [type1]>Обзор</option>
                     <option value="2" [type2]>Новость</option>
