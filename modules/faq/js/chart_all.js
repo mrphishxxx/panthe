@@ -15,9 +15,10 @@ function drawStuff() {
 
     var options = {
         legend: {position: 'none'},
+        colors:['#f9a825'],
         axes: {
             x: {
-                0: {side: 'top'} 
+                0: {side: 'top'}
             }
         }
     };

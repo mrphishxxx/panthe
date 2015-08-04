@@ -56,7 +56,7 @@
 </div>
 <div class="row">
     <div class="col s6 m4 l2">
-        <a class="btn-large" href="/faq.php?action=userAddBurse"><i class="material-icons left">add</i>Добавить</a>
+        <a class="btn-large yellow darken-3" href="/faq.php?action=userAddBurse"><i class="material-icons left">add</i>Добавить</a>
     </div>
 </div>
 

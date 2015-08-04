@@ -4,6 +4,9 @@ html{
 body {
     
 }
+a {
+    color: #f9a825;
+}
 .nav-wrapper {
     padding: 0 25px;
 }
@@ -12,6 +15,11 @@ body {
 }
 .side-nav i {
    margin-top: 17px;
+}
+.dropdown-content li > a, 
+.dropdown-content li > span {
+   color: #f9a825;
+   color: black;
 }
 #dropdown1 {
     width: 250px;
@@ -43,6 +51,7 @@ body {
 .top-menu-icon {
     font-size: 70px;
     margin: 0 auto;
+    color: #f9a825;
 }
 .help-menu-icon {
     font-size: 35px;

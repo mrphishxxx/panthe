@@ -24,6 +24,7 @@ function drawBackgroundColor() {
             title: 'Кол-во заявок'
         },
         legend: { position: 'none' },
+        colors:['#f9a825'],
         backgroundColor: '#fff'
     };
 
