@@ -2498,6 +2498,10 @@ class admins {
         if ($res['status'] == 1 && ($res['to_uid'] == 0 || $res['to_uid'] == $uid)) {
             $db->Execute("UPDATE tickets SET status=2 WHERE id=$tid");
         }
+        $last_answer = $db->Execute("SELECT * FROM answers WHERE tid=$tid ORDER BY date LIMIT 1")->FetchRow();
+        if($res['status'] == 1 && !in_array($last_answer["uid"], $administrations)) {
+            $db->Execute("UPDATE tickets SET status=2 WHERE id=$tid");
+        }
 
         if ($res['to_uid'] > 0 && $res['to_uid'] != $uid) {
             $uinfo = $db->Execute("SELECT * FROM admins WHERE id=" . $res['to_uid'])->FetchRow();
@@ -4053,7 +4057,7 @@ class admins {
     }
 
     function change_status_task($db) {
-        $uid = $_SESSION['admin']['id'];
+        $uid = isset($_SESSION['admin']['id']) ? $_SESSION['admin']['id'] : $_SESSION['manager']['id'];
         $id = $_REQUEST['id'];
         $status = $_REQUEST['status'];
         if (isset($_REQUEST['burse'])) {
@@ -4917,7 +4921,7 @@ class admins {
                 $content = str_replace('[message_copywriter]', $message_copywriter, $content);
                 $content = str_replace('[message_copywriter_count]', $message_copywriter_count == 0 ? 2 : $message_copywriter_count, $content);
                 $content = str_replace('[display]', "", $content);
-                $db->Execute("UPDATE chat_admin_copywriter SET status=1 WHERE uid!='" . $_SESSION["admin"]["id"] . "' AND zid='$id'");
+                $db->Execute("UPDATE chat_admin_copywriter SET status=1 WHERE uid!='" . (isset($_SESSION["admin"]["id"])? $_SESSION["admin"]["id"] : $_SESSION["manager"]["id"]) . "' AND zid='$id'");
             } else {
                 $content = str_replace('[display]', " style='display:none' ", $content);
                 $content = str_replace('[display2]', " style='display:none' ", $content);

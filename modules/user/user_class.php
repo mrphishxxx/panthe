@@ -2444,14 +2444,15 @@ class user {
 
         $tid = (int) $_REQUEST['tid'];
         $res = $db->Execute("SELECT * FROM tickets WHERE (uid=$uid OR to_uid=$uid) AND id=$tid")->FetchRow();
-
+        $last_answer = $db->Execute("SELECT * FROM answers WHERE tid=$tid ORDER BY date DESC LIMIT 1")->FetchRow();
+        
         $view = file_get_contents(PATH . 'modules/user/tmp/ticket_chat_one.tpl');
         $view = str_replace('[msg]', $res['msg'], $view);
         $view = str_replace('[cdate]', $res['date'], $view);
         if ($res['to_uid'] > 0) {
             $view = str_replace('[from_class]', "support", $view);
             $view = str_replace('[from]', "Администрация", $view);
-            if ($res['status'] == 1) {
+            if ($res['status'] == 1 && (!empty($last_answer) && $last_answer["uid"] != $uid)) {
                 $db->Execute("UPDATE tickets SET status=2 WHERE id=$tid");
             }
         } else {

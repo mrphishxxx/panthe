@@ -1,5 +1,4 @@
 <?php
-
 header("Content-Type: text/html; charset=utf-8");
 mb_internal_encoding("UTF-8");
 set_time_limit(0);
@@ -40,7 +39,7 @@ $tasks = $db->Execute("SELECT * FROM zadaniya WHERE "
             . "'http://pr.sape.ru/', "
             . "'http://rotapost.ru/',"
             . "'http://webartex.ru/'"
-        . ") AND (rotapost_id != 0 OR webartex_id != 0 OR sape_id != 0 OR b_id != 0) AND vipolneno = 1 AND date > '$date' AND id=36905");
+        . ") AND (rotapost_id != 0 OR webartex_id != 0 OR sape_id != 0 OR b_id != 0) AND vipolneno = 1 AND date > '$date'");
 $count = $tasks->NumRows();
 $yes = $no = "";
 
@@ -124,7 +123,7 @@ $message["from_email"] = "news@iforget.ru";
 $message["from_name"] = "iforget";
 $message["to"] = array();
 $message["to"][1] = array("email" => MAIL_DEVELOPER);
-//$message["to"][0] = array("email" => MAIL_ADMIN);
+$message["to"][0] = array("email" => MAIL_ADMIN);
 $message["track_opens"] = null;
 $message["track_clicks"] = null;
 $message["auto_text"] = null;

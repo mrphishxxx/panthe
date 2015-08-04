@@ -274,9 +274,13 @@ class managers {
             $administrations[$user["id"]] = $user["id"];
         }
 
-        if ($res['status'] == 1 && $res['uid'] != $uid) {
+        if ($res['status'] == 1 && ($res['to_uid'] == 0 || in_array($res['to_uid'], $administrations))) {
             $db->Execute("UPDATE tickets SET status=2 WHERE id=$tid");
         }
+        $last_answer = $db->Execute("SELECT * FROM answers WHERE tid=$tid ORDER BY date LIMIT 1")->FetchRow();
+        if($res['status'] == 1 && !in_array($last_answer["uid"], $administrations)) {
+            $db->Execute("UPDATE tickets SET status=2 WHERE id=$tid");
+        }        
 
         if ($res['uid'] == $uid && $res['to_uid'] > 0) {
             $uinfo = $db->Execute("SELECT * FROM admins WHERE id=" . $res['to_uid'])->FetchRow();

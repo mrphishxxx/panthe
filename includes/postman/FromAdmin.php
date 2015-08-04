@@ -24,7 +24,7 @@ class FromAdmin {
         $this->TEMPLATE_PATH = $template_path . "fromAdmin/";
         
         $this->message["to"] = array();
-        $this->debugging(true);
+        //$this->debugging(true);
     }
     
     public function sendEmail() {
