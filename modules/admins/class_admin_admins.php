@@ -5035,6 +5035,7 @@ class admins {
                     $ress = curl_exec($curl);
                     curl_close($curl);
                 }
+                $admin_comments .= date("Y-m-d H:i:s") . PHP_EOL . $message . PHP_EOL . PHP_EOL;
                 $profil .= microtime() . "  - AFTER 3 curl" . "\r\n";
             }
             $profil .= microtime() . "  - BEFORE UPDATE task" . "\r\n";

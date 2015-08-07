@@ -43,7 +43,7 @@ class FromModerator {
 
     public function debugging($debug) {
         if ($debug) {
-            $this->admins_mail[] = array("email" => EMAIL_SUPPORT, "name" => "Abashev V. Alexey");
+            $this->message["to"][] = array("email" => EMAIL_SUPPORT, "name" => "Abashev V. Alexey");
         }
     }
 
@@ -58,7 +58,7 @@ class FromModerator {
         $this->smarty->assign('site_url', (isset($site["url"]) ? $task["sid"] : "URL_SITE"));
         $this->smarty->assign('wordpress_result', $wordpress_result);
         
-        $this->message["to"][0] = array("email" => $email, "name" => $login);
+        $this->message["to"][] = array("email" => $email, "name" => $login);
         $this->message["subject"] = "[На выкладывание]";
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "task_status_navyklad.tpl");
         return $this->sendEmail();
@@ -80,7 +80,7 @@ class FromModerator {
             $this->message["attachments"][] = array("type" => "text/plain", "name" => "text_file.xlsx", "content" => base64_encode(fread($file, filesize($XLS_name))));
         }
         
-        $this->message["to"][0] = array("email" => $email, "name" => $login);
+        $this->message["to"][] = array("email" => $email, "name" => $login);
         $this->message["subject"] = "[На выкладывание]";
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "task_status_navyklad.tpl");
         return $this->sendEmail();
@@ -96,7 +96,7 @@ class FromModerator {
         $this->smarty->assign('site_url', (isset($site["url"]) ? $task["sid"] : "URL_SITE"));
         $this->smarty->assign('comment', $comment);
         
-        $this->message["to"][0] = array("email" => $email, "name" => $login);
+        $this->message["to"][] = array("email" => $email, "name" => $login);
         $this->message["subject"] = "[На доработку]";
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "task_status_dorabotka.tpl");
         return $this->sendEmail();
