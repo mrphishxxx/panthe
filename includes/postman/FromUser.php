@@ -22,10 +22,15 @@ class FromUser {
         $this->mandrill = $mandrill;
         $this->admins_mail = $admins_mail;
         $this->TEMPLATE_PATH = $template_path . "fromUser/";
-
-        $this->message["to"] = array();
+        
+        $f1 = fopen("images/header_bg.jpg", "rb");
+        $f2 = fopen("images/logo_main.jpg", "rb");
         $this->message["images"] = array();
-        $this->debugging(true);
+        $this->message["images"][] = array("type" => "image/jpg", "name" => "header_bg", "content" => base64_encode(fread($f1, filesize("images/header_bg.jpg"))));
+        $this->message["images"][] = array("type" => "image/jpg", "name" => "logo_main", "content" => base64_encode(fread($f2, filesize("images/logo_main.jpg"))));
+        
+        $this->message["to"] = array();
+        //$this->debugging(true);
     }
 
     public function sendEmail() {
@@ -60,50 +65,47 @@ class FromUser {
         $this->smarty->assign('network', $network);
         $this->smarty->assign('get_text', $this->get_text);
         
-        $f1 = fopen("images/header_bg.jpg", "rb");
-        $f2 = fopen("images/logo_main.jpg", "rb");
         if ($email != "") {
             $this->message["to"][0] = array("email" => $email, "name" => $login);
         }
-        $this->message["subject"] = "Поздравляем Вас с успешной регистрацией iforget.ru";
-        $this->message["images"][] = array("type" => "image/jpg", "name" => "header_bg", "content" => base64_encode(fread($f1, filesize("images/header_bg.jpg"))));
-        $this->message["images"][] = array("type" => "image/jpg", "name" => "logo_main", "content" => base64_encode(fread($f2, filesize("images/logo_main.jpg"))));
+        $this->message["subject"] = "[Регистрация в iForget.ru!]";
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "registration.tpl");
         return $this->sendEmail();
     }
     
-    public function ticketAdd($email = "", $login = "", $lastId = 0) {
+    public function ticketAdd($email = "", $login = "LOGIN", $lastId = 0) {
         $this->smarty->assign('lastId', $lastId);
+        $this->smarty->assign('login', $login);
+        $this->smarty->assign('get_text', $this->get_text);
+        
         if ($email != "") {
             $this->message["to"][0] = array("email" => $email, "name" => $login);
         }
-        $this->message["subject"] = "[Новый тикет в системе iforget]";
+        $this->message["subject"] = "[Новый тикет $lastId в системе iForget!]";
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "ticket_add.tpl");
         return $this->sendEmail();
     }
 
-    public function ticketAnswer($email = "", $login = "", $tid = 0) {
+    public function ticketAnswer($email = "", $login = "LOGIN", $tid = 0) {
         $this->smarty->assign('tid', $tid);
+        $this->smarty->assign('login', $login);
+        $this->smarty->assign('get_text', $this->get_text);
+        
         if ($email != "") {
             $this->message["to"][0] = array("email" => $email, "name" => $login);
         }
-        $this->message["subject"] = "[Сообщение в тикете от админимстрации IFORGET]";
+        $this->message["subject"] = "[Появился ответ в тикете $tid от админимстрации iForget!]";
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "ticket_answer.tpl");
         return $this->sendEmail();
     }
 
     public function priceIncrease($users = array()) {
         $this->smarty->assign('get_text', $this->get_text);
-        
-        $f1 = fopen("images/header_bg.jpg", "rb");
-        $f2 = fopen("images/logo_main.jpg", "rb");
         if (!empty($users)) {
             $this->message["to"] = $users;
         }
         $this->message["text"] = "До поднятие цены осталось 2 дня!";
         $this->message["subject"] = "[Внимание: увеличение цен в IForget!]";
-        $this->message["images"][] = array("type" => "image/jpg", "name" => "header_bg", "content" => base64_encode(fread($f1, filesize("images/header_bg.jpg"))));
-        $this->message["images"][] = array("type" => "image/jpg", "name" => "logo_main", "content" => base64_encode(fread($f2, filesize("images/logo_main.jpg"))));
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "price_increase.tpl");
         return $this->sendEmail();
     }
@@ -111,16 +113,16 @@ class FromUser {
     public function getMailsName($name = null) {
         if (!empty($name)) {
             switch ($name) {
-                case "registration": return "[Регистрация в iforget.ru!]";
-                case "ticketAdd": return "[Новый тикет в системе iforget]";
-                case "ticketAnswer": return "[Сообщение в тикете от админимстрации IFORGET]";
+                case "registration": return "[Регистрация в iForget.ru!]";
+                case "ticketAdd": return "[Новый тикет ID в системе iForget!]";
+                case "ticketAnswer": return "[Появился ответ в тикете ID от администрации iForget!]";
                 case "priceIncrease": return "[Внимание: увеличение цен в IForget!]";
             }
         } else {
             return array(
-                "registration" => "[Регистрация в iforget.ru!]",
-                "ticketAdd" => "[Новый тикет в системе iforget]",
-                "ticketAnswer" => "[Сообщение в тикете от админимстрации IFORGET]",
+                "registration" => "[Регистрация в iForget.ru!]",
+                "ticketAdd" => "[Новый тикет ID в системе iForget!]",
+                "ticketAnswer" => "[Появился ответ в тикете ID от администрации iForget!]",
                 "priceIncrease" => "[Внимание: увеличение цен в IForget!]"
             );
         }

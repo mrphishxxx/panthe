@@ -357,7 +357,7 @@ class user {
                 $query .= "Изменения сохранены";
             }
         }
-        header("Location: /user.php");
+        header("Location: /user.php?action=lk&query=$query");
     }
 
     function postreg_step1($db) {
@@ -2843,11 +2843,12 @@ class user {
             }
 
             $this->_postman->admin->userChangeData($uinfo);
-            header("Location: /user.php?action=lk");
+            header("Location: /user.php?action=lk&query=Изменения сохранены");
             exit();
         } else {
             $content = file_get_contents(PATH . 'modules/user/tmp/lk.tpl');
-
+            
+            $content = str_replace('[query]', (isset($_REQUEST["query"]) && !empty($_REQUEST["query"]) ? $_REQUEST["query"] : ""), $content);
             $content = str_replace('[fio]', substr($uinfo['contacts'], 3), $content);
             $content = str_replace('[knowus]', $uinfo['dostupy'], $content);
             $content = str_replace('[checked_' . $uinfo["wallet_type"] . ']', "selected='selected'", $content);

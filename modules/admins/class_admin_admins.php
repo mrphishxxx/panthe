@@ -2577,15 +2577,16 @@ class admins {
                 $client = $db->Execute("SELECT * FROM admins WHERE id=" . $res['to_uid'])->FetchRow();
             }
             if ($client["mail_period"] > 0) {
-                //echo $client["type"];die();
+                //
                 switch ($client["type"]) {
                     case "user":
                         $result = $this->_postman->user->ticketAnswer($client['email'], $client['login'], $tid);
                         break;
                     case "copywriter":
-                        $this->_postman->copywriter->ticketAnswer($client['email'], $client['login'], $tid);
+                        $result = $this->_postman->copywriter->ticketAnswer($client['email'], $client['login'], $tid);
                         break;
                 }
+                print_r($result);die();
             }
             header("Location: ?module=admins&action=ticket&action2=view&tid=$tid");
             exit();

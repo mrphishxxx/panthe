@@ -25,7 +25,7 @@ class FromCopywriter {
 
         $this->message["to"] = array();
         $this->message["images"] = array();
-        $this->debugging(true);
+        //$this->debugging(true);
     }
 
     public function sendEmail() {

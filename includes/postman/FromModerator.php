@@ -25,7 +25,7 @@ class FromModerator {
         $this->TEMPLATE_PATH = $template_path . "fromModerator/";
 
         $this->message["to"] = array();
-        $this->debugging(true);
+        //$this->debugging(true);
     }
 
     public function sendEmail() {
