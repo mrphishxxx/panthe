@@ -77,19 +77,19 @@ function getTask($db, $uid) {
     $driver->wait(15);
     
 	$logins = $driver->findElements(WebDriverBy::xpath("//input[@name='login']"));
-	if(count($logins)==0) return null;
+	if(count($logins)==0) {$driver->quit(); return null;}
     $logins[0]->sendKeys($data['login']);
 	
     $pass = $driver->findElements(WebDriverBy::xpath("//input[@name='password']"));
-	if(count($pass)==0) return null;
+	if(count($pass)==0) {$driver->quit(); return null;}
     $pass[0]->sendKeys($data['pass']);
 	
     $btns = $driver->findElements(WebDriverBy::xpath("//button[@type='submit']"));
-	if(count($btns)==0) return null;
+	if(count($btns)==0) {$driver->quit(); return null;}
     $btns[0]->click();
 
     if (count($driver->findElements(WebDriverBy::xpath("//a[@class='amount']"))) === 0) {
-        $driver->close();
+        $driver->quit();
         return null;
     }
     //END LOGIN
@@ -111,7 +111,7 @@ function getTask($db, $uid) {
 
     if (count($rows) === 0) {
         echo "No tasks:" . $data['uid'] . "<br>";
-        $driver->close();
+        $driver->quit();
         return null;
     }
 
@@ -191,7 +191,7 @@ function getTask($db, $uid) {
             $first = mb_strtoupper(mb_substr($data["ankor"], 0, 1, 'UTF-8'), 'UTF-8'); //первая буква
             $first = str_replace("?", "", $first);
             $last = mb_strtolower(mb_substr($data["ankor"], 1), 'UTF-8'); //все кроме первой буквы
-            $last = (isset($last[0]) && $last[0] == "?") ? mb_substr($last, 1) : $last;
+            $last = ($last[0] == "?") ? mb_substr($last, 1) : $last;
             $data["tema"] = mysql_real_escape_string($first . $last);
             $data["keywords"] = implode($keywords, ",");
             $db->Execute("INSERT into zadaniya(sistema, sid, b_id, comments, 
@@ -244,7 +244,7 @@ $message["subject"] = $subject;
 $message["from_email"] = "news@iforget.ru";
 $message["from_name"] = "iforget";
 $message["to"] = array();
-$message["to"][1] = array("email" => MAIL_DEVELOPER);
+//$message["to"][1] = array("email" => MAIL_DEVELOPER);
 $message["to"][0] = array("email" => MAIL_ADMIN);
 $message["track_opens"] = null;
 $message["track_clicks"] = null;

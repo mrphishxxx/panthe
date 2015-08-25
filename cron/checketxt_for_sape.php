@@ -292,7 +292,7 @@ if ($num != 0 && $error == true) {
     $message["from_email"] = "news@iforget.ru";
     $message["from_name"] = "iforget";
     $message["to"] = array();
-    $message["to"][1] = array("email" => MAIL_DEVELOPER);
+    //$message["to"][1] = array("email" => MAIL_DEVELOPER);
     $message["to"][0] = array("email" => MAIL_ADMIN);
     $message["track_opens"] = null;
     $message["track_clicks"] = null;

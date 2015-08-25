@@ -337,7 +337,7 @@ $message["subject"] = $subject;
 $message["from_email"] = "news@iforget.ru";
 $message["from_name"] = "iforget";
 $message["to"] = array();
-$message["to"][1] = array("email" => MAIL_DEVELOPER);
+//$message["to"][1] = array("email" => MAIL_DEVELOPER);
 $message["to"][0] = array("email" => MAIL_ADMIN);
 $message["track_opens"] = null;
 $message["track_clicks"] = null;
@@ -352,7 +352,7 @@ try {
 
 if ($errors != "") {
     $message["html"] = $errors;
-    $message["to"][1] = array("email" => MAIL_DEVELOPER);
+    $message["to"][1] = array("email" => MAIL_ADMIN);
     $message["subject"] = "[Задачи были в неправильном статусе!]";
     try {
         $mandrill->messages->send($message);

@@ -71,7 +71,7 @@ $message["track_clicks"] = null;
 $message["auto_text"] = null;
 
 try {
-    $mandrill->messages->send($message);
+    //$mandrill->messages->send($message);
     echo $body;
 } catch (Exception $e) {
     echo $body;
