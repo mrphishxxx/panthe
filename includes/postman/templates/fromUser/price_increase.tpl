@@ -6,10 +6,10 @@
     <body style="margin: 0">
         <div style="text-align: center; font-family: tahoma, arial; color: #3d413d;">
             <div style="width: 650px; margin: 0 auto; text-align: left; background: #f1f0f0;">
-                <div style="width: 650px; height: 89px; background: {if $get_text}url(images/header_bg.jpg){else}url(cid:header_bg){/if}; text-align: center;">
+                <div style="width: 650px; height: 89px; background: {if $get_text}url(/images/header_bg.jpg){else}url(cid:header_bg){/if}; text-align: center;">
                     <div style="width: 575px; margin: 0 auto; text-align: left;">
                         <a style="float: left; margin: 15px 0 0 0;" target="_blank" href="http://iforget.ru">
-                            <img style="border: 0;" src="{if $get_text}images/logo_main.jpg{else}cid:logo_main{/if}" alt=".">
+                            <img style="border: 0;" src="{if $get_text}/images/logo_main.jpg{else}cid:logo_main{/if}" alt=".">
                         </a>
                         <div style="color: #fff; font-size: 22px; float: left; margin: 12px 0 0 0; line-height: 60px;">- работает сутки напролёт</div>
                         <a style="float: right; font-size: 16px; color: #3d413d; margin: 30px 0 0 0;" href="http://iforget.ru/user.php?action=lk">Войти</a>
@@ -18,7 +18,7 @@
                 <div style="padding: 0 38px 0 38px;">
                     <div style="font-size: 16px; line-height: 20px; font-weight: bold; padding: 20px 0 0 0; text-shadow: 1px 1px 0 #fff;">Здравствуйте!</div>
                     <div style="font-size: 16px; line-height: normal; padding: 15px 0 0 0; text-shadow: 1px 1px 0 #fff;">
-                        Рады сообщить вам, что у нас уже более 500 довольных клиентов, которые используют сервис <a href="http://iforget.ru/">iforget.ru</a> каждый день. 
+                        Рады сообщить вам, что у нас уже более 500 довольных клиентов, которые используют сервис <a href="http://iforget.ru/" style="color: #f9a825;">iforget.ru</a> каждый день. 
                         <br><br>
                         В связи с улучшением качества работы сервиса мы решили увеличить цену на обработку заявок. 
                         <br><br>
@@ -28,9 +28,9 @@
                         <br><br>
                         Для того, что бы цена осталась прежней вам надо будет:
                         <br><br>
-                        <a href="http://iforget.ru/user.php?action=sayty">Добавить 1 сайт к нам в систему</a>
+                        <a href="http://iforget.ru/user.php?action=sayty" style="color: #f9a825;">Добавить 1 сайт к нам в систему</a>
                         <br><br>
-                        <a href="http://iforget.ru/user.php?action=birj">Добавить 1 биржу ссылок</a>
+                        <a href="http://iforget.ru/user.php?action=birj" style="color: #f9a825;">Добавить 1 биржу ссылок</a>
                         <br><br>
                         Пополнить баланс минимум на 500 рублей:
 

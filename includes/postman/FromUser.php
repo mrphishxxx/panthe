@@ -23,11 +23,11 @@ class FromUser {
         $this->admins_mail = $admins_mail;
         $this->TEMPLATE_PATH = $template_path . "fromUser/";
         
-        $f1 = fopen("images/header_bg.jpg", "rb");
-        $f2 = fopen("images/logo_main.jpg", "rb");
+        $f1 = fopen(PATH . "images/header_bg.jpg", "rb");
+        $f2 = fopen(PATH . "images/logo_main.jpg", "rb");
         $this->message["images"] = array();
-        $this->message["images"][] = array("type" => "image/jpg", "name" => "header_bg", "content" => base64_encode(fread($f1, filesize("images/header_bg.jpg"))));
-        $this->message["images"][] = array("type" => "image/jpg", "name" => "logo_main", "content" => base64_encode(fread($f2, filesize("images/logo_main.jpg"))));
+        $this->message["images"][] = array("type" => "image/jpg", "name" => "header_bg", "content" => base64_encode(fread($f1, filesize(PATH . "images/header_bg.jpg"))));
+        $this->message["images"][] = array("type" => "image/jpg", "name" => "logo_main", "content" => base64_encode(fread($f2, filesize(PATH . "images/logo_main.jpg"))));
         
         $this->message["to"] = array();
         //$this->debugging(true);
@@ -64,7 +64,7 @@ class FromUser {
         $this->smarty->assign('password', $password);
         $this->smarty->assign('network', $network);
         $this->smarty->assign('get_text', $this->get_text);
-        
+        $this->smarty->assign('path', PATH);
         if ($email != "") {
             $this->message["to"][0] = array("email" => $email, "name" => $login);
         }
@@ -77,7 +77,7 @@ class FromUser {
         $this->smarty->assign('lastId', $lastId);
         $this->smarty->assign('login', $login);
         $this->smarty->assign('get_text', $this->get_text);
-        
+        $this->smarty->assign('path', PATH);
         if ($email != "") {
             $this->message["to"][0] = array("email" => $email, "name" => $login);
         }
@@ -90,7 +90,7 @@ class FromUser {
         $this->smarty->assign('tid', $tid);
         $this->smarty->assign('login', $login);
         $this->smarty->assign('get_text', $this->get_text);
-        
+        $this->smarty->assign('path', PATH);
         if ($email != "") {
             $this->message["to"][0] = array("email" => $email, "name" => $login);
         }
@@ -101,12 +101,25 @@ class FromUser {
 
     public function priceIncrease($users = array()) {
         $this->smarty->assign('get_text', $this->get_text);
+        $this->smarty->assign('path', PATH);
         if (!empty($users)) {
             $this->message["to"] = $users;
         }
         $this->message["text"] = "До поднятие цены осталось 2 дня!";
         $this->message["subject"] = "[Внимание: увеличение цен в IForget!]";
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "price_increase.tpl");
+        return $this->sendEmail();
+    }
+    
+    public function gettingStarted($email = "", $login = "LOGIN") {
+        $this->smarty->assign('login', $login);
+        $this->smarty->assign('get_text', $this->get_text);
+        $this->smarty->assign('path', PATH);
+        if ($email != "") {
+            $this->message["to"][0] = array("email" => $email, "name" => $login);
+        }
+        $this->message["subject"] = "[Начало работы с iForget.ru!]";
+        $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "getting_started.tpl");
         return $this->sendEmail();
     }
 
@@ -117,13 +130,15 @@ class FromUser {
                 case "ticketAdd": return "[Новый тикет ID в системе iForget!]";
                 case "ticketAnswer": return "[Появился ответ в тикете ID от администрации iForget!]";
                 case "priceIncrease": return "[Внимание: увеличение цен в IForget!]";
+                case "gettingStarted": return "[Начало работы с iForget.ru!]";
             }
         } else {
             return array(
                 "registration" => "[Регистрация в iForget.ru!]",
                 "ticketAdd" => "[Новый тикет ID в системе iForget!]",
                 "ticketAnswer" => "[Появился ответ в тикете ID от администрации iForget!]",
-                "priceIncrease" => "[Внимание: увеличение цен в IForget!]"
+                "priceIncrease" => "[Внимание: увеличение цен в IForget!]",
+                "gettingStarted" => "[Начало работы с iForget.ru!]"
             );
         }
     }
@@ -136,6 +151,7 @@ class FromUser {
                 case "ticketAdd": return $this->ticketAdd();
                 case "ticketAnswer": return $this->ticketAnswer();
                 case "priceIncrease": return $this->priceIncrease();
+                case "gettingStarted": return $this->gettingStarted();
             }
         }
     }
