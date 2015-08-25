@@ -16,12 +16,24 @@ if ((isset($argv) && isset($argv[1]) && !empty($argv[1])) || isset($_GET["param"
     $mails = new MailsController($db, $smarty);
 
     $body = NULL;
-    if (isset($_GET["param"])) {
+    if (isset($_GET["param"]) && !isset($argv[1])) {
         $argv[1] = $_GET["param"];
     }
     switch ($argv[1]) {
         case "started":
             $body = $mails->gettingStartedAction();
+            break;
+        case "promocode":
+            $body = $mails->promocodeAction();
+            break;
+        case "endedBalance":
+            $body = $mails->endedBalance();
+            break;
+        case "balanceComesToEnd":
+            $body = $mails->balanceComesToEnd();
+            break;
+        case "checkMailBalance":
+            $body = $mails->checkMailBalance();
             break;
 
         default: $body = "unknown argument";

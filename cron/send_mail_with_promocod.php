@@ -17,7 +17,7 @@ $users = $db->Execute("SELECT a.* FROM admins a
                            LEFT JOIN orders o ON o.uid = a.id
                            LEFT JOIN birjs b ON b.uid = a.id
                            LEFT JOIN sayty s ON s.uid = a.id
-                           WHERE (a.reg_date < $interval) AND (o.status = 0 AND o.price=300) AND (b.bid IS NULL) AND (s.id IS NULL) AND (a.mail_promo = 0)
+                           WHERE (a.reg_date < $interval) AND (o.status = 0 AND (o.price=300 OR o.price=1000)) AND (b.bid IS NULL) AND (s.id IS NULL) AND (a.mail_promo = 0)
                            GROUP BY a.id
                            ORDER BY a.id");
 
