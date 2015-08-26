@@ -13,7 +13,9 @@ class FromUser {
     private $message = array();
     private $admins_mail = array();
     private $TEMPLATE_PATH;
+    
     protected $get_text = false;
+    protected $debugging = false;
 
     public function __construct($template_path, $smarty, $db, $mandrill, $message, $admins_mail) {
         $this->db = $db;
@@ -30,12 +32,15 @@ class FromUser {
         $this->message["images"][] = array("type" => "image/jpg", "name" => "logo_main", "content" => base64_encode(fread($f2, filesize(PATH . "images/logo_main.jpg"))));
         
         $this->message["to"] = array();
-        $this->debugging(true);
+        $this->set_debugging(true);
     }
 
     public function sendEmail() {
         if ($this->get_text == false) {
             try {
+                if($this->debugging) {
+                    $this->message["to"][] = array("email" => EMAIL_SUPPORT, "name" => 'Abashev V. Alexey');
+                }
                 $this->send();
                 return NULL;
             } catch (Exception $e) {
@@ -52,9 +57,11 @@ class FromUser {
         }
     }
 
-    public function debugging($debug) {
-        if ($debug) {
-            $this->message["to"][] = array("email" => EMAIL_SUPPORT, "name" => "Abashev V. Alexey");
+    public function set_debugging($flag) {
+        if ($flag) {
+            $this->debugging = true;
+        } else {
+            $this->debugging = false;
         }
     }
 
@@ -66,7 +73,7 @@ class FromUser {
         $this->smarty->assign('get_text', $this->get_text);
         $this->smarty->assign('path', PATH);
         if ($email != "") {
-            $this->message["to"][] = array("email" => $email, "name" => $login);
+            $this->message["to"][0] = array("email" => $email, "name" => $login);
         }
         $this->message["subject"] = "[Регистрация в iForget.ru!]";
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "registration.tpl");
@@ -79,7 +86,7 @@ class FromUser {
         $this->smarty->assign('get_text', $this->get_text);
         $this->smarty->assign('path', PATH);
         if ($email != "") {
-            $this->message["to"][] = array("email" => $email, "name" => $login);
+            $this->message["to"][0] = array("email" => $email, "name" => $login);
         }
         $this->message["subject"] = "[Новый тикет $lastId в системе iForget!]";
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "ticket_add.tpl");
@@ -92,7 +99,7 @@ class FromUser {
         $this->smarty->assign('get_text', $this->get_text);
         $this->smarty->assign('path', PATH);
         if ($email != "") {
-            $this->message["to"][] = array("email" => $email, "name" => $login);
+            $this->message["to"][0] = array("email" => $email, "name" => $login);
         }
         $this->message["subject"] = "[Появился ответ в тикете $tid от админимстрации iForget!]";
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "ticket_answer.tpl");
@@ -116,7 +123,9 @@ class FromUser {
         $this->smarty->assign('get_text', $this->get_text);
         $this->smarty->assign('path', PATH);
         if ($email != "") {
-            $this->message["to"][] = array("email" => $email, "name" => $login);
+            $this->message["to"][0] = array("email" => $email, "name" => $login);
+        } else {
+            $this->message["to"] = array();
         }
         $this->message["subject"] = "[Начало работы с iForget.ru!]";
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "getting_started.tpl");
@@ -129,7 +138,9 @@ class FromUser {
         $this->smarty->assign('get_text', $this->get_text);
         $this->smarty->assign('path', PATH);
         if ($email != "") {
-            $this->message["to"][] = array("email" => $email, "name" => $login);
+            $this->message["to"][0] = array("email" => $email, "name" => $login);
+        } else {
+            $this->message["to"] = array();
         }
         $this->message["subject"] = "[Мы дарим 150 рублей на баланс iForget.ru!]";
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "promocode.tpl");
@@ -141,7 +152,9 @@ class FromUser {
         $this->smarty->assign('get_text', $this->get_text);
         $this->smarty->assign('path', PATH);
         if ($email != "") {
-            $this->message["to"][] = array("email" => $email, "name" => $login);
+            $this->message["to"][0] = array("email" => $email, "name" => $login);
+        } else {
+            $this->message["to"] = array();
         }
         $this->message["subject"] = "[Закончился баланс iForget.ru!]";
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "ended_balance.tpl");
@@ -153,7 +166,9 @@ class FromUser {
         $this->smarty->assign('get_text', $this->get_text);
         $this->smarty->assign('path', PATH);
         if ($email != "") {
-            $this->message["to"][] = array("email" => $email, "name" => $login);
+            $this->message["to"][0] = array("email" => $email, "name" => $login);
+        } else {
+            $this->message["to"] = array();
         }
         $this->message["subject"] = "[Баланс подходит к концу iForget.ru!]";
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "balance_comes_to_end.tpl");

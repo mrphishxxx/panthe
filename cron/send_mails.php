@@ -27,13 +27,13 @@ if ((isset($argv) && isset($argv[1]) && !empty($argv[1])) || isset($_GET["param"
             $body = $mails->promocodeAction();
             break;
         case "endedBalance":
-            $body = $mails->endedBalance();
+            $body = $mails->endedBalanceAction();
             break;
         case "balanceComesToEnd":
-            $body = $mails->balanceComesToEnd();
+            $body = $mails->balanceComesToEndAction();
             break;
         case "checkMailBalance":
-            $body = $mails->checkMailBalance();
+            $body = $mails->checkMailBalanceAction();
             break;
 
         default: $body = "unknown argument";
@@ -41,5 +41,5 @@ if ((isset($argv) && isset($argv[1]) && !empty($argv[1])) || isset($_GET["param"
 } else {
     $body = "Not argument!" . implode("; ", $argv);
 }
-echo $body;
+echo date("Y-m-d H:i:s") . PHP_EOL . $body . PHP_EOL;
 exit();
