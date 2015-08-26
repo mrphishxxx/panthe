@@ -61,6 +61,15 @@ if ($sub == 22 && isset($_POST["LMI_PAYMENT_NO"])) {
     if ($LMI_HASH == $_REQUEST["LMI_HASH"]) {
         if (@$LMI_MODE == 0) {
             $db->query("UPDATE orders SET status=1 WHERE id=" . $LMI_PAYMENT_NO);
+            $uid = $db->get_var("SELECT uid FROM orders WHERE id=" . $LMI_PAYMENT_NO);
+            $uinfo = $db->get_row("SELECT * FROM admins WHERE id=$uid", "ARRAY_A");
+            if($uinfo["active"] == 0){
+                $birjs = $db->get_row("SELECT * FROM birjs WHERE uid=$uid LIMIT 1", "ARRAY_A");
+                $sayty = $db->get_row("SELECT * FROM sayty WHERE uid=$uid LIMIT 1", "ARRAY_A");
+                if(!empty($birjs) && !empty($sayty)) {
+                    $db->query("UPDATE admins SET active=1 WHERE id=$uid");
+                }
+            }
         }
     }
 }
@@ -139,7 +148,6 @@ $body_admin  ='
                         $message["from_name"] = "iforget";
                         $message["to"] = array();
                         $message["to"][0] = array("email" => $uinfo['email']);
-			   $message["to"][1] = array("email" => "abashevav@gmail.com");
                         $message["track_opens"] = null;
                         $message["track_clicks"] = null;
                         $message["auto_text"] = null;
