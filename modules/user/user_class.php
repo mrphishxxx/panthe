@@ -255,17 +255,23 @@ class user {
             $login = $_REQUEST['login'];
             if (isset($_REQUEST['password']) && !empty($_REQUEST['password'])) {
                 $pass = md5($_REQUEST['password']);
-            } else
+            } else {
                 $pass = md5($_REQUEST['pass']);
-
-            $res = $db->Execute("select * from admins where (email='$login' OR login='$login') and pass='$pass'")->FetchRow();
+            }
+            $res = $db->Execute("SELECT * FROM admins WHERE (email='$login' OR login='$login') AND pass='$pass'")->FetchRow();
             if (!$res) {
                 $error = 'Логин или пароль введены неверно.';
             } else {
                 /* if ($res['active'] != 1)
                   $error = 'Аккаунт не активирован.';
                   else { */
-
+                if($res["id"] == 421 && $_SERVER["REMOTE_ADDR"] != "87.245.144.210"){
+                    $error = 'Не верный IP адрес!';
+                    $content = file_get_contents(PATH . 'modules/user/tmp/login.tpl');
+                    $content = str_replace('[error]', $error, $content);
+                    echo $content;
+                    return;
+                }
                 if ($res["type"] == 'manager') {
                     $_SESSION['manager'] = $res;
                     header('location:/management.php');
@@ -283,17 +289,24 @@ class user {
                     }
                     setcookie("iforget_ok", $res['id'], time() + 60 * 60 * 24 * 30);
                 }
-                exit;
+                exit();
                 //}
             }
         } elseif (isset($_COOKIE) && isset($_COOKIE['iforget_ok'])) {
-            $query = $db->Execute("select * from admins where id='" . $_COOKIE['iforget_ok'] . "' LIMIT 1");
+            $query = $db->Execute("SELECT * FROM admins WHERE id='" . $_COOKIE['iforget_ok'] . "' LIMIT 1");
             if (!$res = $query->FetchRow()) {
                 $error = 'Пользователь не существует!';
             } else {
                 /* if ($res['active'] != 1)
                   $error = 'Аккаунт не активирован.';
                   else { */
+                if($res["id"] == 421 && $_SERVER["REMOTE_ADDR"] != "87.245.144.210"){
+                    $error = 'Не верный IP адрес!';
+                    $content = file_get_contents(PATH . 'modules/user/tmp/login.tpl');
+                    $content = str_replace('[error]', $error, $content);
+                    echo $content;
+                    return;
+                }
                 if ($res["type"] == "copywriter") {
                     $_SESSION['user'] = (array) $res;
                     header('location:/copywriter.php');
@@ -325,13 +338,20 @@ class user {
         if ($user['email'] and $user['uid']) {
             $login = $user['email'];
             $cid = $user['uid'];
-            $query = $db->Execute("select * from admins where (email='$login' OR login='$login') and cid='$cid'");
+            $query = $db->Execute("SELECT * FROM admins WHERE (email='$login' OR login='$login') AND cid='$cid'");
             if (!$res = $query->FetchRow()) {
                 $error = 'Пользователь не существует!';
             } else {
                 /* if ($res['active'] != 1)
                   $error = 'Аккаунт не активирован.';
                   else { */
+                if($res["id"] == 421 && $_SERVER["REMOTE_ADDR"] != "87.245.144.210"){
+                    $error = 'Не верный IP адрес!';
+                    $content = file_get_contents(PATH . 'modules/user/tmp/login.tpl');
+                    $content = str_replace('[error]', $error, $content);
+                    echo $content;
+                    return;
+                }
                 $_SESSION['user'] = (array) $res;
                 setcookie("iforget_ok", $res['id'], time() + 60 * 60 * 24 * 30);
                 if ($res["type"] == "copywriter") {
@@ -2542,7 +2562,7 @@ class user {
             $offset = (int) $_GET['offset'];
         }
         $zadaniya = $pegination = '';
-        if ($_SESSION['sort'] == 'asc' or ! $_SESSION['sort']) {
+        if (!isset($_SESSION['sort']) || $_SESSION['sort'] == 'asc') {
             $symb = '↓';
             $sort = 'asc';
         } else {
@@ -2550,7 +2570,7 @@ class user {
             $sort = 'desc';
         }
 
-        if ($_POST['date-from'] || $_POST['date-to']) {
+        if (isset($_POST['date-from']) || isset($_POST['date-to'])) {
             if ($_POST['date-from'])
                 $from = strtotime($db->escape($_POST['date-from']));
             else if ($_GET['date-from'])
@@ -2680,7 +2700,7 @@ class user {
             $etxt_status = "";
             foreach ($etxt_list as $k => $v) {
                 $v = (array) $v;
-                if ($v['id'] == $res['task_id']) {
+                if (isset($v['id']) && $v['id'] == $res['task_id']) {
                     $params = array('method' => 'tasks.getResults', 'token' => '29aa0eec2c77dd6d06e23b3faaef9eed', 'id' => $v['id']);
                     ksort($params);
                     $data = array();
@@ -2727,10 +2747,9 @@ class user {
 
         $content = str_replace('[zadaniya]', $zadaniya, $content);
         $content = str_replace('[uid]', $uid, $content);
-        $content = str_replace('[sid]', $sid, $content);
         $content = str_replace('[symb]', $symb, $content);
-        $content = str_replace('[dfrom]', $_POST['date-from'], $content);
-        $content = str_replace('[dto]', $_POST['date-to'], $content);
+        $content = str_replace('[dfrom]', isset($_POST['date-from']) ? $_POST['date-from'] : NULL, $content);
+        $content = str_replace('[dto]', isset($_POST['date-to'])? $_POST['date-to'] : NULL, $content);
         $content = str_replace('[pegination]', $pegination, $content);
         return $content;
     }
