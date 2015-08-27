@@ -120,65 +120,73 @@
                 <input type="text" name="colvos" id="colvos" value="" class="full-length">
             </li>
             <li>
+                <span class="title">Задачи на удаление ссылки: <span class="hint">(GGL)</span></span>
+                <select class="full-length" name="taskdel_flag">
+                    <option value=""></option>
+                    <option value="Да">Да</option>
+                    <option value="Нет">Нет</option>
+                </select>
+            </li>
+            <li>
                 <span class="title">Обзоры: <span class="hint">(размещать заявки с типом обзоров)</span></span>
                 <select class="full-length" name="obzor_flag">
                     <option value=""></option>
                     <option value="Да">Да</option>
                     <option value="Нет">Нет</option>
-                    <select>
-                        </li>
-                        <li>
-                            <span class="title">Новости: <span class="hint">(размещать заявки с типом новости)</span></span>
-                            <select class="full-length" name="news_flag">
-                                <option value=""></option>
-                                <option value="Да">Да</option>
-                                <option value="Нет">Нет</option>
-                                <select>
-                                    </li>
-                                    <li>
-                                        <span class="title">Тематичность:</span>
-                                        <select class="full-length" name="subj_flag">
-                                            <option value=""></option>
-                                            <option value="Да">Да</option>
-                                            <option value="Нет">Нет</option>
-                                            <select>
-                                                </li>
-                                                <li>
-                                                    <span class="title">Размещать задания: <span class="hint">(порно, казино и т.п)</span></span>
-                                                    <select class="full-length" name="bad_flag">
-                                                        <option value=""></option>
-                                                        <option value="Да">Да</option>
-                                                        <option value="Нет">Нет</option>
-                                                        <select>
-                                                            </li>
-                                                            <li>
-                                                                <span class="title">Размер анонса: <span class="hint">(по умолчанию отсутствует)</span></span>
-                                                                <input type="text" class="short" value="" placeholder="Символов" name="anons_size" />
-                                                                <span class="hint">Пример: 1000, 1500</span>
-                                                            </li>
-                                                            <li>
-                                                                <span class="title">Публикация фото: <span class="hint">(критерии)</span></span>
-                                                                <input type="text" class="one-third" value="" placeholder="Ширина пикс." name="pic_width" />
-                                                                <span class="hint">X</span>
-                                                                <input type="text" class="one-third" value="" placeholder="Высота пикс." name="pic_height" />
-                                                                <select class="one-third" name="pic_position">
-                                                                    <option>Слева</option>
-                                                                    <option>По-центру</option>
-                                                                    <option>Справа</option>
-                                                                </select>
-                                                            </li>
-                                                            <li>
-                                                                <span class="title">Ваши пожелания по работе с площадкой: <span class="hint">(по умолчанию отсутствует)</span></span>
-                                                                <textarea class="full-length" cols="10" rows="4" placeholder="Введите текст" name="site_comments"></textarea>
-                                                            </li>
+                </select>
+            </li>
+            <li>
+                <span class="title">Новости: <span class="hint">(размещать заявки с типом новости)</span></span>
+                <select class="full-length" name="news_flag">
+                    <option value=""></option>
+                    <option value="Да">Да</option>
+                    <option value="Нет">Нет</option>
+                </select>
+            </li>
+            <li>
+                <span class="title">Тематичность:</span>
+                <select class="full-length" name="subj_flag">
+                    <option value=""></option>
+                    <option value="Да">Да</option>
+                    <option value="Нет">Нет</option>
+                </select>
+            </li>
+            <li>
+                <span class="title">Размещать задания: <span class="hint">(порно, казино и т.п)</span></span>
+                <select class="full-length" name="bad_flag">
+                    <option value=""></option>
+                    <option value="Да">Да</option>
+                    <option value="Нет">Нет</option>
+                </select>
+            </li>
+            <li>
+                <span class="title">Размер анонса: <span class="hint">(по умолчанию отсутствует)</span></span>
+                <input type="text" class="short" value="" placeholder="Символов" name="anons_size" />
+                <span class="hint">Пример: 1000, 1500</span>
+            </li>
+            <li>
+                <span class="title">Публикация фото: <span class="hint">(критерии)</span></span>
+                <input type="text" class="one-third" value="" placeholder="Ширина пикс." name="pic_width" />
+                <span class="hint">X</span>
+                <input type="text" class="one-third" value="" placeholder="Высота пикс." name="pic_height" />
+                <select class="one-third" name="pic_position">
+                    <option>Слева</option>
+                    <option>По-центру</option>
+                    <option>Справа</option>
+                </select>
+            </li>
+            <li>
+                <span class="title">Ваши пожелания по работе с площадкой: <span class="hint">(по умолчанию отсутствует)</span></span>
+                <textarea class="full-length" cols="10" rows="4" placeholder="Введите текст" name="site_comments"></textarea>
+            </li>
 
-                                                            </ul>
-                                                            </div>
+        </ul>
+    </div>
 
 
-                                                            <div class="action_bar">
-                                                                <input type="hidden" name="send" value="1">
-                                                                <input type="submit" value="Сохранить" /><br/><br/>
-                                                                <input type="button" value="Вернуться" onclick="location.href = '?module=admins&action=sayty&uid=[uid]'" style="width:196px;">
-                                                            </div>
-                                                            </form>
+    <div class="action_bar">
+        <input type="hidden" name="send" value="1">
+        <input type="submit" value="Сохранить" /><br/><br/>
+        <input type="button" value="Вернуться" onclick="location.href = '?module=admins&action=sayty&uid=[uid]'" style="width:196px;">
+    </div>
+</form>

@@ -36,50 +36,15 @@
             <li>
                 <span class="title">Статья:</span>
                 <textarea name="text" id="text" class="full-length" readonly='readonly'>[text]</textarea>
-                [etxt_action]
             </li>
             <li>
                 <span class="title">Уникальность текста:</span>
                 [uniq]%
             </li>
-            <!--<li style="display:none">
-                    <span class="title">Картинка:</span>
-                    <input type="text" name="url_pic" id="url_pic" class="full-length" value='[url_pic]' readonly='readonly'>
-            </li>-->
             <li>
                 <span class="title">Ссылка на статью:</span>
                 <input type="text" name="url_statyi" id="url_statyi" class="full-length" value='[url_statyi]' readonly='readonly'>
             </li>
-            <!--
-                                                                            <li>
-                                                                                    <span class="title">Etxt:</span>
-                                                                                    <input type="text" name="etxt" value='[etxt]' id="etxt" class="full-length">
-                                                                            </li>
-                                                                            <li>
-                                                                                    <span class="title">Стоимость:</span>
-                                                                                    <input type="text" name="price" id="price" class="full-length" value='[price]'>
-                                                                            </li>
-                                                                            <li>
-                                                                                    <span class="title">Статус:</span>
-                                                                                    <input type="radio" name="task_status" value="dorabotka" [dorabotka]> На доработке
-                                                                            </li>
-                                                                            <li>
-                                                                                    <span class="title"></span>
-                                                                                    <input type="radio" name="task_status" value="vilojeno" [vilojeno]> Выложено
-                                                                            </li>
-                                                                            <li>
-                                                                                    <span class="title"></span>
-                                                                                    <input type="radio" name="task_status" value="vipolneno" [vipolneno]> Выполнено
-                                                                            </li>
-                                                                            <li>
-                                                                                    <span class="title"></span>
-                                                                                    <input type="radio" name="task_status" value="vrabote" [vrabote]> В работе
-                                                                            </li>
-                                                                            <li>
-                                                                                    <span class="title"></span>
-                                                                                    <input type="radio" name="task_status" value="navyklad" [navyklad]> На выкладывании
-                                                                            </li>
-            !-->
         </ul>
     </div>
 

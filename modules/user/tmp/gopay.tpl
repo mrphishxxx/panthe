@@ -29,16 +29,15 @@
 <p>&nbsp;</p>
 
 <h1>Мои платежи</h1>
+[pegination]
 <div class="wider">
     <table>
         <thead>
-
             <tr>
                 <th>Сумма платежа</td>
                 <th>Дата</td>
                 <th>Статус</td>
             </tr>
-
         </thead>
         <tbody>
             [my_payments]

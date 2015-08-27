@@ -1,20 +1,19 @@
 <h1>Обращения пользователя [login]</h1>
 <div class="wider" style="border-bottom: 1px solid #ccc; margin-bottom: 40px; padding-bottom: 20px;">
-    <form action="remove" method="post">
-        <table>
-            <thead>
-                <tr>
-                    <th class="left-corner tickets-state-ico"><div>&nbsp;</div></th>
-                    <th class="tickets-title">Тема</th>
-                    <th class="tickets-state-text">Статус</th>
-                    <th class="tickets-date">Дата</th>
-                </tr>
-            </thead>
-            <tbody>
-                [tickets]
-            </tbody>
-        </table>
-    </form>
+    [pegination]
+    <table>
+        <thead>
+            <tr>
+                <th class="left-corner tickets-state-ico"><div>&nbsp;</div></th>
+                <th class="tickets-title">Тема</th>
+                <th class="tickets-state-text">Статус</th>
+                <th class="tickets-date">Дата</th>
+            </tr>
+        </thead>
+        <tbody>
+            [tickets]
+        </tbody>
+    </table>
 </div>
 
 <!-- add exchange -->

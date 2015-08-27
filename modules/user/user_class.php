@@ -265,7 +265,7 @@ class user {
                 /* if ($res['active'] != 1)
                   $error = 'Аккаунт не активирован.';
                   else { */
-                if($res["id"] == 421 && $_SERVER["REMOTE_ADDR"] != "87.245.144.210"){
+                if ($res["id"] == 421 && $_SERVER["REMOTE_ADDR"] != "87.245.144.210") {
                     $error = 'Не верный IP адрес!';
                     $content = file_get_contents(PATH . 'modules/user/tmp/login.tpl');
                     $content = str_replace('[error]', $error, $content);
@@ -300,7 +300,7 @@ class user {
                 /* if ($res['active'] != 1)
                   $error = 'Аккаунт не активирован.';
                   else { */
-                if($res["id"] == 421 && $_SERVER["REMOTE_ADDR"] != "87.245.144.210"){
+                if ($res["id"] == 421 && $_SERVER["REMOTE_ADDR"] != "87.245.144.210") {
                     $error = 'Не верный IP адрес!';
                     $content = file_get_contents(PATH . 'modules/user/tmp/login.tpl');
                     $content = str_replace('[error]', $error, $content);
@@ -345,7 +345,7 @@ class user {
                 /* if ($res['active'] != 1)
                   $error = 'Аккаунт не активирован.';
                   else { */
-                if($res["id"] == 421 && $_SERVER["REMOTE_ADDR"] != "87.245.144.210"){
+                if ($res["id"] == 421 && $_SERVER["REMOTE_ADDR"] != "87.245.144.210") {
                     $error = 'Не верный IP адрес!';
                     $content = file_get_contents(PATH . 'modules/user/tmp/login.tpl');
                     $content = str_replace('[error]', $error, $content);
@@ -497,7 +497,7 @@ class user {
                     $cur_dt = date("Y-m-d H:i:s");
                     $db->Execute("INSERT INTO orders (uid, price, date, status, is_promo) VALUES ($uid, 150, '$cur_dt', 1, 1)");
                     $db->Execute("INSERT INTO promo_user (promo_id, user_id) VALUES (" . $res['Message_ID'] . ", $uid)");
-                    
+
                     $this->_postman->admin->userGoPayment($user["id"], $user["login"], $_REQUEST['promo']);
                 }
 
@@ -568,7 +568,7 @@ class user {
             $db->Execute("UPDATE admins SET email='" . $email . "' WHERE id=" . $_SESSION['user']['id']);
             $_SESSION['user']['email'] = $email;
             $this->_postman->admin->userChangemail($_SESSION['user']['login'], $email);
-            
+
             header('location:/user.php');
             exit;
         }
@@ -1052,7 +1052,7 @@ class user {
             $content = str_replace('[s_id]', $sid, $content);
         } else {
             $qv = $_REQUEST['question_viklad'];
-            
+
             $db->Execute("UPDATE admins SET comment_viklad='" . $qv . "' WHERE id=$uid");
             $this->_postman->admin->moderChangeVikladComment($uid, $site['url']);
             header("Location: /user.php");
@@ -1131,47 +1131,60 @@ class user {
         $content = file_get_contents(PATH . 'modules/user/tmp/sayty_view.tpl');
 
         $uid = (int) $_SESSION['user']['id'];
-        $query = $db->Execute("select * from admins where id=$uid");
-        $res = $query->FetchRow();
-        $content = str_replace('[login]', $res['login'], $content);
+        $user = $db->Execute("select * from admins where id=$uid")->FetchRow();
 
+        $content = str_replace('[login]', $user['login'], $content);
         $content = str_replace('[uid]', $uid, $content);
 
+        $neobrabot = $dorabotka = $vilojeno = $vrabote = $navyklad = $neo = array();
+        $zadaniya = $db->Execute("SELECT * FROM zadaniya WHERE vipolneno !=1 AND uid=$uid");
+        while ($task = $zadaniya->FetchRow()) {
+            if (!isset($navyklad[$task["sid"]])) {
+                $navyklad[$task["sid"]] = 0;
+            }
+            if (!isset($vrabote[$task["sid"]])) {
+                $vrabote[$task["sid"]] = 0;
+            }
+            if (!isset($dorabotka[$task["sid"]])) {
+                $dorabotka[$task["sid"]] = 0;
+            }
+            if (!isset($neobrabot[$task["sid"]])) {
+                $neobrabot[$task["sid"]] = 0;
+            }
+
+
+            if ($task["navyklad"] == 1) {
+                $navyklad[$task["sid"]] += 1;
+            }
+            if ($task["vrabote"] == 1 && empty($task["dorabotka"]) && empty($task["vipolneno"]) && empty($task["navyklad"]) && empty($task["vilojeno"])) {
+                $vrabote[$task["sid"]] += 1;
+            }
+            if ($task["dorabotka"] == 1) {
+                $dorabotka[$task["sid"]] += 1;
+            }
+            if (empty($task["vrabote"]) && empty($task["dorabotka"]) && empty($task["vipolneno"]) && empty($task["navyklad"]) && empty($task["vilojeno"])) {
+                $neobrabot[$task["sid"]] += 1;
+            }
+        }
+        
         $sayty = '';
         $query = $db->Execute("select * from sayty where uid=$uid order by id asc");
-        $n = 0;
-        while ($res = $query->FetchRow()) {
+        while ($site = $query->FetchRow()) {
             $sayty .= file_get_contents(PATH . 'modules/user/tmp/sayty_one.tpl');
-            $sayty = str_replace('[url]', $res['url'], $sayty);
-            $sayty = str_replace('[id]', $res['id'], $sayty);
-            $sayty = str_replace('[comment_viklad]', $res['comment_viklad'], $sayty);
-            $sid = $res['id'];
-            $z1 = $db->Execute("select count(*) from zadaniya where vrabote=1 and sid=$sid");
-            $z1 = $z1->FetchRow();
-            $z1 = $z1['count(*)'];
-            $sayty = str_replace('[z1]', $z1, $sayty);
-            $z2 = $db->Execute("select count(*) from zadaniya where dorabotka=1 and sid=$sid");
-            $z2 = $z2->FetchRow();
-            $z2 = $z2['count(*)'];
-            $sayty = str_replace('[z2]', $z2, $sayty);
-            $z3 = $db->Execute("select count(*) from zadaniya where vipolneno=1 and sid=$sid");
-            $z3 = $z3->FetchRow();
-            $z3 = $z3['count(*)'];
-            $sayty = str_replace('[z3]', $z3, $sayty);
-            $z7 = $db->Execute("select count(*) from zadaniya where navyklad=1 and sid=$sid");
-            $z7 = $z7->FetchRow();
-            $z7 = $z7['count(*)'];
-            $sayty = str_replace('[z7]', $z7, $sayty);
-            $z4 = $db->Execute("select count(*) from zadaniya where sid=$sid");
-            $z4 = $z4->FetchRow();
-            $z4 = $z4['count(*)'] - ($z1 + $z2 + $z3 + $z7);
-            $sayty = str_replace('[z4]', $z4, $sayty);
+            $sayty = str_replace('[url]', $site['url'], $sayty);
+            $sayty = str_replace('[id]', $site['id'], $sayty);
+            $sayty = str_replace('[comment_viklad]', $site['comment_viklad'], $sayty);
+            
+            $sayty = str_replace('[z1]', isset($vrabote[$site['id']]) ? $vrabote[$site['id']] : 0, $sayty);
+            $sayty = str_replace('[z2]', isset($dorabotka[$site['id']]) ? $dorabotka[$site['id']] : 0, $sayty);
+            $sayty = str_replace('[z4]', isset($neobrabot[$site['id']]) ? $neobrabot[$site['id']] : 0, $sayty);
+            $sayty = str_replace('[z7]', isset($navyklad[$site['id']]) ? $navyklad[$site['id']] : 0, $sayty);
         }
-        if ($sayty)
+        if ($sayty) {
             $sayty = str_replace('[sayty]', $sayty, file_get_contents(PATH . 'modules/user/tmp/sayty_top.tpl'));
-        else
+        } else {
             $sayty = file_get_contents(PATH . 'modules/user/tmp/no.tpl');
-
+        }
         $content = str_replace('[sayty]', $sayty, $content);
         $content = str_replace('[uid]', $uid, $content);
         return $content;
@@ -1326,6 +1339,7 @@ class user {
             $content = str_replace('[' . $site["site_subject"] . ']', "selected", $content);
             $content = str_replace('[' . $site["cms"] . ']', "selected", $content);
             $content = str_replace('[' . $site["pic_position"] . ']', "selected", $content);
+            $content = str_replace('[taskdel_' . $site["taskdel_flag"] . ']', "selected", $content);
             $content = str_replace('[obzor_' . $site["obzor_flag"] . ']', "selected", $content);
             $content = str_replace('[news_' . $site["news_flag"] . ']', "selected", $content);
             $content = str_replace('[subj_' . $site["subj_flag"] . ']', "selected", $content);
@@ -1363,6 +1377,7 @@ class user {
             $cms = $_REQUEST['cms'];
             $subj_flag = ($_REQUEST['subj_flag'] == "Да" ? 1 : 0);
             $obzor_flag = ($_REQUEST['obzor_flag'] == "Да" ? 1 : 0);
+            $taskdel_flag = ($_REQUEST['taskdel_flag'] == "Да" ? 1 : 0);
             $news_flag = ($_REQUEST['news_flag'] == "Да" ? 1 : 0);
             $bad_flag = ($_REQUEST['bad_flag'] == "Да" ? 1 : 0);
             $anons_size = $_REQUEST['anons_size'];
@@ -1396,7 +1411,7 @@ class user {
 
             $q = "update sayty set login='$login', pass='$pass',gid='$gid', getgoodlinks_id='$getgoodlinks_id', sape_id='$sape_id', miralinks_id='$miralinks_id', rotapost_id='$rotapost_id', webartex_id='$webartex_id', blogun_id='$blogun_id',
                                         url='$url', url_admin='$url_admin', colvos='$colvos', cena='$price_etxt', price='$price_iforget', site_subject='$site_subject', site_subject_more='$site_subject_more', 
-                                        cms='$cms', subj_flag='$subj_flag', obzor_flag='$obzor_flag', news_flag='$news_flag', bad_flag='$bad_flag', anons_size='$anons_size', 
+                                        cms='$cms', subj_flag='$subj_flag', obzor_flag='$obzor_flag', taskdel_flag='$taskdel_flag', news_flag='$news_flag', bad_flag='$bad_flag', anons_size='$anons_size', 
                                         pic_width='$pic_width', pic_height='$pic_height', pic_position='$pic_position', site_comments='$site_comments' where id=$id";
             $db->Execute($q);
             $this->_postman->admin->userEditSite($user, $site);
@@ -1453,6 +1468,7 @@ class user {
             $site_subject_more = $_REQUEST['site_subject_more'];
             $cms = $_REQUEST['cms'];
             $subj_flag = ($_REQUEST['subj_flag'] == "Да" ? 1 : 0);
+            $taskdel_flag = ($_REQUEST['taskdel_flag'] == "Да" ? 1 : 0);
             $obzor_flag = ($_REQUEST['obzor_flag'] == "Да" ? 1 : 0);
             $news_flag = ($_REQUEST['news_flag'] == "Да" ? 1 : 0);
             $bad_flag = ($_REQUEST['bad_flag'] == "Да" ? 1 : 0);
@@ -1469,8 +1485,8 @@ class user {
             $webartex_id = $_REQUEST['webartex_id'];
             $blogun_id = $_REQUEST['blogun_id'];
 
-            $db->Execute("insert into sayty(uid, url, url_admin, login, pass, gid, getgoodlinks_id, sape_id, miralinks_id, rotapost_id, webartex_id, blogun_id, price, cena, site_subject, site_subject_more, cms, obzor_flag, news_flag, subj_flag, bad_flag, anons_size, pic_width, pic_height, pic_position, site_comments) values 
-					($uid, '$url', '$url_admin', '$login', '$pass', '$gid', '$getgoodlinks_id', '$sape_id', '$miralinks_id', '$rotapost_id', '$webartex_id', '$blogun_id', '$price_iforget', '$price_etxt', '$site_subject', '$site_subject_more', '$cms', '$obzor_flag', '$news_flag', '$subj_flag', '$bad_flag', '$anons_size', '$pic_width', '$pic_height', '$pic_position', '$site_comments')");
+            $db->Execute("insert into sayty(uid, url, url_admin, login, pass, gid, getgoodlinks_id, sape_id, miralinks_id, rotapost_id, webartex_id, blogun_id, price, cena, site_subject, site_subject_more, cms, taskdel_flag, obzor_flag, news_flag, subj_flag, bad_flag, anons_size, pic_width, pic_height, pic_position, site_comments) values 
+					($uid, '$url', '$url_admin', '$login', '$pass', '$gid', '$getgoodlinks_id', '$sape_id', '$miralinks_id', '$rotapost_id', '$webartex_id', '$blogun_id', '$price_iforget', '$price_etxt', '$site_subject', '$site_subject_more', '$cms', '$taskdel_flag', '$obzor_flag', '$news_flag', '$subj_flag', '$bad_flag', '$anons_size', '$pic_width', '$pic_height', '$pic_position', '$site_comments')");
             $sid = $db->Insert_ID();
             $this->_postman->admin->userAddSite($uid, $sid, $url);
 
@@ -1975,23 +1991,6 @@ class user {
             $query = $db->Execute($q);
         }
 
-
-        $pass = ETXT_PASS;
-        $params = array('method' => 'tasks.listTasks', 'token' => '29aa0eec2c77dd6d06e23b3faaef9eed', 'status' => '3');
-        ksort($params);
-        $data = array();
-        $data2 = array();
-        foreach ($params as $k => $v) {
-            $data[] = $k . '=' . $v;
-            $data2[] = $k . '=' . urlencode($v);
-        }
-        $sign = md5(implode('', $data) . md5($pass . 'api-pass'));
-        $url = 'https://www.etxt.ru/api/json/?' . implode('&', $data2) . '&sign=' . $sign;
-        $out = file_get_contents($url);
-        $etxt_list = json_decode($out);
-
-
-        $n = 0;
         while ($res = $query->FetchRow()) {
 
             $task_dt = date("Y-m-d", $res['date']);
@@ -2054,46 +2053,7 @@ class user {
                 $zadaniya = str_replace('[bg]', $bg, $zadaniya);
             }
 
-
-            $etxt_status = "";
-            foreach ($etxt_list as $k => $v) {
-                $v = (array) $v;
-                if ($v['id'] == $res['task_id']) {
-                    $params = array('method' => 'tasks.getResults', 'token' => '29aa0eec2c77dd6d06e23b3faaef9eed', 'id' => $v['id']);
-                    ksort($params);
-                    $data = array();
-                    $data2 = array();
-                    foreach ($params as $k => $v) {
-                        $data[] = $k . '=' . $v;
-                        $data2[] = $k . '=' . urlencode($v);
-                    }
-                    $sign = md5(implode('', $data) . md5($pass . 'api-pass'));
-                    $url = 'https://www.etxt.ru/api/json/?' . implode('&', $data2) . '&sign=' . $sign;
-                    $cur_out = file_get_contents($url);
-                    $task_stat = json_decode($cur_out);
-                    $file_href = "";
-                    $file_path = "";
-
-                    foreach ($task_stat as $kt => $vt) {
-                        $vt = (array) $vt;
-                        $file_href = (array) $vt['files'];
-                        $file_href_parts = (array) $file_href['file'];
-                        if ($file_href_parts['path']) {
-                            $file_path = $file_href_parts['path'];
-                        } else {
-                            $file_href_parts = (array) $file_href['text'];
-                            $file_path = $file_href_parts['path'];
-                        }
-                    }
-                    if ($file_path) {
-                        $etxt_status = "<a href='" . $file_path . "' target='_blank' style='color:#000; text-decoration:underline;'>статья</a>";
-                    }
-
-                    break;
-                }
-            }
-
-            $zadaniya = str_replace('[etxt_status]', $etxt_status, $zadaniya);
+            $zadaniya = str_replace('[etxt_status]', "", $zadaniya);
         }
         if ($zadaniya)
             $zadaniya = str_replace('[zadaniya]', $zadaniya, file_get_contents(PATH . 'modules/user/tmp/zadaniya_top.tpl'));
@@ -2174,7 +2134,7 @@ class user {
 
     function zadaniya_edit_user($db) {
 
-        $send = $_REQUEST['send'];
+        $send = isset($_REQUEST['send']) ? $_REQUEST['send'] : NULL;
         $id = (int) $_REQUEST['id'];
         $uid = (int) $_REQUEST['uid'];
         $sid = (int) $_GET['sid'];
@@ -2187,6 +2147,7 @@ class user {
             //Смотрим на баланс и проверяем, может ли создать пользователь заявку (хватит ли денег)
             $cur_balans = $_SESSION['user_balans'];
             $sinfo = $db->Execute("SELECT * FROM sayty WHERE id=$sid")->FetchRow();
+            $content = str_replace('[url]', $sinfo["url"], $content);
             $task_cost = $sinfo['price'];
             $cur_balans -= $task_cost;
             if ($cur_balans < 0) {
@@ -2219,88 +2180,11 @@ class user {
             else
                 $res['vilojeno'] = '';
 
-            $pass = ETXT_PASS;
-            $params = array('method' => 'tasks.getResults', 'token' => '29aa0eec2c77dd6d06e23b3faaef9eed', 'id' => $res['task_id']);
-            ksort($params);
-            $data = array();
-            $data2 = array();
-            foreach ($params as $k => $v) {
-                $data[] = $k . '=' . $v;
-                $data2[] = $k . '=' . urlencode($v);
-            }
-            $sign = md5(implode('', $data) . md5($pass . 'api-pass'));
-            $url = 'https://www.etxt.ru/api/json/?' . implode('&', $data2) . '&sign=' . $sign;
-            $cur_out = file_get_contents($url);
-            $task_stat = json_decode($cur_out);
-            $file_href = "";
-            $uniq = 0;
-            foreach ($task_stat as $kt => $vt) {
-                $vt = (array) $vt;
-
-                $file_href = (array) $vt['files'];
-                $file_href_parts = (array) $file_href['file'];
-                if ($file_href_parts['path']) {
-                    $file_path = $file_href_parts['path'];
-                    $uniq = $file_href_parts['per_antiplagiat'];
-                } else {
-                    $file_href_parts = (array) $file_href['text'];
-                    $file_path = $file_href_parts['path'];
-                    $uniq = $file_href_parts['per_antiplagiat'];
-                }
-            }
-            if ($file_path) {
-
-                $cur_text = file_get_contents($file_path);
-                $cur_text = iconv('cp1251', 'utf-8', $cur_text);
-                $content = str_replace('[text]', $cur_text, $content);
-            }
-
-
-            $params = array('method' => 'tasks.listTasks', 'token' => '29aa0eec2c77dd6d06e23b3faaef9eed', 'id' => $res['task_id']);
-            ksort($params);
-            $data = array();
-            $data2 = array();
-            foreach ($params as $k => $v) {
-                $data[] = $k . '=' . $v;
-                $data2[] = $k . '=' . urlencode($v);
-            }
-            $sign = md5(implode('', $data) . md5($pass . 'api-pass'));
-            $url = 'https://www.etxt.ru/api/json/?' . implode('&', $data2) . '&sign=' . $sign;
-            $cur_out = file_get_contents($url);
-            $task_info = json_decode($cur_out);
-
-            $etxt_action = "";
-            foreach ($task_info as $kl => $vl) {
-                $vl = (array) $vl;
-                if ($vl['status'] == 3) {
-                    $etxt_action = '
-					<p>
-						<table>
-						<tr>
-							<td>Принять</td>
-							<td><input type="radio" value="0" name="morework" /></td>
-						</tr>
-						<tr>
-							<td>На доработку</td>
-							<td><input type="radio" value="1" name="morework" /></td>
-						</tr>
-						<tr>
-							<td>Комментарий<br/>доработки</td>
-							<td><textarea name="morework_comment" cols="10" rows="5"></textarea></td>
-						</tr>
-						</table>
-					</p>
-					';
-                }
-            }
-            $content = str_replace('[etxt_action]', $etxt_action, $content);
-
             foreach ($res as $k => $v) {
                 $content = str_replace("[$k]", $v, $content);
             }
             $content = str_replace('[uid]', $uid, $content);
             $content = str_replace('[sid]', $sid, $content);
-            $content = str_replace('[uniq]', $uniq, $content);
             $content = str_replace('[tid]', $id, $content);
         } else {
             $sistema = $_REQUEST['sistema'];
@@ -2342,13 +2226,50 @@ class user {
 
     function tickets($db) {
         $content = file_get_contents(PATH . 'modules/user/tmp/tickets_view.tpl');
+        $limit = 15;
+        if (isset($_GET['offset']) && !empty($_GET['offset'])) {
+            $offset = (int) $_GET['offset'];
+        } else {
+            $offset = 1;
+        }
 
         $uid = (int) $_SESSION['user']['id'];
         $res = $db->Execute("select * from admins where id=$uid")->FetchRow();
         $content = str_replace('[login]', $res['login'], $content);
         $content = str_replace('[uid]', $uid, $content);
 
-        $query = $db->Execute("SELECT * FROM tickets WHERE (uid=$uid OR to_uid=$uid) ORDER BY id DESC");
+        $query = $db->Execute("SELECT * FROM tickets WHERE (uid=$uid OR to_uid=$uid) ORDER BY id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit);
+        $all = $db->Execute("SELECT count(id) as num FROM tickets WHERE (uid=$uid OR to_uid=$uid)")->FetchRow();
+        $pegination = '<div style="float:right">';
+        if ($offset == 1) {
+            $pegination .= '<div style="float:left">Пред.</div>';
+        } else {
+            $pegination .= "<div style='float:left'><a href='?action=ticket" . "&offset=" . ($offset - 1) . "'>Пред.</a></div>";
+        }
+        $pegination .= '<div style="float:left">&nbsp [ стр.&nbsp</div>';
+        $pegination .= '<div class="select" style="width:50px;float:left;margin-top:-7px"><select name="pagerMenu" onchange="location=\'?action=ticket&offset=\'+this.options[this.selectedIndex].value+\'\'" ;="">';
+
+        $all_zadanya = $all["num"];
+        $count_pegination = ceil($all_zadanya / $limit);
+        for ($i = 1; $i < $count_pegination + 1; $i++) {
+            if ($i == $offset) {
+                $pegination .= '<option value="' . ($i) . '" selected="selected">' . ($i) . '</option>';
+            } else {
+                $pegination .= '<option value="' . ($i) . '">' . ($i) . '</option>';
+            }
+        }
+        $pegination .= '</select></div>';
+        $pegination .= '&nbsp из ' . $count_pegination . ' ] &nbsp';
+        if ($query->NumRows() < $limit) {
+            $pegination .= "След.";
+        } else {
+            $pegination .= "<a href='?action=ticket" . "&offset=" . ($offset + 1) . "'>След.</a>";
+        }
+        $pegination .= '</div><br /><br />';
+        if ($count_pegination == 1) {
+            $pegination = "";
+        }
+
 
         $ticket_subjects = $db->Execute("SELECT * FROM Message2008")->FetchRow();
         $content = str_replace('[ticket_subjects]', $ticket_subjects['Name'], $content);
@@ -2384,7 +2305,7 @@ class user {
                 $ticket = str_replace('[status_ico]', "answered", $ticket);
             }
         }
-
+        $content = str_replace('[pegination]', $pegination, $content);
         $content = str_replace('[tickets]', $ticket, $content);
 
         $zid = (int) @$_REQUEST['zid'];
@@ -2465,7 +2386,7 @@ class user {
         $tid = (int) $_REQUEST['tid'];
         $res = $db->Execute("SELECT * FROM tickets WHERE (uid=$uid OR to_uid=$uid) AND id=$tid")->FetchRow();
         $last_answer = $db->Execute("SELECT * FROM answers WHERE tid=$tid ORDER BY date DESC LIMIT 1")->FetchRow();
-        
+
         $view = file_get_contents(PATH . 'modules/user/tmp/ticket_chat_one.tpl');
         $view = str_replace('[msg]', $res['msg'], $view);
         $view = str_replace('[cdate]', $res['date'], $view);
@@ -2593,14 +2514,14 @@ class user {
                 }
             }
         } else {
-            if ($site_ids == "()")
+            if ($site_ids == "()") {
                 $site_ids = "(-1)";
-            $q = "select * from zadaniya where sid in $site_ids order by date DESC, id $sort LIMIT " . ($offset - 1) * $limit . "," . $limit;
-            $all = "SELECT id FROM zadaniya WHERE sid in $site_ids ORDER BY date DESC, id $sort";
-            $query = $db->Execute($q);
-            $all = $db->Execute($all);
+            }
+            $query = $db->Execute("select * from zadaniya where sid in $site_ids order by date DESC, id $sort LIMIT " . ($offset - 1) * $limit . "," . $limit);
+            $all = $db->Execute("SELECT count(id) as num FROM zadaniya WHERE sid in $site_ids")->FetchRow();
+            $from = $to = NULL;
         }
-        $all_zadanya = $all->NumRows();
+        $all_zadanya = $all["num"];
         $count_pegination = ceil($all_zadanya / $limit);
         if ($all_zadanya > $limit) {
             $pegination = '<br /><div style="float:right">';
@@ -2629,22 +2550,6 @@ class user {
             $pegination .= '</div><br />';
         }
 
-        $pass = ETXT_PASS;
-        $params = array('method' => 'tasks.listTasks', 'token' => '29aa0eec2c77dd6d06e23b3faaef9eed', 'status' => '3');
-        ksort($params);
-        $data = array();
-        $data2 = array();
-        foreach ($params as $k => $v) {
-            $data[] = $k . '=' . $v;
-            $data2[] = $k . '=' . urlencode($v);
-        }
-        $sign = md5(implode('', $data) . md5($pass . 'api-pass'));
-        $url = 'https://www.etxt.ru/api/json/?' . implode('&', $data2) . '&sign=' . $sign;
-        $out = file_get_contents($url);
-        $etxt_list = json_decode($out);
-
-
-        $n = 0;
         while ($res = $query->FetchRow()) {
 
             $zadaniya .= file_get_contents(PATH . 'modules/user/tmp/zadaniya_one.tpl');
@@ -2659,7 +2564,7 @@ class user {
             $zadaniya = str_replace('[sistemaggl]', $res['sistema'], $zadaniya);
             $zadaniya = str_replace('[date]', date('d.m.Y', $res['date']), $zadaniya);
             $zadaniya = str_replace('[ankor]', $res['ankor'], $zadaniya);
-            $zadaniya = str_replace('[tema]', $res['tema'], $zadaniya);
+            $zadaniya = str_replace('[tema]', mb_substr($res['tema'], 0, 35), $zadaniya);
             $zadaniya = str_replace('[url_statyi]', $res['url_statyi'], $zadaniya);
             $zadaniya = str_replace('[uid]', $res['uid'], $zadaniya);
             $zadaniya = str_replace('[sid]', $res['sid'], $zadaniya);
@@ -2674,8 +2579,12 @@ class user {
                 $new_s = "ready";
             else if ($res['vilojeno'])
                 $new_s = "vilojeno";
+            else if ($res['to_remove'])
+                $new_s = "to_remove";
+            else if ($res['removed'])
+                $new_s = "removed";
             else
-                $bg = '';
+                $new_s = '';
             $zadaniya = str_replace('[status]', $new_s, $zadaniya);
 
             if ($_SESSION['admin']['id'] == 1) {
@@ -2689,57 +2598,20 @@ class user {
                     $bg = 'style="background:#ffde96"';
                 else if ($res['vilojeno'])
                     $bg = 'style="background:#b385bf"';
+                else if ($res['to_remove'])
+                    $bg = 'style="background:#FF8C69"';
+                else if ($res['removed'])
+                    $bg = 'style="background:#8B6969"';
                 else
                     $bg = '';
 
                 $bg = 'style="background:' . $bg . '"';
                 $zadaniya = str_replace('[bg]', $bg, $zadaniya);
             }
-
-
-            $etxt_status = "";
-            foreach ($etxt_list as $k => $v) {
-                $v = (array) $v;
-                if (isset($v['id']) && $v['id'] == $res['task_id']) {
-                    $params = array('method' => 'tasks.getResults', 'token' => '29aa0eec2c77dd6d06e23b3faaef9eed', 'id' => $v['id']);
-                    ksort($params);
-                    $data = array();
-                    $data2 = array();
-                    foreach ($params as $k => $v) {
-                        $data[] = $k . '=' . $v;
-                        $data2[] = $k . '=' . urlencode($v);
-                    }
-                    $sign = md5(implode('', $data) . md5($pass . 'api-pass'));
-                    $url = 'https://www.etxt.ru/api/json/?' . implode('&', $data2) . '&sign=' . $sign;
-                    $cur_out = file_get_contents($url);
-                    $task_stat = json_decode($cur_out);
-                    $file_href = "";
-                    $file_path = "";
-
-                    foreach ($task_stat as $kt => $vt) {
-                        $vt = (array) $vt;
-                        $file_href = (array) $vt['files'];
-                        $file_href_parts = (array) $file_href['file'];
-                        if ($file_href_parts['path']) {
-                            $file_path = $file_href_parts['path'];
-                        } else {
-                            $file_href_parts = (array) $file_href['text'];
-                            $file_path = $file_href_parts['path'];
-                        }
-                    }
-                    if ($file_path) {
-                        $etxt_status = "<a href='" . $file_path . "' target='_blank' style='color:#000; text-decoration:underline;'>статья</a>";
-                    }
-
-                    break;
-                }
-            }
-
-            $zadaniya = str_replace('[etxt_status]', $etxt_status, $zadaniya);
         }
-        if ($zadaniya)
+        if ($zadaniya) {
             $zadaniya = str_replace('[zadaniya]', $zadaniya, file_get_contents(PATH . 'modules/user/tmp/zadaniya_top_all.tpl'));
-        else {
+        } else {
             $zadaniya = file_get_contents(PATH . 'modules/user/tmp/no.tpl');
             $pegination = "";
         }
@@ -2749,7 +2621,7 @@ class user {
         $content = str_replace('[uid]', $uid, $content);
         $content = str_replace('[symb]', $symb, $content);
         $content = str_replace('[dfrom]', isset($_POST['date-from']) ? $_POST['date-from'] : NULL, $content);
-        $content = str_replace('[dto]', isset($_POST['date-to'])? $_POST['date-to'] : NULL, $content);
+        $content = str_replace('[dto]', isset($_POST['date-to']) ? $_POST['date-to'] : NULL, $content);
         $content = str_replace('[pegination]', $pegination, $content);
         return $content;
     }
@@ -2757,7 +2629,12 @@ class user {
     function go_payment($db) {
         $uid = (int) $_SESSION['user']['id'];
         $user = $db->Execute("SELECT * FROM admins WHERE id=$uid")->FetchRow();
-
+        $limit = 10;
+        if (isset($_GET['offset']) && !empty($_GET['offset'])) {
+            $offset = (int) $_GET['offset'];
+        } else {
+            $offset = 1;
+        }
         if (@$_REQUEST['promo'] && $user["type"] != "copywriter") {
             $exist = $db->Execute("SELECT * FROM Message2009 WHERE Code='" . $db->escape($_REQUEST['promo']) . "' AND ((Used=0) OR (Used IS NULL))")->FetchRow();
             if ($exist['Message_ID']) {
@@ -2802,8 +2679,38 @@ class user {
         } else {
             $content = file_get_contents(PATH . 'modules/user/tmp/gopay.tpl');
             $order = "";
-            $orders = $db->Execute("SELECT * FROM orders WHERE uid=$uid");
+            $orders = $db->Execute("SELECT * FROM orders WHERE uid=$uid ORDER BY date DESC LIMIT " . ($offset - 1) * $limit . "," . $limit);
+            $all = $db->Execute("SELECT count(*) as num FROM orders WHERE uid=$uid")->FetchRow();
             $payment_no = 1;
+            $pegination = '<div style="float:right">';
+            if ($offset == 1) {
+                $pegination .= '<div style="float:left">Пред.</div>';
+            } else {
+                $pegination .= "<div style='float:left'><a href='?action=payments" . "&offset=" . ($offset - 1) . "'>Пред.</a></div>";
+            }
+            $pegination .= '<div style="float:left">&nbsp [ стр.&nbsp</div>';
+            $pegination .= '<div class="select" style="width:50px;float:left;margin-top:-7px"><select name="pagerMenu" onchange="location=\'?action=payments&offset=\'+this.options[this.selectedIndex].value+\'\'" ;="">';
+
+            $all_zadanya = $all["num"];
+            $count_pegination = ceil($all_zadanya / $limit);
+            for ($i = 1; $i < $count_pegination + 1; $i++) {
+                if ($i == $offset) {
+                    $pegination .= '<option value="' . ($i) . '" selected="selected">' . ($i) . '</option>';
+                } else {
+                    $pegination .= '<option value="' . ($i) . '">' . ($i) . '</option>';
+                }
+            }
+            $pegination .= '</select></div>';
+            $pegination .= '&nbsp из ' . $count_pegination . ' ] &nbsp';
+            if ($orders->NumRows() < $limit) {
+                $pegination .= "След.";
+            } else {
+                $pegination .= "<a href='?action=payments" . "&offset=" . ($offset + 1) . "'>След.</a>";
+            }
+            $pegination .= '</div><br /><br />';
+            if ($count_pegination == 1) {
+                $pegination = "";
+            }
             while ($res = $orders->FetchRow()) {
                 $payment_no++;
                 $order .= file_get_contents(PATH . 'modules/user/tmp/order_one.tpl');
@@ -2817,6 +2724,7 @@ class user {
                 }
                 $order = str_replace('[status]', $status, $order);
             }
+            $content = str_replace('[pegination]', $pegination, $content);
             $content = str_replace('[payment_no]', $payment_no, $content);
             $content = str_replace('[email]', $user["email"], $content);
             $content = str_replace('[uid]', $uid, $content);
@@ -2866,7 +2774,7 @@ class user {
             exit();
         } else {
             $content = file_get_contents(PATH . 'modules/user/tmp/lk.tpl');
-            
+
             $content = str_replace('[query]', (isset($_REQUEST["query"]) && !empty($_REQUEST["query"]) ? $_REQUEST["query"] : ""), $content);
             $content = str_replace('[fio]', substr($uinfo['contacts'], 3), $content);
             $content = str_replace('[knowus]', $uinfo['dostupy'], $content);
@@ -3057,27 +2965,60 @@ class user {
 
     function decode_balans($db) {
         $content = file_get_contents(PATH . 'modules/user/tmp/decode_balans.tpl');
-
+        $limit = 30;
+        $offset = 1;
         $uid = (int) $_SESSION['user']['id'];
+        if (isset($_GET['offset']) && !empty($_GET['offset'])) {
+            $offset = (int) $_GET['offset'];
+        }
 
         $money = $this->getUserBalans($uid, $db, 1);
         $content = str_replace('[user_balans]', $money . " руб.", $content);
 
-        $completed = $db->Execute("SELECT * FROM completed_tasks WHERE uid=$uid AND status=0");
+        $completed = $db->Execute("SELECT * FROM completed_tasks WHERE uid=$uid AND status=0")->GetAll();
         $compl = array();
-        if ($completed) {
-            while ($row = $completed->FetchRow()) {
-                $compl[] = $row['zid'];
+        if (!empty($completed)) {
+            foreach ($completed as $value) {
+                $compl[] = $value['zid'];
             }
         }
         $zadaniya = "";
-        $tasks = $db->Execute("SELECT * FROM zadaniya WHERE uid=$uid ORDER BY id DESC");
-        $fr_count = 0;
+        $condition = " AND (dorabotka!=0 OR vrabote!=0 OR navyklad!=0 OR vilojeno!=0 OR vipolneno!=0 OR to_remove!=0 OR removed!=0) ";
+        $tasks = $db->Execute("SELECT * FROM zadaniya WHERE uid=" . $uid . " $condition ORDER BY id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit);
+        $all = $db->Execute("SELECT count(id) as num FROM zadaniya WHERE uid=" . $uid . " $condition ORDER BY id DESC")->FetchRow();
+
+        $pegination = '<div style="float:right">';
+        if ($offset == 1) {
+            $pegination .= '<div style="float:left">Пред.</div>';
+        } else {
+            $pegination .= "<div style='float:left'><a href='?action=decode_balans" . "&offset=" . ($offset - 1) . "'>Пред.</a></div>";
+        }
+        $pegination .= '<div style="float:left">&nbsp [ стр.&nbsp</div>';
+        $pegination .= '<div class="select" style="width:50px;float:left;margin-top:-7px"><select name="pagerMenu" onchange="location=\'?action=decode_balans&offset=\'+this.options[this.selectedIndex].value+\'\'" ;="">';
+
+        $all_zadanya = $all["num"];
+        $count_pegination = ceil($all_zadanya / $limit);
+        for ($i = 1; $i < $count_pegination + 1; $i++) {
+            if ($i == $offset) {
+                $pegination .= '<option value="' . ($i) . '" selected="selected">' . ($i) . '</option>';
+            } else {
+                $pegination .= '<option value="' . ($i) . '">' . ($i) . '</option>';
+            }
+        }
+        $pegination .= '</select></div>';
+        $pegination .= '&nbsp из ' . $count_pegination . ' ] &nbsp';
+        if ($tasks->NumRows() < $limit) {
+            $pegination .= "След.";
+        } else {
+            $pegination .= "<a href='?action=decode_balans" . "&offset=" . ($offset + 1) . "'>След.</a>";
+        }
+        $pegination .= '</div><br /><br />';
+        if ($count_pegination == 1) {
+            $pegination = "";
+        }
+
         while ($res = $tasks->FetchRow()) {
             $balans_status = "";
-            if (($res['dorabotka'] == 0) && ($res['vrabote'] == 0) && ($res['navyklad'] == 0) && ($res['vilojeno'] == 0) && ($res['vipolneno'] == 0)) {
-                continue;
-            }
             $zadaniya .= file_get_contents(PATH . 'modules/user/tmp/decode_balans_one.tpl');
             $zadaniya = str_replace('[url]', substr($res['url'], 0, 30), $zadaniya);
             $zadaniya = str_replace('[zid]', $res['id'], $zadaniya);
@@ -3094,7 +3035,7 @@ class user {
             $zadaniya = str_replace('[price]', $zad_price, $zadaniya);
             $zadaniya = str_replace('[id]', $res['id'], $zadaniya);
             $zadaniya = str_replace('[date]', date('d.m.Y', $res['date']), $zadaniya);
-            $zadaniya = str_replace('[tema]', $res['tema'], $zadaniya);
+            $zadaniya = str_replace('[tema]', mb_substr($res['tema'], 0, 36), $zadaniya);
 
             $new_s = "";
             if ($res['dorabotka'])
@@ -3107,12 +3048,18 @@ class user {
                 $new_s = "ready";
             else if ($res['vilojeno'])
                 $new_s = "vilojeno";
+            else if ($res['to_remove'])
+                $new_s = "to_remove";
+            else if ($res['removed'])
+                $new_s = "removed";
             else
-                $bg = '';
+                $new_s = '';
+
             $zadaniya = str_replace('[status]', $new_s, $zadaniya);
+            $zadaniya = str_replace('[bg]', "", $zadaniya);
             $zadaniya = str_replace('[balans_status]', $balans_status, $zadaniya);
         }
-
+        $content = str_replace('[pegination]', $pegination, $content);
         $content = str_replace('[zadaniya]', $zadaniya, $content);
 
         return $content;

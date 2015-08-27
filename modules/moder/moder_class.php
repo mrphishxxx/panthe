@@ -237,8 +237,8 @@ class moder {
         }
 
         if (!@$_GET['status_z']) {
-            $query = $db->Execute("SELECT * FROM zadaniya WHERE sid IN $sids AND ((dorabotka = 1) OR (navyklad=1)) order by date DESC, id $sort LIMIT " . (($offset - 1) * $limit) . ",$limit");
-            $all = $db->Execute("select * from zadaniya where sid IN $sids AND ((dorabotka = 1) OR (navyklad=1)) order by date DESC, id $sort");
+            $query = $db->Execute("SELECT * FROM zadaniya WHERE type_task != 3 AND sid IN $sids AND ((dorabotka = 1) OR (navyklad=1)) order by date DESC, id $sort LIMIT " . (($offset - 1) * $limit) . ",$limit");
+            $all = $db->Execute("select * from zadaniya where type_task != 3 AND sid IN $sids AND ((dorabotka = 1) OR (navyklad=1)) order by date DESC, id $sort");
         } elseif (@$_GET['status_z'] && ($_GET['status_z'] != 'all')) {
             $who_posted = "";
             if (@$_GET['status_z'] == "vipolneno") {
@@ -246,11 +246,11 @@ class moder {
             }
             $status_f = $db->escape(@$_GET['status_z']);
 
-            $query = $db->Execute("select * from zadaniya where ($status_f=1) AND (sid IN $sids) AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1)) $who_posted order by date DESC, id $sort LIMIT " . (($offset - 1) * $limit) . ",$limit");
-            $all = $db->Execute("select * from zadaniya where ($status_f=1) AND (sid IN $sids) AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1)) $who_posted order by date DESC, id $sort");
+            $query = $db->Execute("select * from zadaniya where type_task != 3 AND ($status_f=1) AND (sid IN $sids) AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1)) $who_posted order by date DESC, id $sort LIMIT " . (($offset - 1) * $limit) . ",$limit");
+            $all = $db->Execute("select * from zadaniya where type_task != 3 AND ($status_f=1) AND (sid IN $sids) AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1)) $who_posted order by date DESC, id $sort");
         } else {
-            $all = $db->Execute("select * from zadaniya where sid IN $sids AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1 AND who_posted = $uid)) order by date DESC, id $sort");
-            $query = $db->Execute("select * from zadaniya where sid IN $sids AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1 AND who_posted = $uid)) order by date DESC, id $sort LIMIT " . (($offset - 1) * $limit) . ",$limit");
+            $all = $db->Execute("select * from zadaniya where type_task != 3 AND sid IN $sids AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1 AND who_posted = $uid)) order by date DESC, id $sort");
+            $query = $db->Execute("select * from zadaniya where type_task != 3 AND sid IN $sids AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1 AND who_posted = $uid)) order by date DESC, id $sort LIMIT " . (($offset - 1) * $limit) . ",$limit");
         }
         //print_r($all->GetAll());
         $all_zadanya = (!empty($all)) ? $all->NumRows() : 0;

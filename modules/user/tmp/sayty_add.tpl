@@ -273,6 +273,13 @@
                 <input type="text" name="blogun_id" id="blogun_id" value="" class="full-length">
             </li>
             <li>
+                <span class="title">Задачи на удаление ссылки: <span class="hint">(GGL)</span></span>
+                <select class="full-length" name="taskdel_flag" id="taskdel_flag">
+                    <option value="Да">Да</option>
+                    <option value="Нет">Нет</option>
+                </select>
+            </li>
+            <li>
                 <span class="title">Обзоры: <span class="hint">(размещать заявки с типом обзоров)</span></span>
                 <select class="full-length" name="obzor_flag" id="obzor_flag">
                     <option value=""></option>

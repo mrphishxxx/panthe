@@ -379,6 +379,8 @@ tbody .edit.row_tt .ico{
 .answered .ico { background-position: -120px -20px; width: 24px;  height: 18px; }
 .processed .ico { background-position: -120px 0; width: 24px; height: 18px; }
 
+.to_remove .ico { width: 18px; height: 18px; background-image: url("/images/interface/delete_task.png"); top: 3px; position: relative; }
+.removed .ico { width: 18px; height: 18px; background-image: url("/images/interface/delete_task.png"); top: 3px; position: relative; }
 /* ################################################## BACK END FORMS */
 .form {	
     position: relative;

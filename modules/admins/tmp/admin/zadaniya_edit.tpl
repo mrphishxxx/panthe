@@ -30,6 +30,7 @@
                     <option value="0" [type0]>Статья</option>
                     <option value="1" [type1]>Обзор</option>
                     <option value="2" [type2]>Новость</option>
+                    <option value="3" [type3]>Снятие ссылки</option>
                 </select>
             </li>
             <li>
@@ -134,29 +135,37 @@
                 <input type="text" name="webartex_id" value='[webartex_id]' id="webartex_id" class="full-length">
             </li>
 
-            <li>
+            <li [stat_notremoved]>
                 <span class="title">Статус:</span>
                 <input type="radio" name="task_status" value="dorabotka" [dorabotka] [stat_disabled]> На доработке (модератор)
             </li>
-            <li [rework_display]>
+            <li [rework_display] [stat_notremoved]>
                 <span class="title"></span>
                 <input type="radio" name="task_status" value="rework" [rework] [stat_disabled] /> На доработке (копирайтер)
             </li>
-            <li>
+            <li [stat_notremoved]>
                 <span class="title"></span>
                 <input type="radio" name="task_status" value="vilojeno" [vilojeno] [stat_disabled]> Выложено
+            </li>
+            <li [stat_notremoved]>
+                <span class="title"></span>
+                <input type="radio" name="task_status" value="vrabote" [vrabote] [stat_disabled]> В работе
+            </li>
+            <li [stat_notremoved]>
+                <span class="title"></span>
+                <input type="radio" name="task_status" value="navyklad" [navyklad] [stat_disabled]> На выкладывании
+            </li>
+            <li [stat_removed]>
+                <span class="title"></span>
+                <input type="radio" name="task_status" value="to_remove" [to_remove]> На удаление
+            </li>
+            <li [stat_removed]>
+                <span class="title"></span>
+                <input type="radio" name="task_status" value="removed" [removed] [stat_removed]> Удалена
             </li>
             <li>
                 <span class="title"></span>
                 <input type="radio" name="task_status" value="vipolneno" [vipolneno] [stat_disabled]> Выполнено
-            </li>
-            <li>
-                <span class="title"></span>
-                <input type="radio" name="task_status" value="vrabote" [vrabote] [stat_disabled]> В работе
-            </li>
-            <li>
-                <span class="title"></span>
-                <input type="radio" name="task_status" value="navyklad" [navyklad] [stat_disabled]> На выкладывании
             </li>
         </ul>
     </div>

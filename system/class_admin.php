@@ -50,10 +50,16 @@ class class_index {
         $z42 = $db->Execute("select count(*) from zadaniya where vilojeno=1 AND sid IN " . $sids);
         $z42 = $z42->FetchRow();
         $z42 = $z42['count(*)'];
+        
+        $to_remove = $db->Execute("select count(*) from zadaniya where to_remove=1 AND sid IN " . $sids)->FetchRow();
+        $removed = $db->Execute("select count(*) from zadaniya where removed=1 AND sid IN " . $sids)->FetchRow();
+
         $this->GLOBAL['all_vrabote'] = $z12;
         $this->GLOBAL['all_navyklad'] = $z22;
         $this->GLOBAL['all_neobrabot'] = $z32;
         $this->GLOBAL['all_vilojeno'] = $z42;
+        $this->GLOBAL['all_to_remove'] = $to_remove['count(*)'];
+        $this->GLOBAL['all_removed'] = $removed['count(*)'];
         $this->auth($db, $auth);
         $this->menu($db);
 
@@ -70,6 +76,8 @@ class class_index {
         $content = str_replace('[navyklad]', $this->GLOBAL['all_navyklad'], $content);
         $content = str_replace('[neobrabot]', $this->GLOBAL['all_neobrabot'], $content);
         $content = str_replace('[vilojeno]', $this->GLOBAL['all_vilojeno'], $content);
+        $content = str_replace('[to_remove]', $this->GLOBAL['all_to_remove'], $content);
+        $content = str_replace('[removed]', $this->GLOBAL['all_removed'], $content);
         foreach ($this->GLOBAL as $key => $value) {
             if (!is_array($value))
                 $content = str_replace('[' . $key . ']', $value, $content);

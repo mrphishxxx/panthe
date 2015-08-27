@@ -88,7 +88,7 @@ function getTaskGGL($response, $info, $request) {
                 $task_page = iconv("windows-1251", "utf-8", $result);
                 curl_close($curl);
             }
-            
+
             // 3) Очищаем полученную страницу от лишнего
             $open_now = str_get_html($task_page);
             if (!empty($open_now) && $open_now->find('script,link,comment')) {
@@ -96,7 +96,7 @@ function getTaskGGL($response, $info, $request) {
                     $tmp->outertext = '';
                 }
             }
-            
+
             // 4) Проверяем наличие новых заявок.
             //    Проходим по ним, вытаскивая GGL_ID и URL задачи (чтобы потом вытащить все данные)
             if ($open_now->innertext != '' and count($open_now->find('td[class^=row_] a[onmouseover]'))) {
@@ -104,7 +104,7 @@ function getTaskGGL($response, $info, $request) {
                 if ($type_page == "Новые") {
                     $tmpInd = 0;
                     while ($tr = $open_now->find('tr[class^=table_content_rows]', $tmpInd)) {
-                        
+
                         if ($open_now->find('tr[class^=table_content_rows]', $tmpInd)->children(3) == null) {
                             $tmpInd++;
                             continue;
@@ -113,18 +113,18 @@ function getTaskGGL($response, $info, $request) {
                             $tmpInd++;
                             continue;
                         }
-                        
+
                         $url = $open_now->find('tr[class^=table_content_rows]', $tmpInd)->children(3)->children(0)->href;
                         $row = $open_now->find('tr[class^=table_content_rows]', $tmpInd)->children(0)->class;
-                        
+
                         if (!$row) {
                             $tmpInd++;
                             continue;
                         }
-                        
+
                         $ggl_id = mb_substr("$row", 4);
-                        $type_task = $open_now->find('tr[class^=table_content_rows]', $tmpInd)->children(4)->children(0)->alt;
-                        
+                        $tmpInd++;
+
                         if (!in_array($ggl_id, $buffer)) {
                             $buffer[] = $ggl_id;
                             if ($curl = curl_init()) {
@@ -140,7 +140,7 @@ function getTaskGGL($response, $info, $request) {
                                 $task = iconv("windows-1251", "utf-8", $out);
                                 curl_close($curl);
                             }
-                                
+
                             $open = str_get_html($task);
                             if (!empty($open)) {
                                 foreach ($open->find('script,link,comment') as $tmp) {
@@ -231,22 +231,8 @@ function getTaskGGL($response, $info, $request) {
                             if ($type == "Ссылка-картинка") {
                                 $ankor .= " (!ссылка-картинка!)";
                             }
-                            
-                            if(!empty($type_task) && $type_task == "Задание на удаление") {
-                                $to_remove = 1;
-                                $type_task = 3;
-                                //Ссылка на страницу откуда снимать выложенную ссылку (Только для типа задач "Снятие ссылки")
-                                $link_delete_from = $open_now->find('tr[class^=table_content_rows]', $tmpInd)->children(0)->children(0)->href;
-                                echo $ggl_id. " ++++++ " .$type_task . PHP_EOL;
-                            } else {
-                                $type_task = $to_remove = 0;             //Тип задачи в iForget
-                                $link_delete_from = '';
-                            }
-                            
                             if (!empty($ankor) && !empty($to_url)) {
-                                if($type_task != 3 || ($type_task == 3 && $site["taskdel_flag"] == 1)){
-                                    $db->Execute("INSERT INTO zadaniya(sid, b_id, uid, sistema, type_task, ankor, url, tema, comments, vipolneno, to_remove, date, keywords, url_statyi, nof_chars) VALUES ('" . $site["id"] . "', '" . $ggl_id . "','" . $post->uid . "', 'https://gogetlinks.net/', '" . $type_task . "' , '" . $ankor . "', '" . $to_url . "', '" . $tema . "', '" . mysql_real_escape_string($index . "\n" . $task_text) . "', '0', '" . $to_remove . "', '" . $date . "', '" . $key_words . "', '" . $link_delete_from . "', '2000')");
-                                }
+                                $db->Execute("INSERT INTO zadaniya(sid, b_id, uid, sistema, ankor, url, tema, comments, vipolneno, date, keywords, nof_chars) VALUES ('" . $site["id"] . "', '" . $ggl_id . "','" . $post->uid . "', 'https://gogetlinks.net/', '" . $ankor . "', '" . $to_url . "', '" . $tema . "', '" . mysql_real_escape_string($index . "\n" . $task_text) . "', '0', '" . $date . "', '" . $key_words . "', '2000')");
                             }
                         } else {
                             if (in_array($ggl_id, $vipolneno)) {
@@ -254,19 +240,8 @@ function getTaskGGL($response, $info, $request) {
                                 $task = $db->Execute("SELECT * FROM zadaniya WHERE id='$task_id'")->FetchRow();
                                 $db->Execute("UPDATE zadaniya SET vipolneno='0', vilojeno='1' WHERE id='$task_id'")->FetchRow();
                                 $errors .= "Задача <a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $task['uid'] . "&sid=" . $task['sid'] . "&action2=edit&id=" . $task['id'] . "'>" . $task['id'] . "</a> была в статусе 'Выполнено', но ссылка была не отправлена!! <b>Проверьте в чем причина, отправив задачу руками</b><br>";
-                            } else if(!empty($type_task) && $type_task == "Задание на удаление") {
-                                $to_remove = 1;
-                                $type_task = 3;
-                                //Ссылка на страницу откуда снимать выложенную ссылку (Только для типа задач "Снятие ссылки")
-                                $link_delete_from = $open_now->find('tr[class^=table_content_rows]', $tmpInd)->children(0)->children(0)->href;
-                                $exist = $db->Execute("SELECT * FROM zadaniya WHERE b_id = '$ggl_id'")->FetchRow();
-                                if(!empty($exist) && $exist["url_statyi"] == "" && $exist["type_task"] != 3){
-                                    echo $ggl_id. " - " .$type_task . PHP_EOL;
-                                    $db->Execute("UPDATE zadaniya SET type_task = 3, to_remove = 1, url_statyi = '$link_delete_from' WHERE id=" . $exist["id"]);
-                                }
                             }
                         }
-                        $tmpInd++;
                     }
                 }
             }
@@ -314,7 +289,7 @@ while ($user = $users->FetchRow()) {
 // 0) Создаем запросы на выгрузку для каждого пользователя
 foreach ($act_uids as $uid) {
     $cookie_jar = tempnam(PATH . 'temp', "cookie");
-    
+
     $burse = $db->Execute("SELECT * FROM birjs WHERE birj=1 AND uid=$uid")->FetchRow();
     if ($burse['login'] == null || $burse['pass'] == null) {
         continue;
@@ -362,14 +337,14 @@ $message["subject"] = $subject;
 $message["from_email"] = "news@iforget.ru";
 $message["from_name"] = "iforget";
 $message["to"] = array();
-$message["to"][1] = array("email" => MAIL_DEVELOPER);
-//$message["to"][0] = array("email" => MAIL_ADMIN);
+//$message["to"][1] = array("email" => MAIL_DEVELOPER);
+$message["to"][0] = array("email" => MAIL_ADMIN);
 $message["track_opens"] = null;
 $message["track_clicks"] = null;
 $message["auto_text"] = null;
 
 try {
-    //$mandrill->messages->send($message);
+    $mandrill->messages->send($message);
 } catch (Exception $e) {
     echo $e;
     echo $body;

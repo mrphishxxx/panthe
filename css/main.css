@@ -393,6 +393,7 @@ body {
 
 /* ################################################## BACK END ( USER AREA ) PAGES */
 .back_end h1 {
+        /*word-break: break-all;*/
 	font-weight: bold;
 	margin-bottom: 20px;
 }
@@ -528,6 +529,14 @@ body {
 		}
 		#in_applications.none .ico {
 			background-position: -20px -40px;
+		}
+                #toremove_applications .ico {
+                        background-image: url("/images/interface/delete_task.png");
+			height: 20px;
+		}
+                #removed_applications .ico {
+                        background-image: url("/images/interface/delete_task.png");
+			height: 20px;
 		}
 		#projects .ico {
 			background-position: -20px 0px;

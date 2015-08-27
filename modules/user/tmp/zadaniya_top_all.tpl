@@ -8,7 +8,6 @@
                     <th>ETXT ID</td>
                     <th>Тема</td>
                     <th>URL</td>
-                    <th>ETXT</td>
                     <th>Дата</td>
                     <th>&nbsp</td>
                     <th class="edit"></th>

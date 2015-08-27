@@ -548,9 +548,9 @@ class admins {
         return $category_id;
     }
 
-    function getTaskPrice($lay_out = 0, $nof_chars = 0, $site = array()) {
+    function getTaskPrice($type_task = 0, $lay_out = 0, $nof_chars = 0, $site = array()) {
         $price = 0;
-        if ($lay_out == 1) {
+        if ($lay_out == 1 || $type_task == 3) {
             $price = 15;
         } else {
             if ((int) $nof_chars == 2000) {
@@ -596,7 +596,7 @@ class admins {
         $uid = (int) $_REQUEST['uid'];
         $sid = (int) $_GET['sid'];
         $pass = ETXT_PASS;
-        $tasks = $db->Execute("SELECT * FROM `zadaniya` WHERE sid='" . $sid . "' AND uid='" . $uid . "' AND tema!=''  AND etxt=0 AND copywriter=0 AND for_copywriter=0 AND lay_out=0");
+        $tasks = $db->Execute("SELECT * FROM `zadaniya` WHERE sid='" . $sid . "' AND uid='" . $uid . "' AND tema!=''  AND etxt=0 AND copywriter=0 AND for_copywriter=0 AND lay_out=0 AND type_task != 3");
         $sinfo = $db->Execute("SELECT * FROM `sayty` WHERE id='" . $sid . "'")->FetchRow();
         $user = $db->Execute("SELECT * FROM `admins` WHERE id='" . $uid . "'")->FetchRow();
         if (!empty($sinfo)) {
@@ -616,7 +616,7 @@ class admins {
             //Смотрим на баланс и проверяем, может ли создать пользователь заявку (хватит ли денег)
             $colvos = $db_res2['nof_chars'];
             $cur_balans = $this->getUserBalans($uid, $db, 1);
-            $price = $this->getTaskPrice($db_res2['lay_out'], $colvos, $sinfo);
+            $price = $this->getTaskPrice($db_res2['type_task'], $db_res2['lay_out'], $colvos, $sinfo);
             $cur_balans -= $price;
             if ($cur_balans < 0 && (($uid != 20) && ($uid != 55))) {
                 break;
@@ -773,7 +773,7 @@ class admins {
         $uid = (int) $_REQUEST['uid'];
         $sid = (int) $_REQUEST['sid'];
 
-        $tasks = $db->Execute("SELECT id FROM `zadaniya` WHERE sid='" . $sid . "' AND uid='" . $uid . "' AND tema!='' AND etxt=0 AND copywriter=0 AND for_copywriter=0 AND lay_out=0");
+        $tasks = $db->Execute("SELECT id FROM `zadaniya` WHERE sid='" . $sid . "' AND uid='" . $uid . "' AND tema!='' AND etxt=0 AND copywriter=0 AND for_copywriter=0 AND lay_out=0 AND type_task != 3");
         while ($task = $tasks->FetchRow()) {
             $db->Execute("UPDATE zadaniya SET for_copywriter = 1 WHERE id = " . $task["id"]);
         }
@@ -829,7 +829,7 @@ class admins {
                     $condition = " AND vrabote = 1";
                     break;
                 case "new":
-                    $condition = " AND rectificate='0' AND (vrabote='0' OR vrabote IS NULL) AND vipolneno='0' AND dorabotka='0' AND navyklad='0' AND vilojeno='0' AND rework='0'";
+                    $condition = " AND (vrabote='0' OR vrabote IS NULL) AND vipolneno='0' AND dorabotka='0' AND navyklad='0' AND vilojeno='0' AND rework='0'";
                     break;
                 default: $condition = "";
                     break;
@@ -848,7 +848,7 @@ class admins {
                 $to = strtotime($db->escape($_POST['date-to']));
             else if (@$_GET['date-to'])
                 $to = $_GET['date-to'];
-
+            
             if ($from && $to) {
                 $query = $db->Execute("select * from zadaniya where sid=$sid AND date BETWEEN '" . $from . "' AND '" . $to . "' $condition order by date DESC, id $sort LIMIT " . ($offset - 1) * $limit . "," . $limit);
                 $all = $db->Execute("select * from zadaniya where sid=$sid AND date BETWEEN '" . $from . "' AND '" . $to . "' $condition order by date DESC, id $sort");
@@ -926,7 +926,7 @@ class admins {
             $zadaniya = str_replace('[id]', $res['id'], $zadaniya);
             $zadaniya = str_replace('[etxt_id]', $worker, $zadaniya);
             $zadaniya = str_replace('[date]', date('d.m.Y', $res['date']), $zadaniya);
-            $zadaniya = str_replace('[tema]', mb_substr($res['tema'], 0, 50), $zadaniya);
+            $zadaniya = str_replace('[tema]', mb_substr($res['tema'], 0, 35), $zadaniya);
 
             $new_s = "";
             if ($res['dorabotka']) {
@@ -944,6 +944,12 @@ class admins {
             } else if ($res['vilojeno']) {
                 $new_s = "vilojeno";
                 $bg = '#b385bf';
+            } else if ($res['to_remove']) {
+                $new_s = "to_remove";
+                $bg = '#FF8C69';
+            } else if ($res['removed']) {
+                $new_s = "removed";
+                $bg = '#8B6969';
             } else {
                 $bg = '';
             }
@@ -1435,6 +1441,7 @@ class admins {
             $miralinks_id = $_REQUEST['miralinks_id'];
             $webartex_id = $_REQUEST['webartex_id'];
             $blogun_id = $_REQUEST['blogun_id'];
+            $taskdel_flag = ($_REQUEST['taskdel_flag'] == "Да" ? 1 : 0);
             $subj_flag = ($_REQUEST['subj_flag'] == "Да" ? 1 : 0);
             $obzor_flag = ($_REQUEST['obzor_flag'] == "Да" ? 1 : 0);
             $news_flag = ($_REQUEST['news_flag'] == "Да" ? 1 : 0);
@@ -1445,8 +1452,8 @@ class admins {
             $pic_position = $_REQUEST['pic_position'];
             $site_comments = $_REQUEST['site_comments'];
 
-            $db->Execute("insert into sayty(uid, url, url_admin, login, pass, price, gid, getgoodlinks_id, sape_id, miralinks_id, webartex_id, blogun_id, site_subject, site_subject_more, cms, obzor_flag, news_flag, subj_flag, bad_flag, anons_size, pic_width, pic_height, pic_position, site_comments) values 
-					($uid, '$url', '$url_admin', '$login', '$pass', '$price', '$gid', '$getgoodlinksId', '$sape_id', '$miralinks_id', '$blogun_id', '$webartex_id', '$site_subject', '$site_subject_more', '$cms', '$obzor_flag', '$news_flag', '$subj_flag', '$bad_flag', '$anons_size', '$pic_width', '$pic_height', '$pic_position', '$site_comments')");
+            $db->Execute("insert into sayty(uid, url, url_admin, login, pass, price, gid, getgoodlinks_id, sape_id, miralinks_id, webartex_id, blogun_id, site_subject, site_subject_more, cms, obzor_flag, news_flag, taskdel_flag, subj_flag, bad_flag, anons_size, pic_width, pic_height, pic_position, site_comments) values 
+					($uid, '$url', '$url_admin', '$login', '$pass', '$price', '$gid', '$getgoodlinksId', '$sape_id', '$miralinks_id', '$blogun_id', '$webartex_id', '$site_subject', '$site_subject_more', '$cms', '$obzor_flag', '$news_flag', '$taskdel_flag', '$subj_flag', '$bad_flag', '$anons_size', '$pic_width', '$pic_height', '$pic_position', '$site_comments')");
 
             $alert = 'Сайт успешно добавлен.';
             $url = "?module=admins&action=sayty&uid=$uid";
@@ -1562,7 +1569,7 @@ class admins {
             $profil .= microtime() . "  - AFTER QUERY 1 UPDATE" . "\r\n";
             $compl = $db->Execute("SELECT * FROM completed_tasks WHERE uid = $uid AND zid=" . $lastId)->FetchRow();
             if (($navyklad == 1 || $dorabotka == 1 || $vipolneno == 1 || $vilojeno == 1 || $vrabote == 1) && empty($compl)) {
-                $price = $this->getTaskPrice($lay_out, $nof_chars, $task_site);
+                $price = $this->getTaskPrice($type_task, $lay_out, $nof_chars, $task_site);
                 $db->Execute("INSERT INTO completed_tasks (uid, zid, date, price, status) VALUES ('$uid', '$lastId', '" . date("Y-m-d H:i:s") . "', '$price', '1')");
                 $profil .= microtime() . "  - AFTER QUERY 2 INSERT compl_tasks" . "\r\n";
             }
@@ -1758,6 +1765,7 @@ class admins {
             $content = str_replace('[' . $res["site_subject"] . ']', "selected", $content);
             $content = str_replace('[' . $res["cms"] . ']', "selected", $content);
             $content = str_replace('[' . $res["pic_position"] . ']', "selected", $content);
+            $content = str_replace('[taskdel_' . $res["taskdel_flag"] . ']', "selected", $content);
             $content = str_replace('[obzor_' . $res["obzor_flag"] . ']', "selected", $content);
             $content = str_replace('[news_' . $res["news_flag"] . ']', "selected", $content);
             $content = str_replace('[subj_' . $res["subj_flag"] . ']', "selected", $content);
@@ -1813,6 +1821,7 @@ class admins {
             $site_subject = $_REQUEST['site_subject'];
             $site_subject_more = $_REQUEST['site_subject_more'];
             $cms = $_REQUEST['cms'];
+            $taskdel_flag = ($_REQUEST['taskdel_flag'] == "Да" ? 1 : 0);
             $subj_flag = ($_REQUEST['subj_flag'] == "Да" ? 1 : 0);
             $obzor_flag = ($_REQUEST['obzor_flag'] == "Да" ? 1 : 0);
             $news_flag = ($_REQUEST['news_flag'] == "Да" ? 1 : 0);
@@ -1839,7 +1848,7 @@ class admins {
 
             $db->Execute("update sayty set uid='$owner_id', colvos='$colvos', login='$login', gid='$gid', getgoodlinks_id='$getgoodlinksId', sape_id='$sape_id', miralinks_id='$miralinks_id', webartex_id='$webartex_id', blogun_id='$blogun_id', pass='$pass', url='$url', 
                                         url_admin='$url_admin', price='$price_iforget', cena='$price_etxt', moder_id='$moder_id', price_viklad = '$price_viklad', comment_viklad='$comment_viklad', question_viklad='$question_viklad',
-					site_subject='$site_subject', site_subject_more='$site_subject_more', cms='$cms', subj_flag='$subj_flag', obzor_flag='$obzor_flag', news_flag='$news_flag', 
+					site_subject='$site_subject', site_subject_more='$site_subject_more', cms='$cms', taskdel_flag='$taskdel_flag', subj_flag='$subj_flag', obzor_flag='$obzor_flag', news_flag='$news_flag', 
 					bad_flag='$bad_flag', anons_size='$anons_size', pic_width='$pic_width', pic_height='$pic_height', pic_position='$pic_position', site_comments='$site_comments' where id=$id");
 
 
@@ -1871,7 +1880,7 @@ class admins {
             //Смотрим на баланс и проверяем, может ли создать пользователь заявку (хватит ли денег)
             $cur_balans = $this->getUserBalans($uid, $db, 1);
             $sinfo = $db->Execute("SELECT * FROM sayty WHERE id=$sid")->FetchRow();
-            $price = $this->getTaskPrice($res['lay_out'], $res['nof_chars'], $sinfo);
+            $price = $this->getTaskPrice($res['type_task'], $res['lay_out'], $res['nof_chars'], $sinfo);
             $cur_balans -= $price;
 
             $nomoney = "";
@@ -1892,13 +1901,15 @@ class admins {
             $content = str_replace('[zid]', $id, $content);
             $content = str_replace('[nomoney]', $nomoney, $content);
             $content = str_replace('[stat_disabled]', $stat_disabled, $content);
-
+            
             $res['vipolneno'] = $res['vipolneno'] ? 'checked="checked"' : '';
             $res['dorabotka'] = $res['dorabotka'] ? 'checked="checked"' : '';
             $res['vrabote'] = $res['vrabote'] ? 'checked="checked"' : '';
             $res['navyklad'] = $res['navyklad'] ? 'checked="checked"' : '';
             $res['vilojeno'] = $res['vilojeno'] ? 'checked="checked"' : '';
             $res['rework'] = $res['rework'] ? 'checked="checked"' : '';
+            $res['to_remove'] = $res['to_remove'] ? 'checked="checked"' : '';
+            $res['removed'] = $res['removed'] ? 'checked="checked"' : '';
 
             $url_sayta = '<a href="?module=admins&action=sayty&uid=' . $sinfo['uid'] . '&action2=edit&id=' . $sinfo['id'] . '" target="_blank">' . $sinfo['url'] . '</a>';
             $content = str_replace('[url_sayta]', $url_sayta, $content);
@@ -1914,18 +1925,12 @@ class admins {
             }
             $content = str_replace('[sistema1]', $sistema, $content);
             $content = str_replace("[burse]", (($res['sistema'] == "https://blogun.ru/") ? "Blogun_id" : "GGL_ID"), $content);
-            if ((int) $res['type_task'] == 0) {
-                $content = str_replace('[type0]', "selected='selected'", $content);
-                $content = str_replace('[type1]', "", $content);
-                $content = str_replace('[type2]', "", $content);
-            } elseif ((int) $res['type_task'] == 1) {
-                $content = str_replace('[type0]', "", $content);
-                $content = str_replace('[type1]', "selected='selected'", $content);
-                $content = str_replace('[type2]', "", $content);
-            } else {
-                $content = str_replace('[type0]', "", $content);
-                $content = str_replace('[type1]', "", $content);
-                $content = str_replace('[type2]', "selected='selected'", $content);
+            for ($i = 0; $i < 4; $i++) {
+                if((int) $res['type_task'] == $i) {
+                    $content = str_replace("[type$i]", "selected='selected'", $content);
+                } else {
+                    $content = str_replace("[type$i]", "", $content);
+                }
             }
             $content = str_replace('[date]', date("d-m-Y H:i:s", $res["date"]), $content);
             foreach ($res as $k => $v) {
@@ -1949,7 +1954,13 @@ class admins {
                 $db->Execute("UPDATE chat_admin_copywriter SET status=1 WHERE uid!='" . $_SESSION["admin"]["id"] . "' AND zid='$id' AND burse=1");
             } else {
                 $content = str_replace('[display_for_copywriter]', " style='display:none' ", $content);
-                $content = str_replace('[rework_display]', " style='display:none' ", $content);
+                $content = str_replace('[rework_display]', ($res["type_task"] != 3 ? " style='display:none' " : ""), $content);
+            }
+            
+            if($res["type_task"] == 3) {
+                $content = str_replace('[stat_notremoved]', " style='display:none;' ", $content);
+            } else {
+                $content = str_replace('[stat_removed]', " style='display:none;' ", $content);
             }
 
             $content = str_replace('[uid]', $uid, $content);
@@ -1986,7 +1997,8 @@ class admins {
             $sape_id = $_REQUEST['sape_id'];
             $rotapost_id = $_REQUEST['rotapost_id'];
             $task_id = $res['task_id'];
-            $type_task = (int) $_REQUEST['type'];
+            $task_status = @$_REQUEST['task_status'];
+            $type_task = isset($_REQUEST["type"]) ? (int) $_REQUEST['type'] : 0;
             if($type_task != $res['type_task'] && $sistema == "http://pr.sape.ru/"){
                 if($type_task == 2) {
                     $nof_chars = 1500;
@@ -1996,19 +2008,23 @@ class admins {
             } else {
                 $nof_chars = $res['nof_chars'];
             }
+            if($type_task != $res['type_task'] && $type_task == 3 && $task_status != "removed"){
+                $task_status = "to_remove";
+            }
             $profil .= microtime() . "  - GET DATA" . "\r\n";
 
             $task_site = $db->Execute("SELECT * FROM sayty WHERE id=" . $res['sid'])->FetchRow();
             $viklad_info = $db->Execute("SELECT * FROM admins WHERE id=" . $task_site['moder_id'])->FetchRow();
             $viklad_email = $viklad_info['email'];
             $profil .= microtime() . "  - AFTER 3 && 4 QUERY" . "\r\n";
-            $task_status = @$_REQUEST['task_status'];
-
+            
             $vipolneno = ($task_status == "vipolneno") ? 1 : 0;
             $dorabotka = ($task_status == "dorabotka") ? 1 : 0;
             $vrabote = ($task_status == "vrabote") ? 1 : 0;
             $navyklad = ($task_status == "navyklad") ? 1 : 0;
             $vilojeno = ($task_status == "vilojeno") ? 1 : 0;
+            $removed = ($task_status == "removed") ? 1 : 0;
+            $to_remove = ($task_status == "to_remove") ? 1 : 0;
 
             $rework = ($vipolneno == 1 || $dorabotka == 1 || $vrabote == 1 || $navyklad == 1 || $vilojeno == 1) ? 0 : $res["rework"];
 
@@ -2072,11 +2088,11 @@ class admins {
                 $profil .= microtime() . "  - SEND MAIL" . "\r\n";
             }
 
-            $q = "update zadaniya set b_id='$b_id',sape_id='$sape_id',rotapost_id='$rotapost_id', dorabotka='$dorabotka', rework='$rework', etxt='$etxt', vipolneno='$vipolneno', vrabote='$vrabote', navyklad='$navyklad', vilojeno='$vilojeno', type_task='$type_task', url_statyi='$url_statyi', text='$text', tema='$tema', sistema='$sistema', ankor='$ankor', ankor2='$ankor2', ankor3='$ankor3', ankor4='$ankor4', ankor5='$ankor5', url='$url', url2='$url2', url3='$url3', url4='$url4', url5='$url5', keywords='$keywords', price='$price', url_pic='$url_pic', comments='$comments', admin_comments='$admin_comments', lay_out='$lay_out', nof_chars='$nof_chars' where id=$id";
+            $q = "update zadaniya set b_id='$b_id',sape_id='$sape_id',rotapost_id='$rotapost_id', dorabotka='$dorabotka', rework='$rework', etxt='$etxt', vipolneno='$vipolneno', vrabote='$vrabote', navyklad='$navyklad', vilojeno='$vilojeno', to_remove='$to_remove', removed='$removed', type_task='$type_task', url_statyi='$url_statyi', text='$text', tema='$tema', sistema='$sistema', ankor='$ankor', ankor2='$ankor2', ankor3='$ankor3', ankor4='$ankor4', ankor5='$ankor5', url='$url', url2='$url2', url3='$url3', url4='$url4', url5='$url5', keywords='$keywords', price='$price', url_pic='$url_pic', comments='$comments', admin_comments='$admin_comments', lay_out='$lay_out', nof_chars='$nof_chars' where id=$id";
             $db->Execute($q);
             $profil .= microtime() . "  - QUERY #5 UPDATE task" . "\r\n";
             if (($navyklad == 1 || $dorabotka == 1 || $vilojeno == 1 || $vipolneno == 1 || $vrabote == 1)) {
-                $price = $this->getTaskPrice($lay_out, $res['nof_chars'], $task_site);
+                $price = $this->getTaskPrice($type_task, $lay_out, $res['nof_chars'], $task_site);
                 $compl = $db->Execute("SELECT * FROM completed_tasks WHERE uid = $uid AND zid=" . $id)->FetchRow();
                 if (empty($compl)) {
                     $db->Execute("INSERT INTO completed_tasks (uid, zid, date, price, status) VALUES ('$uid', '$id', '" . date("Y-m-d H:i:s") . "', '$price',1)");
@@ -3079,6 +3095,8 @@ class admins {
     }
 
     function zadaniya_dubl($db) {
+        $task_old = $db->Execute("SELECT * FROM zadaniya WHERE id=$id")->FetchRow();
+        
         $id = (int) @$_REQUEST['zid'];
         $sistema = @$_REQUEST['sistema'];
         $etxt = @$_REQUEST['etxt'];
@@ -3102,8 +3120,8 @@ class admins {
         $admin_comments = @$_REQUEST['admin_comments'];
         $b_id = @$_REQUEST['b_id'];
         $overwrite = @$_REQUEST['overwrite'];
+        $type_task = isset($_REQUEST['type_task']) ? $_REQUEST["type_task"] : $task_old["type_task"];
 
-        $task_old = $db->Execute("SELECT * FROM zadaniya WHERE id=$id")->FetchRow();
         $uid = $task_old['uid'];
 
         $user = $db->Execute("select * from admins where id=$uid")->FetchRow();
@@ -3145,7 +3163,7 @@ class admins {
         $moder = $db->Execute("SELECT * FROM admins WHERE id=" . $site['moder_id'])->FetchRow();
 
         $task_status = isset($_REQUEST['task_status']) ? $_REQUEST['task_status'] : null;
-        $vipolneno = $dorabotka = $vrabote = $navyklad = $vilojeno = 0;
+        $vipolneno = $dorabotka = $vrabote = $navyklad = $vilojeno = $to_remove = $removed = 0;
         switch ($task_status) {
             case "vipolneno":
                 $vipolneno = 1;
@@ -3162,11 +3180,17 @@ class admins {
             case "vilojeno":
                 $vilojeno = 1;
                 break;
+            case "to_remove":
+                $to_remove = 1;
+                break;
+            case "removed":
+                $removed = 1;
+                break;
         }
 
         if (($navyklad == 1 || $dorabotka == 1 || $vilojeno == 1 || $vipolneno == 1 || $vrabote == 1)) {
             $lay_out = (isset($_REQUEST['lay_out']) && $_REQUEST['lay_out'] == "1") ? 1 : 0;
-            $price = $this->getTaskPrice($lay_out, 1500, $site);
+            $price = $this->getTaskPrice($type_task, $lay_out, 1500, $site);
         }
 
         if ($navyklad == 1) {
@@ -3181,7 +3205,7 @@ class admins {
             $this->_postman->admin->taskStatusVilojeno($site, $task_old);
         }
 
-        $q = "update zadaniya set b_id='$b_id', dorabotka='$dorabotka', etxt='$etxt', vipolneno='$vipolneno', vrabote='$vrabote', navyklad='$navyklad', vilojeno='$vilojeno', url_statyi='$url_statyi', text='$text', tema='$tema', sistema='$sistema', ankor='$ankor',ankor2='$ankor2',ankor3='$ankor3',ankor4='$ankor4', ankor5='$ankor5',url='$url',url2='$url2',url3='$url3',url4='$url4',url5='$url5', keywords='$keywords', price='$price', url_pic='$url_pic', comments='$comments', admin_comments='$admin_comments', overwrite='$overwrite' where id=$id";
+        $q = "update zadaniya set b_id='$b_id', type_task='$type_task', dorabotka='$dorabotka', etxt='$etxt', vipolneno='$vipolneno', vrabote='$vrabote', navyklad='$navyklad', vilojeno='$vilojeno', removed='$removed', to_remove='$to_remove', url_statyi='$url_statyi', text='$text', tema='$tema', sistema='$sistema', ankor='$ankor',ankor2='$ankor2',ankor3='$ankor3',ankor4='$ankor4', ankor5='$ankor5',url='$url',url2='$url2',url3='$url3',url4='$url4',url5='$url5', keywords='$keywords', price='$price', url_pic='$url_pic', comments='$comments', admin_comments='$admin_comments', overwrite='$overwrite' where id=$id";
         $db->Execute($q);
         $date = time();
         $copy = $id;
@@ -3630,9 +3654,6 @@ class admins {
             } else if ($task['vilojeno']) {
                 $new_s = "vilojeno";
                 $bg = '#b385bf';
-            } else if ($task['rectificate']) {
-                $new_s = "vilojeno";
-                $bg = '#bbb';
             } else {
                 $new_s = '';
             }
@@ -3958,9 +3979,6 @@ class admins {
             } else if ($task['vilojeno']) {
                 $new_s = "vilojeno";
                 $bg = '#b385bf';
-            } else if ($task['rectificate']) {
-                $new_s = "vilojeno";
-                $bg = '#bbb';
             } else {
                 $new_s = '';
             }
@@ -5498,6 +5516,16 @@ class admins {
             $new_s = "vilojeno";
             $bg = '#b385bf';
             $status = "Выложено";
+        } else if ($status == "to_remove") {
+            $tasks = $db->Execute("SELECT * FROM zadaniya WHERE to_remove=1 AND sid IN " . $sids);
+            $new_s = "to_remove";
+            $bg = '#FF8C69';
+            $status = "На удаление";
+        } else if ($status == "removed") {
+            $tasks = $db->Execute("SELECT * FROM zadaniya WHERE removed=1 AND sid IN " . $sids);
+            $new_s = "removed";
+            $bg = '#8B6969';
+            $status = "Удалено";
         }
         $zadaniya = "";
         while ($task = $tasks->FetchRow()) {

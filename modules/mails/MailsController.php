@@ -70,7 +70,9 @@ class MailsController {
                     $this->_db->Execute("UPDATE admins SET mail_balance_ended = 1 WHERE id = " . $user["id"]);
                     $log .= "endedBalance: " . $user["id"] . " = " . $balance_all[$user["id"]] . PHP_EOL;
                 } else {
-                    $log .= "endedBalance: NOT SEND " . $user["id"] . " = " . (isset($balance_all[$user["id"]]) ? $balance_all[$user["id"]] : "Not orders" ). PHP_EOL;
+                    if(isset($balance_all[$user["id"]])){
+                        $log .= "endedBalance: NOT SEND " . $user["id"] . " = " . $balance_all[$user["id"]] . PHP_EOL;
+                    }
                 }
             }
         } else {
@@ -92,7 +94,9 @@ class MailsController {
                     $this->_db->Execute("UPDATE admins SET mail_balance_comes_end = 1 WHERE id = " . $user["id"]);
                     $log .= "balanceComesToEnd: " . $user["id"] . " = " . $balance_all[$user["id"]] . PHP_EOL;
                 } else {
-                    $log .= "balanceComesToEnd: NOT SEND " . $user["id"] . " = " . (isset($balance_all[$user["id"]]) ? $balance_all[$user["id"]] : "Not orders" ). PHP_EOL;
+                    if(isset($balance_all[$user["id"]])){
+                        $log .= "balanceComesToEnd: NOT SEND " . $user["id"] . " = " . $balance_all[$user["id"]] . PHP_EOL;
+                    }
                 }
             }
         } else {
@@ -108,6 +112,7 @@ class MailsController {
 
         $users_balance_ended = $this->_db->Execute("SELECT * FROM admins WHERE mail_balance_ended = 1")->GetAll();
         if (!empty($users_balance_ended)) {
+            $log = "checkMailBalance: YES mail_balance_ended" . PHP_EOL;
             foreach ($users_balance_ended as $user) {
                 if (isset($balance_all[$user["id"]]) && $balance_all[$user["id"]] > 62) {
                     $this->_db->Execute("UPDATE admins SET mail_balance_ended = 0 WHERE id = " . $user["id"]);
@@ -115,11 +120,12 @@ class MailsController {
                 }
             }
         } else {
-            $log = "checkMailBalance: mail_balance_ended" . PHP_EOL;
+            $log = "checkMailBalance: NOT mail_balance_ended" . PHP_EOL;
         }
 
         $users_balance_comes_end = $this->_db->Execute("SELECT * FROM admins WHERE mail_balance_comes_end = 1")->GetAll();
         if (!empty($users_balance_comes_end)) {
+            $log = "checkMailBalance: YES mail_balance_comes_end" . PHP_EOL;
             foreach ($users_balance_comes_end as $user) {
                 if (isset($balance_all[$user["id"]]) && $balance_all[$user["id"]] > 200) {
                     $this->_db->Execute("UPDATE admins SET mail_balance_comes_end = 0 WHERE id = " . $user["id"]);
@@ -127,7 +133,7 @@ class MailsController {
                 }
             }
         } else {
-            $log = "checkMailBalance: mail_balance_comes_end" . PHP_EOL;
+            $log = "checkMailBalance: NOT mail_balance_comes_end" . PHP_EOL;
         }
 
         return $log;
