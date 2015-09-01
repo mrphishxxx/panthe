@@ -37,9 +37,11 @@
             <div id="hotbar" class="clear">
 
                 <ul>
-                    <li id="new_applications" href="#"><a href="?module=user&action=tasks_moder&status=navyklad"><span class="ico"></span><span class="large">[all_navyklad]</span> всего на выклад</a></li>
-                    <li id="not_applications" href="#"><a href="?module=user&action=tasks_moder&status=dorabotka"><span class="ico"></span><span class="large">[all_dorabotka]</span> всего на доработке</a></li>
-                    <li id="in_applications" href="#"><a href="?module=user&action=tasks_moder&status=vilojeno"><span class="ico"></span><span class="large">[all_vilojeno]</span> всего выложено</a></li>
+                    <li id="new_applications" href="#"><a href="?module=user&action=tasks_moder&status=navyklad"><span class="ico"></span><span class="large">[all_navyklad]</span> на выклад</a></li>
+                    <li id="not_applications" href="#"><a href="?module=user&action=tasks_moder&status=dorabotka"><span class="ico"></span><span class="large">[all_dorabotka]</span> на доработке</a></li>
+                    <li id="in_applications" href="#"><a href="?module=user&action=tasks_moder&status=vilojeno"><span class="ico"></span><span class="large">[all_vilojeno]</span> выложено</a></li>
+                    <li id="toremove_applications" href="#"><a href="?module=user&action=tasks_moder&status=to_remove"><span class="ico"></span><span class="large">[all_to_remove]</span> на удаление</a></li>
+                    <li id="removed_applications" href="#"><a href="?module=user&action=tasks_moder&status=removed"><span class="ico"></span><span class="large">[all_removed]</span> удалено</a></li>
                 </ul>
 
             </div>

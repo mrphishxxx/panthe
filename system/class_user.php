@@ -139,10 +139,14 @@ class class_user {
         $all_navyklad = $db->Execute("select count(*) from zadaniya where navyklad=1 AND sid IN " . $sids)->FetchRow();
         $all_dorabotka = $db->Execute("SELECT count(*) FROM zadaniya WHERE dorabotka=1 AND sid IN " . $sids)->FetchRow();
         $all_vilojeno = $db->Execute("select count(*) from zadaniya where vilojeno=1 AND sid IN " . $sids)->FetchRow();
+        $all_to_remove = $db->Execute("select count(*) from zadaniya where to_remove=1 AND sid IN " . $sids)->FetchRow();
+        $all_removed = $db->Execute("select count(*) from zadaniya where removed=1 AND sid IN " . $sids)->FetchRow();
 
         $content = str_replace('[all_navyklad]', $all_navyklad['count(*)'], $content);
         $content = str_replace('[all_dorabotka]', $all_dorabotka['count(*)'], $content);
         $content = str_replace('[all_vilojeno]', $all_vilojeno['count(*)'], $content);
+        $content = str_replace('[all_to_remove]', $all_to_remove['count(*)'], $content);
+        $content = str_replace('[all_removed]', $all_removed['count(*)'], $content);
         
         $sum_num_tasks = $db->Execute("SELECT count(id) as num FROM zadaniya WHERE who_posted = '" . $this->user["id"] . "' AND vipolneno = 1")->FetchRow();
         $sum_money = $db->Execute("SELECT SUM(price) as sum FROM moders_money WHERE moder_id = '" . $this->user["id"] . "'")->FetchRow();

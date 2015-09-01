@@ -18,6 +18,8 @@
                 <li class="in-work"><a href="[cur_url]&status_z=dorabotka" style="border:0"><span class="ico"></span>— На доработке</a></li>
                 <li class="ready"><a href="[cur_url]&status_z=navyklad" style="border:0"><span class="ico"></span>— На выкладывании</a></li>
                 <li class="vilojeno"><a href="[cur_url]&status_z=vilojeno" style="border:0"><span class="ico"></span>— Выложено</a></li>
+                <li class="to_remove"><a href="[cur_url]&status_z=to_remove" style="border:0"><span class="ico"></span>— На удаление</a></li>
+                <li class="to_remove"><a href="[cur_url]&status_z=removed" style="border:0"><span class="ico"></span>— Удалена ссылка</a></li>
                 <li class="vilojeno"><a href="[cur_url]&status_z=all" style="border:0">Все</a></li>
             </ul>
         </li>

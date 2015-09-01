@@ -950,6 +950,9 @@ class admins {
             } else if ($res['removed']) {
                 $new_s = "removed";
                 $bg = '#8B6969';
+            } else if ($res['rectificate']) {
+                $new_s = "";
+                $bg = '#999';
             } else {
                 $bg = '';
             }
@@ -1867,11 +1870,17 @@ class admins {
         $id = (int) $_REQUEST['id'];
         $uid = (int) $_REQUEST['uid'];
         $sid = (int) $_GET['sid'];
-        $query = $db->Execute("select * from zadaniya where id=$id");
+        $res = $db->Execute("select * from zadaniya where id=$id")->FetchRow();
         $user = $db->Execute("select * from admins where id=$uid")->FetchRow();
-        $res = $query->FetchRow();
+
         $profil .= microtime() . "  - AFTER 1 && 2 QUERY" . "\r\n";
         if (!$send) {
+            if(empty($res)){
+                $content = file_get_contents(PATH . 'modules/admins/tmp/admin/not_found.tpl');
+                $content = str_replace('[url]', $_SERVER['HTTP_REFERER'], $content);
+                return $content;
+                exit;
+            }
             $type_disabled = false;
             $profil .= microtime() . "  - NOT SEND" . "\r\n";
             $_SESSION["HTTP_REFERER"] = @$_SERVER["HTTP_REFERER"];
@@ -1910,6 +1919,7 @@ class admins {
             $res['rework'] = $res['rework'] ? 'checked="checked"' : '';
             $res['to_remove'] = $res['to_remove'] ? 'checked="checked"' : '';
             $res['removed'] = $res['removed'] ? 'checked="checked"' : '';
+            $res['rectificate'] = $res['rectificate'] ? 'checked="checked"' : '';
 
             $url_sayta = '<a href="?module=admins&action=sayty&uid=' . $sinfo['uid'] . '&action2=edit&id=' . $sinfo['id'] . '" target="_blank">' . $sinfo['url'] . '</a>';
             $content = str_replace('[url_sayta]', $url_sayta, $content);
@@ -1959,8 +1969,10 @@ class admins {
             
             if($res["type_task"] == 3) {
                 $content = str_replace('[stat_notremoved]', " style='display:none;' ", $content);
+                $content = str_replace('[stat_removed]', "", $content);
             } else {
                 $content = str_replace('[stat_removed]', " style='display:none;' ", $content);
+                $content = str_replace('[stat_notremoved]', "", $content);
             }
 
             $content = str_replace('[uid]', $uid, $content);
@@ -1998,7 +2010,7 @@ class admins {
             $rotapost_id = $_REQUEST['rotapost_id'];
             $task_id = $res['task_id'];
             $task_status = @$_REQUEST['task_status'];
-            $type_task = isset($_REQUEST["type"]) ? (int) $_REQUEST['type'] : 0;
+            $type_task = isset($_REQUEST["type"]) ? (int) $_REQUEST['type'] : $res["type_task"];
             if($type_task != $res['type_task'] && $sistema == "http://pr.sape.ru/"){
                 if($type_task == 2) {
                     $nof_chars = 1500;
@@ -2025,6 +2037,7 @@ class admins {
             $vilojeno = ($task_status == "vilojeno") ? 1 : 0;
             $removed = ($task_status == "removed") ? 1 : 0;
             $to_remove = ($task_status == "to_remove") ? 1 : 0;
+            $rectificate = ($task_status == "rectificate") ? 1 : 0;
 
             $rework = ($vipolneno == 1 || $dorabotka == 1 || $vrabote == 1 || $navyklad == 1 || $vilojeno == 1) ? 0 : $res["rework"];
 
@@ -2088,7 +2101,7 @@ class admins {
                 $profil .= microtime() . "  - SEND MAIL" . "\r\n";
             }
 
-            $q = "update zadaniya set b_id='$b_id',sape_id='$sape_id',rotapost_id='$rotapost_id', dorabotka='$dorabotka', rework='$rework', etxt='$etxt', vipolneno='$vipolneno', vrabote='$vrabote', navyklad='$navyklad', vilojeno='$vilojeno', to_remove='$to_remove', removed='$removed', type_task='$type_task', url_statyi='$url_statyi', text='$text', tema='$tema', sistema='$sistema', ankor='$ankor', ankor2='$ankor2', ankor3='$ankor3', ankor4='$ankor4', ankor5='$ankor5', url='$url', url2='$url2', url3='$url3', url4='$url4', url5='$url5', keywords='$keywords', price='$price', url_pic='$url_pic', comments='$comments', admin_comments='$admin_comments', lay_out='$lay_out', nof_chars='$nof_chars' where id=$id";
+            $q = "update zadaniya set b_id='$b_id',sape_id='$sape_id',rotapost_id='$rotapost_id', dorabotka='$dorabotka', rework='$rework', etxt='$etxt', vipolneno='$vipolneno', vrabote='$vrabote', navyklad='$navyklad', vilojeno='$vilojeno', to_remove='$to_remove', removed='$removed', rectificate='$rectificate', type_task='$type_task', url_statyi='$url_statyi', text='$text', tema='$tema', sistema='$sistema', ankor='$ankor', ankor2='$ankor2', ankor3='$ankor3', ankor4='$ankor4', ankor5='$ankor5', url='$url', url2='$url2', url3='$url3', url4='$url4', url5='$url5', keywords='$keywords', price='$price', url_pic='$url_pic', comments='$comments', admin_comments='$admin_comments', lay_out='$lay_out', nof_chars='$nof_chars' where id=$id";
             $db->Execute($q);
             $profil .= microtime() . "  - QUERY #5 UPDATE task" . "\r\n";
             if (($navyklad == 1 || $dorabotka == 1 || $vilojeno == 1 || $vipolneno == 1 || $vrabote == 1)) {
@@ -3095,9 +3108,9 @@ class admins {
     }
 
     function zadaniya_dubl($db) {
-        $task_old = $db->Execute("SELECT * FROM zadaniya WHERE id=$id")->FetchRow();
         
         $id = (int) @$_REQUEST['zid'];
+        $task_old = $db->Execute("SELECT * FROM zadaniya WHERE id=$id")->FetchRow();
         $sistema = @$_REQUEST['sistema'];
         $etxt = @$_REQUEST['etxt'];
         $ankor = (@$_REQUEST['ankor']);
@@ -3204,14 +3217,13 @@ class admins {
         if ($vilojeno == 1) {
             $this->_postman->admin->taskStatusVilojeno($site, $task_old);
         }
-
-        $q = "update zadaniya set b_id='$b_id', type_task='$type_task', dorabotka='$dorabotka', etxt='$etxt', vipolneno='$vipolneno', vrabote='$vrabote', navyklad='$navyklad', vilojeno='$vilojeno', removed='$removed', to_remove='$to_remove', url_statyi='$url_statyi', text='$text', tema='$tema', sistema='$sistema', ankor='$ankor',ankor2='$ankor2',ankor3='$ankor3',ankor4='$ankor4', ankor5='$ankor5',url='$url',url2='$url2',url3='$url3',url4='$url4',url5='$url5', keywords='$keywords', price='$price', url_pic='$url_pic', comments='$comments', admin_comments='$admin_comments', overwrite='$overwrite' where id=$id";
+        $q = "update zadaniya set b_id='$b_id', type_task='$type_task', dorabotka='$dorabotka', etxt='$etxt', vipolneno='$vipolneno', vrabote='$vrabote', navyklad='$navyklad', vilojeno='$vilojeno', removed='$removed', to_remove='$to_remove', url_statyi='$url_statyi', text='" . addslashes($text) . "', tema='$tema', sistema='$sistema', ankor='$ankor',ankor2='$ankor2',ankor3='$ankor3',ankor4='$ankor4', ankor5='$ankor5',url='$url',url2='$url2',url3='$url3',url4='$url4',url5='$url5', keywords='$keywords', price='$price', url_pic='$url_pic', comments='$comments', admin_comments='$admin_comments', overwrite='$overwrite' where id=$id";
         $db->Execute($q);
         $date = time();
         $copy = $id;
 
         $db->Execute("INSERT INTO zadaniya (etxt,uid,sid,sistema,ankor,ankor2,ankor3,ankor4,ankor5,url,url2,url3,url4,url5,keywords,tema,text,url_statyi,date,price,url_pic,comments,admin_comments,copy) VALUES 
-						   (0,'$uid','$sid','$sistema','$ankor','$ankor2','$ankor3','$ankor4','$ankor5','$url','$url2','$url3','$url4','$url5','$keywords','$tema','$text','$url_statyi','$date','$price','$url_pic','$comments','$admin_comments','$copy')");
+						   (0,'$uid','$sid','$sistema','$ankor','$ankor2','$ankor3','$ankor4','$ankor5','$url','$url2','$url3','$url4','$url5','$keywords','$tema','" . addslashes($text) . "','$url_statyi','$date','$price','$url_pic','$comments','$admin_comments','$copy')");
 
         $lastId = $db->Insert_ID();
         $db->Execute("INSERT INTO completed_tasks (uid, zid, date, price, status) VALUES ('$uid', '$lastId', '" . date("Y-m-d H:i:s") . "', '$price',1)");
@@ -5257,7 +5269,7 @@ class admins {
         }
         $id = $_REQUEST['id'];
         $uid = isset($_SESSION['admin']['id']) ? $_SESSION['admin']['id'] : $_SESSION['manager']['id'];
-        if (isset($_REQUEST['id'])) {
+        if (isset($_REQUEST['burse'])) {
             $burse = 1;
         } else {
             $burse = 0;
@@ -5507,7 +5519,7 @@ class admins {
             $bg = '#ffde96';
             $status = "На выкладывании";
         } else if ($status == "neobrabot") {
-            $tasks = $db->Execute("SELECT * FROM zadaniya WHERE (vrabote=0 or vrabote IS NULL) AND (vipolneno=0 or vipolneno IS NULL) AND (dorabotka=0 or dorabotka IS NULL) AND (navyklad=0 or navyklad IS NULL) AND (vilojeno=0 or vilojeno IS NULL) AND sid IN " . $sids);
+            $tasks = $db->Execute("SELECT * FROM zadaniya WHERE (vrabote=0 or vrabote IS NULL) AND (vipolneno=0 or vipolneno IS NULL) AND (dorabotka=0 or dorabotka IS NULL) AND (navyklad=0 or navyklad IS NULL) AND (vilojeno=0 or vilojeno IS NULL) AND (to_remove=0 or to_remove IS NULL) AND (removed=0 or removed IS NULL) AND sid IN " . $sids);
             $new_s = "";
             $bg = '#fff';
             $status = "Не обработанно";

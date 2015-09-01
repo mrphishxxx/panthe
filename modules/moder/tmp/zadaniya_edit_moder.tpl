@@ -1,5 +1,5 @@
 ﻿<script language="javascript" src="/modules/admins/tmp/admin/js/index.js" type="text/javascript"></script>
-<h1>Задание для сайта [site]</h1>
+<h1>Задание для сайта [site] <br />[type_task]</h1>
 <form action="" method="post" id="admin_form">
     <div class="form">
 
@@ -76,7 +76,7 @@
             </li>
             <li>
                 <span class="title">Статус:</span>
-                <input type="radio" name="task_status" value="vilojeno" id="vilojeno" [vilojeno]> Выложено
+                <input type="radio" name="task_status" value="[status]" id="[status]" [status_check]> [status_name]
             </li>
 
         </ul>

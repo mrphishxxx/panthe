@@ -32,7 +32,7 @@ class FromUser {
         $this->message["images"][] = array("type" => "image/jpg", "name" => "logo_main", "content" => base64_encode(fread($f2, filesize(PATH . "images/logo_main.jpg"))));
         
         $this->message["to"] = array();
-        $this->set_debugging(true);
+        //$this->set_debugging(true);
     }
 
     public function sendEmail() {
@@ -174,6 +174,20 @@ class FromUser {
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "balance_comes_to_end.tpl");
         return $this->sendEmail();
     }
+    
+    public function newKindTasks($email = "", $login = "LOGIN") {
+        $this->smarty->assign('login', $login);
+        $this->smarty->assign('get_text', $this->get_text);
+        $this->smarty->assign('path', PATH);
+        if ($email != "") {
+            $this->message["to"][0] = array("email" => $email, "name" => $login);
+        } else {
+            $this->message["to"] = array();
+        }
+        $this->message["subject"] = "[Работаем с новыми видами заданий в Forget.ru!]";
+        $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "new_kind_tasks.tpl");
+        return $this->sendEmail();
+    }
 
     public function getMailsName($name = null) {
         if (!empty($name)) {
@@ -186,6 +200,7 @@ class FromUser {
                 case "promocode": return "[Мы дарим 150 рублей на баланс iForget.ru!]";
                 case "endedBalance": return "[Закончился баланс iForget.ru!]";
                 case "balanceComesToEnd": return "[Баланс подходит к концу iForget.ru!]";
+                case "newKindTasks": return "[Работаем с новыми видами заданий в Forget.ru!]";
             }
         } else {
             return array(
@@ -196,7 +211,8 @@ class FromUser {
                 "gettingStarted" => "[Начало работы с iForget.ru!]",
                 "promocode" => "[Мы дарим 150 рублей на баланс iForget.ru!]",
                 "endedBalance" => "[Закончился баланс iForget.ru!]",
-                "balanceComesToEnd" => "[Баланс подходит к концу iForget.ru!]"
+                "balanceComesToEnd" => "[Баланс подходит к концу iForget.ru!]",
+                "newKindTasks" => "[Работаем с новыми видами заданий в Forget.ru!]"
             );
         }
     }
@@ -213,6 +229,7 @@ class FromUser {
                 case "promocode": return $this->promocode();
                 case "endedBalance": return $this->endedBalance();
                 case "balanceComesToEnd": return $this->balanceComesToEnd();
+                case "newKindTasks": return $this->newKindTasks();;
             }
         }
     }

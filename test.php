@@ -1,28 +1,12 @@
 <?php
 include_once 'config.php';
-include_once 'includes/mandrill/mandrill.php';
+include 'includes/adodb5/adodb.inc.php';
+$db = ADONewConnection(DB_TYPE);
+@$db->PConnect(DB_HOST, DB_USER, DB_PASS, DB_BASE) or die('Не удается подключиться к базе данных');
+$db->Execute('set charset utf8');
+$db->Execute('SET NAMES utf8');
 
-$body = implode(",", $argv);
-
-$mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
-$message = array();
-$message["html"] = $body;
-$message["text"] = "";
-$message["subject"] = "TEST";
-$message["from_email"] = "news@iforget.ru";
-$message["from_name"] = "iforget";
-$message["to"] = array();
-$message["to"][0] = array("email" => MAIL_DEVELOPER);
-$message["track_opens"] = null;
-$message["track_clicks"] = null;
-$message["auto_text"] = null;
-
-try {
-    $mandrill->messages->send($message);
-    echo $body;
-} catch (Exception $e) {
-    echo $e;
-    echo $body;
-}
+$query = $db->Execute("select c.* from completed_tasks c LEFT JOIN zadaniya z ON c.zid=z.id where z.type_task = 3 order by c.date")->GetAll();
+print_r($query);
 die();
 

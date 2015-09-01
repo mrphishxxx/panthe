@@ -161,11 +161,15 @@
             </li>
             <li [stat_removed]>
                 <span class="title"></span>
-                <input type="radio" name="task_status" value="removed" [removed] [stat_removed]> Удалена
+                <input type="radio" name="task_status" value="removed" [removed]> Удалена
             </li>
             <li>
                 <span class="title"></span>
                 <input type="radio" name="task_status" value="vipolneno" [vipolneno] [stat_disabled]> Выполнено
+            </li>
+            <li [stat_removed]>
+                <span class="title"></span>
+                <input type="radio" name="task_status" value="rectificate" [rectificate]> Закрыть
             </li>
         </ul>
     </div>

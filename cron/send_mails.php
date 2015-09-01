@@ -35,7 +35,10 @@ if ((isset($argv) && isset($argv[1]) && !empty($argv[1])) || isset($_GET["param"
         case "checkMailBalance":
             $body = $mails->checkMailBalanceAction();
             break;
-
+        case "newKindTasks":
+            $body = $mails->newKindTasks();
+            break;
+        
         default: $body = "unknown argument";
     }
 } else {

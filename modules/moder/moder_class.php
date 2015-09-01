@@ -210,9 +210,9 @@ class moder {
             $n++;
             $sids[] = $res['id'];
             $domain_f .= '<option value="' . $res['id'] . '" ' . (isset($_GET['domain_f']) == $res['id'] ? 'selected' : '') . '>' . $res['url'] . '</option>';
-            if (!in_array($res['uid'], $uids))
+            if (!in_array($res['uid'], $uids)) {
                 $uids[] = $res['uid'];
-
+            }
             $sites .= file_get_contents(PATH . 'modules/moder/tmp/site_one_moder.tpl');
             $sites = str_replace('[site]', $res['url'], $sites);
             $sites = str_replace('[url]', $res['url_admin'], $sites);
@@ -232,25 +232,28 @@ class moder {
 
         $sids = "(" . implode(",", $sids) . ")";
         $uids = "(" . implode(",", $uids) . ")";
-        if (isset($_GET['domain_f'])){
+        if (isset($_GET['domain_f'])) {
             $sids = " (" . $db->escape($_GET["domain_f"]) . ") ";
         }
 
-        if (!@$_GET['status_z']) {
-            $query = $db->Execute("SELECT * FROM zadaniya WHERE type_task != 3 AND sid IN $sids AND ((dorabotka = 1) OR (navyklad=1)) order by date DESC, id $sort LIMIT " . (($offset - 1) * $limit) . ",$limit");
-            $all = $db->Execute("select * from zadaniya where type_task != 3 AND sid IN $sids AND ((dorabotka = 1) OR (navyklad=1)) order by date DESC, id $sort");
-        } elseif (@$_GET['status_z'] && ($_GET['status_z'] != 'all')) {
+        if (!isset($_GET['status_z'])) {
+            $query = $db->Execute("SELECT * FROM zadaniya WHERE sid IN $sids AND ((dorabotka = 1) OR (navyklad=1) OR (type_task = 3 AND to_remove=1)) order by date DESC, id $sort LIMIT " . (($offset - 1) * $limit) . ",$limit");
+            $all = $db->Execute("select * from zadaniya where sid IN $sids AND ((dorabotka = 1) OR (navyklad=1) OR (type_task = 3 AND to_remove=1)) order by date DESC, id $sort");
+        } elseif (isset($_GET['status_z']) && $_GET['status_z'] != 'all') {
             $who_posted = "";
-            if (@$_GET['status_z'] == "vipolneno") {
-                $who_posted = " AND who_posted = $uid ";
-            }
-            $status_f = $db->escape(@$_GET['status_z']);
 
-            $query = $db->Execute("select * from zadaniya where type_task != 3 AND ($status_f=1) AND (sid IN $sids) AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1)) $who_posted order by date DESC, id $sort LIMIT " . (($offset - 1) * $limit) . ",$limit");
-            $all = $db->Execute("select * from zadaniya where type_task != 3 AND ($status_f=1) AND (sid IN $sids) AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1)) $who_posted order by date DESC, id $sort");
+            if (isset($_GET['status_z'])) {
+                if ($_GET['status_z'] == "vipolneno") {
+                    $who_posted = " AND who_posted = $uid ";
+                }
+                $status_f = $db->escape($_GET['status_z']);
+            }
+            //echo "select * from zadaniya where ($status_f=1) ".($status_f != "vipolneno" ? 'AND (sid IN '.$sids.')' : '')." AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (type_task = 3 AND rectificate=0) OR (vipolneno=1)) $who_posted order by date DESC, id $sort";
+            $query = $db->Execute("select * from zadaniya where ($status_f=1) " . ($status_f != "vipolneno" ? 'AND (sid IN ' . $sids . ')' : '') . " AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (type_task = 3 AND rectificate=0) OR (vipolneno=1)) $who_posted order by date DESC, id $sort LIMIT " . (($offset - 1) * $limit) . ",$limit");
+            $all = $db->Execute("select * from zadaniya where ($status_f=1) " . ($status_f != "vipolneno" ? 'AND (sid IN ' . $sids . ')' : '') . " AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (type_task = 3 AND rectificate=0) OR (vipolneno=1)) $who_posted order by date DESC, id $sort");
         } else {
-            $all = $db->Execute("select * from zadaniya where type_task != 3 AND sid IN $sids AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1 AND who_posted = $uid)) order by date DESC, id $sort");
-            $query = $db->Execute("select * from zadaniya where type_task != 3 AND sid IN $sids AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (vipolneno=1 AND who_posted = $uid)) order by date DESC, id $sort LIMIT " . (($offset - 1) * $limit) . ",$limit");
+            $all = $db->Execute("select * from zadaniya where sid IN $sids AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (type_task = 3 AND rectificate=0) OR (vipolneno=1 AND who_posted = $uid)) order by date DESC, id $sort");
+            $query = $db->Execute("select * from zadaniya where sid IN $sids AND ((dorabotka = 1) OR (navyklad=1) OR (vilojeno=1) OR (type_task = 3 AND rectificate=0) OR (vipolneno=1 AND who_posted = $uid)) order by date DESC, id $sort LIMIT " . (($offset - 1) * $limit) . ",$limit");
         }
         //print_r($all->GetAll());
         $all_zadanya = (!empty($all)) ? $all->NumRows() : 0;
@@ -309,18 +312,25 @@ class moder {
                 $zadaniya = str_replace('[tema]', mb_substr($res['tema'], 0, 35), $zadaniya);
                 $zadaniya = str_replace('[url_statyi]', $res['url_statyi'], $zadaniya);
 
-                if ($res['dorabotka'])
+                if ($res['dorabotka']) {
                     $new_s = "in-work";
-                else if ($res['vipolneno'])
+                } else if ($res['vipolneno']) {
                     $new_s = "done";
-                else if ($res['vrabote'])
+                } else if ($res['vrabote']) {
                     $new_s = "working";
-                else if ($res['navyklad'])
+                } else if ($res['navyklad']) {
                     $new_s = "ready";
-                else if ($res['vilojeno'])
+                } else if ($res['vilojeno']) {
                     $new_s = "vilojeno";
-                else
-                    $bg = '';
+                } else if ($res['to_remove']) {
+                    $new_s = "to_remove";
+                } else if ($res['removed']) {
+                    $new_s = "removed";
+                } else if ($res['rectificate']) {
+                    $new_s = "";
+                } else {
+                    $new_s = '';
+                }
                 $zadaniya = str_replace('[status]', $new_s, $zadaniya);
 
                 if ($res['dorabotka'])
@@ -333,6 +343,12 @@ class moder {
                     $bg = 'style="background:#ffde96"';
                 else if ($res['vilojeno'])
                     $bg = 'style="background:#b385bf"';
+                else if ($res['to_remove'])
+                    $bg = 'style="background:#FF8C69"';
+                else if ($res['removed'])
+                    $bg = 'style="background:#8B6969"';
+                else if ($res['rectificate'])
+                    $bg = 'style="background:#999"';
                 else
                     $bg = '';
                 $zadaniya = str_replace('[bg]', $bg, $zadaniya);
@@ -357,8 +373,7 @@ class moder {
 
         $content = str_replace('[zadaniya]', $zadaniya, $content);
         $content = str_replace('[uid]', $uid, $content);
-        //$content = str_replace('[sid]', $sid ? $sid : null, $content);
-        $content = str_replace('[pegination]', @$pegination ? $pegination : null, $content);
+        $content = str_replace('[pegination]', isset($pegination) ? $pegination : null, $content);
         $content = str_replace('[cur_url]', $cur_url, $content);
         $content = str_replace('[viklad_id]', $_SESSION['user']['id'], $content);
 
@@ -431,115 +446,53 @@ class moder {
             $error = @$_REQUEST['error'];
             $content = str_replace('[error]', $error, $content);
 
-            if ($res['vipolneno'])
-                $res['vipolneno'] = 'checked="checked"';
-            else
-                $res['vipolneno'] = '';
-            if ($res['dorabotka'])
-                $res['dorabotka'] = 'checked="checked"';
-            else
-                $res['dorabotka'] = '';
-            if ($res['vrabote'])
-                $res['vrabote'] = 'checked="checked"';
-            else
-                $res['vrabote'] = '';
-            if ($res['navyklad'])
-                $res['navyklad'] = 'checked="checked"';
-            else
-                $res['navyklad'] = '';
-            if ($res['vilojeno'])
-                $res['vilojeno'] = 'checked="checked"';
-            else
-                $res['vilojeno'] = '';
+            $status = $status_name = $status_check = "";
+            if ($res['vipolneno']) {
+                $status_check = 'checked="checked"';
+                $status_name = "Выполнено";
+            }
+            if ($res['dorabotka']) {
+                $status_check = '';
+                $status_name = "Доработано";
+                $status = "vilojeno";
+            }
+            if ($res['vrabote']) {
+                $status_check = '';
+                $status_name = "Выложено";
+                $status = "vilojeno";
+            }
+            if ($res['navyklad']) {
+                $status_check = '';
+                $status_name = "Выложено";
+                $status = "vilojeno";
+            }
+            if ($res['vilojeno']) {
+                $status_check = 'checked="checked"';
+                $status_name = "Выложено";
+                $status = "vilojeno";
+            }
+            if ($res['to_remove']) {
+                $status_check = '';
+                $status_name = "Ссылка удалена";
+                $status = "removed";
+            }
+            if ($res['removed']) {
+                $status_check = 'checked="checked"';
+                $status_name = "Ссылка удалена";
+                $status = "removed";
+            }
+            $content = str_replace('[status]', $status, $content);
+            $content = str_replace('[status_name]', $status_name, $content);
+            $content = str_replace('[status_check]', $status_check, $content);
 
-            $pass = ETXT_PASS;
-            $params = array('method' => 'tasks.getResults', 'token' => '29aa0eec2c77dd6d06e23b3faaef9eed', 'id' => $res['task_id']);
-            ksort($params);
-            $data = array();
-            $data2 = array();
-            foreach ($params as $k => $v) {
-                $data[] = $k . '=' . $v;
-                $data2[] = $k . '=' . urlencode($v);
+            switch ($res["type_task"]) {
+                case 3:
+                    $content = str_replace('[type_task]', " на удаление ссылки из текста", $content);
+                    break;
+                default:
+                    $content = str_replace('[type_task]', " на выкладывание текста на сайт", $content);
+                    break;
             }
-            $sign = md5(implode('', $data) . md5($pass . 'api-pass'));
-            $url = 'https://www.etxt.ru/api/json/?' . implode('&', $data2) . '&sign=' . $sign;
-            if ($curl = curl_init()) {
-                curl_setopt($curl, CURLOPT_URL, $url);
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-                $cur_out = curl_exec($curl);
-                curl_close($curl);
-            }
-            $task_stat = json_decode($cur_out);
-            $file_href = "";
-            $uniq = 0;
-            foreach ($task_stat as $kt => $vt) {
-                $vt = (array) $vt;
-
-                $file_href = (array) @$vt['files'];
-                $file_href_parts = (array) @$file_href['file'];
-                if (@$file_href_parts['path']) {
-                    $file_path = $file_href_parts['path'];
-                    $uniq = $file_href_parts['per_antiplagiat'];
-                } else {
-                    $file_href_parts = (array) @$file_href['text'];
-                    $file_path = @$file_href_parts['path'];
-                    $uniq = @$file_href_parts['per_antiplagiat'];
-                }
-            }
-            if ($file_path) {
-                $cur_text = file_get_contents($file_path);
-                $cur_text = iconv('cp1251', 'utf-8', $cur_text);
-                if (!$res['overwrite'])
-                    $content = str_replace('[text]', htmlspecialchars_decode($cur_text), $content);
-            }
-
-            $params = array('method' => 'tasks.listTasks', 'token' => '29aa0eec2c77dd6d06e23b3faaef9eed', 'id' => $res['task_id']);
-            ksort($params);
-            $data = array();
-            $data2 = array();
-            foreach ($params as $k => $v) {
-                $data[] = $k . '=' . $v;
-                $data2[] = $k . '=' . urlencode($v);
-            }
-            $sign = md5(implode('', $data) . md5($pass . 'api-pass'));
-            $url = 'https://www.etxt.ru/api/json/?' . implode('&', $data2) . '&sign=' . $sign;
-            if ($curl = curl_init()) {
-                curl_setopt($curl, CURLOPT_URL, $url);
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-                $cur_out = curl_exec($curl);
-                curl_close($curl);
-            }
-            $task_info = json_decode($cur_out);
-
-            $etxt_action = "";
-            foreach ($task_info as $kl => $vl) {
-                $vl = (array) $vl;
-                if ($vl['status'] == 3) {
-                    $etxt_action = '
-					<p>
-						<table>
-						<tr>
-							<td>Принять</td>
-							<td><input type="radio" value="0" name="morework" /></td>
-						</tr>
-						<tr>
-							<td>На доработку</td>
-							<td><input type="radio" value="1" name="morework" /></td>
-						</tr>
-						<tr>
-							<td>Комментарий<br/>доработки</td>
-							<td><textarea name="morework_comment" cols="10" rows="5"></textarea></td>
-						</tr>
-						</table>
-					</p>
-					';
-                }
-            }
-            $content = str_replace('[etxt_action]', $etxt_action, $content);
-
-            $content = str_replace('[uniq]', $uniq, $content);
             if ($res['sistema'] != "http://miralinks.ru/" && $res['sistema'] != "http://pr.sape.ru/") {
                 $content = str_replace('[display]', "style='display:none'", $content);
             } else {
@@ -549,75 +502,38 @@ class moder {
             foreach ($res as $k => $v) {
                 $content = str_replace("[$k]", htmlspecialchars_decode($v), $content);
             }
+            
+            $content = str_replace('[etxt_action]', "", $content);
             $content = str_replace('[uid]', $uid, $content);
             $content = str_replace('[sid]', $sid, $content);
             $content = str_replace('[site]', $sinfo["url"], $content);
             $content = str_replace('[tid]', $id, $content);
         } else {
-            $sistema = @$_REQUEST['sistema'];
-            $etxt = @$_REQUEST['etxt'];
-            $ankor = @$_REQUEST['ankor'];
-            $url = @$_REQUEST['url'];
-            $keywords = @$_REQUEST['keywords'];
-            $tema = @$_REQUEST['tema'];
-            $text = @$_REQUEST['text'];
-            $url_statyi = @$_REQUEST['url_statyi'];
-            $url_pic = @$_REQUEST['url_pic'];
-            $price = @$_REQUEST['price'];
-            $comments = (isset($_REQUEST['comments']) && !empty($_REQUEST['comments'])) ? mysql_real_escape_string($_REQUEST['comments']) : '';
-            $admin_comments = @$_REQUEST['admin_comments'];
             $error = "";
 
-            $task_id = $res['task_id'];
+            $url_statyi = isset($_REQUEST['url_statyi']) ? $_REQUEST['url_statyi'] : null;
+            $url_pic = isset($_REQUEST['url_pic']) ? $_REQUEST['url_pic'] : null;
+            $admin_comments = isset($_REQUEST['admin_comments']) ? $_REQUEST['admin_comments'] : null;
 
-            if (@$_REQUEST['morework'] && $task_id) {
-                $text = $_REQUEST['morework_comment'];
-
-                $pass = ETXT_PASS;
-                $query_sign = "method=tasks.cancelTasktoken=29aa0eec2c77dd6d06e23b3faaef9eed";
-                $sign = md5($query_sign . md5($pass . 'api-pass'));
-
-                $params = array('id' => array($task_id), 'text' => $text);
-                $query_p = http_build_query($params);
-                $url_etxt = "https://www.etxt.ru/api/json/?method=tasks.cancelTask&token=29aa0eec2c77dd6d06e23b3faaef9eed&sign=" . $sign;
-                $curl = curl_init();
-                curl_setopt($curl, CURLOPT_URL, $url_etxt);
-                curl_setopt($curl, CURLOPT_POST, true);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $query_p);
-                curl_exec($curl);
-                curl_close($curl);
-            } else if ((@$_REQUEST['morework'] == 0) && $task_id) {
-                if (isset($_REQUEST['morework'])) {
-                    $pass = ETXT_PASS;
-                    $query_sign = "method=tasks.paidTasktoken=29aa0eec2c77dd6d06e23b3faaef9eed";
-                    $sign = md5($query_sign . md5($pass . 'api-pass'));
-
-                    $params = array('id' => array($task_id));
-                    $query_p = http_build_query($params);
-                    $url_etxt = "https://www.etxt.ru/api/json/?method=tasks.paidTask&token=29aa0eec2c77dd6d06e23b3faaef9eed&sign=" . $sign;
-                    $curl = curl_init();
-                    curl_setopt($curl, CURLOPT_URL, $url_etxt);
-                    curl_setopt($curl, CURLOPT_POST, true);
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $query_p);
-                    curl_exec($curl);
-                    curl_close($curl);
-                }
-            }
-
-
-            $task_status = @$_REQUEST['task_status'];
-            if ($task_status == "vilojeno")
+            $task_status = isset($_REQUEST['task_status']) ? $_REQUEST['task_status'] : null;
+            if ($task_status == "vilojeno") {
                 $vilojeno = 1;
-            else
+            } else {
                 $vilojeno = 0;
-
+            }
+            if ($task_status == "removed") {
+                $to_remove = 0;
+                $removed = 1;
+            } else {
+                $to_remove = $res["to_remove"];
+                $removed = $res["removed"];
+            }
             $sinfo["url"] = str_replace("/", "", str_replace("http://", "", str_replace("www.", "", $sinfo["url"])));
-            $vipolneno = 0;
 
-            if ($vilojeno == 0) {
+            if ($vilojeno == 0 && $removed == 0) {
                 /*  Если статус не изменился, сохраняем поля и отправляем админу писомо об изменениии в задаче  */
-                $db->Execute($q = "update zadaniya set vilojeno='$vilojeno', url_statyi='$url_statyi', url_pic='$url_pic', admin_comments='$admin_comments' where id=$id");
-            } elseif ((empty($url_statyi) || $url_statyi == "" || !mb_strstr($url_statyi, $sinfo["url"]))) {
+                $db->Execute($q = "update zadaniya set vilojeno='$vilojeno', removed='$removed', to_remove='$to_remove', url_statyi='$url_statyi', url_pic='$url_pic', admin_comments='$admin_comments' where id=$id");
+            } elseif ($vilojeno == 1 && (empty($url_statyi) || $url_statyi == "" || !mb_strstr($url_statyi, $sinfo["url"]))) {
                 /*  ПРОБЛЕМА с ссылкой на статью  */
                 if (empty($url_statyi) || $url_statyi == "") { /*  Ссылка пуста или отсутствует  */
                     $error .= ("Поле `Ссылка на статью` обязательно для заполнения, если текст выложен! ");
@@ -629,7 +545,7 @@ class moder {
                 header("Location: /user.php?module=user&action=zadaniya_moder&action2=edit&uid=$uid&sid=$sid&id=$id&error=$error'");
                 exit();
             } else {
-                $db->Execute($q = "update zadaniya set dorabotka=0, vrabote=0, navyklad=0, vilojeno='$vilojeno', who_posted='$uid', url_statyi='$url_statyi', url_pic='$url_pic', admin_comments='$admin_comments' where id=$id");
+                $db->Execute($q = "update zadaniya set dorabotka=0, vrabote=0, navyklad=0, vilojeno='$vilojeno', to_remove='$to_remove', removed='$removed', who_posted='$uid', url_statyi='$url_statyi', url_pic='$url_pic', admin_comments='$admin_comments' where id=$id");
             }
             //  Если проблем с ссылкой не было, то изменения были уже сохранены, и редиректим на главную страницу  */
             echo "<script>window.location.href='/user.php';</script>";
@@ -936,12 +852,24 @@ class moder {
                 $bg = '#b385bf';
                 $status = "Выложено";
                 break;
+            case "to_remove":
+                $tasks = $db->Execute("select * from zadaniya where to_remove=1 AND sid IN " . $sids . " ORDER BY date ASC");
+                $new_s = "to_remove";
+                $bg = '#FF8C69';
+                $status = "На удаление";
+                break;
+            case "removed":
+                $tasks = $db->Execute("select * from zadaniya where removed=1 AND sid IN " . $sids . " ORDER BY date ASC");
+                $new_s = "removed";
+                $bg = '#8B6969';
+                $status = "Ссылок удалено";
+                break;
 
             default :
                 $tasks = $db->Execute("select * from zadaniya where vilojeno=1 AND sid = 0 ORDER BY date ASC");
                 $new_s = $bg = $status = "";
         }
-
+        $zadaniya = "";
         if (!empty($tasks)) {
             while ($task = $tasks->FetchRow()) {
                 $zadaniya .= file_get_contents(PATH . 'modules/admins/tmp/admin/task_one.tpl');
@@ -1144,14 +1072,14 @@ class moder {
     function ticket_edit($db) {
         $id = (int) $_REQUEST['tid'];
         $ticket = $db->Execute("select * from tickets where id=$id")->FetchRow();
-        
+
         if (!isset($_REQUEST['send'])) {
             $content = file_get_contents(PATH . 'modules/moder/tmp/ticket_edit.tpl');
 
             $ticket_subjects = $db->Execute("SELECT * FROM Message2008")->FetchRow();
             $content = str_replace('[ticket_subjects]', $ticket_subjects['Name'], $content);
             $content = str_replace("[tid]", $id, $content);
-            
+
             foreach ($ticket as $k => $v) {
                 if ($k == "q_theme") {
                     $content = str_replace("[$v]", "selected", $content);
@@ -1165,7 +1093,6 @@ class moder {
             $msg = $_REQUEST['msg'];
 
             //$db->Execute("UPDATE tickets SET subject='$subject', q_theme='$theme', msg='$msg', site='$site' WHERE id=$id");
-            
             //$this->_postman->admin->ticketEdit($id, $subject);
             header("Location: ?module=user&action=ticket");
             exit();
@@ -1379,7 +1306,7 @@ class moder {
             } else {
                 $db->Execute("UPDATE admins SET contacts='$fio', dostupy='$knowus', wallet_type='$wallet_type', wallet='$wallet', mail_period='$mail_period', icq='$icq', scype='$scype' WHERE id=$uid");
             }
-            
+
             switch ($mail_period) {
                 case 43200: $period = "Два раза в день";
                     break;
@@ -1398,7 +1325,7 @@ class moder {
             exit();
         } else {
             $content = file_get_contents(PATH . 'modules/moder/tmp/lk.tpl');
-            
+
             $content = str_replace('[fio]', substr($uinfo['contacts'], 3), $content);
             $content = str_replace('[knowus]', $uinfo['dostupy'], $content);
             $content = str_replace('[checked_' . $uinfo["wallet_type"] . ']', "selected='selected'", $content);

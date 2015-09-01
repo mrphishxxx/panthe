@@ -10,13 +10,12 @@ $db->Execute('set charset utf8');
 $db->Execute('SET NAMES utf8');
 
 $buffer = array();
-//Задача для крона, проверяет, не прошло ли 5 дней с момента завершения заявки, если прошло - пишет статус = 1, после этого из баланса начинает вычитаться эта сумма
 $completed_tasks = $db->Execute("SELECT * FROM moders_money")->GetAll();
 foreach ($completed_tasks as $task) {
     $buffer[] = $task["zid"];
 }
-
-$tasks = $db->Execute("SELECT z.id, z.who_posted, s.price_viklad FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.who_posted != 0 AND z.vipolneno = 1 AND s.price_viklad != 0 AND s.price_viklad IS NOT NULL");
+$date = time() - 2592000;
+$tasks = $db->Execute("SELECT z.id, z.who_posted, s.price_viklad FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.who_posted != 0 AND z.vipolneno = 1 AND s.price_viklad != 0 AND s.price_viklad IS NOT NULL AND z.date>'$date'");
 foreach ($tasks as $value) {
     if (!in_array($value["id"], $buffer)) {
         if ($value["price_viklad"] == NULL) {

@@ -1,7 +1,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Поздравляем Вас с успешной регистрацией на сайте iforget.ru</title>
+        <title>iForget.ru - обработка заявок в биржах ссылок</title>
     </head>
     <body style="margin: 0">
         <div style="text-align: center; font-family: tahoma, arial; color: #3d413d;">

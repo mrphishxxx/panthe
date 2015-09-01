@@ -138,5 +138,17 @@ class MailsController {
 
         return $log;
     }
+    
+    public function newKindTasks() {
+        $log = "";
+        $users = $this->_db->Execute("SELECT * FROM admins WHERE active=1 AND type='user' AND mail_period > 0")->GetAll();
+        if (!empty($users)) {
+            foreach ($users as $user) {
+                $this->_postman->user->newKindTasks($user["email"], $user["login"]);
+                $log .= "Send -> " . $user["login"] ."(".$user["email"].")" . PHP_EOL;
+            }
+        }
+        return $log;
+    }
 
 }

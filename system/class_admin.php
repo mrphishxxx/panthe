@@ -44,7 +44,7 @@ class class_index {
         $z22 = $db->Execute("select count(*) from zadaniya where navyklad=1 AND sid IN " . $sids);
         $z22 = $z22->FetchRow();
         $z22 = $z22['count(*)'];
-        $z32 = $db->Execute("SELECT count(*) FROM zadaniya WHERE (vrabote=0 or vrabote IS NULL) AND (vipolneno=0 or vipolneno IS NULL) AND (dorabotka=0 or dorabotka IS NULL) AND (navyklad=0 or navyklad IS NULL) AND (vilojeno=0 or vilojeno IS NULL) AND sid IN " . $sids);
+        $z32 = $db->Execute("SELECT count(*) FROM zadaniya WHERE (vrabote=0 or vrabote IS NULL) AND (vipolneno=0 or vipolneno IS NULL) AND (dorabotka=0 or dorabotka IS NULL) AND (navyklad=0 or navyklad IS NULL) AND (vilojeno=0 or vilojeno IS NULL) AND (to_remove=0 or to_remove IS NULL) AND (removed=0 or removed IS NULL) AND sid IN " . $sids);
         $z32 = $z32->FetchRow();
         $z32 = $z32['count(*)'];
         $z42 = $db->Execute("select count(*) from zadaniya where vilojeno=1 AND sid IN " . $sids);
