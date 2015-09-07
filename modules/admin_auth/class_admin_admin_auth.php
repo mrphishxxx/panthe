@@ -62,11 +62,13 @@ class admin_auth {
                 } else if ($res['type'] != "admin" && $res['type'] != "manager") {
                     $error = "У Вас нет прав!";
                 } else {
+                    $this->saveAuthHistory($db, $res);
                     $url = $_SERVER["REQUEST_URI"];
-                    if($res['type'] == "manager")
+                    if($res['type'] == "manager"){
                         $_SESSION['manager'] = $res;
-                    else 
+                    } else {
                         $_SESSION['admin'] = $res;
+                    }
                     setcookie("iforget_admin", $res['id'], time() + 60 * 60 * 24);
                     header('location:'.$url);
                     exit;
@@ -80,6 +82,18 @@ class admin_auth {
         unset($_SESSION['admin']);
         header('location:/admin.php');
         exit;
+    }
+    
+    function saveAuthHistory($db, $client){
+        $ip = $_SERVER["REMOTE_ADDR"];
+        $time = $_SERVER["REQUEST_TIME"];
+        $agent = $_SERVER["HTTP_USER_AGENT"];
+        
+        $uid = $client["id"];
+        $login = $client["login"];
+        
+        $db->Execute("INSERT INTO history_auth (uid, login, date, ip, agent) VALUE ('$uid', '$login', '$time', '$ip', '$agent')");
+        return;
     }
 
 }

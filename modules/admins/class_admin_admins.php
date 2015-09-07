@@ -133,6 +133,16 @@ class admins {
                         break;
                 }
                 break;
+            case 'change_wallet':
+                switch (@$_REQUEST['action2']) {
+                    case '':
+                        $content = $this->change_wallet($db);
+                        break;
+                    case 'confirm':
+                        $content = $this->change_wallet_confirm($db);
+                        break;
+                }
+                break;
             case 'allsites':
                 $content = $this->allsites($db);
                 break;
@@ -848,7 +858,7 @@ class admins {
                 $to = strtotime($db->escape($_POST['date-to']));
             else if (@$_GET['date-to'])
                 $to = $_GET['date-to'];
-            
+
             if ($from && $to) {
                 $query = $db->Execute("select * from zadaniya where sid=$sid AND date BETWEEN '" . $from . "' AND '" . $to . "' $condition order by date DESC, id $sort LIMIT " . ($offset - 1) * $limit . "," . $limit);
                 $all = $db->Execute("select * from zadaniya where sid=$sid AND date BETWEEN '" . $from . "' AND '" . $to . "' $condition order by date DESC, id $sort");
@@ -1875,7 +1885,7 @@ class admins {
 
         $profil .= microtime() . "  - AFTER 1 && 2 QUERY" . "\r\n";
         if (!$send) {
-            if(empty($res)){
+            if (empty($res)) {
                 $content = file_get_contents(PATH . 'modules/admins/tmp/admin/not_found.tpl');
                 $content = str_replace('[url]', $_SERVER['HTTP_REFERER'], $content);
                 return $content;
@@ -1901,7 +1911,7 @@ class admins {
                 if (($uid != 20) && ($uid != 55)) {
                     $stat_disabled = "disabled='disabled'";
                 }
-            } elseif((($res['dorabotka'] != 0) || ($res['rework'] != 0) || ($res['vrabote'] != 0) || ($res['navyklad'] != 0) || ($res['vilojeno'] != 0) || ($res['vipolneno'] != 0))){
+            } elseif ((($res['dorabotka'] != 0) || ($res['rework'] != 0) || ($res['vrabote'] != 0) || ($res['navyklad'] != 0) || ($res['vilojeno'] != 0) || ($res['vipolneno'] != 0))) {
                 $type_disabled = true;
             }
             $content = str_replace("[type_disabled]", ($type_disabled == true ? "disabled='disabled'" : ""), $content);
@@ -1910,7 +1920,7 @@ class admins {
             $content = str_replace('[zid]', $id, $content);
             $content = str_replace('[nomoney]', $nomoney, $content);
             $content = str_replace('[stat_disabled]', $stat_disabled, $content);
-            
+
             $res['vipolneno'] = $res['vipolneno'] ? 'checked="checked"' : '';
             $res['dorabotka'] = $res['dorabotka'] ? 'checked="checked"' : '';
             $res['vrabote'] = $res['vrabote'] ? 'checked="checked"' : '';
@@ -1936,7 +1946,7 @@ class admins {
             $content = str_replace('[sistema1]', $sistema, $content);
             $content = str_replace("[burse]", (($res['sistema'] == "https://blogun.ru/") ? "Blogun_id" : "GGL_ID"), $content);
             for ($i = 0; $i < 4; $i++) {
-                if((int) $res['type_task'] == $i) {
+                if ((int) $res['type_task'] == $i) {
                     $content = str_replace("[type$i]", "selected='selected'", $content);
                 } else {
                     $content = str_replace("[type$i]", "", $content);
@@ -1966,8 +1976,8 @@ class admins {
                 $content = str_replace('[display_for_copywriter]', " style='display:none' ", $content);
                 $content = str_replace('[rework_display]', ($res["type_task"] != 3 ? " style='display:none' " : ""), $content);
             }
-            
-            if($res["type_task"] == 3) {
+
+            if ($res["type_task"] == 3) {
                 $content = str_replace('[stat_notremoved]', " style='display:none;' ", $content);
                 $content = str_replace('[stat_removed]', "", $content);
             } else {
@@ -2011,8 +2021,8 @@ class admins {
             $task_id = $res['task_id'];
             $task_status = @$_REQUEST['task_status'];
             $type_task = isset($_REQUEST["type"]) ? (int) $_REQUEST['type'] : $res["type_task"];
-            if($type_task != $res['type_task'] && $sistema == "http://pr.sape.ru/"){
-                if($type_task == 2) {
+            if ($type_task != $res['type_task'] && $sistema == "http://pr.sape.ru/") {
+                if ($type_task == 2) {
                     $nof_chars = 1500;
                 } else {
                     $nof_chars = 2000;
@@ -2020,7 +2030,7 @@ class admins {
             } else {
                 $nof_chars = $res['nof_chars'];
             }
-            if($type_task != $res['type_task'] && $type_task == 3 && $task_status != "removed"){
+            if ($type_task != $res['type_task'] && $type_task == 3 && $task_status != "removed") {
                 $task_status = "to_remove";
             }
             $profil .= microtime() . "  - GET DATA" . "\r\n";
@@ -2029,7 +2039,7 @@ class admins {
             $viklad_info = $db->Execute("SELECT * FROM admins WHERE id=" . $task_site['moder_id'])->FetchRow();
             $viklad_email = $viklad_info['email'];
             $profil .= microtime() . "  - AFTER 3 && 4 QUERY" . "\r\n";
-            
+
             $vipolneno = ($task_status == "vipolneno") ? 1 : 0;
             $dorabotka = ($task_status == "dorabotka") ? 1 : 0;
             $vrabote = ($task_status == "vrabote") ? 1 : 0;
@@ -2270,6 +2280,93 @@ class admins {
         }
 
         return $content;
+    }
+
+    function change_wallet($db) {
+        $content = file_get_contents(PATH . 'modules/admins/tmp/admin/change_wallet.tpl');
+        $users = array();
+        $adminsModel = $db->Execute("SELECT * FROM admins")->GetAll();
+        foreach ($adminsModel as $value) {
+            $users[$value["id"]] = $value;
+        }
+        $error = $accept = "";
+        if(isset($_REQUEST["error"])){
+            $error = $_REQUEST["error"];
+        }
+        if(isset($_REQUEST["accept"])){
+            $accept = $_REQUEST["accept"];
+        }
+        $table = $history = "";
+        $new_change_wallet = $db->Execute("SELECT * FROM change_wallet WHERE status = 0 AND confirm=1")->GetAll();
+        foreach ($new_change_wallet as $value) {
+            switch ($value['status']) {
+                case 0: $status = 'Рассматривается';
+                    break;
+                case 1: $status = 'Подтверждено';
+                    break;
+                case 2: $status = 'Отменен';
+                    break;
+                default : $status = 'Рассматривается';
+            }
+            $now = date("Y-m-d H:i:s", time()-259200);//259200
+            $date = $value["date"];
+            /*$d1 = strtotime($date);
+            $d2 = strtotime($now);
+            $days = floor(($d1-$d2)/(60*60*24));
+            $hour = (floor(($d1-$d2)/(60*60)));*/
+            
+            $table .= "<tr>"
+                    . "<td>" . $users[$value["uid"]]["login"] . "</td>"
+                    . "<td>" . $date . "</td>"
+                    . "<td>" . $users[$value["uid"]]["wallet"] . "</td>"
+                    . "<td>" . $value["wallet"] . "</td>"
+                    . "<td>" . $status . "</td>"
+                    . ($now < $date ? "<td>Ещё рано</td>" : "<td class='tick'><a href='?module=admins&action=change_wallet&action2=confirm&id=".$value["id"]."' class='ico'></a></td>")
+                    . "</tr>"
+            ;
+        }
+        
+        $change_wallet_history = $db->Execute("SELECT * FROM change_wallet WHERE status != 0")->GetAll();
+        foreach ($change_wallet_history as $value) {
+            switch ($value['status']) {
+                case 0: $status = 'Рассматривается';
+                    break;
+                case 1: $status = 'Подтверждено';
+                    break;
+                case 2: $status = 'Отменен';
+                    break;
+                default : $status = 'Рассматривается';
+            }
+            $history .= "<tr>"
+                    . "<td>" . $users[$value["uid"]]["login"] . "</td>"
+                    . "<td>" . $value["date"] . "</td>"
+                    . "<td>" . $value["wallet"] . "</td>"
+                    . "<td>" . $status . "</td>"
+                    . "</tr>"
+            ;
+        }
+        $content = str_replace('[error]', $error, $content);
+        $content = str_replace('[accept]', $accept, $content);
+        $content = str_replace('[table]', $table == "" ? "<tr><td colspan='6'>Нет запросов</td></tr>" : $table, $content);
+        $content = str_replace('[history]', $history == "" ? "<tr><td colspan='6'>Нет запросов</td></tr>" : $history, $content);
+        return $content;
+    }
+    
+    function change_wallet_confirm($db) {
+        $id = $_REQUEST["id"];
+        if(!empty($id)) {
+            $change_wallet = $db->Execute("SELECT * FROM change_wallet WHERE id = '$id'")->FetchRow();
+            if(!empty($change_wallet)) {
+                $db->Execute("UPDATE change_wallet SET status='1' WHERE id = '$id'");
+                $db->Execute("UPDATE admins SET wallet='".$change_wallet["wallet"]."' WHERE id = '".$change_wallet["uid"]."'");
+                header("Location: ?module=admins&action=change_wallet&accept=Заявка подтверждена");
+            } else {
+                header("Location: ?module=admins&action=change_wallet&error=Такой заявки нет");
+            }
+        } else {
+            header("Location: ?module=admins&action=change_wallet&error=Такой заявки нет");
+        }
+        exit();
     }
 
     function tickets($db) {
@@ -2528,7 +2625,7 @@ class admins {
             $db->Execute("UPDATE tickets SET status=2 WHERE id=$tid");
         }
         $last_answer = $db->Execute("SELECT * FROM answers WHERE tid=$tid ORDER BY date LIMIT 1")->FetchRow();
-        if($res['status'] == 1 && !in_array($last_answer["uid"], $administrations)) {
+        if ($res['status'] == 1 && !in_array($last_answer["uid"], $administrations)) {
             $db->Execute("UPDATE tickets SET status=2 WHERE id=$tid");
         }
 
@@ -2606,7 +2703,6 @@ class admins {
                 $client = $db->Execute("SELECT * FROM admins WHERE id=" . $res['to_uid'])->FetchRow();
             }
             if ($client["mail_period"] > 0) {
-                //
                 switch ($client["type"]) {
                     case "user":
                         $result = $this->_postman->user->ticketAnswer($client['email'], $client['login'], $tid);
@@ -2615,7 +2711,6 @@ class admins {
                         $result = $this->_postman->copywriter->ticketAnswer($client['email'], $client['login'], $tid);
                         break;
                 }
-                print_r($result);die();
             }
             header("Location: ?module=admins&action=ticket&action2=view&tid=$tid");
             exit();
@@ -3108,7 +3203,7 @@ class admins {
     }
 
     function zadaniya_dubl($db) {
-        
+
         $id = (int) @$_REQUEST['zid'];
         $task_old = $db->Execute("SELECT * FROM zadaniya WHERE id=$id")->FetchRow();
         $sistema = @$_REQUEST['sistema'];
@@ -3779,8 +3874,8 @@ class admins {
         while ($copywriter = $copywriters->FetchRow()) {
             $tr = "<tr>";
             $tr .= "<td style='text-align:left'>" . $copywriter["login"] . "</td>";
-            $tr .= "<td>" . ($statistics[$copywriter["id"]]["vipolneno"] ? $statistics[$copywriter["id"]]["vipolneno"] : 0) . "</td>";
-            $tr .= "<td>" . ($statistics[$copywriter["id"]]["vrabote"] ? $statistics[$copywriter["id"]]["vrabote"] : 0) . "</td>";
+            $tr .= "<td>" . (isset($statistics[$copywriter["id"]]["vipolneno"]) ? $statistics[$copywriter["id"]]["vipolneno"] : 0) . "</td>";
+            $tr .= "<td>" . (isset($statistics[$copywriter["id"]]["vrabote"]) ? $statistics[$copywriter["id"]]["vrabote"] : 0) . "</td>";
             $tr .= "<td><input class='trust' type='checkbox' id='" . $copywriter["id"] . "' " . (($copywriter["trust"] == 1) ? 'checked="checked"' : '') . " /></td>";
             $tr .= "<td class='lock_ok'><a href='/admin.php?module=admins&action=copywriters&action2=banned&id=" . $copywriter["id"] . "' class='ico'></a></td>";
             $tr .= "</tr>";
@@ -4952,7 +5047,7 @@ class admins {
                 $content = str_replace('[message_copywriter]', $message_copywriter, $content);
                 $content = str_replace('[message_copywriter_count]', $message_copywriter_count == 0 ? 2 : $message_copywriter_count, $content);
                 $content = str_replace('[display]', "", $content);
-                $db->Execute("UPDATE chat_admin_copywriter SET status=1 WHERE uid!='" . (isset($_SESSION["admin"]["id"])? $_SESSION["admin"]["id"] : $_SESSION["manager"]["id"]) . "' AND zid='$id'");
+                $db->Execute("UPDATE chat_admin_copywriter SET status=1 WHERE uid!='" . (isset($_SESSION["admin"]["id"]) ? $_SESSION["admin"]["id"] : $_SESSION["manager"]["id"]) . "' AND zid='$id'");
             } else {
                 $content = str_replace('[display]', " style='display:none' ", $content);
                 $content = str_replace('[display2]', " style='display:none' ", $content);

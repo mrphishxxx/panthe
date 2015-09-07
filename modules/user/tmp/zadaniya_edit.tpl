@@ -14,6 +14,10 @@
                 <input type="text" name="sistema" id="sistema" class="full-length" value='[sistema]' readonly='readonly'>
             </li>
             <li>
+                <span class="title">ID в системе:</span>
+                <input type="text" name="id_sistema" id="sistema" class="full-length" value='[id_sistema]' readonly='readonly'>
+            </li>
+            <li>
                 <span class="title">Анкор:</span>
                 <input type="text" name="ankor" id="ankor" class="full-length" value='[ankor]' readonly='readonly'>
             </li>

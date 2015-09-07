@@ -56,6 +56,12 @@ class class_user {
 
         $all_tick = $db->Execute("SELECT COUNT(id) as allt FROM tickets WHERE uid='" . $this->user["id"] . "' OR to_uid='" . $this->user["id"] . "'")->FetchRow();
         $content = str_replace('[all_tick]', $all_tick['allt'], $content);
+        
+        $new_wallet = $db->Execute("SELECT COUNT(id) as num FROM change_wallet WHERE uid='" . $this->user["id"] . "' AND status = 0")->FetchRow();
+        $content = str_replace('[new_wallet]', $new_wallet['num'], $content);
+
+        $all_wallet = $db->Execute("SELECT COUNT(id) as num FROM change_wallet WHERE uid='" . $this->user["id"] . "'")->FetchRow();
+        $content = str_replace('[all_wallet]', $all_wallet['num'], $content);
 
 
         return $content;

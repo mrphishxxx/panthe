@@ -351,6 +351,16 @@ class FromAdmin {
         return $this->sendEmail();
     }
     
+    public function userChangeWallet($user = array()) {
+        $this->smarty->assign('login', (isset($user["login"]) ? $user["login"] : "'LOGIN'"));
+        $this->smarty->assign('wallet', (isset($user["wallet"]) ? $user["wallet"] : ""));
+        
+        $this->message["subject"] = "[Запрос на смену кошелька]";                        
+        $this->message["to"] = $this->admins_mail;
+        $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "user_change_wallet.tpl");
+        return $this->sendEmail();
+    }
+    
     
     public function getMailsName($name = null) {
         if (!empty($name)) {
@@ -380,7 +390,7 @@ class FromAdmin {
                 case "copywriterFinishedTask": return "[Копирайтер выполнил задачу]";
                 case "copywriterSentMessage": return "[Новое сообщение от копирайтера]";
                 case "copywriterOutputMoney": return "[Запрос на вывод средств копирайтером]";
-                    
+                case "userChangeWallet": return "[Запрос на смену кошелька]";
             }
         } else {
             return array(
@@ -409,6 +419,7 @@ class FromAdmin {
                 "copywriterFinishedTask" => "[Копирайтер выполнил задачу]",
                 "copywriterSentMessage" => "[Новое сообщение от копирайтера]",
                 "copywriterOutputMoney" => "[Запрос на вывод средств копирайтером]",
+                "userChangeWallet" => "[Запрос на смену кошелька]"
                 
             );
         }
@@ -443,7 +454,7 @@ class FromAdmin {
                 case "copywriterFinishedTask": return $this->copywriterFinishedTask();
                 case "copywriterSentMessage": return $this->copywriterSentMessage();
                 case "copywriterOutputMoney": return $this->copywriterOutputMoney();
-                
+                case "userChangeWallet": return $this->userChangeWallet();
             }
         }
     }

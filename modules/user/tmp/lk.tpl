@@ -27,8 +27,8 @@
             </li>
             <li>
                 <span class="title">Кошелек:</span>
-                <input type="text"  value="[wallet]" placeholder="" name="wallet" id="wallet" />
-
+                <input type="text"  value="[wallet]" placeholder="" disabled="disabled" id="wallet" /> <!--name="wallet" -->
+                <span class="hint edit"><a href="?action=change_wallet" class="ico">Изменить</a></span>
             </li>
             <li>
                 <span class="title">ICQ:</span>

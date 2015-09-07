@@ -48,7 +48,7 @@ $balance = $api->userBalance();
 if ($balance->balance > 0) {
     // Вытаскиваем все ВЫПОЛНЕНЫЕ задачи, у которых есть ссылка на статью и которые ещё не загружались в ГетБот
     // ВАЖНО! Задания должны попасть в дату БОЛЬШУЮ начала выгрузки (чтобы не загружать в гетбот лишнее) и МЕНЬШУЮ "сегодня минус 1 день"
-    $zadaniya = $db->Execute("SELECT id, url_statyi FROM zadaniya WHERE vipolneno='1' AND getbot='0' AND (date > '$day_start' AND date < '$day_end') AND (url_statyi != '' AND url_statyi IS NOT NULL) ORDER BY date")->GetAll();
+    $zadaniya = $db->Execute("SELECT id, url_statyi FROM zadaniya WHERE type_task !=3 AND vipolneno='1' AND getbot='0' AND (date > '$day_start' AND date < '$day_end') AND (url_statyi != '' AND url_statyi IS NOT NULL) ORDER BY date")->GetAll();
     if (!empty($zadaniya)) {
         $body .= "<br><strong>Выгружаем новые задачи в GetBot  и запускаем их:</strong><br>";
         foreach ($zadaniya as $value) {
@@ -89,7 +89,7 @@ $message["from_email"] = "news@iforget.ru";
 $message["from_name"] = "iforget";
 $message["to"] = array();
 $message["to"][0] = array("email" => MAIL_ADMIN);
-//$message["to"][1] = array("email" => MAIL_DEVELOPER);
+$message["to"][1] = array("email" => MAIL_DEVELOPER);
 $message["track_opens"] = null;
 $message["track_clicks"] = null;
 $message["auto_text"] = null;

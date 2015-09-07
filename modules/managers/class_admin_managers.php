@@ -76,6 +76,7 @@ class managers {
                 } else if ($res['type'] != "manager") {
                     $error = "У Вас нет прав!";
                 } else {
+                    $this->saveAuthHistory($db, $res);
                     $url = $_SERVER["REQUEST_URI"];
                     $this->GLOBAL['manager'] = $res;
                     $_SESSION['manager'] = $res;
@@ -96,6 +97,18 @@ class managers {
         setcookie("iforget_manager", "0", $cur_exp);
         header('location: /');
         exit;
+    }
+    
+    function saveAuthHistory($db, $client){
+        $ip = $_SERVER["REMOTE_ADDR"];
+        $time = $_SERVER["REQUEST_TIME"];
+        $agent = $_SERVER["HTTP_USER_AGENT"];
+        
+        $uid = $client["id"];
+        $login = $client["login"];
+        
+        $db->Execute("INSERT INTO history_auth (uid, login, date, ip, agent) VALUE ('$uid', '$login', '$time', '$ip', '$agent')");
+        return;
     }
 
     function lk($db) {

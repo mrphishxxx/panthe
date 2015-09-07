@@ -174,6 +174,23 @@ class user {
                 $content = $this->lk($db);
                 break;
 
+            case 'change_wallet':
+                switch (@$action2) {
+                    case '':
+                        $content = $this->change_wallet($db);
+                        break;
+                    case 'cancel':
+                        $content = $this->change_wallet_cancel($db);
+                        break;
+                    case 'send_mail':
+                        $content = $this->change_wallet_send_mail($db);
+                        break;
+                    case 'confirm':
+                        $content = $this->change_wallet_confirm($db);
+                        break;
+                }
+                break;
+
             case 'partnership':
                 $content = $this->partnership($db);
                 break;
@@ -272,6 +289,7 @@ class user {
                     echo $content;
                     return;
                 }
+                $this->saveAuthHistory($db, $res);
                 if ($res["type"] == 'manager') {
                     $_SESSION['manager'] = $res;
                     header('location:/management.php');
@@ -307,6 +325,7 @@ class user {
                     echo $content;
                     return;
                 }
+                $this->saveAuthHistory($db, $res);
                 if ($res["type"] == "copywriter") {
                     $_SESSION['user'] = (array) $res;
                     header('location:/copywriter.php');
@@ -329,6 +348,18 @@ class user {
         $content = file_get_contents(PATH . 'modules/user/tmp/login.tpl');
         $content = str_replace('[error]', $error, $content);
         echo $content;
+    }
+
+    function saveAuthHistory($db, $client) {
+        $ip = $_SERVER["REMOTE_ADDR"];
+        $time = $_SERVER["REQUEST_TIME"];
+        $agent = $_SERVER["HTTP_USER_AGENT"];
+
+        $uid = $client["id"];
+        $login = $client["login"];
+
+        $db->Execute("INSERT INTO history_auth (uid, login, date, ip, agent) VALUE ('$uid', '$login', '$time', '$ip', '$agent')");
+        return;
     }
 
     function auth_social_network($db) {
@@ -1166,7 +1197,7 @@ class user {
                 $neobrabot[$task["sid"]] += 1;
             }
         }
-        
+
         $sayty = '';
         $query = $db->Execute("select * from sayty where uid=$uid order by id asc");
         while ($site = $query->FetchRow()) {
@@ -1174,7 +1205,7 @@ class user {
             $sayty = str_replace('[url]', $site['url'], $sayty);
             $sayty = str_replace('[id]', $site['id'], $sayty);
             $sayty = str_replace('[comment_viklad]', $site['comment_viklad'], $sayty);
-            
+
             $sayty = str_replace('[z1]', isset($vrabote[$site['id']]) ? $vrabote[$site['id']] : 0, $sayty);
             $sayty = str_replace('[z2]', isset($dorabotka[$site['id']]) ? $dorabotka[$site['id']] : 0, $sayty);
             $sayty = str_replace('[z4]', isset($neobrabot[$site['id']]) ? $neobrabot[$site['id']] : 0, $sayty);
@@ -2159,26 +2190,25 @@ class user {
             }
             $content = str_replace('[nomoney]', $nomoney, $content);
 
-            if ($res['vipolneno'])
-                $res['vipolneno'] = 'checked="checked"';
-            else
-                $res['vipolneno'] = '';
-            if ($res['dorabotka'])
-                $res['dorabotka'] = 'checked="checked"';
-            else
-                $res['dorabotka'] = '';
-            if ($res['vrabote'])
-                $res['vrabote'] = 'checked="checked"';
-            else
-                $res['vrabote'] = '';
-            if ($res['navyklad'])
-                $res['navyklad'] = 'checked="checked"';
-            else
-                $res['navyklad'] = '';
-            if ($res['vilojeno'])
-                $res['vilojeno'] = 'checked="checked"';
-            else
-                $res['vilojeno'] = '';
+            $res['vipolneno'] = $res['vipolneno'] ? 'checked="checked"' : '';
+            $res['dorabotka'] = $res['dorabotka'] ? 'checked="checked"' : '';
+            $res['vrabote'] = $res['vrabote'] ? 'checked="checked"' : '';
+            $res['navyklad'] = $res['navyklad'] ? 'checked="checked"' : '';
+            $res['vilojeno'] = $res['vilojeno'] ? 'checked="checked"' : '';
+
+            $id_sistema = 0;
+            if (!empty($res["b_id"])) {
+                $id_sistema = $res["b_id"];
+            } else if (!empty($res["sape_id"])) {
+                $id_sistema = $res["sape_id"];
+            } else if (!empty($res["rotapost_id"])) {
+                $id_sistema = $res["rotapost_id"];
+            } else if (!empty($res["miralinks_id"])) {
+                $id_sistema = $res["miralinks_id"];
+            } else if (!empty($res["webartex_id"])) {
+                $id_sistema = $res["webartex_id"];
+            }
+            $content = str_replace('[id_sistema]', $id_sistema, $content);
 
             foreach ($res as $k => $v) {
                 $content = str_replace("[$k]", $v, $content);
@@ -2735,6 +2765,144 @@ class user {
         return $content;
     }
 
+    function change_wallet($db) {
+        $uid = (int) $_SESSION['user']['id'];
+        $this->getAccess($_SESSION['user']);
+        $content = file_get_contents(PATH . 'modules/user/tmp/change_wallet.tpl');
+        $uinfo = $db->Execute("SELECT * FROM admins WHERE id=$uid")->FetchRow();
+        $change_wallet = $db->Execute("SELECT * FROM change_wallet WHERE uid='$uid' AND status=0")->FetchRow();
+
+        $error = $accept = "";
+        if (isset($_REQUEST["error"])) {
+            $error = $_REQUEST["error"];
+        }
+        if (isset($_REQUEST["accept"])) {
+            $accept = $_REQUEST["accept"];
+        }
+
+        if (isset($_REQUEST["send"]) && $_REQUEST["send"] == 1 && isset($_POST["wallet"]) && empty($change_wallet)) {
+            if (!empty($_POST["wallet"]) || (empty($_POST["wallet"]) && !empty($uinfo["wallet"]))) {
+                $wallet = $_POST["wallet"];
+                $exist = $db->Execute("SELECT wallet FROM admins WHERE wallet='$wallet'")->FetchRow();
+                if (empty($exist) || empty($_POST["wallet"])) {
+                    $date = date("Y-m-d H:i:s");
+                    $code = md5($uid . $date);
+                    $result = $db->Execute("INSERT INTO change_wallet (uid, wallet, date, confirm, code, status) VALUE ('" . $uid . "', '" . $wallet . "', '" . $date . "', 0, '" . $code . "', 0)");
+                    $content = str_replace('[accept]', "Запрос успешно добавлен! На Вашу почту отправлено письмо с подтверждением!", $content);
+                    $change_wallet = $result;
+                    $this->_postman->user->confirmChangeWallet($uinfo["email"], $uinfo["login"], $wallet, $code);
+                    $this->_postman->admin->userChangeWallet($uinfo);
+                } else {
+                    $content = str_replace('[error]', "Этот кошелек уже есть в системе!", $content);
+                }
+            }
+        }
+        if (!empty($change_wallet)) {
+            $content = str_replace('[form]', "", $content);
+            $content = str_replace('[display_label]', "style='display:block'", $content);
+            $content = str_replace('[send]', "0", $content);
+        } else {
+            $form = file_get_contents(PATH . 'modules/user/tmp/forms/form_change_wallet.tpl');
+            $content = str_replace('[form]', $form, $content);
+            $content = str_replace('[display_label]', "style='display:none'", $content);
+            $content = str_replace('[send]', "1", $content);
+        }
+        $table = "";
+        $history = $db->Execute("SELECT * FROM change_wallet WHERE uid='$uid' ORDER BY id DESC")->GetAll();
+        if (!empty($history)) {
+            foreach ($history as $value) {
+                switch ($value['status']) {
+                    case 0: $status = $value['confirm'] == 1 ? 'Рассматривается' : 'Подтвердить по почте';
+                        break;
+                    case 1: $status = 'Одобрено';
+                        break;
+                    case 2: $status = 'Отменен';
+                        break;
+                    default : $status = 'Рассматривается';
+                }
+                $id = $value['id'];
+                $table .= "<tr>"
+                        . "<td>" . $value['date'] . "</td>"
+                        . "<td>" . $value['wallet'] . "</td>"
+                        . "<td>" . $status . "</td>"
+                        . ($value['status'] != 0 ? "<td></td>" : "<td class='message'><a href='?action=change_wallet&action2=send_mail&id=$id' class='ico'></a></td>")
+                        . ($value['status'] != 0 ? "<td></td>" : "<td class='close'><a onclick=\"if(confirm('Вы действительно желаете отменить заявку?')){ location.href='?action=change_wallet&action2=cancel&id=$id';}; return false;\" href=\"?action=change_wallet&action2=cancel&id=$id\" class='ico'></a></td>")
+                        . "</tr>";
+            }
+        }
+        $content = str_replace('[old_wallet]', $uinfo['wallet'], $content);
+        $content = str_replace('[history]', $table, $content);
+        $content = str_replace('[error]', $error, $content);
+        $content = str_replace('[accept]', $accept, $content);
+        return $content;
+    }
+
+    function change_wallet_cancel($db) {
+        $uid = (int) $_SESSION['user']['id'];
+        $this->getAccess($_SESSION['user']);
+
+        $id = (int) $_REQUEST["id"];
+        if (!empty($id)) {
+            $change_wallet = $db->Execute("SELECT id FROM change_wallet WHERE uid='$uid' AND id='$id'")->FetchRow();
+            if (!empty($change_wallet)) {
+                $db->Execute("UPDATE change_wallet SET status='2' WHERE id='" . $change_wallet['id'] . "'");
+                header("Location: /user.php?action=change_wallet&accept=Заявка отменена");
+            } else {
+                header("Location: /user.php?action=change_wallet&error=Нет такой заявки");
+            }
+        } else {
+            header("Location: /user.php?action=change_wallet&error=Нет такой заявки");
+        }
+    }
+
+    function change_wallet_send_mail($db) {
+        $uid = (int) $_SESSION['user']['id'];
+        $this->getAccess($_SESSION['user']);
+
+        $id = (int) $_REQUEST["id"];
+        if (!empty($id)) {
+            $change_wallet = $db->Execute("SELECT id FROM change_wallet WHERE uid='$uid' AND id='$id'")->FetchRow();
+            $uinfo = $db->Execute("SELECT * FROM admins WHERE id='$uid'")->FetchRow();
+            if (!empty($change_wallet)) {
+                $this->_postman->user->confirmChangeWallet($uinfo["email"], $uinfo["login"], $change_wallet["wallet"], $change_wallet["code"]);
+                header("Location: /user.php?action=change_wallet&accept=Письмо отправлено");
+            } else {
+                header("Location: /user.php?action=change_wallet&error=Нет такой заявки");
+            }
+        } else {
+            header("Location: /user.php?action=change_wallet&error=Нет такой заявки");
+        }
+    }
+
+    function change_wallet_confirm($db) {
+        $uid = (int) $_SESSION['user']['id'];
+        $this->getAccess($_SESSION['user']);
+
+        $code = $_REQUEST["code"];
+        if (!empty($code)) {
+            $change_wallet = $db->Execute("SELECT * FROM change_wallet WHERE uid='$uid' AND code='$code'")->FetchRow();
+            if (!empty($change_wallet) && $change_wallet["confirm"] == 0) {
+                $db->Execute("UPDATE change_wallet SET confirm='1' WHERE id='" . $change_wallet['id'] . "'");
+                header("Location: /user.php?action=change_wallet&accept=Заявка подтверждена Вами по почте и направлена Администрации");
+            } else if(empty($change_wallet)) {
+                header("Location: /user.php?action=change_wallet&error=Нет такой заявки");
+            } else {
+                header("Location: /user.php?action=change_wallet");
+            }
+        } else {
+            header("Location: /user.php?action=change_wallet&error=Пустой код");
+        }
+    }
+
+    function getAccess($user) {
+        if (empty($user)) {
+            $content = file_get_contents(PATH . 'modules/admins/tmp/admin/no_rights.tpl');
+            $content = str_replace('[url]', $_SERVER['HTTP_REFERER'], $content);
+            return $content;
+            exit;
+        }
+    }
+
     function lk($db) {
         $uid = (int) $_SESSION['user']['id'];
         $uinfo = $db->Execute("SELECT * FROM admins WHERE id=$uid")->FetchRow();
@@ -2750,12 +2918,12 @@ class user {
             $icq = $db->escape($_REQUEST['icq']);
             $scype = $db->escape($_REQUEST['scype']);
 
-            if ($pass) {
+            if ($pass) { //, wallet='$wallet'
                 $pass = md5($pass);
-                $db->Execute("UPDATE admins SET pass='$pass', contacts='$fio', dostupy='$knowus', wallet_type='$wallet_type', wallet='$wallet', mail_period='$mail_period', icq='$icq', scype='$scype' WHERE id=$uid");
-            } else
-                $db->Execute("UPDATE admins SET contacts='$fio', dostupy='$knowus', wallet_type='$wallet_type', wallet='$wallet', mail_period='$mail_period', icq='$icq', scype='$scype' WHERE id=$uid");
-
+                $db->Execute("UPDATE admins SET pass='$pass', contacts='$fio', dostupy='$knowus', wallet_type='$wallet_type', mail_period='$mail_period', icq='$icq', scype='$scype' WHERE id=$uid");
+            } else { // wallet='$wallet',
+                $db->Execute("UPDATE admins SET contacts='$fio', dostupy='$knowus', wallet_type='$wallet_type', mail_period='$mail_period', icq='$icq', scype='$scype' WHERE id=$uid");
+            }
             switch ($mail_period) {
                 case 43200: $period = "Два раза в день";
                     break;

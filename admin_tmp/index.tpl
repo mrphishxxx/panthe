@@ -123,7 +123,12 @@
                                     <li><a href="?module=admins&action=ticket&type=copywriter">Копирайтеры</a><span>([new_tick_copywriter]/[all_tick_copywriter])</span></li>
                                     <li><a href="?module=admins&action=ticket&type=manager">Менеджеры</a><span>([new_tick_manager]/[all_tick_manager])</span></li>
                                 </ul>
-
+                                
+                                <h2>Запросы</h2>
+                                <ul>
+                                    <li><a href="?module=admins&action=change_wallet">Смена кошелька<span>([new_wallet]/[all_wallet])</span></a></li>
+                                </ul>
+                                
                                 <h2>Копирайтеры</h2>
                                 <ul>
                                     <li><a href="?module=admins&action=copywriters">Статистика задач</a></li>

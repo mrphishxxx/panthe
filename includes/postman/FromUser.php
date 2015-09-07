@@ -188,6 +188,22 @@ class FromUser {
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "new_kind_tasks.tpl");
         return $this->sendEmail();
     }
+    
+    public function confirmChangeWallet($email = "", $login = "LOGIN", $wallet = "WALLET", $code = "CODE") {
+        $this->smarty->assign('login', $login);
+        $this->smarty->assign('code', $code);
+        $this->smarty->assign('wallet', $wallet);
+        $this->smarty->assign('get_text', $this->get_text);
+        $this->smarty->assign('path', PATH);
+        if ($email != "") {
+            $this->message["to"][0] = array("email" => $email, "name" => $login);
+        } else {
+            $this->message["to"] = array();
+        }
+        $this->message["subject"] = "[Подтверждение смены кошелька в Forget.ru!]";
+        $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "confirm_change_wallet.tpl");
+        return $this->sendEmail();
+    }
 
     public function getMailsName($name = null) {
         if (!empty($name)) {
@@ -201,6 +217,7 @@ class FromUser {
                 case "endedBalance": return "[Закончился баланс iForget.ru!]";
                 case "balanceComesToEnd": return "[Баланс подходит к концу iForget.ru!]";
                 case "newKindTasks": return "[Работаем с новыми видами заданий в Forget.ru!]";
+                case "confirmChangeWallet": return "[Подтверждение смены кошелька в Forget.ru!]";
             }
         } else {
             return array(
@@ -212,7 +229,8 @@ class FromUser {
                 "promocode" => "[Мы дарим 150 рублей на баланс iForget.ru!]",
                 "endedBalance" => "[Закончился баланс iForget.ru!]",
                 "balanceComesToEnd" => "[Баланс подходит к концу iForget.ru!]",
-                "newKindTasks" => "[Работаем с новыми видами заданий в Forget.ru!]"
+                "newKindTasks" => "[Работаем с новыми видами заданий в Forget.ru!]",
+                "confirmChangeWallet" => "[Подтверждение смены кошелька в Forget.ru!]"
             );
         }
     }
@@ -229,7 +247,8 @@ class FromUser {
                 case "promocode": return $this->promocode();
                 case "endedBalance": return $this->endedBalance();
                 case "balanceComesToEnd": return $this->balanceComesToEnd();
-                case "newKindTasks": return $this->newKindTasks();;
+                case "newKindTasks": return $this->newKindTasks();
+                case "confirmChangeWallet": return $this->confirmChangeWallet();
             }
         }
     }

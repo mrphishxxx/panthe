@@ -176,6 +176,12 @@ $all_tick_manager = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT
 $content = str_replace('[new_tick_manager]', $new_tick_manager['newt'], $content);
 $content = str_replace('[all_tick_manager]', $all_tick_manager['newt'], $content);
 
+/* Запросы СМЕНА КОШЕЛЬКА */
+$new_wallet = $db->Execute("SELECT COUNT(id) as num FROM change_wallet WHERE status = 0 AND confirm = '1'")->FetchRow();
+$all_wallet = $db->Execute("SELECT COUNT(id) as num FROM change_wallet")->FetchRow();
+$content = str_replace('[new_wallet]', $new_wallet['num'], $content);
+$content = str_replace('[all_wallet]', $all_wallet['num'], $content);
+
 
 $main_comment = $db->Execute("SELECT * FROM Message2002 WHERE Sub_Class_ID = 22");
 $mc = $main_comment->FetchRow();

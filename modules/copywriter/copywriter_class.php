@@ -122,6 +122,7 @@ class copywriter {
                 if ($res['active'] != 1)
                     $error = 'Аккаунт не активирован.';
                 else {
+                    $this->saveAuthHistory($db, $res);
                     $_SESSION['user'] = $res;
                     setcookie("iforget_ok", $res['id'], time() + 60 * 60 * 24 * 30);
                     header('location:/copywriter.php');
@@ -137,6 +138,7 @@ class copywriter {
                 if ($res['active'] != 1)
                     $error = 'Аккаунт не активирован.';
                 else {
+                    $this->saveAuthHistory($db, $res);
                     $_SESSION['user'] = $res;
                     header('location:/copywriter.php');
                     exit;
@@ -158,6 +160,18 @@ class copywriter {
         setcookie("iforget_ok", "0", $cur_exp);
         header('location:/');
         exit;
+    }
+    
+    function saveAuthHistory($db, $client){
+        $ip = $_SERVER["REMOTE_ADDR"];
+        $time = $_SERVER["REQUEST_TIME"];
+        $agent = $_SERVER["HTTP_USER_AGENT"];
+        
+        $uid = $client["id"];
+        $login = $client["login"];
+        
+        $db->Execute("INSERT INTO history_auth (uid, login, date, ip, agent) VALUE ('$uid', '$login', '$time', '$ip', '$agent')");
+        return;
     }
 
     function unsubscribe($db) {
@@ -187,7 +201,7 @@ class copywriter {
             $scype = $db->escape($_REQUEST['scype']);
             $mail_period = (isset($_REQUEST['mail_period']) && !empty($_REQUEST['mail_period'])) ? 0 : 1;
 
-            if (!empty($wallet)) {
+            /*if (!empty($wallet)) {
                 $wallet_model = $db->Execute("SELECT * FROM admins WHERE wallet='" . $wallet . "' AND id != $uid")->FetchRow();
                 if (!empty($wallet_model)) {
                     $error = "Не возможно сохранить профиль. Копирайтер с таким кошельком уже существует в системе!";
@@ -198,19 +212,19 @@ class copywriter {
                 $error = "Поле Кошелек обязателен для заполнения!";
                 header("Location: /copywriter.php?action=lk&error=$error");
                 exit();
-            }
+            }*/
 
             if ($pass) {
                 $pass = md5($pass);
                 $confpass = md5($confpass);
-                if ($pass === $confpass) {
-                    $db->Execute("UPDATE admins SET pass='$pass', contacts='$fio', wallet_type='$wallet_type', wallet='$wallet', icq='$icq', scype='$scype', mail_period='$mail_period' WHERE id=$uid");
+                if ($pass === $confpass) { //wallet='$wallet',
+                    $db->Execute("UPDATE admins SET pass='$pass', contacts='$fio', wallet_type='$wallet_type',  icq='$icq', scype='$scype', mail_period='$mail_period' WHERE id=$uid");
                 } else {
                     header("Location: /copywriter.php?action=lk&error=Пароли не совпадают");
                     exit();
                 }
-            } else {
-                $db->Execute("UPDATE admins SET contacts='$fio', wallet_type='$wallet_type', wallet='$wallet', icq='$icq', scype='$scype', mail_period='$mail_period' WHERE id=$uid");
+            } else { //wallet='$wallet', 
+                $db->Execute("UPDATE admins SET contacts='$fio', wallet_type='$wallet_type', icq='$icq', scype='$scype', mail_period='$mail_period' WHERE id=$uid");
             }
 
             $this->_postman->admin->copywriterChangeData($uinfo);
@@ -280,7 +294,7 @@ class copywriter {
                     }
 
                     $tr = "<tr>";
-                    $tr .= "<td><a href='/copywriter.php?action=tasks&action2=view&id=" . $res["id"] . (!isset($res["from_sape"]) ? "&burse=1" : "") . "'>" . $res["tema"] . "</a></td>";
+                    $tr .= "<td><a href='/copywriter.php?action=tasks&action2=view&id=" . $res["id"] . (!isset($res["from_sape"]) ? "&burse=1" : "") . "'>" . mb_substr($res["tema"], 0, 35) . "</a></td>";
                     $tr .= "<td>" . $res["nof_chars"] . "</td>";
                     $tr .= "<td>" . $type . "</td>";
                     $tr .= "<td>" . date("Y-m-d", $res["date"]) . "</td>";
@@ -439,7 +453,7 @@ class copywriter {
             $chat = $db->Execute("SELECT * FROM chat_admin_copywriter WHERE status=0 AND uid!=$uid AND zid='" . $res["id"] . "' AND burse='" . (!isset($res["from_sape"]) ? "1" : "0") . "' LIMIT 1")->FetchRow();
 
             $tr = "<tr style='background:$bg'>";
-            $tr .= "<td>" . $res["tema"] . "</td>";
+            $tr .= "<td>" . mb_substr($res["tema"], 0, 35) . "</td>";
             $tr .= "<td>" . $res["nof_chars"] . "</td>";
             $tr .= "<td>" . $type . "</td>";
             $tr .= "<td>" . $status . "</td>";

@@ -35,7 +35,7 @@
             </li>
             <li>
                 <span class="title">Кошелек:*</span>
-                <input type="text"  value="[wallet]" placeholder="" name="wallet" id="wallet" />
+                <input type="text"  value="[wallet]" placeholder=""  disabled="disabled" id="wallet" /> <!--name="wallet"-->
             </li>
             <li>
                 <span class="title">ICQ:</span>

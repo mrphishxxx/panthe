@@ -38,26 +38,17 @@ class class_index {
         $sids = "(" . implode(",", $sids) . ")";
 
 
-        $z12 = $db->Execute("SELECT count(*) FROM zadaniya WHERE vrabote=1 AND etxt=1 AND (vipolneno=0 or vipolneno IS NULL) AND (dorabotka=0 or dorabotka IS NULL) AND (navyklad=0 or navyklad IS NULL) AND (vilojeno=0 or vilojeno IS NULL) AND sid IN " . $sids);
-        $z12 = $z12->FetchRow();
-        $z12 = $z12['count(*)'];
-        $z22 = $db->Execute("select count(*) from zadaniya where navyklad=1 AND sid IN " . $sids);
-        $z22 = $z22->FetchRow();
-        $z22 = $z22['count(*)'];
-        $z32 = $db->Execute("SELECT count(*) FROM zadaniya WHERE (vrabote=0 or vrabote IS NULL) AND (vipolneno=0 or vipolneno IS NULL) AND (dorabotka=0 or dorabotka IS NULL) AND (navyklad=0 or navyklad IS NULL) AND (vilojeno=0 or vilojeno IS NULL) AND (to_remove=0 or to_remove IS NULL) AND (removed=0 or removed IS NULL) AND sid IN " . $sids);
-        $z32 = $z32->FetchRow();
-        $z32 = $z32['count(*)'];
-        $z42 = $db->Execute("select count(*) from zadaniya where vilojeno=1 AND sid IN " . $sids);
-        $z42 = $z42->FetchRow();
-        $z42 = $z42['count(*)'];
-        
+        $vrabote = $db->Execute("SELECT count(*) FROM zadaniya WHERE vrabote=1 AND etxt=1 AND (vipolneno=0 or vipolneno IS NULL) AND (dorabotka=0 or dorabotka IS NULL) AND (navyklad=0 or navyklad IS NULL) AND (vilojeno=0 or vilojeno IS NULL) AND sid IN " . $sids)->FetchRow();
+        $navyklad = $db->Execute("select count(*) from zadaniya where navyklad=1 AND sid IN " . $sids)->FetchRow();
+        $neobrabot = $db->Execute("SELECT count(*) FROM zadaniya WHERE (vrabote=0 or vrabote IS NULL) AND (vipolneno=0 or vipolneno IS NULL) AND (dorabotka=0 or dorabotka IS NULL) AND (navyklad=0 or navyklad IS NULL) AND (vilojeno=0 or vilojeno IS NULL) AND (to_remove=0 or to_remove IS NULL) AND (removed=0 or removed IS NULL) AND sid IN " . $sids)->FetchRow();
+        $vilojeno = $db->Execute("select count(*) from zadaniya where vilojeno=1 AND sid IN " . $sids)->FetchRow();
         $to_remove = $db->Execute("select count(*) from zadaniya where to_remove=1 AND sid IN " . $sids)->FetchRow();
         $removed = $db->Execute("select count(*) from zadaniya where removed=1 AND sid IN " . $sids)->FetchRow();
 
-        $this->GLOBAL['all_vrabote'] = $z12;
-        $this->GLOBAL['all_navyklad'] = $z22;
-        $this->GLOBAL['all_neobrabot'] = $z32;
-        $this->GLOBAL['all_vilojeno'] = $z42;
+        $this->GLOBAL['all_vrabote'] = $vrabote['count(*)'];
+        $this->GLOBAL['all_navyklad'] = $navyklad['count(*)'];
+        $this->GLOBAL['all_neobrabot'] = $neobrabot['count(*)'];
+        $this->GLOBAL['all_vilojeno'] = $vilojeno['count(*)'];
         $this->GLOBAL['all_to_remove'] = $to_remove['count(*)'];
         $this->GLOBAL['all_removed'] = $removed['count(*)'];
         $this->auth($db, $auth);
