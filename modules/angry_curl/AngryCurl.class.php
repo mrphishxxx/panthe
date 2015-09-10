@@ -119,7 +119,7 @@ class AngryCurl extends RollingCurl {
      * @return bool
      */
     public function request($url, $method = "GET", $post_data = null, $headers = null, $options = null) {
-        $options[CURLOPT_PROXYUSERPWD] = "RUS79476:H987tURQLo";
+        $options[CURLOPT_PROXYUSERPWD] = "RUS79476:y4JG0NR8jQ";
         if ($this->n_proxy > 0 && $this->use_proxy_list) {
             $options[CURLOPT_PROXY] = $this->array_proxy[mt_rand(0, $this->n_proxy - 1)];
             //    self::add_debug_msg("Using PROXY({$this->n_proxy}): ".$options[CURLOPT_PROXY]);

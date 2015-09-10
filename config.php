@@ -23,6 +23,9 @@ define('PATH', dirname(__FILE__).'\\');
 define('LOGIN_IN_SAPE', 'iforget');
 define('PASS_IN_SAPE', 'iforgetiforget');
 
+define('PROXY_LOGIN', 'RUS79476');
+define('PROXY_PASS', 'y4JG0NR8jQ');
+
 /*  OTHER CONSTANTS   */
 define("LIMIT_ERROR_FROM_COPYWRITER", 3);
 define("COPYWRITER_PRICE_FOR_1000_CHAR", 21);

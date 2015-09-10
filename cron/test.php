@@ -41,8 +41,8 @@ login($access["login"], $access["pass"]);
             $proxy_data[] = array(
                 'proxy_host' => substr($p, 0, strpos($p, ":")),
                 'proxy_port' => (int) substr($p, strpos($p, ":") + 1),
-                'proxy_user' => 'RUS79476',
-                'proxy_pass' => 'H987tURQLo'
+                'proxy_user' => PROXY_PASS,
+                'proxy_pass' => PROXY_PASS
             );
         }
         $proxy_counter = mt_rand(0, 69);

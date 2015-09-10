@@ -32,8 +32,8 @@ while ($birj = $accs->FetchRow())
 		$proxies[] = array(
 			'domain' => substr($p, 0, strpos($p, ":")),
 			'port' => (int) substr($p, strpos($p, ":") + 1),
-			'user' => 'RUS79476',
-			'pass' => 'H987tURQLo'
+			'user' => PROXY_LOGIN,
+			'pass' => PROXY_PASS
 		);
 	}
 	$proxy = $proxies[rand(0, count($proxies) - 1)];

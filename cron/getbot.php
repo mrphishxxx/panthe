@@ -57,10 +57,10 @@ if ($balance->balance > 0) {
         }
         $data = date("d-m-Y H:i:s");
         $description = implode(", ", $ids);
-        
+
         $task = $api->taskCreate($data, $links, GetbotApi::MODE_ABSOLUTE_UPDATE, $description);
-        $id = $task->id;
-        if ($task->can_launch) {
+        if (isset($task->can_launch)) {
+            $id = $task->id;
             $result = $api->taskLaunch($id); // >>StdClass: status
             if ($result->status == 'ok') {
                 $body .= "Задания ($description) успешно запущены<br>";
@@ -72,6 +72,11 @@ if ($balance->balance > 0) {
                     $body .= "&emsp; - " . $error . "<br>";
                     echo "Ошибка запуска задания: " . $error . "<br>";
                 }
+            }
+        } else if (isset($task->errors)) {
+            $body .= "<br><p style='color:red;'><strong>Ошибка запуска задания:<strong></p>";
+            foreach ($task->errors as $error) {
+                $body .= "&emsp; - <span style='color:red;'>" . $error . "</span>";
             }
         }
     }
@@ -102,4 +107,3 @@ try {
 }
 echo "THE END\r\n";
 exit();
-?>
