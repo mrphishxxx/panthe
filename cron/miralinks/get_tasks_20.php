@@ -29,7 +29,7 @@ foreach ($proxy as $p) {
     $proxy_data[] = array(
         'proxy_host' => substr($p, 0, strpos($p, ":")),
         'proxy_port' => (int) substr($p, strpos($p, ":") + 1),
-        'proxy_user' => PROXY_PASS,
+        'proxy_user' => PROXY_LOGIN,
         'proxy_pass' => PROXY_PASS
     );
 }
