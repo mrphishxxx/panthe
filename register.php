@@ -77,8 +77,8 @@ if (@$_POST['wmid'] == 1) {
     $content = str_replace('[login]', "", $content);
     $content = str_replace('[email]', "", $content);
     $content = str_replace('[wallet]', "", $content);
-    
-    $content = str_replace('[promo]', (@$_GET['promo'] ? $_GET['promo'] : ""), $content);
+
+    $content = str_replace('[promo]', (isset($_GET['promo']) ? $_GET['promo'] : (isset($_SESSION["promo"]) ? $_SESSION["promo"] : "")), $content);
     $content = str_replace('[partner_link]', (@$_GET['partner'] ? $_GET['partner'] : ""), $content);
     $content = str_replace('[error]', "", $content);
 }
