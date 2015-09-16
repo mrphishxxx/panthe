@@ -8,6 +8,7 @@ if ($curl = curl_init()) {
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
     $rez = curl_exec($curl);
+    print_r($rez);
     curl_close($curl);
 }
 file_put_contents(PATH . 'modules/angry_curl/proxy_list.txt', trim($rez));

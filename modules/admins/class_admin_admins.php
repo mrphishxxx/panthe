@@ -2006,14 +2006,14 @@ class admins {
             $url3 = ($_REQUEST['url3']);
             $url4 = ($_REQUEST['url4']);
             $url5 = ($_REQUEST['url5']);
-            $keywords = $_REQUEST['keywords'];
-            $tema = $_REQUEST['tema'];
+            $keywords = mysql_real_escape_string($_REQUEST['keywords']);
+            $tema = mysql_real_escape_string($_REQUEST['tema']);
             $text = addslashes($_REQUEST['text']);
             $url_statyi = $_REQUEST['url_statyi'];
             $url_pic = $_REQUEST['url_pic'];
             $price = (int) @$_REQUEST['price'];
             $comments = mysql_real_escape_string($_REQUEST['comments']);
-            $admin_comments = $_REQUEST['admin_comments'];
+            $admin_comments = mysql_real_escape_string($_REQUEST['admin_comments']);
             $lay_out = isset($_REQUEST['lay_out']) ? 1 : 0;
             $b_id = $_REQUEST['b_id'];
             $sape_id = $_REQUEST['sape_id'];
@@ -2110,7 +2110,7 @@ class admins {
                 }
                 $profil .= microtime() . "  - SEND MAIL" . "\r\n";
             }
-
+            
             $q = "update zadaniya set b_id='$b_id',sape_id='$sape_id',rotapost_id='$rotapost_id', dorabotka='$dorabotka', rework='$rework', etxt='$etxt', vipolneno='$vipolneno', vrabote='$vrabote', navyklad='$navyklad', vilojeno='$vilojeno', to_remove='$to_remove', removed='$removed', rectificate='$rectificate', type_task='$type_task', url_statyi='$url_statyi', text='$text', tema='$tema', sistema='$sistema', ankor='$ankor', ankor2='$ankor2', ankor3='$ankor3', ankor4='$ankor4', ankor5='$ankor5', url='$url', url2='$url2', url3='$url3', url4='$url4', url5='$url5', keywords='$keywords', price='$price', url_pic='$url_pic', comments='$comments', admin_comments='$admin_comments', lay_out='$lay_out', nof_chars='$nof_chars' where id=$id";
             $db->Execute($q);
             $profil .= microtime() . "  - QUERY #5 UPDATE task" . "\r\n";
@@ -2290,10 +2290,10 @@ class admins {
             $users[$value["id"]] = $value;
         }
         $error = $accept = "";
-        if(isset($_REQUEST["error"])){
+        if (isset($_REQUEST["error"])) {
             $error = $_REQUEST["error"];
         }
-        if(isset($_REQUEST["accept"])){
+        if (isset($_REQUEST["accept"])) {
             $accept = $_REQUEST["accept"];
         }
         $table = $history = "";
@@ -2308,24 +2308,24 @@ class admins {
                     break;
                 default : $status = 'Рассматривается';
             }
-            $now = date("Y-m-d H:i:s", time()-259200);//259200
+            $now = date("Y-m-d H:i:s", time() - 259200); //259200
             $date = $value["date"];
-            /*$d1 = strtotime($date);
-            $d2 = strtotime($now);
-            $days = floor(($d1-$d2)/(60*60*24));
-            $hour = (floor(($d1-$d2)/(60*60)));*/
-            
+            /* $d1 = strtotime($date);
+              $d2 = strtotime($now);
+              $days = floor(($d1-$d2)/(60*60*24));
+              $hour = (floor(($d1-$d2)/(60*60))); */
+
             $table .= "<tr>"
                     . "<td>" . $users[$value["uid"]]["login"] . "</td>"
                     . "<td>" . $date . "</td>"
                     . "<td>" . $users[$value["uid"]]["wallet"] . "</td>"
                     . "<td>" . $value["wallet"] . "</td>"
                     . "<td>" . $status . "</td>"
-                    . ($now < $date ? "<td>Ещё рано</td>" : "<td class='tick'><a href='?module=admins&action=change_wallet&action2=confirm&id=".$value["id"]."' class='ico'></a></td>")
+                    . ($now < $date ? "<td>Ещё рано</td>" : "<td class='tick'><a href='?module=admins&action=change_wallet&action2=confirm&id=" . $value["id"] . "' class='ico'></a></td>")
                     . "</tr>"
             ;
         }
-        
+
         $change_wallet_history = $db->Execute("SELECT * FROM change_wallet WHERE status != 0")->GetAll();
         foreach ($change_wallet_history as $value) {
             switch ($value['status']) {
@@ -2351,14 +2351,14 @@ class admins {
         $content = str_replace('[history]', $history == "" ? "<tr><td colspan='6'>Нет запросов</td></tr>" : $history, $content);
         return $content;
     }
-    
+
     function change_wallet_confirm($db) {
         $id = $_REQUEST["id"];
-        if(!empty($id)) {
+        if (!empty($id)) {
             $change_wallet = $db->Execute("SELECT * FROM change_wallet WHERE id = '$id'")->FetchRow();
-            if(!empty($change_wallet)) {
+            if (!empty($change_wallet)) {
                 $db->Execute("UPDATE change_wallet SET status='1' WHERE id = '$id'");
-                $db->Execute("UPDATE admins SET wallet='".$change_wallet["wallet"]."' WHERE id = '".$change_wallet["uid"]."'");
+                $db->Execute("UPDATE admins SET wallet='" . $change_wallet["wallet"] . "' WHERE id = '" . $change_wallet["uid"] . "'");
                 header("Location: ?module=admins&action=change_wallet&accept=Заявка подтверждена");
             } else {
                 header("Location: ?module=admins&action=change_wallet&error=Такой заявки нет");
@@ -2371,6 +2371,9 @@ class admins {
 
     function tickets($db) {
         $content = file_get_contents(PATH . 'modules/admins/tmp/admin/tickets_view.tpl');
+        if (!isset($_SESSION['admin']["id"]) && isset($_SESSION['manager']["id"]) && $_SERVER["PHP_SELF"] == "/management.php") {
+            header("Location: /management.php?" . str_replace("module=admins", "module=managers", $_SERVER["QUERY_STRING"]));
+        }
         $type = isset($_REQUEST['type']) ? $_REQUEST['type'] : null;
         $uid = $_SESSION['admin']["id"];
         $limit = 25;
@@ -2602,12 +2605,14 @@ class admins {
     }
 
     function ticket_view($db) {
-        if (!@$_SESSION['admin']['id']) {
+        if (!@$_SESSION['admin']['id'] && !isset($_SESSION['manager']['id'])) {
             $content = file_get_contents(PATH . 'modules/admins/tmp/admin/no-rights.tpl');
             $content = str_replace('[alert]', 'Данное действие Вам недоступно', $content);
             $content = str_replace('[url]', $_SERVER["HTTP_REFERER"], $content);
             echo $content;
             exit;
+        } else if (!isset($_SESSION['admin']["id"]) && isset($_SESSION['manager']["id"]) && $_SERVER["PHP_SELF"] == "/management.php") {
+            header("Location: /management.php?" . str_replace("module=admins", "module=managers", $_SERVER["QUERY_STRING"]));
         }
         $uid = (int) $_SESSION['admin']['id'];
         $content = file_get_contents(PATH . 'modules/admins/tmp/admin/ticket_full_view.tpl');
@@ -5181,7 +5186,7 @@ class admins {
                         curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
                         @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
                         curl_setopt($curl, CURLOPT_POSTFIELDS, xmlrpc_encode_request('performer.login', array(LOGIN_IN_SAPE, PASS_IN_SAPE)));
-                        curl_exec($curl);
+                        $auth = curl_exec($curl);
                         curl_close($curl);
                     }
                     $profil .= microtime() . "  - AFTER 2 curl" . "\r\n";
@@ -5200,7 +5205,6 @@ class admins {
                     curl_close($curl);
                 }
                 $accept = xmlrpc_decode($out);
-
                 $profil .= microtime() . "  - AFTER 3(4) curl" . "\r\n";
                 if ($accept == true && !isset($accept["faultString"])) {
                     $db->Execute("UPDATE zadaniya_new SET vilojeno = '1', navyklad = '0', dorabotka = '0' WHERE id = $id");
@@ -5225,6 +5229,9 @@ class admins {
                             $err = "В статье не найдены требуемые ссылки. Добавьте не менее 1 ссылок из списка.";
                         }
                         $data[] = "error[]=" . str_replace('"', "", $err);
+                    }
+                    if (empty($data) && !is_numeric($auth)) {
+                        $data[] = "error[]=Авторизация не удалась!";
                     }
                     $query_p = implode('&', $data);
                     $profil .= microtime() . "  - FALSE SEND TASK!! OUT ERROR" . "\r\n";

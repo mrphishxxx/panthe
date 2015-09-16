@@ -513,7 +513,7 @@ class moder {
 
             $url_statyi = isset($_REQUEST['url_statyi']) ? $_REQUEST['url_statyi'] : null;
             $url_pic = isset($_REQUEST['url_pic']) ? $_REQUEST['url_pic'] : null;
-            $admin_comments = isset($_REQUEST['admin_comments']) ? $_REQUEST['admin_comments'] : null;
+            $admin_comments = isset($_REQUEST['admin_comments']) ? mysql_real_escape_string($_REQUEST['admin_comments']) : null;
 
             $task_status = isset($_REQUEST['task_status']) ? $_REQUEST['task_status'] : null;
             if ($task_status == "vilojeno") {

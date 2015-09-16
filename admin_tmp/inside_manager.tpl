@@ -35,7 +35,7 @@
                     <div class="bar">
 
                         <!-- logo -->
-                        <a id="logo" href="/"></a>
+                        <a id="logo" href="/management.php"></a>
                         [auth_block]
 
                     </div>
