@@ -5168,6 +5168,8 @@ class admins {
                 }
                 $admin_comments .= date("Y-m-d H:i:s") . PHP_EOL . $message . PHP_EOL . PHP_EOL;
                 $profil .= microtime() . "  - AFTER 3 curl" . "\r\n";
+            } else if($rectificate == 1) {
+                $rectificate = 0;
             }
             $profil .= microtime() . "  - BEFORE UPDATE task" . "\r\n";
 

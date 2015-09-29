@@ -150,7 +150,7 @@
             
             <li>
                 <span class="title"></span>
-                <input type="radio" name="task_status" value="rectificate" [rectificate]> Отклонить
+                <input type="radio" name="task_status" id="rectificate" value="rectificate" [rectificate]> Отклонить
             </li>
             
         </ul>
@@ -189,7 +189,7 @@
     <div class="action_bar">
         <input type="hidden" name="send" value="1">
         <input type="hidden" id="send_sape" name="send_sape" value="">
-        <input type="submit" value="Сохранить" /><br/><br/>
+        <input type="submit" id="send_form" value="Сохранить" onclick="return false;" /><br/><br/>
         <input type="button" value="Вернуться" onclick="location.href = '?module=admins&action=articles'" style="width:196px;">
     </div>
 </form>
@@ -253,6 +253,15 @@
                     $("#send_task_to_copywriter").click(function() {
                         $("#admin_form").attr("action", "?module=admins&action=copywriters&action2=change_status_task&status=dorabotka");
                         $("#admin_form").submit();
+                    });
+                    
+                    $("#send_form").click(function() {
+                        if($("#rectificate").prop("checked") && $.trim($("#message").val()) === "") {
+                            alert("Если хотите отклонить задачу, то поле Написать заказчику обязателен для заполнения!\r\n Введите в это поле причину отклонения!");
+                            return false;
+                        } else {
+                            $("#admin_form").submit();
+                        }
                     });
 
                     var error = $("#error").val();
