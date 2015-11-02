@@ -68,7 +68,7 @@ function getTaskGGL($response, $info, $request) {
         }
         
         echo " UID = " . $post->uid . "{" . PHP_EOL;
-        $sites = $db->Execute("SELECT * FROM sayty WHERE gid != 0 AND gid IS NOT NULL AND uid=" . $post->uid);
+        $sites = $db->Execute("SELECT * FROM sayty WHERE gid != 0 AND gid IS NOT NULL AND uid=" . $post->uid);// AND id=8192764 
         while ($site = $sites->FetchRow()) {
             // В ЦИКЛЕ ПО САЙТАМ 
             echo "sid = " . $site["id"] . PHP_EOL;
@@ -232,7 +232,7 @@ function getTaskGGL($response, $info, $request) {
                                 $ankor .= " (!ссылка-картинка!)";
                             }
                             
-                            if(!empty($type_task) && $type_task == "Задание на удаление") {
+                            if(!empty($type_task) && ($type_task == "Задание на удаление" || $type_task == "Задание на смену анкора" || $type_task == "Сайт прекратил существование")) {
                                 $to_remove = 1;
                                 $type_task = 3;
                                 //Ссылка на страницу откуда снимать выложенную ссылку (Только для типа задач "Снятие ссылки")
@@ -241,6 +241,7 @@ function getTaskGGL($response, $info, $request) {
                             } else {
                                 $type_task = $to_remove = 0;             //Тип задачи в iForget
                                 $link_delete_from = '';
+                                echo $ggl_id. " +*+*+*+ " .$type_task . PHP_EOL;
                             }
                             
                             if (!empty($ankor) && !empty($to_url)) {
@@ -313,6 +314,7 @@ while ($user = $users->FetchRow()) {
 }
 // 0) Создаем запросы на выгрузку для каждого пользователя
 foreach ($act_uids as $uid) {
+    //if($uid != "421") continue;
     $cookie_jar = tempnam(PATH . 'temp', "cookie");
     
     $burse = $db->Execute("SELECT * FROM birjs WHERE birj=1 AND uid=$uid")->FetchRow();
@@ -362,7 +364,7 @@ $message["subject"] = $subject;
 $message["from_email"] = "news@iforget.ru";
 $message["from_name"] = "iforget";
 $message["to"] = array();
-$message["to"][1] = array("email" => MAIL_DEVELOPER);
+//$message["to"][1] = array("email" => MAIL_DEVELOPER);
 $message["to"][0] = array("email" => MAIL_ADMIN);
 $message["track_opens"] = null;
 $message["track_clicks"] = null;

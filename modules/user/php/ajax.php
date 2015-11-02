@@ -40,7 +40,7 @@ if (!empty($login) && !empty($pass) && !empty($bid)) {
             exit();
             break;
         case 6: /* WEBARTEX */
-            $url_login = 'https://webartex.ru/login';
+            $url_login = "https://api.webartex.ru/api/webmaster/sites/list";
             unset($data["e_mail"]);
             $data['email'] = $login;
             break;
@@ -69,14 +69,18 @@ if (!empty($login) && !empty($pass) && !empty($bid)) {
             curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie_jar);
             curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
             @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-            if ($bid == 4)
+            if ($bid == 4){
                 curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+            }
             if($bid == 3) {
                 curl_setopt($curl, CURLOPT_USERAGENT, 'RotapostClient/1.0.0.0 (PHP)');
-            } else {
+            } elseif($bid != 6) {
                 curl_setopt($curl, CURLOPT_POST, true);
                 curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+            } else {
+                curl_setopt($curl, CURLOPT_USERPWD, $login . ":" . $pass);
             }
+            
             $out_auth = curl_exec($curl);
             curl_close($curl);
         }
@@ -94,8 +98,14 @@ if (!empty($login) && !empty($pass) && !empty($bid)) {
     if ($bid == 1 || $bid == 2) {
         $out_auth = iconv("windows-1251", "utf-8", $out_auth);
     }
+    if ($bid == 6) {
+        $out = json_decode($out_auth);
+        $out_auth = $out->status;
+    }
 
-
+    /*if($_SERVER["REMOTE_ADDR"] == "128.69.89.113") {
+        print_r($out_auth);die();
+    }*/
     $auth = true;
     $auth_error = array();
     $auth_error[] = "Некорректный email или пароль."; //ggl
@@ -109,6 +119,7 @@ if (!empty($login) && !empty($pass) && !empty($bid)) {
     $auth_error[] = "Login failed!"; // sape
     $auth_error[] = "Unknown error"; // sape
     $auth_error[] = "Неверный пользователь или пароль"; // webartex
+    $auth_error[] = "fail"; // webartex
     $auth_error[] = "Ошибка авторизации"; // webartex
     $auth_error[] = "Пожалуйста, введите верные имя пользователя и пароль."; // rodina linkov
     $auth_error[] = "Неверный логин или пароль."; // blogun

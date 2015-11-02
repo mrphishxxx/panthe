@@ -521,6 +521,14 @@ class copywriter {
                         curl_close($curl);
                     }
                     $accept = xmlrpc_decode($out);
+
+                    if(in_array($task["sape_id"], $accept)){
+                        $task = $db->Execute("UPDATE zadaniya_new SET copywriter = '$uid', vrabote='1', date_in_work='$date' WHERE id = '$id'");
+                        $this->_postman->admin->copywriterAddedTask($id, $_SESSION['user']['login']);
+                    } else {
+                        $task = $db->Execute("UPDATE zadaniya_new SET copywriter = '0', from_copywriter='0' WHERE id = '$id'");
+                        header('location: /copywriter.php?error=Задача не подтвердилась в Articles.Sape');
+                    }
                 } elseif($table == "zadaniya") {
                     // Если задача из БИРЖИ, то снимаем деньги со счета Вебмастера
                     $price = $this->getTaskPrice(0, $task["nof_chars"], $sinfo);
@@ -532,11 +540,11 @@ class copywriter {
                     } else {
                         $db->Execute("UPDATE completed_tasks SET price = '" . $price . "' WHERE id = '" . $compl["id"] . "'");
                     }
+                    $task = $db->Execute("UPDATE zadaniya SET copywriter = '$uid', vrabote='1', date_in_work='$date' WHERE id = '$id'");
+                    $this->_postman->admin->copywriterAddedTask($id, $_SESSION['user']['login']);
                 }
 
-                $task = $db->Execute("UPDATE $table SET copywriter = '$uid', vrabote='1', date_in_work='$date' WHERE id = '$id'");
-
-                $this->_postman->admin->copywriterAddedTask($id, $_SESSION['user']['login']);
+                
                 header('location: /copywriter.php?action=tasks');
                 die();
             } else {

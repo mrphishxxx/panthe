@@ -32,7 +32,7 @@ while ($res = $query->FetchRow()) {
 }
 $main_error = array();
 foreach ($rota_to_uid as $uid) {
-    //if ($uid != 601)continue;
+    //if ($uid != 399)continue;
     $balance = $admins->getUserBalans($uid, $db, 1);
     if ($balance >= 60 || (($res['id'] == 20) || ($res['id'] == 55))) {
         echo $uid . " - UID (balans = $balance)<br>\r\n";
@@ -77,7 +77,7 @@ function callback($uid, $db) {
             $err = (array) $New->Error;
             $error[] = $err["Description"];
         }
-        
+
         $buff = array();
         $result = $db->Execute("SELECT rotapost_id FROM zadaniya WHERE (rotapost_id IS NOT NULL AND rotapost_id != 0) AND uid=$uid");
         while ($add = $result->FetchRow()) {
@@ -97,8 +97,8 @@ function callback($uid, $db) {
                     $url_site = $task->Site;
                     $site_in_iforget = false;
                     foreach ($user_sites as $key => $value) {
-                        if(mb_detect_encoding($value) == "UTF-8") {
-                            $idn = new idna_convert(array('idn_version'=>2008));
+                        if (mb_detect_encoding($value) == "UTF-8") {
+                            $idn = new idna_convert(array('idn_version' => 2008));
                             $value = $idn->encode($value);
                         }
                         if (mb_strpos($url_site, $value) || mb_strpos($value, $url_site) || $url_site == $value) {
@@ -156,11 +156,11 @@ function callback($uid, $db) {
                         )");
                         $buff[] = $task->Id;
                     } else {
-                        if ($site_in_iforget == false)
+                        if ($site_in_iforget == false) {
                             $error[] = "Не найден сайт в системе ($url_site)";
-                        else {
+                        } else {
                             $isset = $db->Execute("SELECT * FROM zadaniya WHERE rotapost_id = '" . $task->Id . "'")->FetchRow();
-                            $error[] = "Данная задача уже есть в системе (<a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $isset['uid'] . "&sid=" . $isset['sid'] . "&action2=edit&id=" . $isset['id'] ."'>" . $isset['id'] . "</a>)";
+                            $error[] = "Данная задача уже есть в системе (<a href='http://iforget.ru/admin.php?module=admins&action=zadaniya&uid=" . $isset['uid'] . "&sid=" . $isset['sid'] . "&action2=edit&id=" . $isset['id'] . "'>" . $isset['id'] . "</a>)";
                         }
                     }
                 }
@@ -192,13 +192,13 @@ if (count($new_tasks) !== 0) {
     foreach ($new_tasks as $knt => $vnt) {
         $body .= "<a href='$vnt'>$knt</a><br/>";
     }
-    if (!empty($output_error)) {
-        $body .= "<br><br><em>Во время выгрузки были замечены некоторые ошибки, пожалуйста обратите внимание на них!</em>" . $output_error;
-    }
 } else {
     $body = "Добрый день!<br/><br/>
             В бирже rotapost не найдено ни одной новой задачи.<br/><br/>";
     $subject = "[0 новых задач из биржи rotapost]";
+}
+if (!empty($output_error)) {
+    $body .= "<br><br><em>Во время выгрузки были замечены некоторые ошибки, пожалуйста обратите внимание на них!</em>" . $output_error;
 }
 
 $mandrill = new Mandrill('zTiNSqPNVH3LpQdk1PgZ8Q');
@@ -221,4 +221,5 @@ try {
 } catch (Exception $e) {
     echo $body;
 }
+echo "\r\n";
 exit();

@@ -48,10 +48,12 @@
             <div id="hotbar" class="clear">
 
                 <ul>
-                    <li id="applications" href="#"><a href="?module=admins&action=tasks&status=vrabote"><span class="ico"></span><span class="large">[vrabote]</span> всего в работе</a></li>
-                    <li id="new_applications" href="#"><a href="?module=admins&action=tasks&status=navyklad"><span class="ico"></span><span class="large">[navyklad]</span> всего на выклад</a></li>
-                    <li id="not_applications" href="#"><a href="?module=admins&action=tasks&status=neobrabot"><span class="ico"></span><span class="large">[neobrabot]</span> всего не обработанные</a></li>
-                    <li id="in_applications" href="#"><a href="?module=admins&action=tasks&status=vilojeno"><span class="ico"></span><span class="large">[vilojeno]</span> всего выложено</a></li>
+                    <li id="applications" href="#"><a href="?module=admins&action=tasks&status=vrabote"><span class="ico"></span><span class="large">[vrabote]</span> в работе</a></li>
+                    <li id="new_applications" href="#"><a href="?module=admins&action=tasks&status=navyklad"><span class="ico"></span><span class="large">[navyklad]</span> на выклад</a></li>
+                    <li id="not_applications" href="#"><a href="?module=admins&action=tasks&status=neobrabot"><span class="ico"></span><span class="large">[neobrabot]</span> не обраб</a></li>
+                    <li id="in_applications" href="#"><a href="?module=admins&action=tasks&status=vilojeno"><span class="ico"></span><span class="large">[vilojeno]</span> вылож</a></li>
+                    <li id="toremove_applications" href="#"><a href="?module=admins&action=tasks&status=to_remove"><span class="ico"></span><span class="large">[to_remove]</span> на удаление</a></li>
+                    <li id="removed_applications" href="#"><a href="?module=admins&action=tasks&status=removed"><span class="ico"></span><span class="large">[removed]</span> удалено</a></li>
                 </ul>
 
             </div>

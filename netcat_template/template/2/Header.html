@@ -16,6 +16,7 @@
 	<script type="text/JavaScript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script type="text/JavaScript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
         <script src="http://code.jquery.com/jquery-migrate-1.0.0.js"></script>
+        <script type="text/JavaScript" src="/js/autoresize.jquery.js"></script>
 	<script type="text/JavaScript" src="/js/jcar.js"></script>
 	<script type="text/JavaScript" src="/js/main.js"></script>
 	
@@ -54,6 +55,7 @@ if ($_COOKIE['iforget_ok'])
                                               Быстрая связь: 
                                              <img src="/images/openid/skype16x16.png" /> <a href="skype:roman.vetes?chat">Roman.vetes</a>
                                              <img src="/images/openid/icq16x16.gif" /> 133-215 
+                                             <img src="/images/openid/phone.png" /> 8-926-417 30-30 
                                  </p>
   		                 <a id="user_login" href="'.($uinfo['type'] == "user" ? '/user.php?action=lk' : (($uinfo['type'] == "copywriter" ? '/copywriter.php' : (($uinfo['type'] == "manager" ? '/management.php' : '/admin.php'))))).'">'.($uinfo['email'] ? $uinfo['email'] : $uinfo['login']).'</a>
                                  <span class="sep"></span>
@@ -65,7 +67,8 @@ if ($_COOKIE['iforget_ok'])
                                     <p id="fast_connection">
                                         Быстрая связь: 
                                            <img src="/images/openid/skype16x16.png" /> <a href="skype:roman.vetes?chat">Roman.vetes</a>
-                                           <img src="/images/openid/icq16x16.gif" /> 133-215 
+                                           <img src="/images/openid/icq16x16.gif" /> 133-215  
+                                             <img src="/images/openid/phone.png" /> 8-926-417 30-30 
                                     </p>
                                     <form action="/user.php" method="POST" style="float: right;">
 						<input type="text" name="login" value="" style="height:16px;" placeholder="Логин" />

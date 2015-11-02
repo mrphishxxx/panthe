@@ -104,16 +104,16 @@ include 'system/class_admin.php';
 $my = new class_index();
 
 
-if ((@$_SESSION['user']['id'] > 0) || (@$_SESSION['admin']['id'] > 0)) {
+if (isset($_SESSION['admin']['id']) && ($_SESSION['admin']['id'] > 0)) {
     $auth_block = '
 		<!-- userbar -->
 		<div id="userbar">
 			
-			<a id="user_login" href="#">' . (isset($_SESSION['user']['login']) ? $_SESSION['user']['login'] : $_SESSION['admin']['login']) . '</a>
+			<a id="user_login" href="#">' . $_SESSION['admin']['login'] . '</a>
 			
 			<span class="sep"></span>
 			
-			<a id="log_off" href="/' . (isset($_SESSION['user']['email']) ? 'user.php?action=logout' : 'admin.php?module=admins&action=logout') . '"><span class="ico"></span> <span>Выход</span> </a>
+			<a id="log_off" href="/admin.php?module=admins&action=logout"><span class="ico"></span> <span>Выход</span> </a>
 			
 		</div>
 	';

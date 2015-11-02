@@ -1,4 +1,5 @@
 <?php
+die();
 include_once 'config.php';
 include 'includes/adodb5/adodb.inc.php';
 $db = ADONewConnection(DB_TYPE);
@@ -6,7 +7,6 @@ $db = ADONewConnection(DB_TYPE);
 $db->Execute('set charset utf8');
 $db->Execute('SET NAMES utf8');
 
-$query = $db->Execute("select c.* from completed_tasks c LEFT JOIN zadaniya z ON c.zid=z.id where z.type_task = 3 order by c.date")->GetAll();
-print_r($query);
+
 die();
 

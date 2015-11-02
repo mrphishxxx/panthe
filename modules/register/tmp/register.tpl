@@ -55,7 +55,7 @@
             <div class="action-bar">
                 <br/>
                 <button onclick="regNewUser();return false;" id="submit">Регистрация</button>
-                <span class="note">* Поля необходимые для заполнения</span>
+                <span class="note">* Поля, необходимые для заполнения</span>
 
             </div>
             <input name="wmid" id="wmid" type="hidden" value='1'>

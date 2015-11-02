@@ -116,6 +116,10 @@
                 <span class="title">ID в blogun:</span>
                 <input type="text" name="blogun_id" id="blogun_id" value="[blogun_id]" class="full-length"[readonly]>
             </li>
+            <li>
+                <span class="title">ID в rotapost:</span>
+                <input type="text" name="rotapost_id" id="blogun_id" value="[rotapost_id]" class="full-length"[readonly]>
+            </li>
             <li [rights]>
                 <span class="title">Стоимость текста:</span>
                 <select class="full-length" name="cena">

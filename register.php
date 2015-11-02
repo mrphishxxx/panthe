@@ -107,6 +107,7 @@ if (@$_SESSION['user']['id'] > 0) {
                         Быстрая связь: 
                         <img src="/images/openid/skype16x16.png" /> <a href="skype:roman.vetes?chat">Roman.vetes</a>
                         <img src="/images/openid/icq16x16.gif" /> 133-215 
+                        <img src="/images/openid/phone.png" /> 8-926-417 30-30
                     </p>
                     <form action="/user.php" method="POST">
                         <input type="text" name="login" value="" placeholder="Логин" />

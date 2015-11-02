@@ -16,6 +16,7 @@
 	<script type="text/JavaScript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script type="text/JavaScript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
         <script src="http://code.jquery.com/jquery-migrate-1.0.0.js"></script>
+        <script type="text/JavaScript" src="/js/autoresize.jquery.js"></script>
 	<script type="text/JavaScript" src="/js/jcar.js"></script>
 	<script type="text/JavaScript" src="/js/main.js"></script>
 	
@@ -54,6 +55,7 @@ if ($_COOKIE['iforget_ok'])
                                               Быстрая связь: 
                                              <img src="/images/openid/skype16x16.png" /> <a href="skype:roman.vetes?chat">Roman.vetes</a>
                                              <img src="/images/openid/icq16x16.gif" /> 133-215 
+                                             <img src="/images/openid/phone.png" /> 8-926-417 30-30 
                                  </p>
   		                 <a id="user_login" href="'.($uinfo['type'] == "user" ? '/user.php?action=lk' : (($uinfo['type'] == "copywriter" ? '/copywriter.php' : (($uinfo['type'] == "manager" ? '/management.php' : '/admin.php'))))).'">'.($uinfo['email'] ? $uinfo['email'] : $uinfo['login']).'</a>
                                  <span class="sep"></span>
@@ -65,7 +67,8 @@ if ($_COOKIE['iforget_ok'])
                                     <p id="fast_connection">
                                         Быстрая связь: 
                                            <img src="/images/openid/skype16x16.png" /> <a href="skype:roman.vetes?chat">Roman.vetes</a>
-                                           <img src="/images/openid/icq16x16.gif" /> 133-215 
+                                           <img src="/images/openid/icq16x16.gif" /> 133-215  
+                                             <img src="/images/openid/phone.png" /> 8-926-417 30-30 
                                     </p>
                                     <form action="/user.php" method="POST" style="float: right;">
 						<input type="text" name="login" value="" style="height:16px;" placeholder="Логин" />
@@ -89,26 +92,31 @@ if ($_COOKIE['iforget_ok'])
 <!-- Footer -->	<!-- FOOTER -->
 	<div id="footer">
 		<div class="alignment">	
-
-                        <?=($sub == 1 ? "<div class='ft_vetes'><div class='vt_img'><img src='/images/vetes.png' alt='' /></div><div class='vt_txt'><a href='http://www.vetes.ru/' target='_blank'>создание сайта</a></div></div>" : "")?>
- 
-			<span id="copyrights">
-				© 2013 iForget — система автоматической монетизации.
-			</span>
-                        
+                        <div class="footer_item">
+                        	<span id="copyrights">
+					© 2013 iForget — система автоматической монетизации.
+				</span>
+                        	<p class="footer_address">
+                        		Адрес: г. Москва, ул.Гамсоновский переулок <br />
+                        		дом 3, строение 4, офис 2 <br />
+                        		м.Тульская
+                       		</p>
+                        </div>
+			<div class="footer_item webmoney">
+				<!-- begin WebMoney Transfer : attestation label --> 
+                                <a href="https://passport.webmoney.ru/asp/certview.asp?wmid=243525969589" target=_blank><IMG SRC="/images/acc_blue_on_transp_ru.png" title="Здесь находится аттестат нашего WM идентификатора 243525969589" border="0"><br><font size=1>Проверить аттестат</font></a>
+                                <!-- end WebMoney Transfer : attestation label -->
+			</div>
+			<div class="footer_item right">
+				<ul class="navigation">
+					<li><a href="/about/">О системе</a></li>
+					<li><a href="/price/">Цены</a></li>
+					<li><a href="/convention/">Соглашение</a></li>
+					<li><a href="/register.php">Регистрация</a></li>
+					<li><a href="/contacts/">Контакты</a></li>
+				</ul>
+			</div>
 			
-			<ul class="navigation">
-                                <li><!-- begin WebMoney Transfer : attestation label --> 
-                                      <a href="https://passport.webmoney.ru/asp/certview.asp?wmid=243525969589" target=_blank style="border:none"><IMG SRC="/images/acc_blue_on_transp_ru.png" title="Здесь находится аттестат нашего WM идентификатора 243525969589" border="0"><br><font size=1>Проверить аттестат</font></a>
-                                      <!-- end WebMoney Transfer : attestation label -->
-                               </li>
-				<li><a href="/about/">О системе</a></li>
-				<li><a href="/price/">Цены</a></li>
-				<li><a href="/convention/">Соглашение</a></li>
-				<li><a href="/register.php">Регистрация</a></li>
-				<li><a href="/contacts/">Контакты</a></li>
-			</ul>
-
 		</div>
 	</div>
 	<!-- FOOTER END -->

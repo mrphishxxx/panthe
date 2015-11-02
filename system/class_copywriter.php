@@ -15,6 +15,7 @@ class class_index {
                             Быстрая связь: 
                             <img src="/images/openid/skype16x16.png" /> <a href="skype:roman.vetes?chat">Roman.vetes</a>
                             <img src="/images/openid/icq16x16.gif" /> 133-215 
+                            <img src="/images/openid/phone.png" /> 8-926-417 30-30
                         </p>
 			<a id="user_login" href="/copywriter.php?action=lk">' . $_SESSION['user']['login'] . '</a>
 			

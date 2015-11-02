@@ -304,6 +304,9 @@ class admins {
             case 'tasks':
                 $content = $this->tasks($db);
                 break;
+            case 'tasks_delete_all':
+                $content = $this->tasks_delete_all($db);
+                break;
             case 'users_non_active':
                 $content = $this->users_non_active($db);
                 break;
@@ -1824,6 +1827,7 @@ class admins {
             $miralinks_id = $_REQUEST['miralinks_id'];
             $webartex_id = $_REQUEST['webartex_id'];
             $blogun_id = $_REQUEST['blogun_id'];
+            $rotapost_id = $_REQUEST['rotapost_id'];
             $url_admin = $_REQUEST['url_admin'];
             $moder_id = $_REQUEST['viklad'];
             $owner_id = $_REQUEST['owner'];
@@ -1859,7 +1863,7 @@ class admins {
                 $price_iforget = 40;
             }
 
-            $db->Execute("update sayty set uid='$owner_id', colvos='$colvos', login='$login', gid='$gid', getgoodlinks_id='$getgoodlinksId', sape_id='$sape_id', miralinks_id='$miralinks_id', webartex_id='$webartex_id', blogun_id='$blogun_id', pass='$pass', url='$url', 
+            $db->Execute("update sayty set uid='$owner_id', colvos='$colvos', login='$login', gid='$gid', getgoodlinks_id='$getgoodlinksId', sape_id='$sape_id', miralinks_id='$miralinks_id', webartex_id='$webartex_id', blogun_id='$blogun_id', rotapost_id='$rotapost_id', pass='$pass', url='$url', 
                                         url_admin='$url_admin', price='$price_iforget', cena='$price_etxt', moder_id='$moder_id', price_viklad = '$price_viklad', comment_viklad='$comment_viklad', question_viklad='$question_viklad',
 					site_subject='$site_subject', site_subject_more='$site_subject_more', cms='$cms', taskdel_flag='$taskdel_flag', subj_flag='$subj_flag', obzor_flag='$obzor_flag', news_flag='$news_flag', 
 					bad_flag='$bad_flag', anons_size='$anons_size', pic_width='$pic_width', pic_height='$pic_height', pic_position='$pic_position', site_comments='$site_comments' where id=$id");
@@ -2110,7 +2114,7 @@ class admins {
                 }
                 $profil .= microtime() . "  - SEND MAIL" . "\r\n";
             }
-            
+
             $q = "update zadaniya set b_id='$b_id',sape_id='$sape_id',rotapost_id='$rotapost_id', dorabotka='$dorabotka', rework='$rework', etxt='$etxt', vipolneno='$vipolneno', vrabote='$vrabote', navyklad='$navyklad', vilojeno='$vilojeno', to_remove='$to_remove', removed='$removed', rectificate='$rectificate', type_task='$type_task', url_statyi='$url_statyi', text='$text', tema='$tema', sistema='$sistema', ankor='$ankor', ankor2='$ankor2', ankor3='$ankor3', ankor4='$ankor4', ankor5='$ankor5', url='$url', url2='$url2', url3='$url3', url4='$url4', url5='$url5', keywords='$keywords', price='$price', url_pic='$url_pic', comments='$comments', admin_comments='$admin_comments', lay_out='$lay_out', nof_chars='$nof_chars' where id=$id";
             $db->Execute($q);
             $profil .= microtime() . "  - QUERY #5 UPDATE task" . "\r\n";
@@ -5168,7 +5172,7 @@ class admins {
                 }
                 $admin_comments .= date("Y-m-d H:i:s") . PHP_EOL . $message . PHP_EOL . PHP_EOL;
                 $profil .= microtime() . "  - AFTER 3 curl" . "\r\n";
-            } else if($rectificate == 1) {
+            } else if ($rectificate == 1) {
                 $rectificate = 0;
             }
             $profil .= microtime() . "  - BEFORE UPDATE task" . "\r\n";
@@ -5400,166 +5404,14 @@ class admins {
                                         for_copywriter=0 AND 
                                         (task_id = 0 OR task_id IS NULL) AND 
                                         etxt=0 AND 
-                                        copywriter=0");
+                                        copywriter=0")->GetAll();
         $cena = 20;
         $order_accept = array();
-        while ($task = $tasks->FetchRow()) {
-            $colvos = $task["nof_chars"];
-            $tema = $task['tema'];
-            if (empty($tema)) {
-                continue;
-            }
 
-            $description = '1)Cтатья ' . $colvos . ' символов без пробелов, в тексте должн[mn] быть фраз[mn] "[ankor]",[ankor2][ankor3][ankor4][ankor5] заключенная в {} 
-                            2)Фраза должна быть употреблена в точности как написана, разрывать другими словами ее нельзя, склонять так же нельзя. Если указано несколько фраз через запятую, то нужно их равномерно распределить по тексту 
-                            3)Текст без воды, строго по теме, без негатива (см. прикрепленный файл "Текст заказа") 
-                            4)Фразу употребить ТОЛЬКО ОДИН раз, в остальном - заменять синонимами 
-                            5)Высылать готовый заказ просто текстом, в формате word не принимаем
-                            6)Вручную проверить уникальность текста по Адвего Плагиатус (выше 95%), в Комментариях к заказу проставить % уникальности по данной программе. Без этого пункта автоматически задание отправляется на доработку.
-                            7)После того как заказ будет принят и оплачен все авторские права принадлежат аккаунту ifoget.ru (то есть статьи могут быть опубликованы на сайтах под различным именем, на выбор владельца текста).
-                            8)Тексты писать только на русском языке.';
-
-            $description = str_replace('[ankor]', $task['ankor'], $description);
-            if (!empty($task['ankor2']))
-                $description = str_replace('[ankor2]', ' "' . $task['ankor2'] . '",', $description);
-            else
-                $description = str_replace('[ankor2]', "", $description);
-            if (!empty($task['ankor3']))
-                $description = str_replace('[ankor3]', ' "' . $task['ankor3'] . '",', $description);
-            else
-                $description = str_replace('[ankor3]', "", $description);
-            if (!empty($task['ankor4']))
-                $description = str_replace('[ankor4]', ' "' . $task['ankor4'] . '",', $description);
-            else
-                $description = str_replace('[ankor4]', "", $description);
-            if (!empty($task['ankor5']))
-                $description = str_replace('[ankor5]', ' "' . $task['ankor5'] . '",', $description);
-            else
-                $description = str_replace('[ankor5]', "", $description);
-
-            if (!empty($task['ankor2']) || !empty($task['ankor3']) || !empty($task['ankor4']) || !empty($task['ankor5'])) {
-                $description = str_replace('[mn]', "ы", $description);
-            } else
-                $description = str_replace('[mn]', "а", $description);
-
-
-            $time = time() + 86400;
-            $date = date("d.m.y", $time);
-            $id = $task['id'];
-            if (!empty($task["price"])) {
-                $cena = $task["price"];
-            }
-
-            $howto = '
-		Здесь представлены основные требования к работе авторов. 
-
-		Общие требования к тексту
-
-		Соответствие тематике (НЕ фразы, а именно тематике), если прямо не указано, что можно писать по теме фразы 
-		Максимальное совмещение тематики и темы фразы (например, фраза «украшения» прекрасно впишется в женскую тематику и необходимо писать в этом случае ОБЯЗАТЕЛЬНО о женских украшениях, а не о народном противостоянии феминисток в Палестине).
-		Текст должен быть уникальным (минимальная уникальность 95%). 
-		Текст должен иметь смысловую нагрузку. То есть несущим какую-то полезную информацию для читателей законченный рассказ, с четким и понятным изложением какого-то факта или события, совет, инструкция или рекомендация.
-		Информация ОБЯЗАТЕЛЬНО должна быть правдивой.
-		Предложения должны быть связаны между собой по смыслу. 
-		Фраза должна входить в текст естественно (по смыслу, числу и падежу),или её нужно употребить, не изменяя ничего.Это прописано рядом с фразой, пример: в тексте должна быть фраза "www.altaystroy.ru (склонять анкор нельзя )"
-		В тексте не должно быть грамматических и пунктуационных ошибок.
-		Нельзя писать от первого лица и от лица компании (мы изготовим для вас, в нашей компании). Все текста пишутся только от третьего лица.
-
-
-		Оформление
-
-		Текст необходимо делить на абзацы и выделять подзаголовки.
-		Нельзя употреблять в тексте смайлы и множество восклицательных и вопросительных знаков.
-
-
-		О тематике
-
-		Нужно избегать любых негативных тем - Придаем тексту нейтральную или положительную окраску.
- 
-
-		О вписывании фразы в тест
-
-		НЕЛЬЗЯ менять заглавные буквы на строчные и наоборот, нельзя его склонять и изменять. Лучше не переписывать фразу, а скопировать и вставить в текст.
-		Фраза должна входить в текст естественно. НЕЛЬЗЯ писать: Ухаживать за лицом [матрасы] нужно ежедневно. Мы не примем такую работу. 
-		Если в задании фраза, например, "свадебные платья", а вам нужно написать что-то на тему "Советы хозяйке" НЕЛЬЗЯ писать о туалетных ершиках или борьбе с тараканами и всовывать кое-как фразу. 
-		НЕЛЬЗЯ придавать фразе негативную окраску. Пишем о нем либо нейтрально, либо ненавязчиво рекомендуем читателю товар, услугу и т.д.
-		Фраза должна иметь тематическое окружение (если фраза "диваны", необходимо употребить рядом слова, например, мебель, интерьер спальня). 
-
-
-		О несоответствии темы и фразы
-
-		Если тематику невозможно аккуратно совместить с темой фразы и логически она никак в нее не вписывается, следует писать текст по тематике. А в конце текста написать 2-3 полноценных предложения о фразе и вставив фразу. 
-		В таких случаях пишем текст, а в конце дописываем 2-3 полноценных предложения, не относящихся к тексту, именно по теме ключа. 
-		Фраза должна иметь тематическое окружение. После фразы нужно дописать еще несколько слов или предложение.
-		НЕЛЬЗЯ фразой заканчивать текст.
-
-
-		Текст на широкую тематику
-
-		Даже если вы «в теме» не стоит выдумывать что-то самостоятельно. Основывайтесь на реальных фактах.
-		Не используйте избитые фразы и выражения - текст короткий и уникальность сразу упадет. 
-		Смотрите информацию о фразе, особенно если это слово вам незнакомо. Если фраза, например, монурал (название лекарства) НЕЛЬЗЯ писать, что это модная прическа или деталь трактора.
-	';
-
-            $category_id = 1828;
-            $pass = ETXT_PASS;                        //29aa0eec2c77dd6d06e23b3faaef9eed
-            $query_sign = "method=tasks.saveTasktoken=29aa0eec2c77dd6d06e23b3faaef9eed";
-            $sign = md5($query_sign . md5($pass . 'api-pass'));
-
-            $params = array('auto_work' => 1,
-                'id_category' => $category_id,
-                'deadline' => $date,
-                'description' => $description,
-                'multitask' => 0,
-                'id_type' => 1,
-                'only_stars' => 0,
-                'price' => $cena,
-                'price_type' => 1,
-                'public' => 1,
-                'target_task' => 1,
-                'text' => $howto,
-                'timeline' => '17:00',
-                'title' => $tema,
-                'whitespaces' => 0,
-                'auto_level' => 1,
-                'auto_rate' => 100,
-                'size' => $colvos,
-                'uniq' => 95);
-
-            $query_p = $params;
-
-            $url_etxt = "https://www.etxt.ru/api/json/?method=tasks.saveTask&token=29aa0eec2c77dd6d06e23b3faaef9eed&sign=" . $sign;
-
-            $not_copywriter = $db->Execute("SELECT copywriter FROM zadaniya_new WHERE id = " . $task['id'])->FetchRow();
-            if ($not_copywriter['copywriter'] == 0) {
-                if ($curl = curl_init()) {
-                    curl_setopt($curl, CURLOPT_URL, $url_etxt);
-                    curl_setopt($curl, CURLOPT_POST, true);
-                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $query_p);
-                    $out = curl_exec($curl);
-                    curl_close($curl);
-                }
-                $new_tid = json_decode($out);
-                unset($description);
-
-                $new_tid_arr = (array) $new_tid;
-                $id_task = isset($new_tid_arr['id_task']) ? $new_tid_arr['id_task'] : null;
-
-                if (isset($id_task)) {
-                    $order_accept[] = $task["sape_id"];
-                    $db->Execute("UPDATE zadaniya_new SET task_id = '" . $id_task . "', etxt = 1, vrabote = 1, dorabotka = 0 WHERE id = '" . $id . "'");
-                    $num++;
-                } else {
-                    //print_r($query_p);
-                    $error .= 'Задание ' . $task["id"] . ' не добавилось в ETXT! Error: ' . $new_tid_arr["error"] . '<br>';
-                }
-            } else {
-                $copywriter = $db->Execute("SELECT * FROM admins WHERE id = " . $not_copywriter['copywriter'])->FetchRow();
-                $error .= 'Задание ' . $task["id"] . ' уже взял себе копирайтер ' . $copywriter["login"] . '! Задача уже в статусе `В работе`.<br>';
-            }
+        foreach ($tasks as $value) {
+            $order_accept[] = $value["sape_id"];
         }
-        $accept = null;
+        $accept = array();
         if (!empty($order_accept)) {
             $cookie_jar = tempnam(PATH . 'temp', "cookie");
             if ($curl = curl_init()) {
@@ -5588,6 +5440,168 @@ class admins {
             }
             $accept = xmlrpc_decode($out);
         }
+
+        foreach ($tasks as $task) {
+            if (in_array($task["sape_id"], $accept)) {
+                $colvos = $task["nof_chars"];
+                $tema = $task['tema'];
+                if (empty($tema)) {
+                    continue;
+                }
+
+                $description = '1)Cтатья ' . $colvos . ' символов без пробелов, в тексте должн[mn] быть фраз[mn] "[ankor]",[ankor2][ankor3][ankor4][ankor5] заключенная в {} 
+                                2)Фраза должна быть употреблена в точности как написана, разрывать другими словами ее нельзя, склонять так же нельзя. Если указано несколько фраз через запятую, то нужно их равномерно распределить по тексту 
+                                3)Текст без воды, строго по теме, без негатива (см. прикрепленный файл "Текст заказа") 
+                                4)Фразу употребить ТОЛЬКО ОДИН раз, в остальном - заменять синонимами 
+                                5)Высылать готовый заказ просто текстом, в формате word не принимаем
+                                6)Вручную проверить уникальность текста по Адвего Плагиатус (выше 95%), в Комментариях к заказу проставить % уникальности по данной программе. Без этого пункта автоматически задание отправляется на доработку.
+                                7)После того как заказ будет принят и оплачен все авторские права принадлежат аккаунту ifoget.ru (то есть статьи могут быть опубликованы на сайтах под различным именем, на выбор владельца текста).
+                                8)Тексты писать только на русском языке.';
+
+                $description = str_replace('[ankor]', $task['ankor'], $description);
+                if (!empty($task['ankor2']))
+                    $description = str_replace('[ankor2]', ' "' . $task['ankor2'] . '",', $description);
+                else
+                    $description = str_replace('[ankor2]', "", $description);
+                if (!empty($task['ankor3']))
+                    $description = str_replace('[ankor3]', ' "' . $task['ankor3'] . '",', $description);
+                else
+                    $description = str_replace('[ankor3]', "", $description);
+                if (!empty($task['ankor4']))
+                    $description = str_replace('[ankor4]', ' "' . $task['ankor4'] . '",', $description);
+                else
+                    $description = str_replace('[ankor4]', "", $description);
+                if (!empty($task['ankor5']))
+                    $description = str_replace('[ankor5]', ' "' . $task['ankor5'] . '",', $description);
+                else
+                    $description = str_replace('[ankor5]', "", $description);
+
+                if (!empty($task['ankor2']) || !empty($task['ankor3']) || !empty($task['ankor4']) || !empty($task['ankor5'])) {
+                    $description = str_replace('[mn]', "ы", $description);
+                } else
+                    $description = str_replace('[mn]', "а", $description);
+
+
+                $time = time() + 86400;
+                $date = date("d.m.y", $time);
+                $id = $task['id'];
+                if (!empty($task["price"])) {
+                    $cena = $task["price"];
+                }
+
+                $howto = '
+                    Здесь представлены основные требования к работе авторов. 
+
+                    Общие требования к тексту
+
+                    Соответствие тематике (НЕ фразы, а именно тематике), если прямо не указано, что можно писать по теме фразы 
+                    Максимальное совмещение тематики и темы фразы (например, фраза «украшения» прекрасно впишется в женскую тематику и необходимо писать в этом случае ОБЯЗАТЕЛЬНО о женских украшениях, а не о народном противостоянии феминисток в Палестине).
+                    Текст должен быть уникальным (минимальная уникальность 95%). 
+                    Текст должен иметь смысловую нагрузку. То есть несущим какую-то полезную информацию для читателей законченный рассказ, с четким и понятным изложением какого-то факта или события, совет, инструкция или рекомендация.
+                    Информация ОБЯЗАТЕЛЬНО должна быть правдивой.
+                    Предложения должны быть связаны между собой по смыслу. 
+                    Фраза должна входить в текст естественно (по смыслу, числу и падежу),или её нужно употребить, не изменяя ничего.Это прописано рядом с фразой, пример: в тексте должна быть фраза "www.altaystroy.ru (склонять анкор нельзя )"
+                    В тексте не должно быть грамматических и пунктуационных ошибок.
+                    Нельзя писать от первого лица и от лица компании (мы изготовим для вас, в нашей компании). Все текста пишутся только от третьего лица.
+
+
+                    Оформление
+
+                    Текст необходимо делить на абзацы и выделять подзаголовки.
+                    Нельзя употреблять в тексте смайлы и множество восклицательных и вопросительных знаков.
+
+
+                    О тематике
+
+                    Нужно избегать любых негативных тем - Придаем тексту нейтральную или положительную окраску.
+
+
+                    О вписывании фразы в тест
+
+                    НЕЛЬЗЯ менять заглавные буквы на строчные и наоборот, нельзя его склонять и изменять. Лучше не переписывать фразу, а скопировать и вставить в текст.
+                    Фраза должна входить в текст естественно. НЕЛЬЗЯ писать: Ухаживать за лицом [матрасы] нужно ежедневно. Мы не примем такую работу. 
+                    Если в задании фраза, например, "свадебные платья", а вам нужно написать что-то на тему "Советы хозяйке" НЕЛЬЗЯ писать о туалетных ершиках или борьбе с тараканами и всовывать кое-как фразу. 
+                    НЕЛЬЗЯ придавать фразе негативную окраску. Пишем о нем либо нейтрально, либо ненавязчиво рекомендуем читателю товар, услугу и т.д.
+                    Фраза должна иметь тематическое окружение (если фраза "диваны", необходимо употребить рядом слова, например, мебель, интерьер спальня). 
+
+
+                    О несоответствии темы и фразы
+
+                    Если тематику невозможно аккуратно совместить с темой фразы и логически она никак в нее не вписывается, следует писать текст по тематике. А в конце текста написать 2-3 полноценных предложения о фразе и вставив фразу. 
+                    В таких случаях пишем текст, а в конце дописываем 2-3 полноценных предложения, не относящихся к тексту, именно по теме ключа. 
+                    Фраза должна иметь тематическое окружение. После фразы нужно дописать еще несколько слов или предложение.
+                    НЕЛЬЗЯ фразой заканчивать текст.
+
+
+                    Текст на широкую тематику
+
+                    Даже если вы «в теме» не стоит выдумывать что-то самостоятельно. Основывайтесь на реальных фактах.
+                    Не используйте избитые фразы и выражения - текст короткий и уникальность сразу упадет. 
+                    Смотрите информацию о фразе, особенно если это слово вам незнакомо. Если фраза, например, монурал (название лекарства) НЕЛЬЗЯ писать, что это модная прическа или деталь трактора.
+            ';
+
+                $category_id = 1828;
+                $pass = ETXT_PASS;                        //29aa0eec2c77dd6d06e23b3faaef9eed
+                $query_sign = "method=tasks.saveTasktoken=29aa0eec2c77dd6d06e23b3faaef9eed";
+                $sign = md5($query_sign . md5($pass . 'api-pass'));
+
+                $params = array('auto_work' => 1,
+                    'id_category' => $category_id,
+                    'deadline' => $date,
+                    'description' => $description,
+                    'multitask' => 0,
+                    'id_type' => 1,
+                    'only_stars' => 0,
+                    'price' => $cena,
+                    'price_type' => 1,
+                    'public' => 1,
+                    'target_task' => 1,
+                    'text' => $howto,
+                    'timeline' => '17:00',
+                    'title' => $tema,
+                    'whitespaces' => 0,
+                    'auto_level' => 1,
+                    'auto_rate' => 100,
+                    'size' => $colvos,
+                    'uniq' => 95);
+
+                $query_p = $params;
+
+                $url_etxt = "https://www.etxt.ru/api/json/?method=tasks.saveTask&token=29aa0eec2c77dd6d06e23b3faaef9eed&sign=" . $sign;
+
+                $not_copywriter = $db->Execute("SELECT copywriter FROM zadaniya_new WHERE id = " . $task['id'])->FetchRow();
+                if ($not_copywriter['copywriter'] == 0) {
+                    if ($curl = curl_init()) {
+                        curl_setopt($curl, CURLOPT_URL, $url_etxt);
+                        curl_setopt($curl, CURLOPT_POST, true);
+                        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($curl, CURLOPT_POSTFIELDS, $query_p);
+                        $out = curl_exec($curl);
+                        curl_close($curl);
+                    }
+                    $new_tid = json_decode($out);
+                    unset($description);
+
+                    $new_tid_arr = (array) $new_tid;
+                    $id_task = isset($new_tid_arr['id_task']) ? $new_tid_arr['id_task'] : null;
+
+                    if (isset($id_task)) {
+                        //$order_accept[] = $task["sape_id"];
+                        $db->Execute("UPDATE zadaniya_new SET task_id = '" . $id_task . "', etxt = 1, vrabote = 1, dorabotka = 0 WHERE id = '" . $id . "'");
+                        $num++;
+                    } else {
+                        //print_r($query_p);
+                        $error .= 'Задание ' . $task["id"] . ' не добавилось в ETXT! Error: ' . $new_tid_arr["error"] . '<br>';
+                    }
+                } else {
+                    $copywriter = $db->Execute("SELECT * FROM admins WHERE id = " . $not_copywriter['copywriter'])->FetchRow();
+                    $error .= 'Задание ' . $task["id"] . ' уже взял себе копирайтер ' . $copywriter["login"] . '! Задача уже в статусе `В работе`.<br>';
+                }
+            } else {
+                $error .= 'Задание ' . $task["id"] . ' не подтвердилась в Articles.Sape!' . '<br>';
+            }
+        }
+
         $content = file_get_contents(PATH . 'modules/admins/tmp/admin/articles_to_etxt.tpl');
         if (!empty($error) && $error != "") {
             $content = str_replace('[error]', "<p class='error_to_etxt'>" . $error . "</p>", $content);
@@ -5659,6 +5673,17 @@ class admins {
         $content = str_replace('[status]', $status, $content);
         $content = str_replace('[zadaniya]', $zadaniya, $content);
         return $content;
+    }
+
+    function tasks_delete_all($db) {
+        $tasks = $_POST["tasks"];
+        foreach ($tasks as $task) {
+            foreach ($task as $id => $value) {
+                $db->Execute("DELETE FROM zadaniya WHERE id = " . $id);
+            }
+        }
+        header("Location: " . $_SERVER["HTTP_REFERER"]);
+        die();
     }
 
     function articles_statistics($db) {
