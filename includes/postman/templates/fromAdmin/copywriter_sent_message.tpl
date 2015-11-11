@@ -9,7 +9,7 @@
         <p>`<em>{$message}</em>`</p>
         <p>
             Для того, чтобы ответить копирайтеру перейдите по данной ссылке: 
-            <a href="http://iforget.ru/admin.php?module=admins&action={if !$burse}'articles'{else}'zadaniya'{/if}&action2=edit&id={$id}">Задание № {$id}</a>.
+            <a href="http://iforget.ru/admin.php?module=admins&action={if !$burse}articles{else}zadaniya{/if}&action2=edit&id={$id}">Задание № {$id}</a>.
         </p> 
         <p>С уважением, Администрация сайта iforget!</p>
     </body>
