@@ -282,7 +282,7 @@ class user {
                 /* if ($res['active'] != 1)
                   $error = 'Аккаунт не активирован.';
                   else { */
-                if ($res["id"] == 421 && $_SERVER["REMOTE_ADDR"] != "87.245.144.210") {
+                if ($res["id"] == 421 && $_SERVER["REMOTE_ADDR"] != "87.229.183.58") {
                     $error = 'Не верный IP адрес!';
                     $content = file_get_contents(PATH . 'modules/user/tmp/login.tpl');
                     $content = str_replace('[error]', $error, $content);
@@ -318,7 +318,7 @@ class user {
                 /* if ($res['active'] != 1)
                   $error = 'Аккаунт не активирован.';
                   else { */
-                if ($res["id"] == 421 && $_SERVER["REMOTE_ADDR"] != "87.245.144.210") {
+                if ($res["id"] == 421 && $_SERVER["REMOTE_ADDR"] != "87.229.183.58") {
                     $error = 'Не верный IP адрес!';
                     $content = file_get_contents(PATH . 'modules/user/tmp/login.tpl');
                     $content = str_replace('[error]', $error, $content);
@@ -376,7 +376,7 @@ class user {
                 /* if ($res['active'] != 1)
                   $error = 'Аккаунт не активирован.';
                   else { */
-                if ($res["id"] == 421 && $_SERVER["REMOTE_ADDR"] != "87.245.144.210") {
+                if ($res["id"] == 421 && $_SERVER["REMOTE_ADDR"] != "87.229.183.58") {
                     $error = 'Не верный IP адрес!';
                     $content = file_get_contents(PATH . 'modules/user/tmp/login.tpl');
                     $content = str_replace('[error]', $error, $content);
