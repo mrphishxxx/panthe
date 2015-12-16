@@ -19,6 +19,7 @@ $body = "<h3>Запуск задач в GetBot от " . date("d-m-Y H:i:s") . "<
 $body .= "<small>Выгружаются задачи, дата создания у которых не более " . date("d-m-Y H:i:s", $day_end) . " (" . $day_end . ")</small><br><br>";
 // Проверяем баланс, если он больше нуля, то запускаем новые задачи в гетбот
 $user = $api->userBalance();
+
 if ($user->balance > 0) {
     $tasks_created = $api->tasksList(GetbotApi::STATUS_CREATED);
     if (!empty($tasks_created)) {
@@ -52,12 +53,13 @@ if ($balance->balance > 0) {
     if (!empty($zadaniya)) {
         $body .= "<br><strong>Выгружаем новые задачи в GetBot  и запускаем их:</strong><br>";
         foreach ($zadaniya as $value) {
-            $links[] = $value["url_statyi"];
-            $ids[] = $value["id"];
+            if (strripos($value["url_statyi"], "http") !== false) {
+                $links[$value["id"]] = $value["url_statyi"];
+                $ids[] = $value["id"];
+            }
         }
         $data = date("d-m-Y H:i:s");
         $description = implode(", ", $ids);
-
         $task = $api->taskCreate($data, $links, GetbotApi::MODE_ABSOLUTE_UPDATE, $description);
         if (isset($task->can_launch)) {
             $id = $task->id;
@@ -77,6 +79,7 @@ if ($balance->balance > 0) {
             $body .= "<br><p style='color:red;'><strong>Ошибка запуска задания:<strong></p>";
             foreach ($task->errors as $error) {
                 $body .= "&emsp; - <span style='color:red;'>" . $error . "</span>";
+                echo "Ошибка запуска задания: " . $error . "<br>";
             }
         }
     }
