@@ -2374,10 +2374,15 @@ class admins {
     }
 
     function tickets($db) {
+        $starttime = time();
+        $profil = "";
+        $profil .= time() . "\r\n";
+
         $content = file_get_contents(PATH . 'modules/admins/tmp/admin/tickets_view.tpl');
         if (!isset($_SESSION['admin']["id"]) && isset($_SESSION['manager']["id"]) && $_SERVER["PHP_SELF"] == "/management.php") {
             header("Location: /management.php?" . str_replace("module=admins", "module=managers", $_SERVER["QUERY_STRING"]));
         }
+        $profil .= microtime() . "  - GET TEMPLEATE" . "\r\n";
         $type = isset($_REQUEST['type']) ? $_REQUEST['type'] : null;
         $uid = $_SESSION['admin']["id"];
         $limit = 25;
@@ -2399,16 +2404,27 @@ class admins {
             $admins_managers[] = $user['id'];
         }
         $admins_managers = "(" . implode(",", $admins_managers) . ")";
+        $profil .= microtime() . "  - GET ADMINS AND MANAGERS" . "\r\n";
         if ($type != "manager") {
+            $profil .= microtime() . "  - type != manager" . "\r\n";
             $all = $db->Execute("SELECT t.id FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE $condition a.id != 0 ORDER BY t.id DESC");
+            $profil .= microtime() . "  - SELECT t.id FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE $condition a.id != 0 ORDER BY t.id DESC" . "\r\n";
             $query = $db->Execute("SELECT t.* FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE $condition a.id != 0 ORDER BY t.status DESC, t.id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit);
+            $profil .= microtime() . "  - SELECT t.* FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE $condition a.id != 0 ORDER BY t.status DESC, t.id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit . "\r\n";
         } else {
+            $profil .= microtime() . "  - type == manager" . "\r\n";
+            
             $all = $db->Execute("SELECT t.id FROM tickets t LEFT JOIN admins a ON (t.uid IN $admins_managers AND t.to_uid IN $admins_managers) WHERE $condition a.id != 0 ORDER BY t.id DESC");
+            $profil .= microtime() . " - SELECT t.id FROM tickets t LEFT JOIN admins a ON (t.uid IN $admins_managers AND t.to_uid IN $admins_managers) WHERE $condition a.id != 0 ORDER BY t.id DESC" . "\r\n";
             $query = $db->Execute("SELECT t.* FROM tickets t LEFT JOIN admins a ON (t.uid IN $admins_managers AND t.to_uid IN $admins_managers) WHERE $condition a.id != 0 ORDER BY t.status DESC, t.id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit);
+            $profil .= microtime() . " - SELECT t.* FROM tickets t LEFT JOIN admins a ON (t.uid IN $admins_managers AND t.to_uid IN $admins_managers) WHERE $condition a.id != 0 ORDER BY t.status DESC, t.id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit . "\r\n";
         }
+        $profil .= microtime() . "  - AFTER EXECUTE TICKETS" . "\r\n";
         $pegination = "";
         $tickets_all = $all->NumRows();
+        $profil .= microtime() . "  - AFTER NUM ROWS" . "\r\n";
         if ($tickets_all > $limit) {
+            $profil .= microtime() . "  **** PEGINATIONS ***" . "\r\n";
             $pegination = '<div style="float:right">';
             if ($offset == 1) {
                 $pegination .= '<div style="float:left">Пред.</div>';
@@ -2426,6 +2442,7 @@ class admins {
                     $pegination .= '<option value="' . ($i + 1) . '">' . ($i + 1) . '</option>';
                 }
             }
+            $profil .= microtime() . "  - AFTER *FOR* PEGINATIONS" . "\r\n";
             $pegination .= '</select></div>';
             $pegination .= '&nbsp из ' . $count_pegination . ' ] &nbsp';
             if ($query->NumRows() < $limit) {
@@ -2434,10 +2451,13 @@ class admins {
                 $pegination .= "<a href='?module=admins&action=ticket&type=$type&offset=" . ($offset + 1) . "'>След.</a>";
             }
             $pegination .= '</div>';
+            $profil .= microtime() . "  *** END PEGINATIONS ***" . "\r\n";
         }
 
         $ticket = "";
+        $profil .= microtime() . "  - BOFORE WHILE FOR TICKETS" . "\r\n";
         if (!empty($query) && $query->NumRows() != 0) {
+            $profil .= microtime() . "  *** TICETS WHILE ***" . "\r\n";
             while ($resw = $query->FetchRow()) {
                 $ticket .= file_get_contents(PATH . 'modules/admins/tmp/admin/ticket_one.tpl');
                 $ticket = str_replace('[site]', $resw['site'], $ticket);
@@ -2465,17 +2485,27 @@ class admins {
                     $ticket = str_replace('[status_ico]', "answered", $ticket);
                 }
             }
+            $profil .= microtime() . "  AFTER *WHILE* ALL TICETS" . "\r\n";
         } else {
             $ticket = "<tr><td colspan='4'>Нет ни одного тикета</td></tr>";
         }
 
         $content = str_replace('[tickets]', $ticket, $content);
         $content = str_replace('[pegination]', $pegination, $content);
-
+        $endtime = time() - $starttime;
+        //if ($endtime > 3) {
+            $profil .= "\r\nALL TIME - " . $endtime;
+            $file = 'temp_file/tickets/view/' . $endtime . '-(' . time() . ').txt';
+            file_put_contents($file, $profil);
+        //}
         return $content;
     }
 
     function ticket_add($db) {
+        $starttime = time();
+        $profil = "";
+        $profil .= time() . "\r\n";
+        $profil .= microtime() . "  - START" . "\r\n";
         if (!@$_SESSION['admin']['id'] && !@$_SESSION['manager']['id']) {
             $content = file_get_contents(PATH . 'modules/admins/tmp/admin/no-rights.tpl');
             $content = str_replace('[url]', $_SERVER["HTTP_REFERER"], $content);
@@ -2519,7 +2549,7 @@ class admins {
             }
         }
         $content = str_replace('[title_page]', $title_page, $content);
-
+        $profil .= microtime() . "  - GET DATA FOR REQUESTS" . "\r\n";
         if (isset($_POST) && !empty($_POST)) {
             $to = $_REQUEST['ticket_to'];
             $subject = $_REQUEST['subject'];
@@ -2528,11 +2558,12 @@ class admins {
             $msg = substr(nl2br(htmlspecialchars(addslashes(trim($_REQUEST['msg'])))), 0, 1000);
             $cdate = date("Y-m-d");
             $zid = (intval($_REQUEST['tid']) > 0 ? $_REQUEST['tid'] : 0);
-
+            $profil .= microtime() . "  - **POST** - GET DATA" . "\r\n";
             $user = $db->Execute("SELECT * FROM admins WHERE id=$to")->FetchRow();
+            $profil .= microtime() . "  - **POST** - GET ADMIN" . "\r\n";
             $db->Execute("INSERT INTO tickets (uid, subject, q_theme, msg, date, status, site, tid, to_uid) VALUES ($uid, '$subject', '$theme', '$msg', '$cdate', 1, '$site', $zid, $to)");
             $lastId = $db->Insert_ID();
-
+            $profil .= microtime() . "  - **POST** - INSERT TICKET" . "\r\n";
             // SEND Mails from Admins AND User
             //$this->_postman->admin->ticketAdd();
             if ($user["mail_period"] > 0) {
@@ -2545,44 +2576,70 @@ class admins {
                         break;
                 }
             }
+            $profil .= microtime() . "  - **POST** - AFTER MAIL SEND (BEFORE HEADER-LOCATION)" . "\r\n";
+            $endtime = time() - $starttime;
+            //if ($endtime > 3) {
+                $profil .= "\r\nALL TIME - " . $endtime;
+                $file = 'temp_file/tickets/add/' . $endtime . '-INSERT-(' . time() . ').txt';
+                file_put_contents($file, $profil);
+            //}
             header("Location: ?module=admins&action=ticket");
+            $profil .= microtime() . "  - **POST** - AFTER HEADER-LOCATION" . "\r\n";
+            $endtime = time() - $starttime;
+            //if ($endtime > 3) {
+                $profil .= "\r\nALL TIME - " . $endtime;
+                $file = 'temp_file/tickets/add/' . $endtime . '-INSERT-LOCATION-(' . time() . ').txt';
+                file_put_contents($file, $profil);
+            //}
             exit();
         }
 
         $res = $db->Execute("select * from admins where id=$uid")->FetchRow();
         $content = str_replace('[login]', $res['login'], $content);
         $content = str_replace('[uid]', $uid, $content);
-
+        $profil .= microtime() . "  - GET ADMIN" . "\r\n";
         $query = $db->Execute("SELECT * FROM admins where $type id<>$uid ORDER BY login, id DESC");
 
         $ticket_subjects = $db->Execute("SELECT * FROM Message2008")->FetchRow();
         $content = str_replace('[ticket_subjects]', $ticket_subjects['Name'], $content);
         $content = str_replace('[site]', "", $content);
         $content = str_replace('[subject]', "", $content);
-
+        $profil .= microtime() . "  - GET TICKET SUBJECT" . "\r\n";
         $ticket = "";
         $ticket_to = "";
+        $profil .= microtime() . "  - BEFORE *WHILE*" . "\r\n";
         while ($resw = $query->FetchRow()) {
             if (!empty($to_user) && $to_user == $resw['id'])
                 $ticket_to .= "<option value='" . $resw['id'] . "' selected>" . $resw['login'] . "</option>";
             else
                 $ticket_to .= "<option value='" . $resw['id'] . "'>" . $resw['login'] . "</option>";
         }
+        $profil .= microtime() . "  - AFTER *WHILE* ALL USERS" . "\r\n";
         $content = str_replace('[ticket_to]', $ticket_to, $content);
-
+        $endtime = time() - $starttime;
+        //if ($endtime > 3) {
+            $profil .= "\r\nALL TIME - " . $endtime;
+            $file = 'temp_file/tickets/add/' . $endtime . '-OPEN-(' . time() . ').txt';
+            file_put_contents($file, $profil);
+        //}
         return $content;
     }
 
     function ticket_edit($db) {
-
+        $starttime = time();
+        $profil = "";
+        $profil .= time() . "\r\n";
+        $profil .= microtime() . "  - START" . "\r\n";
+        
         $send = $_REQUEST['send'];
         $id = (int) $_REQUEST['tid'];
         $uid = (int) $_SESSION['user']['id'];
         $query2 = $db->Execute("select * from tickets where id=$id");
         $res = $query2->FetchRow();
-
+        $profil .= microtime() . "  - GAT DATA AND TICKET" . "\r\n";
         if (!$send) {
             $content = file_get_contents(PATH . 'modules/admins/tmp/admin/ticket_edit.tpl');
+            $profil .= microtime() . "  - GET TEMPLEATE" . "\r\n";
             foreach ($res as $k => $v) {
                 if ($k == "q_theme") {
                     $content = str_replace("[$v]", "selected", $content);
@@ -2590,25 +2647,51 @@ class admins {
                 $content = str_replace("[$k]", $v, $content);
                 $content = str_replace("[tid]", $id, $content);
             }
+            $profil .= microtime() . "  - SET DATA INTO TEMPLEATE" . "\r\n";
         } else {
             $subject = $_REQUEST['subject'];
             $site = $_REQUEST['site'];
             $theme = $_REQUEST['theme'];
             $msg = $_REQUEST['msg'];
-
+            $profil .= microtime() . "  - **POST - GAT DATA" . "\r\n";
             $db->Execute("UPDATE tickets SET subject='$subject', q_theme='$theme', msg='$msg', site='$site' WHERE id=$id");
-
+            $profil .= microtime() . "  - **POST - AFTER UPDATE" . "\r\n";
             $alert = 'Тикет успешно отредактирован.';
-            $url = "?module=user&action=ticket";
-
+            $url = "?module=admins&action=ticket";
+            $profil .= microtime() . "  - **POST - BEFORE REDIRECT" . "\r\n";
+            $endtime = time() - $starttime;
+            //if ($endtime > 3) {
+                $profil .= "\r\nALL TIME - " . $endtime;
+                $file = 'temp_file/tickets/edit/' . $endtime . '-UPDATE-(' . time() . ').txt';
+                file_put_contents($file, $profil);
+            //}
             $content = file_get_contents(PATH . 'modules/admins/tmp/admin/request.tpl');
             $content = str_replace('[alert]', $alert, $content);
             $content = str_replace('[url]', $url, $content);
+            $profil .= microtime() . "  - **POST - AFTER REDIRECT" . "\r\n";
+            $endtime = time() - $starttime;
+            //if ($endtime > 3) {
+                $profil .= "\r\nALL TIME - " . $endtime;
+                $file = 'temp_file/tickets/edit/' . $endtime . '-REDIR-(' . time() . ').txt';
+                file_put_contents($file, $profil);
+            //}
         }
+        $profil .= microtime() . "  - END" . "\r\n";
+        $endtime = time() - $starttime;
+        //if ($endtime > 3) {
+            $profil .= "\r\nALL TIME - " . $endtime;
+            $file = 'temp_file/tickets/edit/' . $endtime . '-(' . time() . ').txt';
+            file_put_contents($file, $profil);
+        //}
         return $content;
     }
 
     function ticket_view($db) {
+        $starttime = time();
+        $profil = "";
+        $profil .= time() . "\r\n";
+        $profil .= microtime() . "  - START" . "\r\n";
+        
         if (!@$_SESSION['admin']['id'] && !isset($_SESSION['manager']['id'])) {
             $content = file_get_contents(PATH . 'modules/admins/tmp/admin/no-rights.tpl');
             $content = str_replace('[alert]', 'Данное действие Вам недоступно', $content);
@@ -2618,6 +2701,7 @@ class admins {
         } else if (!isset($_SESSION['admin']["id"]) && isset($_SESSION['manager']["id"]) && $_SERVER["PHP_SELF"] == "/management.php") {
             header("Location: /management.php?" . str_replace("module=admins", "module=managers", $_SERVER["QUERY_STRING"]));
         }
+        $profil .= microtime() . "  - AFTER IF-1" . "\r\n";
         $uid = (int) $_SESSION['admin']['id'];
         $content = file_get_contents(PATH . 'modules/admins/tmp/admin/ticket_full_view.tpl');
         $content = str_replace('[uid]', $uid, $content);
@@ -2627,15 +2711,18 @@ class admins {
         foreach ($admins as $user) {
             $administrations[$user["id"]] = $user["id"];
         }
-
+        $profil .= microtime() . "  - AFTER GET DATA AND ADMINISTRATORS" . "\r\n";
         $tid = (int) $_REQUEST['tid'];
         $res = $db->Execute("SELECT * FROM tickets WHERE id=$tid")->FetchRow();
+        $profil .= microtime() . "  - GET TICKET" . "\r\n";
         if ($res['status'] == 1 && ($res['to_uid'] == 0 || $res['to_uid'] == $uid)) {
             $db->Execute("UPDATE tickets SET status=2 WHERE id=$tid");
+            $profil .= microtime() . "  - UPDATE STATUS" . "\r\n";
         }
         $last_answer = $db->Execute("SELECT * FROM answers WHERE tid=$tid ORDER BY date LIMIT 1")->FetchRow();
         if ($res['status'] == 1 && !in_array($last_answer["uid"], $administrations)) {
             $db->Execute("UPDATE tickets SET status=2 WHERE id=$tid");
+            $profil .= microtime() . "  - SAW ANSWERS AND UPDATE STATUS" . "\r\n";
         }
 
         if ($res['to_uid'] > 0 && $res['to_uid'] != $uid) {
@@ -2643,7 +2730,7 @@ class admins {
         } else {
             $uinfo = $db->Execute("SELECT * FROM admins WHERE id=" . $res['uid'])->FetchRow();
         }
-
+        $profil .= microtime() . "  - GET ADMIN" . "\r\n";
         $content = str_replace('[assigned]', "пользователь: " . $uinfo["login"], $content);
 
         $view = file_get_contents(PATH . 'modules/admins/tmp/admin/ticket_chat_one.tpl');
@@ -2652,7 +2739,7 @@ class admins {
         if (array_search($res['uid'], $administrations) && array_search($res['to_uid'], $administrations)) {
             $admin_and_manager = true;
         }
-
+        $profil .= microtime() . "  - GET TEMPLEATE CHAT" . "\r\n";
         if (array_search($res['uid'], $administrations) && ($admin_and_manager == false || $admin_and_manager == true && $res['uid'] == $uid)) {
             $view = str_replace('[from_class]', "support", $view);
             $view = str_replace('[from]', "Администрация", $view);
@@ -2660,9 +2747,10 @@ class admins {
             $view = str_replace('[from_class]', "you", $view);
             $view = str_replace('[from]', $uinfo['login'] . "<br>" . $res['site'], $view);
         }
-
+        $profil .= microtime() . "  - SET ONE ANSWER" . "\r\n";
 
         $answers = $db->Execute("SELECT * FROM answers WHERE tid=$tid");
+        $profil .= microtime() . "  - GET ALL ANSWERS" . "\r\n";
         while ($resw = $answers->FetchRow()) {
             $view .= file_get_contents(PATH . 'modules/admins/tmp/admin/ticket_chat_one.tpl');
 
@@ -2676,11 +2764,12 @@ class admins {
                 $view = str_replace('[from_class]', "you", $view);
             }
         }
-
+        $profil .= microtime() . "  - AFTER SET ALL ANSWERS" . "\r\n";
 
         if ($res['tid'] > 0) {
             $zid = $res['tid'];
             $zinfo = $db->Execute("SELECT * FROM zadaniya WHERE id=$zid")->FetchRow();
+            $profil .= microtime() . "  - GET TASK" . "\r\n";
             if (!empty($zinfo)) {
                 $sid = $zinfo['sid'];
                 $sinfo = $db->Execute("SELECT * FROM sayty WHERE id=$sid")->FetchRow();
@@ -2689,27 +2778,42 @@ class admins {
         } else {
             $subj = $res['subject'];
         }
-
+        $profil .= microtime() . "  - SET TICKET SUBJECT" . "\r\n";
         $content = str_replace('[chat]', $view, $content);
         $content = str_replace('[subject]', $subj, $content);
         $content = str_replace('[tid]', $tid, $content);
 
+        $profil .= microtime() . "  - END" . "\r\n";
+        $endtime = time() - $starttime;
+        
+            $profil .= "\r\nALL TIME - " . $endtime;
+            $file = 'temp_file/tickets/view-one/' . $endtime . '-(' . time() . ').txt';
+            file_put_contents($file, $profil);
+        
         return $content;
     }
 
     function ticket_answer($db) {
+        $starttime = time();
+        $profil = "";
+        $profil .= time() . "\r\n";
+        $profil .= microtime() . "  - START" . "\r\n";
+        
         $uid = (int) (@$_SESSION['admin']['id'] ? $_SESSION['admin']['id'] : $_SESSION['manager']['id']);
         $tid = (int) $_REQUEST['tid'];
         $msg = substr(nl2br(htmlspecialchars(addslashes(trim($_REQUEST['msg'])))), 0, 2000);
         $adate = date("Y-m-d H:i:s");
+        $profil .= microtime() . "  - GET DATA" . "\r\n";
         if (!empty($uid)) {
             $db->Execute("INSERT INTO answers (uid, tid, msg, date) VALUES ($uid, $tid, '$msg', '$adate')");
             $db->Execute("UPDATE tickets SET status=3 WHERE id=$tid");
-
+            $profil .= microtime() . "  - TWO QUERIES: INSERT ANSWER AND UPDATE TICKET" . "\r\n";
             $res = $db->Execute("SELECT * FROM tickets WHERE id=$tid")->FetchRow();
             $client = $db->Execute("SELECT * FROM admins WHERE id=" . $res['uid'])->FetchRow();
+            $profil .= microtime() . "  - TWO QUERIES: GET TICKET AND ADMIN" . "\r\n";
             if ($client["type"] == "admin") {
                 $client = $db->Execute("SELECT * FROM admins WHERE id=" . $res['to_uid'])->FetchRow();
+                $profil .= microtime() . "  - GET ADMIN YET" . "\r\n";
             }
             if ($client["mail_period"] > 0) {
                 switch ($client["type"]) {
@@ -2720,18 +2824,60 @@ class admins {
                         $result = $this->_postman->copywriter->ticketAnswer($client['email'], $client['login'], $tid);
                         break;
                 }
+                $profil .= microtime() . "  - MAIL SEND" . "\r\n";
             }
+            $profil .= microtime() . "  - BEFORE LOCATION" . "\r\n";
+            $endtime = time() - $starttime;
+            //if ($endtime > 3) {
+                $profil .= "\r\nALL TIME - " . $endtime . "\r\n" . "\r\n";
+                $file = 'temp_file/tickets/answer/' . $endtime . '-(' . time() . ').txt';
+                file_put_contents($file, $profil);
+            //}
+            
             header("Location: ?module=admins&action=ticket&action2=view&tid=$tid");
+            //$content = file_get_contents(PATH . 'modules/admins/tmp/admin/request.tpl');
+            //$content = str_replace('[url]', "?module=admins&action=ticket&action2=view&tid=".$tid, $content);
+            
+            $profil .= microtime() . "  - AFTER LOCATION" . "\r\n";
+            $endtime = time() - $starttime;
+            //if ($endtime > 3) {
+                $profil .= "\r\nALL TIME - " . $endtime;
+                $file = 'temp_file/tickets/answer/HEADER-' . $endtime . '-(' . time() . ').txt';
+                file_put_contents($file, $profil);
+            //}
+            //return $content;
             exit();
         }
         return $content;
     }
 
     function ticket_close($db) {
+        $starttime = time();
+        $profil = "";
+        $profil .= time() . "\r\n";
+        $profil .= microtime() . "  - START" . "\r\n";
         $tid = (int) $_REQUEST['tid'];
+        $profil .= microtime() . "  - GET DATA" . "\r\n";
         $db->Execute("UPDATE tickets SET status=0 WHERE id=$tid");
+        $profil .= microtime() . "  - AFTER UPDATE" . "\r\n";
+        
+        $profil .= microtime() . "  - BEFORE HEADER-LOCATION" . "\r\n";
+        $endtime = time() - $starttime;
+        //if ($endtime > 3) {
+            $profil .= "\r\nALL TIME - " . $endtime;
+            $file = 'temp_file/tickets/close/' . $endtime . '-(' . time() . ').txt';
+            file_put_contents($file, $profil);
+        //}
+        
         $content = file_get_contents(PATH . 'modules/admins/tmp/admin/request.tpl');
         $content = str_replace('[url]', "?module=admins&action=ticket", $content);
+        $profil .= microtime() . "  - AFTER HEADER-LOCATION" . "\r\n";
+        $endtime = time() - $starttime;
+        //if ($endtime > 3) {
+            $profil .= "\r\nALL TIME - " . $endtime;
+            $file = 'temp_file/tickets/close/HEADER-' . $endtime . '-(' . time() . ').txt';
+            file_put_contents($file, $profil);
+        //}
         return $content;
     }
 
@@ -3885,7 +4031,7 @@ class admins {
             $tr .= "<td style='text-align:left'>" . $copywriter["login"] . "</td>";
             $tr .= "<td>" . (isset($statistics[$copywriter["id"]]["vipolneno"]) ? $statistics[$copywriter["id"]]["vipolneno"] : 0) . "</td>";
             $tr .= "<td>" . (isset($statistics[$copywriter["id"]]["vrabote"]) ? $statistics[$copywriter["id"]]["vrabote"] : 0) . "</td>";
-            $tr .= "<td><input class='trust' type='checkbox' id='" . $copywriter["id"] . "' " . (($copywriter["trust"] == 1) ? 'checked="checked"' : '') . " /></td>";
+            //$tr .= "<td><input class='trust' type='checkbox' id='" . $copywriter["id"] . "' " . (($copywriter["trust"] == 1) ? 'checked="checked"' : '') . " /></td>";
             $tr .= "<td class='lock_ok'><a href='/admin.php?module=admins&action=copywriters&action2=banned&id=" . $copywriter["id"] . "' class='ico'></a></td>";
             $tr .= "</tr>";
             $table .= $tr;

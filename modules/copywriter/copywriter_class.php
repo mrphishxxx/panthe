@@ -672,11 +672,11 @@ class copywriter {
                 $content = str_replace('[mn]', "а", $content);
             }
 
-            if ($copywriter["trust"] == 0 && $burse == 0) {
+            /*if ($copywriter["trust"] == 0 && $burse == 0) {
                 $content = str_replace('[trust]', "style='display:none'", $content);
             } else {
                 $content = str_replace('[trust]', "", $content);
-            }
+            }*/
             $content = str_replace('[id]', $task['id'], $content);
             $content = str_replace('[ankor_url]', (!empty($task['ankor'])) ? htmlspecialchars(' <a href="' . $task['url'] . '">' . $task['ankor'] . '</a>') : '', $content);
             $content = str_replace('[ankor2_url2]', (!empty($task['ankor2'])) ? "<br>" . htmlspecialchars('<a href="' . $task['url2'] . '">' . $task['ankor2'] . '</a>') : '', $content);
@@ -704,7 +704,7 @@ class copywriter {
             $num_symbol_without_space = mb_strlen(str_replace(" ", "", str_replace("\r", "", str_replace("\n", "", $text_without_links))), "UTF-8");
             $message = array();
 
-            if ($navyklad == 1 && $copywriter['trust'] == 1) {
+            if ($navyklad == 1) { // && $copywriter['trust'] == 1
                 if ($num_symbol_without_space < (int) $task["nof_chars"] || (empty($uniq) || $uniq < 95)) {
                     if ($uniq < 95) {
                         $error = "Уникальность статьи должна быть больше 95%! Читайте Описание задачи!";

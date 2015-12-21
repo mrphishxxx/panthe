@@ -40,13 +40,13 @@ if (!empty($tasks)) {
             $mail["from_name"] = "iforget";
             $mail["to"] = array();
             $mail["to"][0] = array("email" => MAIL_ADMIN);
-            $mail["to"][1] = array("email" => MAIL_DEVELOPER);
+            //$mail["to"][1] = array("email" => MAIL_DEVELOPER);
             $mail["track_opens"] = null;
             $mail["track_clicks"] = null;
             $mail["auto_text"] = null;
 
             try {
-                $mandrill->messages->send($mail);
+                //$mandrill->messages->send($mail);
             } catch (Exception $e) {
                 echo 'Сообщение не отправлено!';
             }
