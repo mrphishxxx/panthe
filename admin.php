@@ -140,48 +140,63 @@ if (isset($_SESSION['admin']['id']) && ($_SESSION['admin']['id'] > 0)) {
 $content = $my->content();
 $content = str_replace('[auth_block]', $auth_block, $content);
 
-$admins_managers = array();
-$admins_manager = $db->Execute("SELECT id FROM admins WHERE type = 'admin' OR type = 'manager'");
-while ($user = $admins_manager->FetchRow()) {
-    $admins_managers[] = $user['id'];
+$admins_managers = $users_type = $new_tick_user = $new_tick_moder = $new_tick_copywriter = $new_tick_manager = $new_wallet = array();
+$admins = $db->Execute("SELECT id, type FROM admins")->GetAll();
+foreach ($admins as $user) {
+    if($user["type"] == "admin" || $user["type"] == "manager") {
+        $admins_managers[] = $user['id'];
+    } else {
+        $users_type[$user["id"]] = $user["type"];
+    }
 }
-$admins_managers = "(" . implode(",", $admins_managers) . ")";
-/* Тикеты ВСЕГО */
-$new_tick = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid = 1, a.id=t.to_uid, a.id=t.uid) WHERE a.id != 0 AND t.status != 0")->FetchRow();
-$all_tick = $db->Execute("SELECT COUNT(t.id) as allt FROM tickets t LEFT JOIN admins a ON IF (t.uid = 1, a.id=t.to_uid, a.id=t.uid) WHERE a.id != 0")->FetchRow();
-$content = str_replace('[new_tick]', $new_tick['newt'], $content);
-$content = str_replace('[all_tick]', $all_tick['allt'], $content);
+$new_tick = $db->Execute("SELECT t.id, t.uid, t.to_uid, t.status FROM tickets t WHERE t.status != 0")->GetAll();
+foreach ($new_tick as $ticket) {
+    if(in_array($ticket["uid"], $admins_managers)) {
+        if(in_array($ticket["to_uid"], $admins_managers)){
+            $type = "manager";
+        } else {
+            $type = $users_type[$ticket["to_uid"]];
+        }
+    } else if(isset($users_type[$ticket["uid"]])) {
+        $type = $users_type[$ticket["uid"]];
+    }
+    switch ($type) {
+        case "user":
+            $new_tick_user[] = $ticket;
+            break;
+        case "moder":
+            $new_tick_moder[] = $ticket;
+            break;
+        case "copywriter":
+            $new_tick_copywriter[] = $ticket;
+            break;
+        case "manager":
+            $new_tick_manager[] = $ticket;
+            break;
 
-/* Тикеты ПОЛЬЗОВАТЕЛИ */
-$new_tick_user = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE t.status != 0 AND a.type = 'user'")->FetchRow();
-$all_tick_user = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE a.type = 'user'")->FetchRow();
-$content = str_replace('[new_tick_user]', $new_tick_user['newt'], $content);
-$content = str_replace('[all_tick_user]', $all_tick_user['newt'], $content);
+        default:
+            break;
+    }
+}
+$content = str_replace('[new_tick]', count($new_tick), $content);
+$content = str_replace('[new_tick_user]', count($new_tick_user), $content);
+$content = str_replace('[new_tick_moder]', count($new_tick_moder), $content);
+$content = str_replace('[new_tick_copywriter]', count($new_tick_copywriter), $content);
+$content = str_replace('[new_tick_manager]', count($new_tick_manager), $content);
 
-/* Тикеты МОДЕРАТОРЫ */
-$new_tick_moder = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE t.status != 0 AND a.type = 'moder'")->FetchRow();
-$all_tick_moder = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE a.type = 'moder'")->FetchRow();
-$content = str_replace('[new_tick_moder]', $new_tick_moder['newt'], $content);
-$content = str_replace('[all_tick_moder]', $all_tick_moder['newt'], $content);
 
-/* Тикеты КОПИРАЙТЕРЫ */
-$new_tick_copywriter = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE t.status != 0 AND a.type = 'copywriter'")->FetchRow();
-$all_tick_copywriter = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE a.type = 'copywriter'")->FetchRow();
-$content = str_replace('[new_tick_copywriter]', $new_tick_copywriter['newt'], $content);
-$content = str_replace('[all_tick_copywriter]', $all_tick_copywriter['newt'], $content);
+$old_tickets = $db->Execute("SELECT id FROM tickets WHERE status = 0")->GetAll();
+$content = str_replace('[old_tickets]', count($old_tickets), $content);
 
-/* Тикеты МЕНЕДЖЕРЫ */
-$new_tick_manager = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON (t.uid IN $admins_managers AND t.to_uid IN $admins_managers) WHERE t.status != 0 AND a.type = 'manager'")->FetchRow();
-$all_tick_manager = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON (t.uid IN $admins_managers AND t.to_uid IN $admins_managers) WHERE a.type = 'manager'")->FetchRow();
-$content = str_replace('[new_tick_manager]', $new_tick_manager['newt'], $content);
-$content = str_replace('[all_tick_manager]', $all_tick_manager['newt'], $content);
 
-/* Запросы СМЕНА КОШЕЛЬКА */
-$new_wallet = $db->Execute("SELECT COUNT(id) as num FROM change_wallet WHERE status = 0 AND confirm = '1'")->FetchRow();
-$all_wallet = $db->Execute("SELECT COUNT(id) as num FROM change_wallet")->FetchRow();
-$content = str_replace('[new_wallet]', $new_wallet['num'], $content);
-$content = str_replace('[all_wallet]', $all_wallet['num'], $content);
-
+$all_wallet = $db->Execute("SELECT * FROM change_wallet")->GetAll();
+foreach ($all_wallet as $value) {
+    if($value['status'] == 0 && $value['confirm'] == '1') {
+        $new_wallet[] = $value;
+    }
+}
+$content = str_replace('[new_wallet]', count($new_wallet), $content);
+$content = str_replace('[all_wallet]', count($all_wallet), $content);
 
 $main_comment = $db->Execute("SELECT * FROM Message2002 WHERE Sub_Class_ID = 22");
 $mc = $main_comment->FetchRow();

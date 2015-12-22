@@ -115,13 +115,15 @@
                                 </ul>
 
                                 <h2 style="float:left"><a href="?module=admins&action=ticket">Тикеты</a></h2>
-                                <span style="float:right;margin: 30px 5px 5px;">([new_tick]/[all_tick])</span>
+                                <span style="float:right;margin: 30px 15px 5px;">([new_tick])</span>
                                 <div class="clear"></div>
                                 <ul>
-                                    <li><a href="?module=admins&action=ticket&type=user">Пользователи</a><span>([new_tick_user]/[all_tick_user])</span></li>
-                                    <li><a href="?module=admins&action=ticket&type=moder">Модераторы</a><span>([new_tick_moder]/[all_tick_moder])</span></li>
-                                    <li><a href="?module=admins&action=ticket&type=copywriter">Копирайтеры</a><span>([new_tick_copywriter]/[all_tick_copywriter])</span></li>
-                                    <li><a href="?module=admins&action=ticket&type=manager">Менеджеры</a><span>([new_tick_manager]/[all_tick_manager])</span></li>
+                                    <li><a href="?module=admins&action=ticket&type=user">Пользователи</a><span>([new_tick_user])</span></li>
+                                    <li><a href="?module=admins&action=ticket&type=moder">Модераторы</a><span>([new_tick_moder])</span></li>
+                                    <li><a href="?module=admins&action=ticket&type=copywriter">Копирайтеры</a><span>([new_tick_copywriter])</span></li>
+                                    <li><a href="?module=admins&action=ticket&type=manager">Менеджеры</a><span>([new_tick_manager])</span></li>
+                                    <li><hr /></li>
+                                    <li><a href="?module=admins&action=ticket&type=archive">Архив</a><span>([old_tickets])</span></li>
                                 </ul>
                                 
                                 <h2>Запросы</h2>

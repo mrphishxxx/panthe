@@ -175,26 +175,47 @@ class managers {
         $condition = $for_pegination = "";
         $title_page = "Все тикеты";
         if (!empty($type)) {
-            $condition = " a.type='$type' AND ";
             $title_page = "Тикеты для '$type'";
         }
         $content = str_replace('[title_page]', $title_page, $content);
         $content = str_replace('[type]', "&type=$type", $content);
         $admins_managers = array();
-        $admins_manager = $db->Execute("SELECT id FROM admins WHERE type = 'admin' OR type = 'manager'");
-        while ($user = $admins_manager->FetchRow()) {
-            $admins_managers[] = $user['id'];
+        $admins = $db->Execute("SELECT id, type FROM admins")->GetAll();
+        foreach ($admins as $user) {
+            if($user["type"] == "admin" || $user["type"] == "manager") {
+                $admins_managers[] = $user['id'];
+            } else {
+                $users_type[$user["id"]] = $user["type"];
+            }
         }
-        $admins_managers = "(" . implode(",", $admins_managers) . ")";
-        if ($type != "admin") {
-            $all = $db->Execute("SELECT t.id FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE $condition a.id != 0 ORDER BY t.id DESC");
-            $query = $db->Execute("SELECT t.* FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE $condition a.id != 0 ORDER BY t.status DESC, t.id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit);
+        if($type != "archive"){
+            $new_tick = $db->Execute("SELECT * FROM tickets t WHERE t.status != 0")->GetAll();
         } else {
-            $all = $db->Execute("SELECT t.id FROM tickets t LEFT JOIN admins a ON (t.uid IN $admins_managers AND t.to_uid IN $admins_managers) WHERE $condition a.id != 0 ORDER BY t.id DESC");
-            $query = $db->Execute("SELECT t.* FROM tickets t LEFT JOIN admins a ON (t.uid IN $admins_managers AND t.to_uid IN $admins_managers) WHERE $condition a.id != 0 ORDER BY t.status DESC, t.id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit);
+            $new_tick = $db->Execute("SELECT * FROM tickets t WHERE t.status = 0 ORDER BY id DESC")->GetAll();
+        }
+        $tickets = array();
+        foreach ($new_tick as $ticket) {
+            if(in_array($ticket["uid"], $admins_managers) && in_array($ticket["to_uid"], $admins_managers)) {
+                $type_ticket = "manager";
+            } elseif(in_array($ticket["uid"], $admins_managers) && isset($users_type[$ticket["to_uid"]])) {
+                $type_ticket = $users_type[$ticket["to_uid"]];
+            } else if(isset($users_type[$ticket["uid"]])) {
+                $type_ticket = $users_type[$ticket["uid"]];
+            } else {
+                $type_ticket = "user";
+            }
+            
+            if(!empty($type) && $type != "archive") {
+                if($type_ticket == $type) {
+                    $tickets[] = $ticket;
+                }
+            } else {
+                $tickets[] = $ticket;
+            }
+            
         }
         $pegination = "";
-        $tickets_all = $all->NumRows();
+        $tickets_all = count($tickets);
         if ($tickets_all > $limit) {
             $pegination = '<div style="float:right">';
             if ($offset == 1) {
@@ -215,7 +236,7 @@ class managers {
             }
             $pegination .= '</select></div>';
             $pegination .= '&nbsp из ' . $count_pegination . ' ] &nbsp';
-            if ($query->NumRows() < $limit) {
+            if ($offset == $count_pegination) {
                 $pegination .= "След.";
             } else {
                 $pegination .= "<a href='?module=managers&action=ticket&type=$type&offset=" . ($offset + 1) . "'>След.</a>";
@@ -224,9 +245,17 @@ class managers {
         }
 
         $ticket = "";
-        if (!empty($query) && $query->NumRows() != 0) {
-            while ($resw = $query->FetchRow()) {
-                $ticket .= file_get_contents(PATH . 'modules/managers/tmp/ticket_one.tpl');
+        if (!empty($tickets)) {
+            $ticket_one = file_get_contents(PATH . 'modules/managers/tmp/ticket_one.tpl');
+            foreach ($tickets as $key=>$resw) {
+                if($offset > 1 && ($key < ($offset - 1) * $limit)) {
+                    continue;
+                }
+                if($key == $offset * $limit) {
+                    break;
+                }
+                
+                $ticket .= $ticket_one;
                 $ticket = str_replace('[site]', $resw['site'], $ticket);
                 $ticket = str_replace('[subject]', $resw['subject'], $ticket);
                 $ticket = str_replace('[q_theme]', $resw['q_theme'], $ticket);
@@ -235,22 +264,27 @@ class managers {
                 $ticket = str_replace('[module]', 'managers', $ticket);
 
                 //0 - закрыто; 1-не прочитан; 2-прочитан; 3-дан ответ;
-                if ($resw['status'] == 0) {
-                    $ticket = str_replace('[status]', "Тема закрыта", $ticket);
-                    $ticket = str_replace('[status_ico]', "closed", $ticket);
+                $status = $status_ico = "";
+                switch ($resw['status']) {
+                    case 0:
+                        $status = "Тема закрыта";
+                        $status_ico = "closed";
+                        break;
+                    case 1:
+                        $status = "Не рассмотрено";
+                        $status_ico = "processed";
+                        break;
+                    case 2:
+                        $status = "Рассматривается";
+                        $status_ico = "in-progress";
+                        break;
+                    case 3:
+                        $status = "Дан ответ";
+                        $status_ico = "answered";
+                        break;
                 }
-                if ($resw['status'] == 1) {
-                    $ticket = str_replace('[status]', "Не рассмотрено", $ticket);
-                    $ticket = str_replace('[status_ico]', "processed", $ticket);
-                }
-                if ($resw['status'] == 2) {
-                    $ticket = str_replace('[status]', "Рассматривается", $ticket);
-                    $ticket = str_replace('[status_ico]', "in-progress", $ticket);
-                }
-                if ($resw['status'] == 3) {
-                    $ticket = str_replace('[status]', "Дан ответ", $ticket);
-                    $ticket = str_replace('[status_ico]', "answered", $ticket);
-                }
+                $ticket = str_replace('[status]', $status, $ticket);
+                $ticket = str_replace('[status_ico]', $status_ico, $ticket);
             }
         } else {
             $ticket = "<tr><td colspan='4'>Нет ни одного тикета</td></tr>";
@@ -475,6 +509,7 @@ class managers {
         $tid = (int) $_REQUEST['tid'];
         $msg = substr(nl2br(htmlspecialchars(addslashes(trim($_REQUEST['msg'])))), 0, 2000);
         $adate = date("Y-m-d H:i:s");
+        
         if (!empty($uid)) {
             $db->Execute("INSERT INTO answers (uid, tid, msg, date) VALUES ($uid, $tid, '$msg', '$adate')");
             $db->Execute("UPDATE tickets SET status=3 WHERE id=$tid");

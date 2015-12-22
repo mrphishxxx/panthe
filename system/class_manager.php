@@ -74,41 +74,88 @@ class class_manager {
             $this->GLOBAL['content'] = @$GLOBAL['content'];
             $this->GLOBAL['page_title'] = @$GLOBAL['page_title'];
         }
-        $admins_managers = array();
+        $admins_managers = $users_type = $new_tick_user = $new_tick_moder = $new_tick_copywriter = $new_tick_admin = $new_wallet = array();
+        $admins = $db->Execute("SELECT id, type FROM admins")->GetAll();
+        foreach ($admins as $user) {
+            if($user["type"] == "admin" || $user["type"] == "manager") {
+                $admins_managers[] = $user['id'];
+            } else {
+                $users_type[$user["id"]] = $user["type"];
+            }
+        }
+        $new_tick = $db->Execute("SELECT t.id, t.uid, t.to_uid, t.status FROM tickets t WHERE t.status != 0")->GetAll();
+        foreach ($new_tick as $ticket) {
+            if(in_array($ticket["uid"], $admins_managers)) {
+                if(in_array($ticket["to_uid"], $admins_managers)){
+                    $type = "admin";
+                } else {
+                    $type = $users_type[$ticket["to_uid"]];
+                }
+            } else if(isset($users_type[$ticket["uid"]])) {
+                $type = $users_type[$ticket["uid"]];
+            }
+            switch ($type) {
+                case "user":
+                    $new_tick_user[] = $ticket;
+                    break;
+                case "moder":
+                    $new_tick_moder[] = $ticket;
+                    break;
+                case "copywriter":
+                    $new_tick_copywriter[] = $ticket;
+                    break;
+                case "admin":
+                    $new_tick_admin[] = $ticket;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        $content = str_replace('[new_tick]', count($new_tick), $content);
+        $content = str_replace('[new_tick_user]', count($new_tick_user), $content);
+        $content = str_replace('[new_tick_moder]', count($new_tick_moder), $content);
+        $content = str_replace('[new_tick_copywriter]', count($new_tick_copywriter), $content);
+        $content = str_replace('[new_tick_admin]', count($new_tick_admin), $content);
+        
+        $old_tickets = $db->Execute("SELECT id FROM tickets WHERE status = 0")->GetAll();
+        $content = str_replace('[old_tickets]', count($old_tickets), $content);
+        
+        /*$admins_managers = array();
         $admins_manager = $db->Execute("SELECT id FROM admins WHERE type = 'admin' OR type = 'manager'");
         while ($user = $admins_manager->FetchRow()) {
             $admins_managers[] = $user['id'];
         }
         $admins_managers = "(" . implode(",", $admins_managers) . ")";
-        /* Тикеты ВСЕГО */
+        // Тикеты ВСЕГО 
         $new_tick = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE a.id != 0 AND t.status != 0")->FetchRow();
         $all_tick = $db->Execute("SELECT COUNT(t.id) as allt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE a.id != 0")->FetchRow();
         $content = str_replace('[new_tick]', $new_tick['newt'], $content);
         $content = str_replace('[all_tick]', $all_tick['allt'], $content);
 
-        /* Тикеты ПОЛЬЗОВАТЕЛИ */
+        // Тикеты ПОЛЬЗОВАТЕЛИ 
         $new_tick_user = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE t.status != 0 AND a.type = 'user'")->FetchRow();
         $all_tick_user = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE a.type = 'user'")->FetchRow();
         $content = str_replace('[new_tick_user]', $new_tick_user['newt'], $content);
         $content = str_replace('[all_tick_user]', $all_tick_user['newt'], $content);
 
-        /* Тикеты МОДЕРАТОРЫ */
+        // Тикеты МОДЕРАТОРЫ 
         $new_tick_moder = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE t.status != 0 AND a.type = 'moder'")->FetchRow();
         $all_tick_moder = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE a.type = 'moder'")->FetchRow();
         $content = str_replace('[new_tick_moder]', $new_tick_moder['newt'], $content);
         $content = str_replace('[all_tick_moder]', $all_tick_moder['newt'], $content);
 
-        /* Тикеты КОПИРАЙТЕРЫ */
+        // Тикеты КОПИРАЙТЕРЫ
         $new_tick_copywriter = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE t.status != 0 AND a.type = 'copywriter'")->FetchRow();
         $all_tick_copywriter = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON IF (t.uid IN $admins_managers, a.id=t.to_uid, a.id=t.uid) WHERE a.type = 'copywriter'")->FetchRow();
         $content = str_replace('[new_tick_copywriter]', $new_tick_copywriter['newt'], $content);
         $content = str_replace('[all_tick_copywriter]', $all_tick_copywriter['newt'], $content);
         
-        /* Тикеты АДМИНИСТРАЦИИ */
+        // Тикеты АДМИНИСТРАЦИИ
         $new_tick_admin = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON (t.uid IN $admins_managers AND t.to_uid IN $admins_managers) WHERE t.status != 0 AND a.type = 'admin'")->FetchRow();
         $all_tick_admin = $db->Execute("SELECT COUNT(t.id) as newt FROM tickets t LEFT JOIN admins a ON (t.uid IN $admins_managers AND t.to_uid IN $admins_managers) WHERE a.type = 'admin'")->FetchRow();
         $content = str_replace('[new_tick_admin]', $new_tick_admin['newt'], $content);
-        $content = str_replace('[all_tick_admin]', $all_tick_admin['newt'], $content);
+        $content = str_replace('[all_tick_admin]', $all_tick_admin['newt'], $content);*/
 
 
         $main_comment = $db->Execute("SELECT * FROM Message2002 WHERE Sub_Class_ID = 22")->FetchRow();
