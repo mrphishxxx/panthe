@@ -1050,7 +1050,15 @@ label {
     position:absolute;
     bottom: 0;
     right: 0;
+    max-width: 400px;
 }
+
+.slider-main:last-child {
+    position: relative;
+    height: 380px;
+}
+
+
 #slider .description {
     width: 510px;
     margin: 15px 25px;
