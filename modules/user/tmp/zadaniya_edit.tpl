@@ -31,7 +31,7 @@
             </li>
             <li>
                 <span class="title">Тема статьи:</span>
-                <input type="text" name="tema" id="tema" class="full-length" value='[tema]' readonly='readonly'>
+                <input type="text" name="tema" id="tema" class="full-length" value='[tema]' [theme_readonly]>
             </li>
             <li>
                 <span class="title">Комментарий:</span>
@@ -55,6 +55,7 @@
 
     <div class="action_bar">
         <input type="hidden" name="send" value="1">
+        [save_button]
         <input type="button" class="button" value="Вернуться" onclick="history.back();" /><br/><br/>
 
         <br/><br/><a href="/user.php?action=ticket&zid=[tid]">Есть вопрос?</a>

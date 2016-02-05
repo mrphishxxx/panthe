@@ -623,7 +623,10 @@ table tbody .yellow1 {
 
 
 
-
+input:read-only,
+textarea:read-only {
+    opacity: 0.5;
+}
 
 
 

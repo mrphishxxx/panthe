@@ -68,7 +68,7 @@ function getTaskGGL($response, $info, $request) {
         }
         
         echo " UID = " . $post->uid . "{" . PHP_EOL;
-        $sites = $db->Execute("SELECT * FROM sayty WHERE gid != 0 AND gid IS NOT NULL AND uid=" . $post->uid);// AND id=8192764 
+        $sites = $db->Execute("SELECT * FROM sayty WHERE gid != 0 AND gid IS NOT NULL AND uid=" . $post->uid);//id=8192764 
         while ($site = $sites->FetchRow()) {
             // В ЦИКЛЕ ПО САЙТАМ 
             echo "sid = " . $site["id"] . PHP_EOL;
@@ -218,7 +218,7 @@ function getTaskGGL($response, $info, $request) {
                                 $open->clear();
                             }
                             unset($open);
-                            if (!empty($ankor)) {
+                            if (!empty($ankor) && $post->uid != 1462) {
                                 $first1 = mb_strtoupper(mb_substr($ankor, 0, 1, 'UTF-8'), 'UTF-8'); //первая буква
                                 $first = str_replace("?", "", $first1);
                                 $last1 = mb_strtolower(mb_substr($ankor, 1), 'UTF-8'); //все кроме первой буквы
@@ -241,7 +241,6 @@ function getTaskGGL($response, $info, $request) {
                             } else {
                                 $type_task = $to_remove = 0;             //Тип задачи в iForget
                                 $link_delete_from = '';
-                                echo $ggl_id. " +*+*+*+ " .$type_task . PHP_EOL;
                             }
                             
                             if (!empty($ankor) && !empty($to_url)) {

@@ -243,6 +243,18 @@ class FromAdmin {
         return $this->sendEmail();
     }
     
+    public function userInsertThemesTask($user = array(), $task_id = 0, $sid = 0) {
+        $this->smarty->assign('uid', (isset($user["id"]) ? $user["id"] : 0));
+        $this->smarty->assign('sid', $sid);
+        $this->smarty->assign('login', (isset($user["login"]) ? $user["login"] : "'LOGIN'"));
+        $this->smarty->assign('id', $task_id);
+        
+        $this->message["subject"] = "[Задача может быть отправлена в работу]";
+        $this->message["to"] = array(0 => "profi-sale@yandex.ru");
+        $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "user_insert_themes_task.tpl");
+        return $this->sendEmail();
+    }
+    
     public function moderChangeTask($task = array(), $user = array()) {
         $this->smarty->assign('id', (isset($task["id"]) ? $task["id"] : 0));
         $this->smarty->assign('uid', (isset($task["uid"]) ? $task["uid"] : 0));
@@ -379,6 +391,7 @@ class FromAdmin {
                 case "userAddSitesFromBurse": return "[Новые сайты в системе (из биржи)]";
                 case "userAddTask": return "[Добавлено новое задание]";
                 case "userGoPayment": return "[Вебмастер воспользовался промокодом]";
+                case "userInsertThemesTask": return "[Задача может быть отправлена в работу]";
                 case "userChangeData": return "[Пользователь изменил свои данные]";
                 case "userOutputMoney": return "[Запрос на вывод средств пользователем]";
                 case "moderChangeTask": return "[Модератор изменил задание]";
@@ -419,8 +432,8 @@ class FromAdmin {
                 "copywriterFinishedTask" => "[Копирайтер выполнил задачу]",
                 "copywriterSentMessage" => "[Новое сообщение от копирайтера]",
                 "copywriterOutputMoney" => "[Запрос на вывод средств копирайтером]",
-                "userChangeWallet" => "[Запрос на смену кошелька]"
-                
+                "userChangeWallet" => "[Запрос на смену кошелька]",
+                "userInsertThemesTask" => "[Задача может быть отправлена в работу]"
             );
         }
     }
@@ -445,6 +458,7 @@ class FromAdmin {
                 case "userGoPayment": return $this->userGoPayment();
                 case "userChangeData": return $this->userChangeData();
                 case "userOutputMoney": return $this->userOutputMoney();
+                case "userInsertThemesTask": return $this->userInsertThemesTask();
                 case "moderChangeTask": return $this->moderChangeTask();
                 case "moderChangeVikladComment": return $this->moderChangeVikladComment();
                 case "moderOutputMoney": return $this->moderOutputMoney();

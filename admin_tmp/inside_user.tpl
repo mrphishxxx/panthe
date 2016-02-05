@@ -87,9 +87,8 @@
                                 </ul>
 
                             </div>
-                            <div id="webmasters_ru_informer_200x147_white_2"></div> 
-                            <script type="text/javascript" src="http://webmasters.ru/informer/informer_200x147_white_2.js" charset="utf-8"></script>
-
+                            <a href="http://www.updates.seo-auditor.ru/" id="upd" target="_blank"></a><script type="text/javascript" src="//www.informer.seo-auditor.ru/updates/informer-v1.01.js" charset="utf-8"></script>
+                            
                         </div>
                         <!-- SIDEBAR END -->
 
@@ -168,5 +167,12 @@
         <script type="text/javascript">
             (window.Image ? (new Image()) : document.createElement('img')).src = location.protocol + '//vk.com/rtrg?r=nY8Nd*aijShWd1kCSfe1XeNCsyvaLoTOrbLP9Jj6zmJaVXkgP4B4MEvjAEBVNPaweE3/UJbgbh*TYM3eM64biDMshlKkCqZda/P1KGO09IfK2ub*pOTgYpCGiF*A2gPITA1OhlymWIsrC4yUsnico7Jg2pYPSLHveJZQqmnmzrc-';
         </script>
+        <script type="text/javascript">  
+            $(document).ready(function (){
+                $(".SeoAuditor_Informer").find("a").each(function(){
+                    $(this).remove();
+                });
+            });
+        </script>    
     </body>
 </html>

@@ -4,10 +4,21 @@ class user {
 
     public $_smarty = null;
     public $_postman = null;
+    
+    public $_user = null;
+    public $_options = array();
 
     function content($db, $smarty) {
         $this->_smarty = $smarty;
         $this->_postman = new Postman($smarty, $db);
+        
+        if (isset($_SESSION["user"]['id'])) {
+            $this->_user = $_SESSION["user"];
+            $options = $db->Execute("SELECT * FROM user_options WHERE user_id = '" . $this->_user["id"] . "'")->GetAll();
+            foreach ($options as $opt) {
+                $this->_options[$opt["option_id"]] = true;
+            }
+        }
 
         $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : '';
         $action2 = isset($_REQUEST['action2']) ? $_REQUEST['action2'] : '';
@@ -2216,28 +2227,17 @@ class user {
             $content = str_replace('[uid]', $uid, $content);
             $content = str_replace('[sid]', $sid, $content);
             $content = str_replace('[tid]', $id, $content);
+            if(isset($this->_options["1"]) && !empty($this->_options["1"])){
+                $content = str_replace('[theme_readonly]', "", $content);
+                $content = str_replace('[save_button]', '<input type="submit" class="button" value="Сохранить" />', $content);
+            } else {
+                $content = str_replace('[theme_readonly]', "readonly='readonly'", $content);
+                $content = str_replace('[save_button]', '', $content);
+            }
         } else {
-            $sistema = $_REQUEST['sistema'];
-            $etxt = $_REQUEST['etxt'];
-            $ankor = $_REQUEST['ankor'];
-            $url = $_REQUEST['url'];
-            $keywords = $_REQUEST['keywords'];
             $tema = $_REQUEST['tema'];
-            $text = $_REQUEST['text'];
-            $url_statyi = $_REQUEST['url_statyi'];
-            $url_pic = $_REQUEST['url_pic'];
-            $price = $_REQUEST['price'];
-            $comments = mysql_real_escape_string($_REQUEST['comments']);
-            $admin_comments = $_REQUEST['admin_comments'];
-
-            $task_id = $res['task_id'];
-            $task_site_id = $res['sid'];
-            $task_site = $db->Execute("SELECT * FROM sayty WHERE id=" . $task_site_id)->FetchRow();
-            $viklad_info = $db->Execute("SELECT * FROM admins WHERE id=" . $task_site['moder_id'])->FetchRow();
-            $viklad_email = $viklad_info['email'];
-
-            //$q = "update zadaniya set etxt='$etxt', url_statyi='$url_statyi', text='$text', tema='$tema', sistema='$sistema', ankor='$ankor', url='$url', keywords='$keywords', price='$price', url_pic='$url_pic', comments='$comments', admin_comments='$admin_comments' where id=$id";
-            //$db->Execute($q);
+            $db->Execute("update zadaniya set tema='$tema' where id=$id");
+            $this->_postman->admin->userInsertThemesTask($this->_user, $id, $sid);
 
             header("Location: ?module=user&action=zadaniya&uid=$uid&sid=$sid");
         }
