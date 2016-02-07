@@ -636,19 +636,21 @@ class copywriter {
                 $display = "style='display:none'";
                 $read = "readonly='readonly'";
             }
-
+            $additional_text = "";
             switch ($task["type_task"]) {
                 case 0: $type = "Статья";
                     break;
                 case 1: $type = "Обзор";
                     break;
                 case 2: $type = "Новость";
+                    $additional_text = "<br>Новость будет размещена на сайте " . $task["url"] . ". Писать только по тематике сайта";
                     break;
                 default : $type = "Статья";
             }
             $content = str_replace('[read]', $read, $content);
             $content = str_replace('[display]', $display, $content);
             $content = str_replace('[type]', $type, $content);
+            $content = str_replace('[additional_text]', $additional_text, $content);
             $content = str_replace('[date]', date("Y-m-d", $task['date']), $content);
             foreach ($task as $k => $v) {
                 $content = str_replace("[$k]", htmlspecialchars($v), $content);
@@ -828,17 +830,20 @@ class copywriter {
         }
         $task = $db->Execute("SELECT * FROM $table WHERE id='$id'")->FetchRow();
         if (!empty($id)) {
+            $additional_text = "";
             switch ($task["type_task"]) {
                 case 0: $type = "Статья";
                     break;
                 case 1: $type = "Обзор";
                     break;
                 case 2: $type = "Новость";
+                    $additional_text = "<br>Новость будет размещена на сайте " . $task["url"] . ". Писать только по тематике сайта";
                     break;
                 default : $type = "Статья";
             }
 
             $content = str_replace('[type]', $type, $content);
+            $content = str_replace('[additional_text]', $additional_text, $content);
             $content = str_replace('[date]', date("Y-m-d", $task['date']), $content);
             foreach ($task as $k => $v) {
                 $content = str_replace("[$k]", htmlspecialchars($v), $content);

@@ -287,6 +287,9 @@ class admins {
                     case 'edit':
                         $content = $this->article_edit($db);
                         break;
+                    case 'delete':
+                        $content = $this->article_delete($db);
+                        break;
                     case 'etxt':
                         $content = $this->articles_to_etxt($db);
                         break;
@@ -634,9 +637,20 @@ class admins {
             if ($cur_balans < 0 && (($uid != 20) && ($uid != 55))) {
                 break;
             }
+            $additional = "";
+            switch ($db_res2["type_task"]) {
+                    case 0: $type = "Статья";
+                        break;
+                    case 1: $type = "Обзор";
+                        break;
+                    case 2: $type = "Новость";
+                            $additional = " - (новость будет размещена на сайте " . $db_res2["url"] . ". Писать только по тематике сайта)";
+                        break;
+                    default: $type = "Статья";
+                }
 
             $tema = $db_res2['tema'];
-            $description = '1)Cтатья [colvos] символов без пробелов, в тексте должн[mn] быть фраз[mn] "[ankor]",[ankor2][ankor3][ankor4][ankor5] заключенная в {} 
+            $description = '1)' . $type . ' [colvos] символов без пробелов, в тексте должн[mn] быть фраз[mn] "[ankor]",[ankor2][ankor3][ankor4][ankor5] заключенная в {} ' . $additional . '
                             2)Фраза должна быть употреблена в точности как написана, разрывать другими словами ее нельзя, склонять так же нельзя. Если указано несколько фраз через запятую, то нужно их равномерно распределить по тексту  
                             3)Текст без воды, строго по теме, без негатива (см. прикрепленный файл "Текст заказа") 
                             4)Фразу употребить ТОЛЬКО ОДИН раз, в остальном - заменять синонимами 
@@ -5007,6 +5021,36 @@ class admins {
         }
         $profil .= microtime() . "  - AFTER construct pegenation" . "\r\n";
         $table = $bg = "";
+        
+        $all = $db->Execute("SELECT * FROM zadaniya_new WHERE from_sape=1 AND (sape_id IS NOT NULL AND sape_id != 0) AND sistema = 'http://pr.sape.ru/' AND vipolneno = 0")->GetAll();
+        $num_vrabote = $num_vilojeno = $num_navyklad = $num_dorabotka = $num_vipolneno = $num_neobrabot = 0;
+        foreach ($all as $value) {
+            if($value["vrabote"] == 1){
+                $num_vrabote++;
+            }
+            if($value["vilojeno"] == 1){
+                $num_vilojeno++;
+            }
+            if($value["navyklad"] == 1){
+                $num_navyklad++;
+            }
+            if($value["dorabotka"] == 1){
+                $num_dorabotka++;
+            }
+            if($value["vrabote"] == 0 && $value["rectificate"] == 0 && $value["vilojeno"] == 0 && $value["navyklad"] == 0 && $value["dorabotka"] == 0 && $value["vipolneno"] == 0 && $value["rework"] == 0){
+                $num_neobrabot++;
+            }
+            /*if($value["vipolneno"] == 1){
+                $num_vipolneno++;
+            }*/
+        }
+        $content = str_replace('[num_vrabote]', $num_vrabote, $content);
+        $content = str_replace('[num_navyklad]', $num_navyklad, $content);
+        $content = str_replace('[num_dorabotka]', $num_dorabotka, $content);
+        $content = str_replace('[num_vilojeno]', $num_vilojeno, $content);
+        $content = str_replace('[num_neobrabot]', $num_neobrabot, $content);
+        //$content = str_replace('[num_vipolneno]', $num_vipolneno, $content);
+        
         if (!empty($tasks)) {
             foreach ($tasks as $value) {
                 switch ($value["type_task"]) {
@@ -5076,6 +5120,7 @@ class admins {
                     $tr .= "<td></td>";
                 }
                 $tr .= "<td class='edit'><a href='?module=admins&action=articles&action2=edit&id=" . $value["id"] . "' class='ico'></a></td>";
+                $tr .= "<td class='close'><a href='?module=admins&action=articles&action2=delete&id=" . $value["id"] . "' class='ico' onclick='return confirmDelete();'></a></td>";
                 $tr .= "</tr>";
                 $table .= $tr;
             }
@@ -5175,6 +5220,12 @@ class admins {
                 //$content = str_replace("[display]", 'style="display:none"', $content);
             } else {
                 $content = str_replace("[display_vilojeno]", 'style="display:none"', $content);
+            }
+            if ($task['vipolneno']) {
+                $task['vipolneno'] = 'checked';
+                $content = str_replace('[activen]', 'disabled', $content);
+            } else {
+                $task['vipolneno'] = '';
             }
             if ($task['vipolneno'] == 0 && $task['dorabotka'] == 0 && $task['vrabote'] == 0 && $task['navyklad'] == 0 && $task['vilojeno'] == 0) {
                 $content = str_replace('[activen]', 'checked', $content);
@@ -5299,7 +5350,7 @@ class admins {
             }
 
             $task_status = @$_REQUEST['task_status'];
-            $vrabote = $navyklad = $dorabotka = $rework = $rectificate = $vilojeno = 0;
+            $vrabote = $navyklad = $dorabotka = $rework = $rectificate = $vilojeno = $vipolneno = 0;
             switch ($task_status) {
                 case "vrabote": $vrabote = 1;
                     break;
@@ -5314,6 +5365,8 @@ class admins {
                 case "vilojeno": $vilojeno = 1;
                     break;
                 case "rectificate": $rectificate = 1;
+                    break;
+                case "vipolneno": $vipolneno = 1;
                     break;
             }
 
@@ -5350,7 +5403,7 @@ class admins {
             }
             $profil .= microtime() . "  - BEFORE UPDATE task" . "\r\n";
 
-            $q = "UPDATE zadaniya_new SET $task_id etxt='$etxt', title='$title', keywords='$keywords', description='" . mysql_real_escape_string($description) . "', rework ='$rework', vrabote='$vrabote', navyklad='$navyklad', rectificate='$rectificate', dorabotka='$dorabotka', type_task='$type_task', text='" . mysql_real_escape_string($text) . "', tema='" . mysql_real_escape_string($tema) . "', ankor='$ankor', ankor2='$ankor2', ankor3='$ankor3', ankor4='$ankor4', ankor5='$ankor5', url='$url', url2='$url2', url3='$url3', url4='$url4', url5='$url5', comments='$comments', admin_comments='$admin_comments', lay_out='$lay_out', overwrite='$overwrite' WHERE id=$id";
+            $q = "UPDATE zadaniya_new SET $task_id etxt='$etxt', title='$title', keywords='$keywords', description='" . mysql_real_escape_string($description) . "', rework ='$rework', vrabote='$vrabote', navyklad='$navyklad', rectificate='$rectificate', dorabotka='$dorabotka', vipolneno='$vipolneno', type_task='$type_task', text='" . mysql_real_escape_string($text) . "', tema='" . mysql_real_escape_string($tema) . "', ankor='$ankor', ankor2='$ankor2', ankor3='$ankor3', ankor4='$ankor4', ankor5='$ankor5', url='$url', url2='$url2', url3='$url3', url4='$url4', url5='$url5', comments='$comments', admin_comments='$admin_comments', lay_out='$lay_out', overwrite='$overwrite' WHERE id=$id";
             $db->Execute($q);
             $profil .= microtime() . "  - AFTER UPDATE task" . "\r\n";
             if ($send_task) {
@@ -5451,6 +5504,14 @@ class admins {
         }
 
         return $content;
+    }
+    
+    function article_delete($db) {
+        $id = $_REQUEST["id"];
+        if(!empty($id)){
+            $db->Execute("DELETE FROM zadaniya_new WHERE id = " . $id);
+        }
+        header("Location: ?module=admins&action=articles");
     }
 
     function send_message($db) {
@@ -5621,11 +5682,22 @@ class admins {
                 if (empty($tema)) {
                     continue;
                 }
+                $additional = "";
+                switch ($task["type_task"]) {
+                    case 0: $type = "Статья";
+                        break;
+                    case 1: $type = "Обзор";
+                        break;
+                    case 2: $type = "Новость";
+                        $additional = " - (новость будет размещена на сайте " . $task["url"] . ". Писать только по тематике сайта)";
+                        break;
+                    default: $type = "Статья";
+                }
 
-                $description = '1)Cтатья ' . $colvos . ' символов без пробелов, в тексте должн[mn] быть фраз[mn] "[ankor]",[ankor2][ankor3][ankor4][ankor5] заключенная в {} 
-                                2)Фраза должна быть употреблена в точности как написана, разрывать другими словами ее нельзя, склонять так же нельзя. Если указано несколько фраз через запятую, то нужно их равномерно распределить по тексту 
-                                3)Текст без воды, строго по теме, без негатива (см. прикрепленный файл "Текст заказа") 
-                                4)Фразу употребить ТОЛЬКО ОДИН раз, в остальном - заменять синонимами 
+                $description = '1)' . $type . ' ' . $colvos . ' символов без пробелов, в тексте должн[mn] быть фраз[mn] "[ankor]",[ankor2][ankor3][ankor4][ankor5] заключенная в {} ' . $additional . '
+                                2)Фраза должна быть употреблена в точности как написана, разрывать другими словами ее нельзя, склонять так же нельзя. Если указано несколько фраз через запятую, то нужно их равномерно распределить по тексту
+                                3)Текст без воды, строго по теме, без негатива (см. прикрепленный файл "Текст заказа")
+                                4)Фразу употребить ТОЛЬКО ОДИН раз, в остальном - заменять синонимами
                                 5)Высылать готовый заказ просто текстом, в формате word не принимаем
                                 6)Вручную проверить уникальность текста по Адвего Плагиатус (выше 95%), в Комментариях к заказу проставить % уникальности по данной программе. Без этого пункта автоматически задание отправляется на доработку.
                                 7)После того как заказ будет принят и оплачен все авторские права принадлежат аккаунту ifoget.ru (то есть статьи могут быть опубликованы на сайтах под различным именем, на выбор владельца текста).

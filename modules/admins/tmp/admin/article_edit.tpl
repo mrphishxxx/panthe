@@ -117,7 +117,7 @@
             </li>
 
 
-            
+
             <li>
                 <span class="title"></span>
                 <input id="order_recomplite" type="button" class="button" value="Отправить заказчику без доработки" onclick="return false;" style="margin-top: 0px;"> <!-- location.href = ''; -->
@@ -147,15 +147,19 @@
                 <span class="title"></span>
                 <input type="radio" name="task_status" value="rework" [rework]> На доработке у Копирайтера
             </li>
-            
+
             <li>
                 <span class="title"></span>
                 <input type="radio" name="task_status" id="rectificate" value="rectificate" [rectificate]> Отклонить
             </li>
-            
+            <li>
+                <span class="title"></span>
+                <input type="radio" name="task_status" id="vipolneno" value="vipolneno" [vipolneno]> Выполнено
+            </li>
+
         </ul>
     </div>
-    
+
     <div [display]>
         <div style="background: #d0dde7; padding: 10px 5px;" class="form">
             <ul>
@@ -166,8 +170,8 @@
             </ul>
         </div>
     </div>
-            
-    
+
+
     <div [display]>
         <div style="background: #e7e7e7; padding: 10px 5px;" class="form">
             <ul>
@@ -189,87 +193,97 @@
     <div class="action_bar">
         <input type="hidden" name="send" value="1">
         <input type="hidden" id="send_sape" name="send_sape" value="">
-        <input type="submit" id="send_form" value="Сохранить" onclick="return false;" /><br/><br/>
+        <input type="submit" id="send_form" value="Сохранить" onclick="return false;" />
+        <input type="button" class="button" id="delete_task" value="Удалить" onclick="return false;" /><br/><br/>
         <input type="button" value="Вернуться" onclick="location.href = '?module=admins&action=articles'" style="width:196px;">
     </div>
 </form>
 <script>
-                $(document).ready(function() {
-                    $("#send_sape_button").click(function() {
-                        var keywords = $("#keywords").val();
-                        var description = $("#description").val();
-                        var title = $("#title").val();
-                        var tema = $("#tema").val();
-                        var err = "Незаполнены некоторые обязательные поля: \r\n\r\n";
+    $(document).ready(function () {
+        $("#send_sape_button").click(function () {
+            var keywords = $("#keywords").val();
+            var description = $("#description").val();
+            var title = $("#title").val();
+            var tema = $("#tema").val();
+            var err = "Незаполнены некоторые обязательные поля: \r\n\r\n";
 
-                        if (keywords === "") {
-                            err += "Поле Keywords\r\n";
-                        }
-                        if (description === "") {
-                            err += "Поле Description\r\n";
-                        }
-                        if (title === "") {
-                            err += "Поле Title\r\n";
-                        }
-                        if (tema === "") {
-                            err += "Поле 'Заголовок статьи'\r\n";
-                        }
+            if (keywords === "") {
+                err += "Поле Keywords\r\n";
+            }
+            if (description === "") {
+                err += "Поле Description\r\n";
+            }
+            if (title === "") {
+                err += "Поле Title\r\n";
+            }
+            if (tema === "") {
+                err += "Поле 'Заголовок статьи'\r\n";
+            }
 
-                        if (tema === "" || title === "" || description === "" || keywords === "") {
-                            alert(err);
-                            return false;
-                        }
+            if (tema === "" || title === "" || description === "" || keywords === "") {
+                alert(err);
+                return false;
+            }
 
-                        $("#send_sape").val("1");
-                        $("#admin_form").submit();
-
-
-                    });
-                    $("#order_recomplite").click(function() {
-                        $("#admin_form").attr("action", "?module=admins&action=articles&action2=order_recomplite");
-                        $("#admin_form").submit();
-                    });
-
-                    $("#send_message").click(function() {
-                        var message = $("#message").val();
-                        if (message === "") {
-                            alert("Поле 'Написать заказчику пустое'\r\n");
-                        } else {
-                            $("#admin_form").attr("action", "?module=admins&action=articles&action2=send_message");
-                            $("#admin_form").submit();
-                        }
-                    });
-
-                    $("#send_message_copywriter").click(function() {
-                        var message = $("#message_copywriter").val();
-                        if (message === "") {
-                            alert("Поле 'Написать заказчику пустое'\r\n");
-                        } else {
-                            $("#admin_form").attr("action", "?module=admins&action=chat&action2=send_message_copywriter");
-                            $("#admin_form").submit();
-                        }
-                    });
-                    
-                    $("#send_task_to_copywriter").click(function() {
-                        $("#admin_form").attr("action", "?module=admins&action=copywriters&action2=change_status_task&status=dorabotka");
-                        $("#admin_form").submit();
-                    });
-                    
-                    $("#send_form").click(function() {
-                        if($("#rectificate").prop("checked") && $.trim($("#message").val()) === "") {
-                            alert("Если хотите отклонить задачу, то поле Написать заказчику обязателен для заполнения!\r\n Введите в это поле причину отклонения!");
-                            return false;
-                        } else {
-                            $("#admin_form").submit();
-                        }
-                    });
-
-                    var error = $("#error").val();
-                    if (error !== "") {
-                        alert("[error]");
-                    }
+            $("#send_sape").val("1");
+            $("#admin_form").submit();
 
 
+        });
+        $("#order_recomplite").click(function () {
+            $("#admin_form").attr("action", "?module=admins&action=articles&action2=order_recomplite");
+            $("#admin_form").submit();
+        });
 
-                });
+        $("#send_message").click(function () {
+            var message = $("#message").val();
+            if (message === "") {
+                alert("Поле 'Написать заказчику пустое'\r\n");
+            } else {
+                $("#admin_form").attr("action", "?module=admins&action=articles&action2=send_message");
+                $("#admin_form").submit();
+            }
+        });
+
+        $("#send_message_copywriter").click(function () {
+            var message = $("#message_copywriter").val();
+            if (message === "") {
+                alert("Поле 'Написать заказчику пустое'\r\n");
+            } else {
+                $("#admin_form").attr("action", "?module=admins&action=chat&action2=send_message_copywriter");
+                $("#admin_form").submit();
+            }
+        });
+
+        $("#send_task_to_copywriter").click(function () {
+            $("#admin_form").attr("action", "?module=admins&action=copywriters&action2=change_status_task&status=dorabotka");
+            $("#admin_form").submit();
+        });
+
+        $("#send_form").click(function () {
+            if ($("#rectificate").prop("checked") && $.trim($("#message").val()) === "") {
+                alert("Если хотите отклонить задачу, то поле Написать заказчику обязателен для заполнения!\r\n Введите в это поле причину отклонения!");
+                return false;
+            } else {
+                $("#admin_form").submit();
+            }
+        });
+
+        $("#delete_task").click(function () {
+            if (confirm("Уверены что хотите удалить задачу?")) {
+                $("#admin_form").attr("action", "?module=admins&action=articles&action2=delete");
+                $("#admin_form").submit();
+            } else {
+                return false;
+            }
+        });
+
+        var error = $("#error").val();
+        if (error !== "") {
+            alert("[error]");
+        }
+
+
+
+    });
 </script>
