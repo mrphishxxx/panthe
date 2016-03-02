@@ -502,7 +502,7 @@ class moder {
             foreach ($res as $k => $v) {
                 $content = str_replace("[$k]", htmlspecialchars_decode($v), $content);
             }
-            
+
             $content = str_replace('[etxt_action]', "", $content);
             $content = str_replace('[uid]', $uid, $content);
             $content = str_replace('[sid]', $sid, $content);
@@ -893,14 +893,23 @@ class moder {
 
     function site_viklad_edit($db) {
 
-        $send = $_REQUEST['send'];
-        $sid = ($_GET['sid'] ? $_GET['sid'] : $_REQUEST['s_id']);
-
-        $site = $db->Execute("SELECT * FROM sayty WHERE id=$sid")->FetchRow();
+        $send = isset($_REQUEST['send']) ? $_REQUEST['send'] : NULL;
+        $sid = (isset($_GET['sid']) ? $_GET['sid'] : (isset($_REQUEST['s_id']) ? $_REQUEST['s_id'] : NULL));
+        if(empty($sid)) {
+            $content = file_get_contents(PATH . 'modules/moder/tmp/error.tpl');
+            return $content;
+            exit();
+        }
+        $site = $db->Execute("SELECT * FROM sayty WHERE id = " . $sid)->FetchRow();
         $uid = $site['uid'];
         $uinfo = $db->Execute("SELECT * FROM admins WHERE id=" . $uid)->FetchRow();
-        if (!$send) {
+        if (empty($send)) {
             $content = file_get_contents(PATH . 'modules/moder/tmp/site_moder_edit.tpl');
+            $content = str_replace('[site_comments]', !empty($site["site_comments"]) ? $site["site_comments"] : "Без особых пожеланий", $content);
+            $content = str_replace('[pic_width]', $site["pic_width"], $content);
+            $content = str_replace('[pic_height]', $site["pic_height"], $content);
+            $content = str_replace('[pic_position]', $site["pic_position"], $content);
+            
             $content = str_replace('[question_viklad]', $uinfo['comment_viklad'], $content);
             $content = str_replace('[s_id]', $sid, $content);
         } else {
