@@ -2083,7 +2083,7 @@ class admins {
                 if ($navyklad == 1) {
                     // Выкладываем текст автоматом в WORDPRESS
                     //  --> Запрещаем отправление статьи для пользователя "me05"(id=649) и "palexa"(id = 330)
-                    include 'includes/IXR_Library.php';
+                    /*include 'includes/IXR_Library.php';
                     $url_connect = explode("/wp-", $task_site["url_admin"]);
                     $url_connect = $url_connect[0];
                     if (!empty($url_connect) && !empty($text) && $uid != 330 && $uid != 649 && $res["navyklad"] != 1 && $task_site["cms"] == "Wordpress") {
@@ -2108,7 +2108,7 @@ class admins {
                                 }
                             }
                         }
-                    }
+                    }*/
 
                     if ($uid == 330) { // только для пользователя "palexa" (id = 330)
                         $moder = $db->Execute("select * from admins where id=" . $uid)->FetchRow();
@@ -2116,9 +2116,9 @@ class admins {
                         $this->_postman->moderator->taskStatusNavykladForPalexa($viklad_info, $task_site, $res, $file_name);
                     } else {
                         $wordpress = "";
-                        if (isset($ID)) {
+                        /*if (isset($ID)) {
                             $wordpress = "<br />На сайте клиента создан пост под названием '" . $tema . "'. Текст задачи уже выложен. Проверьте корректность текста, соответствие рубрики и др.";
-                        }
+                        }*/
                         $this->_postman->moderator->taskStatusNavyklad($viklad_info, $task_site, $res, $wordpress);
                     }
                 } elseif ($dorabotka == 1) {

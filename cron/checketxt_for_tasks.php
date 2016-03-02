@@ -191,7 +191,8 @@ while ($res = $all->FetchRow()) {
 
                 // Выкладываем готовую статью на сайт, если это Wordpress
                 //  --> Запрещаем отправление статьи для пользователя "me05"
-                if (!empty($url_connect) && !empty($cur_text) && $site["cms"] == "Wordpress" && $res["uid"] != 649) {
+                /*$users_not_wordpress_autosend = array(330 => 330, 649 => 649, 1463 => 1463);
+                if (!empty($url_connect) && !empty($cur_text) && $site["cms"] == "Wordpress" && !array_search($res["uid"], $users_not_wordpress_autosend)) {
                     $client = new IXR_Client($url_connect . '/xmlrpc.php');
                     if (!$client->query('wp.getCategories', '', $site["login"], $site["pass"])) {
                         echo($client->getErrorCode() . ":" . $client->getErrorMessage()) . "<br>";
@@ -216,7 +217,7 @@ while ($res = $all->FetchRow()) {
                             $ID = $client->getResponse();
                         }
                     }
-                }
+                }*/
 
                 $body2 .= $res['id'] . "<br>";
                 $num++;
@@ -237,9 +238,9 @@ while ($res = $all->FetchRow()) {
                     $email = $moder['email'];
                     $body = "Добрый день!<br/><br/>
 				Ваше задание для сайта " . $task_site[$res['sid']] . " на сайте iForget с номером <a href='http://iforget.ru/user.php?module=user&action=zadaniya_moder&uid=" . $res['uid'] . "&sid=" . $res['sid'] . "&action2=edit&id=" . $res['id'] . "'>" . $res['id'] . "</a> поменяло статус: &laquo;На Выкладку&raquo;!";
-                    if (@$ID) {
+                    /*if (isset($ID) && !empty($ID)) {
                         $body .= "<br />На сайте клиента создан пост под названием '" . $res['tema'] . "'. Текст задачи уже выложен. Проверьте корректность текста, соответствие рубрики и др.";
-                    }
+                    }*/
                 }
                 if (!empty($email)) {
                     $body .= "<br /><br /> Оставить и почитать отзывы Вы сможете в нашей ветке на <a href='http://searchengines.guru/showthread.php?p=12378271'>серчах</a><br/><br/>С уважением,<br/>Администрация проекта iForget.";
