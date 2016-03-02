@@ -109,6 +109,7 @@ $profil .= microtime() . "  - AFTER N curl in etxt (in archive) " . "\r\n";
 
 $body2 = "Выгружены тексты для задач:<br><br>";
 $num = 0;
+$etxt_users_array = array();
 while ($res = $all->FetchRow()) {
     if ((in_array($res['task_id'], $etxt_list) || in_array($res['task_id'], $end_etxt)) && !$res['text']) {
         $params = array('method' => 'tasks.getResults', 'token' => '29aa0eec2c77dd6d06e23b3faaef9eed', 'id' => $res['task_id']);
@@ -149,24 +150,51 @@ while ($res = $all->FetchRow()) {
                 $file_path = $file_href_parts['path'];
                 $uniq = @$file_href_parts['per_antiplagiat'];
             }
+
+            // I. Вытаскиваем из ЕТХТ исполнителя работы (в дальнейшем сохраняем его в БД)
+            if (isset($vt["id_user"]) && !array_key_exists($vt["id_user"], $etxt_users_array)) {
+                $etxt_users = get_etxt_request("users.getUser", $vt["id_user"]);
+                foreach ($etxt_users as $etxt_user) {
+                    $etxt_users_array[$etxt_user->id_user] = array(
+                        "etxt_id" => $etxt_user->id_user,
+                        "login" => $etxt_user->login,
+                        "fio" => $etxt_user->fio,
+                        "description" => $etxt_user->description,
+                        "country" => $etxt_user->country,
+                        "city" => $etxt_user->city,
+                        "regdate" => $etxt_user->regdate,
+                        "rate" => $etxt_user->rate,
+                        "photo" => $etxt_user->photo,
+                        "group" => $etxt_user->group,
+                        "categories" => array()
+                    );
+                    foreach ($etxt_user->categories as $etxt_user_cat) {
+                        if ($etxt_user_cat != "object") {
+                            $etxt_users_array[$etxt_user->id_user]["categories"][] = $etxt_user_cat;
+                        }
+                    }
+                }
+            }
+            // Конец I. 
+
             if ($vt["status"] == 2) {
                 $email = null;
                 $cur_text = file_get_contents($file_path);
                 $cur_text = iconv('cp1251', 'utf-8', $cur_text);
                 $cur_text = str_replace('&nbsp;', ' ', $cur_text);
                 $db->Execute("UPDATE zadaniya SET vrabote='0', navyklad='1', uniq='$uniq', text='" . $cur_text . "' WHERE id=" . $res['id']);
-                
+
                 $site = $db->Execute("SELECT * FROM sayty WHERE id = " . $res["sid"])->FetchRow();
                 $url = explode("/wp-", $site["url_admin"]);
 
                 $url_connect = @$url[0];
-                
+
                 // Выкладываем готовую статью на сайт, если это Wordpress
                 //  --> Запрещаем отправление статьи для пользователя "me05"
                 if (!empty($url_connect) && !empty($cur_text) && $site["cms"] == "Wordpress" && $res["uid"] != 649) {
                     $client = new IXR_Client($url_connect . '/xmlrpc.php');
                     if (!$client->query('wp.getCategories', '', $site["login"], $site["pass"])) {
-                        echo($client->getErrorCode() . ":" . $client->getErrorMessage()). "<br>" ;
+                        echo($client->getErrorCode() . ":" . $client->getErrorMessage()) . "<br>";
                     } else {
                         $cats = $client->getResponse();
                         if (!empty($cats)) {
@@ -174,14 +202,14 @@ while ($res = $all->FetchRow()) {
                             $content['categories'] = array();
                             $content['description'] = $cur_text;
                             $content['mt_allow_comments'] = 1;
-                            if($res['keywords']) {
+                            if ($res['keywords']) {
                                 $keywords = explode(",", $res['keywords']);
                                 $content['mt_keywords'] = array();
-                                foreach ($keywords as $word){
+                                foreach ($keywords as $word) {
                                     $content['mt_keywords'][] = $word;
                                 }
                             }
-                            
+
                             if (!$client->query('metaWeblog.newPost', '', $site["login"], $site["pass"], $content, false)) {
                                 echo ('Error while creating a new post' . $client->getErrorCode() . " : " . $client->getErrorMessage());
                             }
@@ -209,8 +237,8 @@ while ($res = $all->FetchRow()) {
                     $email = $moder['email'];
                     $body = "Добрый день!<br/><br/>
 				Ваше задание для сайта " . $task_site[$res['sid']] . " на сайте iForget с номером <a href='http://iforget.ru/user.php?module=user&action=zadaniya_moder&uid=" . $res['uid'] . "&sid=" . $res['sid'] . "&action2=edit&id=" . $res['id'] . "'>" . $res['id'] . "</a> поменяло статус: &laquo;На Выкладку&raquo;!";
-                    if(@$ID) {
-                        $body .= "<br />На сайте клиента создан пост под названием '".$res['tema']."'. Текст задачи уже выложен. Проверьте корректность текста, соответствие рубрики и др.";
+                    if (@$ID) {
+                        $body .= "<br />На сайте клиента создан пост под названием '" . $res['tema'] . "'. Текст задачи уже выложен. Проверьте корректность текста, соответствие рубрики и др.";
                     }
                 }
                 if (!empty($email)) {
@@ -239,6 +267,16 @@ while ($res = $all->FetchRow()) {
         $profil .= microtime() . "  - AFTER CURL FOR TASK " . "\r\n";
     }
 }
+
+// II. Сохраняем в БД (таб. users_etxt) Исполнителей работы. (Нужно для оценки уровня текста) 
+foreach ($etxt_users_array as $etxt_user_id => $etxt_user) {
+    $exists_user = $db->Execute("SELECT * FROM users_etxt WHERE etxt_id=" . $etxt_user_id)->FetchRow();
+    if (empty($exists_user)) {
+        $db->Execute("INSERT INTO users_etxt (`etxt_id`, `login`, `fio`, `description`, `country`, `city`, `regdate`, `rate`, `photo`, `group`, `categories`) "
+                . "VALUES ('" . $etxt_user_id . "', '" . $etxt_user['login'] . "', '" . addslashes($etxt_user['fio']) . "', '" . addslashes($etxt_user['description']) . "', '" . $etxt_user['country'] . "', '" . $etxt_user['city'] . "', '" . $etxt_user['regdate'] . "', '" . $etxt_user['rate'] . "', '" . $etxt_user['photo'] . "', '" . $etxt_user['group'] . "', '" . json_encode($etxt_user['categories']) . "')");
+    }
+}
+// Конец II.
 
 if ($num == 0) {
     $body2 = "Нет ни одного готового текста для задач!<br>";
@@ -329,4 +367,25 @@ function createXLSForUser($id = null, $sistema = null, $ankor = null, $url = nul
     return $file_name;
 }
 
+function get_etxt_request($method = "", $user_id = null) {
+    $params = array('method' => $method, 'token' => ETXT_TOKEN, 'id' => $user_id);
+    ksort($params);
+    $data = array();
+    $data2 = array();
+    foreach ($params as $k => $v) {
+        $data[] = $k . '=' . $v;
+        $data2[] = $k . '=' . urlencode($v);
+    }
+    $sign = md5(implode('', $data) . md5(ETXT_PASS . 'api-pass'));
+    $url_etxt = 'https://www.etxt.ru/api/json/?' . implode('&', $data2) . '&sign=' . $sign;
+    if ($curl = curl_init()) {
+        curl_setopt($curl, CURLOPT_URL, $url_etxt);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        $cur_out = curl_exec($curl);
+        curl_close($curl);
+    }
+    $out = json_decode($cur_out);
+    return $out;
+}
 ?>

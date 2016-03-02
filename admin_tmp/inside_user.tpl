@@ -84,6 +84,8 @@
                                 <ul>
                                     <li><a href="/user.php?action=ticket">Тикеты</a><span>([new_tick]/[all_tick])</span></li>
                                     <li><a href="/user.php?action=change_wallet">Смена кошелька</a><span>([new_wallet]/[all_wallet])</span></li>
+                                    
+                                    <li><a href="/faq/" target="_blank">FAQ</a></li>
                                 </ul>
 
                             </div>

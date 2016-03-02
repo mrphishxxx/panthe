@@ -98,6 +98,7 @@ $error = false;
 $all = $db->Execute("SELECT * FROM zadaniya_new WHERE (sape_id IS NOT NULL AND sape_id != 0) AND etxt=1 AND vrabote = 1 ORDER BY id DESC");
 $profil .= microtime() . "  - QUERY 1 get ALL" . "\r\n";
 $num = 0;
+$etxt_users_array = array();
 if (!empty($all)) {
     while ($value = $all->FetchRow()) {
         if (in_array($value['task_id'], $etxt_list) || in_array($value['task_id'], $end_etxt)) {
@@ -138,6 +139,31 @@ if (!empty($all)) {
                     $file_href_parts = (array) @$file_href['text'];
                     $file_path = @$file_href_parts['path'];
                 }
+                if ($_SERVER["REMOTE_ADDR"] == "93.81.171.20") {
+                    if (isset($vt["id_user"]) && !array_key_exists($vt["id_user"], $etxt_users_array)) {
+                        $etxt_users = get_etxt_request("users.getUser", $vt["id_user"]);
+                        foreach ($etxt_users as $etxt_user) {
+                            $etxt_users_array[$etxt_user->id_user] = array(
+                                "etxt_id" => $etxt_user->id_user,
+                                "login" => $etxt_user->login,
+                                "fio" => $etxt_user->fio,
+                                "description" => $etxt_user->description,
+                                "country" => $etxt_user->country,
+                                "city" => $etxt_user->city,
+                                "regdate" => $etxt_user->regdate,
+                                "rate" => $etxt_user->rate,
+                                "photo" => $etxt_user->photo,
+                                "group" => $etxt_user->group,
+                                "categories" => array()
+                            );
+                            foreach ($etxt_user->categories as $etxt_user_cat) {
+                                if ($etxt_user_cat != "object") {
+                                    $etxt_users_array[$etxt_user->id_user]["categories"][] = $etxt_user_cat;
+                                }
+                            }
+                        }
+                    }
+                }
 
                 if (@$vt["status"] == 2) {
                     $cur_text = file_get_contents($file_path);
@@ -150,7 +176,7 @@ if (!empty($all)) {
                         $description .= mb_substr($cur_text_utf, $first, ($next - $first), "utf-8");
                     }
                     $description = str_replace("}", "", str_replace("{", "", $description));
-                    if(mb_strlen($description) > 255) {
+                    if (mb_strlen($description) > 255) {
                         $description = mb_substr($description, 0, 254, "utf-8");
                     }
 
@@ -192,7 +218,7 @@ if (!empty($all)) {
                             $cur_text_utf = mb_substr_replace($cur_text_utf, '<a href="' . $url[$key] . '">' . $ankor[$key] . '</a>', $pos_one, $pos_two);
                         }
                     }
-                    
+
                     if (!empty($value['title']) && !empty($value['tema']) && !empty($value['keywords']) && !empty($description) && !empty($cur_text_utf)) {
                         $cookie_jar = tempnam(PATH . 'temp', "cookie");
                         if ($curl = curl_init()) {
@@ -237,13 +263,13 @@ if (!empty($all)) {
                             if (empty($request) && isset($accept["faultString"])) {
                                 $request[] = $accept["faultString"];
                             }
-                            $body .= "Задача #<a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=".$value['id']."'>" . $value['id'] . "</a> не отправлена в Sape (ОШИБКА отправления) - <br>";
+                            $body .= "Задача #<a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=" . $value['id'] . "'>" . $value['id'] . "</a> не отправлена в Sape (ОШИБКА отправления) - <br>";
                             foreach ($request as $err) {
                                 $body .= "error = " . $err . "<br>";
-                                if($err == "Failed to parse request") {
+                                if ($err == "Failed to parse request") {
                                     //$body .= json_encode(array((int) $value["sape_id"], array("title" => $value['title'], "header" => $value['tema'], "keywords" => $value['keywords'], "description" => $description, "text" => $cur_text_utf)));
                                     $body .= "DESCRIPTION = $description <br>";
-                                    $body .= "TEXT = $cur_text_utf <br>";                                    
+                                    $body .= "TEXT = $cur_text_utf <br>";
                                 }
                             }
                             $body .= "<br><br>";
@@ -253,7 +279,7 @@ if (!empty($all)) {
                         $vilojeno = 0;
                         $navyklad = 1;
 
-                        $body .= "Задача #<a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=".$value['id']."'>" . $value['id'] . "</a> не отправлена в Sape (не хватает данных) - <br>";
+                        $body .= "Задача #<a href='http://iforget.ru/admin.php?module=admins&action=articles&action2=edit&id=" . $value['id'] . "'>" . $value['id'] . "</a> не отправлена в Sape (не хватает данных) - <br>";
                         if (empty($value['title'])) {
                             $body .= "Поле Title пустое<br>";
                         }
@@ -281,6 +307,16 @@ if (!empty($all)) {
     }
 }
 $profil .= microtime() . "  - AFTER OUTPUT ALL TASKS" . "\r\n";
+
+if ($_SERVER["REMOTE_ADDR"] == "93.81.171.20") {
+    foreach ($etxt_users_array as $etxt_user_id => $etxt_user) {
+        $exists_user = $db->Execute("SELECT * FROM users_etxt WHERE etxt_id=" . $etxt_user_id)->FetchRow();
+        if (empty($exists_user)) {
+            $db->Execute("INSERT INTO users_etxt (`etxt_id`, `login`, `fio`, `description`, `country`, `city`, `regdate`, `rate`, `photo`, `group`, `categories`) "
+                    . "VALUES ('" . $etxt_user_id . "', '" . $etxt_user['login'] . "', '" . addslashes($etxt_user['fio']) . "', '" . addslashes($etxt_user['description']) . "', '" . $etxt_user['country'] . "', '" . $etxt_user['city'] . "', '" . $etxt_user['regdate'] . "', '" . $etxt_user['rate'] . "', '" . $etxt_user['photo'] . "', '" . $etxt_user['group'] . "', '" . json_encode($etxt_user['categories']) . "')");
+        }
+    }
+}
 
 if ($num != 0 && $error == true) {
     $body .= "\r\n<br>Date: " . date("d-m-Y H:i:s") . "<br>\r\n";
@@ -319,6 +355,28 @@ exit();
 
 function mb_substr_replace($output, $replace, $posOpen, $posClose) {
     return mb_substr($output, 0, $posOpen, "utf-8") . $replace . mb_substr($output, $posClose + 1, NULL, "utf-8");
+}
+
+function get_etxt_request($method = "", $user_id = null) {
+    $params = array('method' => $method, 'token' => ETXT_TOKEN, 'id' => $user_id);
+    ksort($params);
+    $data = array();
+    $data2 = array();
+    foreach ($params as $k => $v) {
+        $data[] = $k . '=' . $v;
+        $data2[] = $k . '=' . urlencode($v);
+    }
+    $sign = md5(implode('', $data) . md5(ETXT_PASS . 'api-pass'));
+    $url_etxt = 'https://www.etxt.ru/api/json/?' . implode('&', $data2) . '&sign=' . $sign;
+    if ($curl = curl_init()) {
+        curl_setopt($curl, CURLOPT_URL, $url_etxt);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        $cur_out = curl_exec($curl);
+        curl_close($curl);
+    }
+    $out = json_decode($cur_out);
+    return $out;
 }
 
 ?>

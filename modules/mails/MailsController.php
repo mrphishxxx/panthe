@@ -70,7 +70,7 @@ class MailsController {
                     $this->_db->Execute("UPDATE admins SET mail_balance_ended = 1 WHERE id = " . $user["id"]);
                     $log .= "endedBalance: " . $user["id"] . " = " . $balance_all[$user["id"]] . PHP_EOL;
                 } else {
-                    if(isset($balance_all[$user["id"]])){
+                    if (isset($balance_all[$user["id"]])) {
                         $log .= "endedBalance: NOT SEND " . $user["id"] . " = " . $balance_all[$user["id"]] . PHP_EOL;
                     }
                 }
@@ -94,7 +94,7 @@ class MailsController {
                     $this->_db->Execute("UPDATE admins SET mail_balance_comes_end = 1 WHERE id = " . $user["id"]);
                     $log .= "balanceComesToEnd: " . $user["id"] . " = " . $balance_all[$user["id"]] . PHP_EOL;
                 } else {
-                    if(isset($balance_all[$user["id"]])){
+                    if (isset($balance_all[$user["id"]])) {
                         $log .= "balanceComesToEnd: NOT SEND " . $user["id"] . " = " . $balance_all[$user["id"]] . PHP_EOL;
                     }
                 }
@@ -138,14 +138,27 @@ class MailsController {
 
         return $log;
     }
-    
+
     public function newKindTasks() {
         $log = "";
         $users = $this->_db->Execute("SELECT * FROM admins WHERE active=1 AND type='user' AND mail_period > 0")->GetAll();
         if (!empty($users)) {
             foreach ($users as $user) {
                 $this->_postman->user->newKindTasks($user["email"], $user["login"]);
-                $log .= "Send -> " . $user["login"] ."(".$user["email"].")" . PHP_EOL;
+                $log .= "Send -> " . $user["login"] . "(" . $user["email"] . ")" . PHP_EOL;
+            }
+        }
+        return $log;
+    }
+
+    public function ticketClosed($users_ids = array()) {
+        $log = "";
+        $users = $this->_db->Execute("SELECT * FROM admins WHERE active=1 AND id IN (" . implode(',', $users_ids) . ")")->GetAll();
+        if (!empty($users)) {
+            foreach ($users as $user) {
+                $tid = array_search($user["id"], $users_ids);
+                $this->_postman->user->ticketClosed($user["email"], $user["login"], $tid);
+                $log .= "Send -> " . $user["login"] . "(" . $user["email"] . ")" . PHP_EOL;
             }
         }
         return $log;

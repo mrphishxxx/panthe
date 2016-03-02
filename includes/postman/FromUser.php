@@ -105,6 +105,19 @@ class FromUser {
         $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "ticket_answer.tpl");
         return $this->sendEmail();
     }
+    
+    public function ticketClosed($email = "", $login = "LOGIN", $tid = 0) {
+        $this->smarty->assign('tid', $tid);
+        $this->smarty->assign('login', $login);
+        $this->smarty->assign('get_text', $this->get_text);
+        $this->smarty->assign('path', PATH);
+        if ($email != "") {
+            $this->message["to"][0] = array("email" => $email, "name" => $login);
+        }
+        $this->message["subject"] = "[Закрыт тикет в системе iForget!]";
+        $this->message["html"] = $this->smarty->fetch($this->TEMPLATE_PATH . "ticket_closed.tpl");
+        return $this->sendEmail();
+    }
 
     public function priceIncrease($users = array()) {
         $this->smarty->assign('get_text', $this->get_text);
@@ -211,6 +224,7 @@ class FromUser {
                 case "registration": return "[Регистрация в iForget.ru!]";
                 case "ticketAdd": return "[Новый тикет ID в системе iForget!]";
                 case "ticketAnswer": return "[Появился ответ в тикете ID от администрации iForget!]";
+                case "ticketClosed": return "[Закрыт тикет в системе iForget!]";
                 case "priceIncrease": return "[Внимание: увеличение цен в IForget!]";
                 case "gettingStarted": return "[Начало работы с iForget.ru!]";
                 case "promocode": return "[Мы дарим 150 рублей на баланс iForget.ru!]";
@@ -224,6 +238,7 @@ class FromUser {
                 "registration" => "[Регистрация в iForget.ru!]",
                 "ticketAdd" => "[Новый тикет ID в системе iForget!]",
                 "ticketAnswer" => "[Появился ответ в тикете ID от администрации iForget!]",
+                "ticketClosed" => "[Закрыт тикет в системе iForget!]",
                 "priceIncrease" => "[Внимание: увеличение цен в IForget!]",
                 "gettingStarted" => "[Начало работы с iForget.ru!]",
                 "promocode" => "[Мы дарим 150 рублей на баланс iForget.ru!]",
@@ -242,6 +257,7 @@ class FromUser {
                 case "registration": return $this->registration();
                 case "ticketAdd": return $this->ticketAdd();
                 case "ticketAnswer": return $this->ticketAnswer();
+                case "ticketClosed": return $this->ticketClosed();
                 case "priceIncrease": return $this->priceIncrease();
                 case "gettingStarted": return $this->gettingStarted();
                 case "promocode": return $this->promocode();
