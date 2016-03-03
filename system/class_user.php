@@ -157,7 +157,7 @@ class class_user {
         
         $sum_num_tasks = $db->Execute("SELECT count(id) as num FROM zadaniya WHERE who_posted = '" . $this->user["id"] . "' AND vipolneno = 1")->FetchRow();
         $sum_money = $db->Execute("SELECT SUM(price) as sum FROM moders_money WHERE moder_id = '" . $this->user["id"] . "'")->FetchRow();
-        $withdrawal = $db->Execute("SELECT SUM(w.`sum`) as sums FROM withdrawal w WHERE w.uid='" . $this->user["id"] . "' ORDER BY w.date DESC")->FetchRow();
+        $withdrawal = $db->Execute("SELECT SUM(w.`sum`) as sums FROM withdrawal w WHERE w.visible = 1 AND w.uid='" . $this->user["id"] . "' ORDER BY w.date DESC")->FetchRow();
         $withdrawal["sums"] = (!empty($withdrawal["sums"])) ? $withdrawal["sums"] : 0;
         $content = str_replace('[balance]', $sum_money['sum'] - $withdrawal["sums"], $content);
         $content = str_replace('[num]', $sum_num_tasks['num'], $content);

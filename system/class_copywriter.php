@@ -28,22 +28,24 @@ class class_index {
         /* Вывод баланса и количества выволненых задач */
         $balance = $vipolneno = 0;
         $tables = array(0 => "zadaniya_new", 1 => "zadaniya");
-        foreach ($tables as $table) {
-            $tasks = $db->Execute("SELECT * FROM $table WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vipolneno=1");
-            if (!empty($tasks)) {
-                $vipolneno += $tasks->NumRows();
-                while ($res = $tasks->FetchRow()) {
-                    $balance += ($res["nof_chars"] / 1000) * COPYWRITER_PRICE_FOR_1000_CHAR;
-                }
+
+        $tasks_old = $db->Execute("SELECT z.*, s.cena FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.copywriter='" . $_SESSION['user']['id'] . "' AND z.vipolneno=1")->GetAll();
+        $tasks_new = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vipolneno=1")->GetAll();
+        $tasks = array_merge($tasks_old, $tasks_new);
+        if (!empty($tasks)) {
+            $vipolneno += count($tasks);
+            foreach ($tasks as $res) {
+                $price = (isset($res["cena"]) ? $res["cena"] : $res["price"]); 
+                $balance += (($res["date"] >= "1456779600") ? $this->getPriceCopywriter($price, $res["nof_chars"]) : ($res["nof_chars"] / 1000 * COPYWRITER_PRICE_FOR_1000_CHAR));
             }
         }
-        /* Минус выведенные средства*/
-        $withdrawal = $db->Execute("SELECT * FROM withdrawal WHERE uid='" . $_SESSION['user']['id'] . "'");
+        /* Минус выведенные средства */
+        $withdrawal = $db->Execute("SELECT * FROM withdrawal WHERE visible = 1 AND uid='" . $_SESSION['user']['id'] . "'");
         while ($res = $withdrawal->FetchRow()) {
             $balance -= $res["sum"];
         }
-        
-        $content = str_replace('[balance]', $balance, $content);
+
+        $content = str_replace('[balance]', floor($balance), $content);
         $content = str_replace('[vipolneno]', $vipolneno, $content);
         /* ------- */
 
@@ -60,6 +62,31 @@ class class_index {
         $all_tick = $db->Execute("SELECT COUNT(id) as allt FROM tickets WHERE uid='" . $_SESSION['user']["id"] . "' OR to_uid='" . $_SESSION['user']["id"] . "'")->FetchRow();
         $content = str_replace('[all_tick]', $all_tick['allt'], $content);
         return $content;
+    }
+
+    function getPriceCopywriter($tarif = 20, $type = 1000) {
+        $price = 0;
+        switch ($tarif) {
+            case 20: $price = 21;
+                break;
+            case 30: $price = 31.5;
+                break;
+            case 45:
+            case 50:$price = 47.25;
+                break;
+            
+            case 78:
+            case 93: $price = 31.5; //Для задач из биржи (тариф medium).
+                break;
+            case 110:
+            case 128: $price = 47.25; //Для задач из биржи (тариф expert).
+                break;
+
+            default: $price = 21;
+                break;
+        }
+
+        return $price * ($type / 1000);
     }
 
 }

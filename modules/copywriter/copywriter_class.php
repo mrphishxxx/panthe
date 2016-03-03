@@ -161,15 +161,15 @@ class copywriter {
         header('location:/');
         exit;
     }
-    
-    function saveAuthHistory($db, $client){
+
+    function saveAuthHistory($db, $client) {
         $ip = $_SERVER["REMOTE_ADDR"];
         $time = $_SERVER["REQUEST_TIME"];
         $agent = $_SERVER["HTTP_USER_AGENT"];
-        
+
         $uid = $client["id"];
         $login = $client["login"];
-        
+
         $db->Execute("INSERT INTO history_auth (uid, login, date, ip, agent) VALUE ('$uid', '$login', '$time', '$ip', '$agent')");
         return;
     }
@@ -201,18 +201,18 @@ class copywriter {
             $scype = $db->escape($_REQUEST['scype']);
             $mail_period = (isset($_REQUEST['mail_period']) && !empty($_REQUEST['mail_period'])) ? 0 : 1;
 
-            /*if (!empty($wallet)) {
-                $wallet_model = $db->Execute("SELECT * FROM admins WHERE wallet='" . $wallet . "' AND id != $uid")->FetchRow();
-                if (!empty($wallet_model)) {
-                    $error = "Не возможно сохранить профиль. Копирайтер с таким кошельком уже существует в системе!";
-                    header("Location: /copywriter.php?action=lk&error=$error");
-                    exit();
-                }
-            } else {
-                $error = "Поле Кошелек обязателен для заполнения!";
-                header("Location: /copywriter.php?action=lk&error=$error");
-                exit();
-            }*/
+            /* if (!empty($wallet)) {
+              $wallet_model = $db->Execute("SELECT * FROM admins WHERE wallet='" . $wallet . "' AND id != $uid")->FetchRow();
+              if (!empty($wallet_model)) {
+              $error = "Не возможно сохранить профиль. Копирайтер с таким кошельком уже существует в системе!";
+              header("Location: /copywriter.php?action=lk&error=$error");
+              exit();
+              }
+              } else {
+              $error = "Поле Кошелек обязателен для заполнения!";
+              header("Location: /copywriter.php?action=lk&error=$error");
+              exit();
+              } */
 
             if ($pass) {
                 $pass = md5($pass);
@@ -263,7 +263,7 @@ class copywriter {
             sistema = 'http://pr.sape.ru/' 
             $condition ORDER BY date ASC, id DESC")->GetAll();
 
-        $for_burse = $db->Execute("SELECT * FROM zadaniya WHERE 
+        $for_burse = $db->Execute("SELECT z.*, s.cena FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE 
             tema != '' AND  
             for_copywriter=1 AND 
             etxt=0 AND 
@@ -292,12 +292,13 @@ class copywriter {
                             break;
                         default : $type = "Статья";
                     }
-
+                    $price = (isset($res["cena"]) ? $res["cena"] : $res["price"]); 
                     $tr = "<tr>";
                     $tr .= "<td><a href='/copywriter.php?action=tasks&action2=view&id=" . $res["id"] . (!isset($res["from_sape"]) ? "&burse=1" : "") . "'>" . mb_substr($res["tema"], 0, 35) . "</a></td>";
                     $tr .= "<td>" . $res["nof_chars"] . "</td>";
                     $tr .= "<td>" . $type . "</td>";
                     $tr .= "<td>" . date("Y-m-d", $res["date"]) . "</td>";
+                    $tr .= "<td>" . $this->getPriceCopywriter($price, $res["nof_chars"]) . " руб.</td>";
                     $tr .= "<td class='add'><a href='/copywriter.php?action=tasks&action2=add&id=" . $res["id"] . (!isset($res["from_sape"]) ? "&burse=1" : "") . "' class='ico'></a></td>";
                     $tr .= "</tr>";
                     $table .= $tr;
@@ -355,7 +356,7 @@ class copywriter {
                 }
 
                 $tasks_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='$uid' $condition ORDER BY date DESC, id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit)->GetAll();
-                $tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='$uid' $condition ORDER BY date DESC, id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit)->GetAll();
+                $tasks_burse = $db->Execute("SELECT z.*, s.cena FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.copywriter='$uid' $condition ORDER BY z.date DESC, z.id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit)->GetAll();
                 $tasks = array_merge($tasks_sape, $tasks_burse);
 
                 $all_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='$uid' $condition ORDER BY date DESC, id DESC")->GetAll();
@@ -364,7 +365,7 @@ class copywriter {
             }
         } else {
             $tasks_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='$uid' ORDER BY date DESC, id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit)->GetAll();
-            $tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='$uid' ORDER BY date DESC, id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit)->GetAll();
+            $tasks_burse = $db->Execute("SELECT z.*, s.cena FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.copywriter='$uid' ORDER BY z.date DESC, z.id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit)->GetAll();
             $tasks = array_merge($tasks_sape, $tasks_burse);
 
             $all_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='$uid' ORDER BY date DESC, id DESC")->GetAll();
@@ -452,12 +453,14 @@ class copywriter {
             }
             $chat = $db->Execute("SELECT * FROM chat_admin_copywriter WHERE status=0 AND uid!=$uid AND zid='" . $res["id"] . "' AND burse='" . (!isset($res["from_sape"]) ? "1" : "0") . "' LIMIT 1")->FetchRow();
 
+            $price = (isset($res["cena"]) ? $res["cena"] : $res["price"]);
             $tr = "<tr style='background:$bg'>";
             $tr .= "<td>" . mb_substr($res["tema"], 0, 35) . "</td>";
             $tr .= "<td>" . $res["nof_chars"] . "</td>";
             $tr .= "<td>" . $type . "</td>";
             $tr .= "<td>" . $status . "</td>";
             $tr .= "<td>" . date("Y-m-d", $res["date"]) . "</td>";
+            $tr .= "<td>" . (($res["date"] >= "1456779600") ? $this->getPriceCopywriter($price, $res["nof_chars"]) : ($res["nof_chars"] / 1000 * COPYWRITER_PRICE_FOR_1000_CHAR)) . " руб.</td>";
             if (!empty($chat)) {
                 $tr .= "<td class='state processed' style='padding-top:15px'><span class='ico'></span></td>";
             } else {
@@ -522,14 +525,14 @@ class copywriter {
                     }
                     $accept = xmlrpc_decode($out);
 
-                    if(in_array($task["sape_id"], $accept)){
+                    if (in_array($task["sape_id"], $accept)) {
                         $task = $db->Execute("UPDATE zadaniya_new SET copywriter = '$uid', vrabote='1', date_in_work='$date' WHERE id = '$id'");
                         $this->_postman->admin->copywriterAddedTask($id, $_SESSION['user']['login']);
                     } else {
                         $task = $db->Execute("UPDATE zadaniya_new SET copywriter = '0', from_copywriter='0' WHERE id = '$id'");
                         header('location: /copywriter.php?error=Задача не подтвердилась в Articles.Sape');
                     }
-                } elseif($table == "zadaniya") {
+                } elseif ($table == "zadaniya") {
                     // Если задача из БИРЖИ, то снимаем деньги со счета Вебмастера
                     $price = $this->getTaskPrice(0, $task["nof_chars"], $sinfo);
 
@@ -544,7 +547,7 @@ class copywriter {
                     $this->_postman->admin->copywriterAddedTask($id, $_SESSION['user']['login']);
                 }
 
-                
+
                 header('location: /copywriter.php?action=tasks');
                 die();
             } else {
@@ -674,11 +677,11 @@ class copywriter {
                 $content = str_replace('[mn]', "а", $content);
             }
 
-            /*if ($copywriter["trust"] == 0 && $burse == 0) {
-                $content = str_replace('[trust]', "style='display:none'", $content);
-            } else {
-                $content = str_replace('[trust]', "", $content);
-            }*/
+            /* if ($copywriter["trust"] == 0 && $burse == 0) {
+              $content = str_replace('[trust]', "style='display:none'", $content);
+              } else {
+              $content = str_replace('[trust]', "", $content);
+              } */
             $content = str_replace('[id]', $task['id'], $content);
             $content = str_replace('[ankor_url]', (!empty($task['ankor'])) ? htmlspecialchars(' <a href="' . $task['url'] . '">' . $task['ankor'] . '</a>') : '', $content);
             $content = str_replace('[ankor2_url2]', (!empty($task['ankor2'])) ? "<br>" . htmlspecialchars('<a href="' . $task['url2'] . '">' . $task['ankor2'] . '</a>') : '', $content);
@@ -951,13 +954,14 @@ class copywriter {
             $withdrawal_first = null;
             $tasks = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='" . $user['id'] . "' AND vipolneno=1");
             while ($res = $tasks->FetchRow()) {
-                $balance += ($res["nof_chars"] / 1000) * COPYWRITER_PRICE_FOR_1000_CHAR;
+                $balance += (($res["date"] >= "1456779600") ? $this->getPriceCopywriter($res["price"], $res["nof_chars"]) : ($res["nof_chars"] / 1000 * COPYWRITER_PRICE_FOR_1000_CHAR));
             }
-            $tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='" . $user['id'] . "' AND vipolneno=1");
+            $tasks_burse = $db->Execute("SELECT z.*, s.cena FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.copywriter='" . $user['id'] . "' AND z.vipolneno=1");
             while ($res = $tasks_burse->FetchRow()) {
-                $balance += ($res["nof_chars"] / 1000) * COPYWRITER_PRICE_FOR_1000_CHAR;
+                $price = (isset($res["cena"]) ? $res["cena"] : $res["price"]); 
+                $balance += (($res["date"] >= "1456779600") ? $this->getPriceCopywriter($price, $res["nof_chars"]) : ($res["nof_chars"] / 1000 * COPYWRITER_PRICE_FOR_1000_CHAR));
             }
-            $withdrawal = $db->Execute("SELECT * FROM withdrawal WHERE uid='" . $user['id'] . "' ORDER BY date DESC");
+            $withdrawal = $db->Execute("SELECT * FROM withdrawal WHERE visible = 1 AND uid='" . $user['id'] . "' ORDER BY date DESC");
             while ($res = $withdrawal->FetchRow()) {
                 $balance -= $res["sum"];
                 $three_days_last = date("Y-m-d H:i:s", mktime(date("H"), date("i"), date("s"), date("m"), date("d") - 3, date("Y")));
@@ -1212,7 +1216,7 @@ class copywriter {
         $db->Execute("UPDATE tickets SET status=0 WHERE id=$tid");
         header('location: /copywriter.php?action=ticket');
     }
-    
+
     function getTaskPrice($lay_out = 0, $nof_chars = 0, $site = array()) {
         $price = 0;
         if ($lay_out == 1) {
@@ -1253,6 +1257,31 @@ class copywriter {
             }
         }
         return $price;
+    }
+
+    function getPriceCopywriter($tarif = 20, $type = 1000) {
+        $price = 0;
+        switch ($tarif) {
+            case 20: $price = 21;
+                break;
+            case 30: $price = 31.5;
+                break;
+            case 45:
+            case 50:$price = 47.25;
+                break;
+            
+            case 78:
+            case 93: $price = 31.5; //Для задач из биржи (тариф medium).
+                break;
+            case 110:
+            case 128: $price = 47.25; //Для задач из биржи (тариф expert).
+                break;
+            
+            default: $price = 21;
+                break;
+        }
+        
+        return $price * ($type / 1000);
     }
 
 }

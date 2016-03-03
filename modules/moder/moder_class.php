@@ -1225,7 +1225,7 @@ class moder {
             $withdrawal_first = null;
             $sum_tasks = $db->Execute("SELECT SUM(price) as sum FROM moders_money WHERE moder_id = '" . $_SESSION['user']["id"] . "'")->FetchRow();
             $balance = $sum_tasks['sum'];
-            $withdrawal = $db->Execute("SELECT * FROM withdrawal WHERE uid='" . $user['id'] . "' ORDER BY date DESC");
+            $withdrawal = $db->Execute("SELECT * FROM withdrawal WHERE visible = 1 AND uid='" . $user['id'] . "' ORDER BY date DESC");
             while ($res = $withdrawal->FetchRow()) {
                 $balance -= $res["sum"];
                 $three_days_last = date("Y-m-d H:i:s", mktime(date("H"), date("i"), date("s"), date("m"), date("d") - 3, date("Y")));

@@ -605,6 +605,31 @@ class admins {
         }
         return $price;
     }
+    
+    function getPriceCopywriter($tarif = 20, $type = 1000) {
+        $price = 0;
+        switch ($tarif) {
+            case 20: $price = 21;
+                break;
+            case 30: $price = 31.5;
+                break;
+            case 45:
+            case 50:$price = 47.25;
+                break;
+            
+            case 78:
+            case 93: $price = 31.5; //Для задач из биржи (тариф medium).
+                break;
+            case 110:
+            case 128: $price = 47.25; //Для задач из биржи (тариф expert).
+                break;
+            
+            default: $price = 21;
+                break;
+        }
+        
+        return $price * ($type / 1000);
+    }
 
     function etxt($db) {
         $cena = $colvos = 0;
@@ -800,7 +825,7 @@ class admins {
         $uid = (int) $_REQUEST['uid'];
         $sid = (int) $_REQUEST['sid'];
 
-        $tasks = $db->Execute("SELECT id FROM `zadaniya` WHERE sid='" . $sid . "' AND uid='" . $uid . "' AND tema!='' AND etxt=0 AND copywriter=0 AND for_copywriter=0 AND lay_out=0 AND type_task != 3");
+        $tasks = $db->Execute("SELECT id FROM zadaniya WHERE sid='" . $sid . "' AND uid='" . $uid . "' AND tema!='' AND etxt=0 AND copywriter=0 AND for_copywriter=0 AND lay_out=0 AND type_task != 3");
         while ($task = $tasks->FetchRow()) {
             $db->Execute("UPDATE zadaniya SET for_copywriter = 1 WHERE id = " . $task["id"]);
         }
@@ -3815,7 +3840,7 @@ class admins {
         while ($moder = $moders->FetchRow()) {
             $tasks_vipolneno = $db->Execute("SELECT count(z.id) as num FROM zadaniya z WHERE z.who_posted = '" . $moder["id"] . "' AND z.vipolneno = 1")->FetchRow();
             $moder_money = $db->Execute("SELECT SUM(price) as summ FROM moders_money WHERE moder_id = '" . $moder["id"] . "'")->FetchRow();
-            $withdrawal = $db->Execute("SELECT sum(sum) as summa FROM withdrawal WHERE uid = " . $moder["id"])->FetchRow();
+            $withdrawal = $db->Execute("SELECT sum(sum) as summa FROM withdrawal WHERE visible = 1 AND uid = " . $moder["id"])->FetchRow();
             $summa = (isset($withdrawal["summa"]) && !empty($withdrawal["summa"])) ? $withdrawal["summa"] : 0;
             $balance = ((int) $moder_money["summ"]) - $summa;
 
@@ -3906,7 +3931,7 @@ class admins {
 
             //$count_task = $db->Execute("SELECT count(id) as num FROM zadaniya WHERE who_posted = '" . $moder["id"] . "' AND vipolneno = 1")->FetchRow();
             $all_money = $db->Execute("SELECT SUM(price) as sum FROM moders_money WHERE moder_id = '" . $moder["id"] . "'")->FetchRow();
-            $withdrawal = $db->Execute("SELECT sum(sum) as summa FROM withdrawal WHERE uid = " . $moder["id"])->FetchRow();
+            $withdrawal = $db->Execute("SELECT sum(sum) as summa FROM withdrawal WHERE visible = 1 AND uid = " . $moder["id"])->FetchRow();
         }
 
         $pegination = '<div style="float:right">';
@@ -3969,9 +3994,9 @@ class admins {
             $zadaniya .= '<td>' . date("d.m.Y", $task["date"]) . '</td>';
             $zadaniya .= '<td class="state ' . $new_s . '"><span class="ico"></span></td>';
             $zadaniya .= '</tr>';
-            if ($task["vipolneno"] == 1) {
+            /*if ($task["vipolneno"] == 1) {
                 $sum += ($task["price_viklad"]);
-            }
+            }*/
         }
         $content = str_replace('[id]', $moder["id"], $content);
         $content = str_replace('[earned]', $all_money["sum"], $content);
@@ -3986,7 +4011,7 @@ class admins {
         $content = file_get_contents(PATH . 'modules/admins/tmp/admin/moders_withdrawal.tpl');
         $table = $bg = "";
         $num = 1;
-        $withdrawal = $db->Execute("SELECT w.*,a.login FROM withdrawal w LEFT JOIN admins a ON a.id=w.uid WHERE a.type='moder' ORDER BY w.date");
+        $withdrawal = $db->Execute("SELECT w.*,a.login FROM withdrawal w LEFT JOIN admins a ON a.id=w.uid WHERE w.visible=1 AND a.type='moder' ORDER BY w.date");
         while ($value = $withdrawal->FetchRow()) {
             $bg = (($num % 2) == 0) ? "#f7f7f7" : "";
             $table .= '<tr style="background:' . $bg . '">';
@@ -4045,24 +4070,39 @@ class admins {
                 $condition = "";
         }
         $content = str_replace('[name_stat]', $name_chart, $content);
-
-        // Задачи которые выполнили копирайтеры
-        $tasks_vipolneno = $db->Execute("SELECT COUNT(*) AS cnt, `copywriter` FROM `zadaniya_new` WHERE copywriter != 0 AND vipolneno = 1 $condition GROUP BY `copywriter`")->GetAll();
         $statistics = array();
+        
+        // Задачи которые выполнили копирайтеры
+        $tasks_vipolneno = $db->Execute("SELECT COUNT(*) AS cnt, `copywriter` FROM `zadaniya` WHERE copywriter != 0 AND vipolneno = 1 $condition GROUP BY `copywriter`")->GetAll();
+        $tasks_new_vipolneno = $db->Execute("SELECT COUNT(*) AS cnt, `copywriter` FROM `zadaniya_new` WHERE copywriter != 0 AND vipolneno = 1 $condition GROUP BY `copywriter`")->GetAll();
         foreach ($tasks_vipolneno as $task) {
             if (!isset($statistics[$task["copywriter"]])) {
-                $statistics[$task["copywriter"]] = array();
+                $statistics[$task["copywriter"]] = array("vipolneno" => 0, "vrabote" => 0);
             }
-            $statistics[$task["copywriter"]]["vipolneno"] = $task["cnt"];
+            $statistics[$task["copywriter"]]["vipolneno"] += $task["cnt"];
+        }
+        foreach ($tasks_new_vipolneno as $task) {
+            if (!isset($statistics[$task["copywriter"]])) {
+                $statistics[$task["copywriter"]] = array("vipolneno" => 0, "vrabote" => 0);
+            }
+            $statistics[$task["copywriter"]]["vipolneno"] += $task["cnt"];
         }
 
+        $other_status_empty = "rework=0 AND dorabotka=0 AND vrabote=0 AND navyklad=0 AND vilojeno=0 AND rectificate=0";
         //Задачи, которые ещё находятся в работе и не засчитаны копирайтерам
-        $tasks_other = $db->Execute("SELECT COUNT(*) AS cnt, `copywriter` FROM `zadaniya_new` WHERE copywriter != 0 AND vipolneno != 1 GROUP BY `copywriter`")->GetAll();
+        $tasks_other = $db->Execute("SELECT COUNT(*) AS cnt, `copywriter` FROM `zadaniya` WHERE copywriter != 0 AND vipolneno != 1 GROUP BY `copywriter`")->GetAll();
+        $tasks_new_other = $db->Execute("SELECT COUNT(*) AS cnt, `copywriter` FROM `zadaniya_new` WHERE copywriter != 0 AND vipolneno != 1 AND rectificate=0 GROUP BY `copywriter`")->GetAll();
         foreach ($tasks_other as $task) {
             if (!isset($statistics[$task["copywriter"]])) {
-                $statistics[$task["copywriter"]] = array();
+                $statistics[$task["copywriter"]] = array("vipolneno" => 0, "vrabote" => 0);
             }
-            $statistics[$task["copywriter"]]["vrabote"] = $task["cnt"];
+            $statistics[$task["copywriter"]]["vrabote"] += $task["cnt"];
+        }
+        foreach ($tasks_new_other as $task) {
+            if (!isset($statistics[$task["copywriter"]])) {
+                $statistics[$task["copywriter"]] = array("vipolneno" => 0, "vrabote" => 0);
+            }
+            $statistics[$task["copywriter"]]["vrabote"] += $task["cnt"];
         }
 
         $table = "";
@@ -4122,7 +4162,7 @@ class admins {
         while ($copywriter = $copywriters->FetchRow()) {
             $tr = "<tr>";
             $tr .= "<td style='text-align:left'>" . $copywriter["login"] . "</td>";
-            $tr .= "<td>" . ($statistics[$copywriter["id"]]["vipolneno"] ? $statistics[$copywriter["id"]]["vipolneno"] : 0) . "</td>";
+            $tr .= "<td>" . (isset($statistics[$copywriter["id"]]["vipolneno"]) ? $statistics[$copywriter["id"]]["vipolneno"] : 0) . "</td>";
             $tr .= "<td class='lock_open'><a href='/admin.php?module=admins&action=copywriters&action2=bannedoff&id=" . $copywriter["id"] . "' class='ico'></a></td>";
             $tr .= "</tr>";
             $table .= $tr;
@@ -4153,17 +4193,17 @@ class admins {
             case "day": $filter = "mon";
                 $name_chart = "Статистика за день";
                 $time = mktime(0, 0, 0, $month, $day, $year);
-                $condition = " AND date >= $time";
+                $condition = " AND z.date >= $time";
                 break;
             case "weeks": $filter = "mday";
                 $name_chart = "Статистика за неделю";
                 $time = mktime(0, 0, 0, $month, $day - $day_week, $year);
-                $condition = " AND date >= $time";
+                $condition = " AND z.date >= $time";
                 break;
             case "month": $filter = "mday";
                 $name_chart = "Статистика за месяц";
                 $time = mktime(0, 0, 0, $month, 1, $year);
-                $condition = " AND date >= $time";
+                $condition = " AND z.date >= $time";
                 break;
             case "all": $filter = "year";
                 $name_chart = "Статистика за всё время";
@@ -4176,20 +4216,62 @@ class admins {
         }
         $content = str_replace('[name_stat]', $name_chart, $content);
 
-        $copywriters = $db->Execute("SELECT * FROM admins WHERE type = 'copywriter' AND active = 1 ORDER BY login ASC");
+        $copywriters = $copywriters_ids = array();
+        $copywriters_model = $db->Execute("SELECT * FROM admins WHERE type = 'copywriter' AND active = 1 ORDER BY login ASC")->GetAll();
+        foreach($copywriters_model as $copywriter) {
+            $copywriters[$copywriter["id"]] = $copywriter;
+            $copywriters_ids[] = $copywriter["id"];
+        }
+        $copywriters_ids = implode(",", $copywriters_ids);
+        
+        $tasks_old_vipolneno = $db->Execute("SELECT z.*, s.cena FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.copywriter IN (" . $copywriters_ids . ") AND z.vipolneno = 1" . $condition)->GetAll();
+        $tasks_new_vipolneno = $db->Execute("SELECT z.* FROM zadaniya_new z WHERE z.copywriter IN (" . $copywriters_ids . ") AND z.vipolneno = 1" . $condition)->GetAll();
+        $tasks_vipolneno = array_merge($tasks_old_vipolneno, $tasks_new_vipolneno);
+        foreach ($tasks_vipolneno as $task) {
+            $id_copywriter = (int)$task["copywriter"];
+            if(!isset($copywriters[$id_copywriter]["num"])) {
+                $copywriters[$id_copywriter]["num"] = 0;
+            }
+            if(!isset($copywriters[$id_copywriter]["money"])) {
+                $copywriters[$id_copywriter]["money"] = 0;
+            }
+            
+            // Увеличиваем кол-во выполненых задач
+            $copywriters[$id_copywriter]["num"] ++;
+            
+            // Увеличиваем заработанные деньги
+            if($task["date"] >= "1456779600") {
+                $price = (isset($task["cena"]) ? $task["cena"] : $task["price"]);
+                $copywriters[$id_copywriter]["money"] += $this->getPriceCopywriter($price, $task["nof_chars"]);
+            } else {
+                $copywriters[$id_copywriter]["money"] += ($task["nof_chars"] / 1000) * COPYWRITER_PRICE_FOR_1000_CHAR;
+            }
+        }
+        
+        $withdrawal = array();
+        $withdrawal_model = $db->Execute("SELECT * FROM withdrawal WHERE visible=1 AND uid IN (" . $copywriters_ids .")")->GetAll();
+        foreach ($withdrawal_model as $row) {
+            if(!isset($withdrawal[$row["uid"]])) {
+                $withdrawal[$row["uid"]] = 0;
+            }
+            $withdrawal[$row["uid"]] += $row["sum"]; 
+        }
+        
         $table = "";
-        while ($copywriter = $copywriters->FetchRow()) {
-            $tasks_vipolneno = $db->Execute("SELECT count(id) as num, sum(nof_chars) as chars FROM zadaniya_new WHERE copywriter = " . $copywriter["id"] . " AND vipolneno = 1" . $condition)->FetchRow();
-            $withdrawal = $db->Execute("SELECT sum(sum) as summa FROM withdrawal WHERE uid = " . $copywriter["id"])->FetchRow();
-            $summa = (isset($withdrawal["summa"]) ? $withdrawal["summa"] : 0);
-            $balance = ((int) $tasks_vipolneno["chars"] / 1000 * 21) - $summa;
-
+        foreach ($copywriters as $copywriter) {
+            $money = isset($copywriters[$copywriter["id"]]["money"]) ? $copywriters[$copywriter["id"]]["money"] : 0;
+            $num = (int) isset($copywriters[$copywriter["id"]]["num"]) ? $copywriters[$copywriter["id"]]["num"] : 0;
+            $summa = (isset($withdrawal[$copywriter["id"]]) ? $withdrawal[$copywriter["id"]] : 0);
+            $balance = $money - $summa;
+            if($num == 0) {
+                continue;
+            }
             $tr = "<tr>";
-            $tr .= "<td>" . $copywriter["login"] . "</td>";
-            $tr .= "<td>" . $tasks_vipolneno["num"] . "</td>";
-            $tr .= "<td>" . ((int) $tasks_vipolneno["chars"] / 1000 * 21) . "</td>";
-            $tr .= "<td class='withdrawal'>" . round($summa, 2) . "</td>";
-            $tr .= "<td class='balance'><a href='?module=admins&action=copywriters&action2=decode_balance&copywriter=" . $copywriter["id"] . "'>" . round($balance, 2) . "</a></td>";
+            $tr .= "<td>" . mb_substr($copywriter["login"], 0, 20) . "</td>";
+            $tr .= "<td>" . $num . "</td>";
+            $tr .= "<td>" . round($money) . "</td>";
+            $tr .= "<td class='withdrawal'>" . round($summa) . "</td>";
+            $tr .= "<td class='balance'><a href='?module=admins&action=copywriters&action2=decode_balance&copywriter=" . $copywriter["id"] . "'>" . round($balance) . "</a></td>";
             $tr .= "<td><input type='text' value='' class='mini' id='" . $copywriter["id"] . "' /></td>";
             $tr .= "<td class='output'><a href='#' class='ico' onclick='return false;'></a></td>";
             $tr .= "</tr>";
@@ -4256,16 +4338,27 @@ class admins {
         if (!empty($copywriter)) {
             $copywriter = $db->Execute("SELECT * FROM admins WHERE type = 'copywriter' AND id = " . $copywriter)->FetchRow();
             $content = str_replace('[balance_title]', "Баланс копирайтера: <b>" . $copywriter['login'] . "</b>", $content);
-            $tasks = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter = " . $copywriter["id"] . " ORDER BY date DESC");
-            $withdrawal = $db->Execute("SELECT sum(sum) as summa FROM withdrawal WHERE uid = " . $copywriter["id"])->FetchRow();
+            $tasks_old = $db->Execute("SELECT z.*, s.cena FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.copywriter = " . $copywriter["id"] . " ORDER BY z.date DESC")->GetAll();
+            $tasks_new = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter = " . $copywriter["id"] . " ORDER BY date DESC")->GetAll();
+            $withdrawal = $db->Execute("SELECT sum(sum) as summa FROM withdrawal WHERE visible = 1 AND uid = " . $copywriter["id"])->FetchRow();
         } else {
-            $content = str_replace('[balance_title]', "Баланс копирайтера: <b>[user_balans]</b>", $content);
-            $tasks = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter != 0 ORDER BY date DESC");
-            $withdrawal = $db->Execute("SELECT sum(sum) as summa FROM withdrawal")->FetchRow();
+            $content = str_replace('[balance_title]', "", $content);
+            $tasks_old = $db->Execute("SELECT z.*, s.cena FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.copywriter != 0 ORDER BY z.date DESC")->GetAll();
+            $tasks_new = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter != 0 ORDER BY date DESC")->GetAll();
+            
+            $copywriters = array();
+            $copywriters_model = $db->Execute("SELECT * FROM admins WHERE type = 'copywriter'")->GetAll();
+            foreach($copywriters_model as $copywriter) {
+                $copywriters[] = $copywriter["id"];
+            }
+            $copywriters_ids = implode(",", $copywriters);
+            $withdrawal = $db->Execute("SELECT sum(sum) as summa FROM withdrawal WHERE visible = 1 AND uid IN ($copywriters_ids)")->FetchRow();
         }
+        $tasks = array_merge($tasks_old, $tasks_new);
+        
         $zadaniya = "";
         $sum = 0;
-        while ($task = $tasks->FetchRow()) {
+        foreach ($tasks as $task) {
             $bg = '';
             if ($task['dorabotka']) {
                 $new_s = "in-work";
@@ -4287,20 +4380,33 @@ class admins {
             }
             if ($_SESSION['admin']['id'] != 1)
                 $bg = '';
-
+            
+            //До 1 марта цены для копирайтеров были: 21 р. за 1000 знаков, 
+            //вне зависимости от кач-ва работы
+            // Потом изменились!!
+            if($task["date"] >= "1456779600"){
+                $price = (isset($task["cena"]) ? $task["cena"] : $task["price"]); 
+                $money = $this->getPriceCopywriter($price, $task["nof_chars"]);
+            } else {
+                $money = ($task["nof_chars"] / 1000) * COPYWRITER_PRICE_FOR_1000_CHAR;
+            }
+                
             $zadaniya .= '<tr style="background:' . $bg . '">';
-            $zadaniya .= '<td>' . ($task["nof_chars"] / 1000 * 21) . '</td>';
-            $zadaniya .= '<td style="text-align:left"><a href="?module=admins&action=articles&uid=&action2=edit&id=' . $task["id"] . '">' . $task["tema"] . '</a></td>';
+            $zadaniya .= '<td>' . $money . '</td>';
+            $zadaniya .= '<td style="text-align:left"><a href="?module=admins&action=articles&uid=&action2=edit&id=' . $task["id"] . '">' . mb_substr($task["tema"], 0, 30) . '</a></td>';
             $zadaniya .= '<td>' . date("d.m.Y", $task["date"]) . '</td>';
             $zadaniya .= '<td class="state ' . $new_s . '"><span class="ico"></span></td>';
             $zadaniya .= '</tr>';
-            if ($task["vipolneno"] == 1)
-                $sum += ($task["nof_chars"] / 1000 * 21);
+            if ($task["vipolneno"] == 1){
+                $sum += $money;
+            }
         }
+        $summa = $withdrawal["summa"] ? round($withdrawal["summa"], 1) : 0;
+        
         $content = str_replace('[id]', $copywriter["id"], $content);
-        $content = str_replace('[earned]', $sum, $content);
-        $content = str_replace('[withdrawn]', $withdrawal["summa"] ? $withdrawal["summa"] : 0, $content);
-        $content = str_replace('[balance]', ($sum - $withdrawal["summa"]), $content);
+        $content = str_replace('[earned]', round($sum, 1), $content);
+        $content = str_replace('[withdrawn]', $summa, $content);
+        $content = str_replace('[balance]', round(($sum - $summa), 1), $content);
         $content = str_replace('[zadaniya]', $zadaniya, $content);
         return $content;
     }
@@ -4309,7 +4415,7 @@ class admins {
         $content = file_get_contents(PATH . 'modules/admins/tmp/admin/copywriters_withdrawal.tpl');
         $table = $bg = "";
         $num = 1;
-        $withdrawal = $db->Execute("SELECT w.*,a.login FROM withdrawal w LEFT JOIN admins a ON a.id=w.uid WHERE a.type='copywriter' ORDER BY w.date");
+        $withdrawal = $db->Execute("SELECT w.*,a.login FROM withdrawal w LEFT JOIN admins a ON a.id=w.uid WHERE w.visible = 1 AND a.type='copywriter' ORDER BY w.date DESC");
         while ($value = $withdrawal->FetchRow()) {
             $bg = (($num % 2) == 0) ? "#f7f7f7" : "";
             $table .= '<tr style="background:' . $bg . '">';
@@ -4458,15 +4564,16 @@ class admins {
         $tasks_burse_for_copywriter = array();
         if (!empty($date)) {
             $tasks = $db->Execute("SELECT ct.* FROM completed_tasks ct  WHERE ct.date >= '$date' ORDER BY ct.date ASC"); // AND date < '2014-10-28 00:00:00'
-            $tasks_burse_copywriter = $db->Execute("SELECT id, nof_chars FROM zadaniya WHERE for_copywriter = 1 AND copywriter != 0 AND date >= '$date'");
+            $tasks_burse_copywriter = $db->Execute("SELECT z.id, z.price, z.nof_chars, s.cena FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.for_copywriter = 1 AND z.copywriter != 0 AND z.date >= '$date'");
             $sapes = $db->Execute("SELECT * FROM zadaniya_new WHERE (etxt = 1 OR copywriter != 0) AND date >= '$time' ORDER BY date ASC");
         } else {
             $tasks = $db->Execute("SELECT ct.* FROM completed_tasks ct ORDER BY ct.date ASC");
-            $tasks_burse_copywriter = $db->Execute("SELECT id, nof_chars FROM zadaniya WHERE for_copywriter = 1 AND copywriter != 0");
+            $tasks_burse_copywriter = $db->Execute("SELECT z.id, z.price, z.nof_chars, s.cena FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.for_copywriter = 1 AND z.copywriter != 0");
             $sapes = $db->Execute("SELECT * FROM zadaniya_new WHERE (etxt = 1 OR copywriter != 0) ORDER BY date ASC");
         }
         while ($task_copywriter = $tasks_burse_copywriter->FetchRow()) {
-            $tasks_burse_for_copywriter[$task_copywriter["id"]] = $task_copywriter["nof_chars"];
+            $price_copywriter = (isset($task_copywriter["cena"]) ? $task_copywriter["cena"] : $task_copywriter["price"]);
+            $tasks_burse_for_copywriter[$task_copywriter["id"]] = array($price_copywriter, $task_copywriter["nof_chars"]);
         }
         //print_r($tasks->GetAll());die();
         $stat = $money = array(0 => 0);
@@ -4495,8 +4602,13 @@ class admins {
                     $stat[$date_time_array[$filter]][$task['price']] += 1;
                 }
                 $price = 0;
+                //print_r($tasks_burse_for_copywriter);die();
                 if (array_key_exists($task["zid"], $tasks_burse_for_copywriter)) {
-                    $price = $task['price'] - (COPYWRITER_PRICE_FOR_1000_CHAR * ($tasks_burse_for_copywriter[$task["zid"]] / 1000));
+                    if($task['date'] >= "1456779600"){
+                        $price = $task['price'] - ($this->getPriceCopywriter($tasks_burse_for_copywriter[$task["zid"]][0],$tasks_burse_for_copywriter[$task["zid"]][1]));
+                    } else {
+                        $price = $task['price'] - (COPYWRITER_PRICE_FOR_1000_CHAR * ($tasks_burse_for_copywriter[$task["zid"]] / 1000));
+                    }
                 } else {
                     switch ($task['price']) {
                         case 15 : $price = 15;
@@ -4570,7 +4682,7 @@ class admins {
             $tr .= "<td>" . $stat[$key][90] . "</td>";
             $tr .= "<td>" . $stat[$key][128] . "</td>";
             $tr .= "<td>" . (round(($stat[$key][62] + $stat[$key][77] + $stat[$key][110] + $stat[$key][78] + $stat[$key][90] + $stat[$key][128] + $stat[$key][93] + $stat[$key][61] + $stat[$key][45] + $stat[$key][15] + $stat[$key][60] + $stat[$key][76] + $stat[$key][111]))) . "</td>";
-            $tr .= "<td>" . $value . "</td>";
+            $tr .= "<td>" . round($value) . "</td>";
             $tr .= "</tr>";
             $table .= $tr;
             $sum += $value;
@@ -4610,9 +4722,10 @@ class admins {
                 $cena = ($task['nof_chars'] / 1000) * $task['price'];
                 $comission_etxt = ($cena / 100) * 5;
                 $price = $cena + $comission_etxt;
+            } else if($task['date'] >= "1456779600"){
+                $price = $cena = $this->getPriceCopywriter($task['price'], $task['nof_chars']);
             } else {
-                $cena = ($task['nof_chars'] / 1000) * 21;
-                $price = $cena;
+                $price = $cena = COPYWRITER_PRICE_FOR_1000_CHAR * ($task['nof_chars'] / 1000);
             }
             if (!isset($stat[$date_time_array[$filter]][floor($price)])) {
                 $stat[$date_time_array[$filter]][floor($price)] = 0;
