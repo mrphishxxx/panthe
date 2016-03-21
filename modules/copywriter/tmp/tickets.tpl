@@ -20,7 +20,7 @@
 
 <!-- add exchange -->
 <div class="add-exchange">
-    <h3>Тема обращения:</h3>
+    <h3>Написать администрации:</h3>
     <!-- form -->
     <form action="/copywriter.php?action=ticket&action2=add" method="post">
         <div class="form">

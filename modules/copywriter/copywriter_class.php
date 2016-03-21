@@ -1,5 +1,7 @@
 <?php
 
+include PATH . '/helpers/Helper.php';
+
 class copywriter {
 
     public $_smarty = null;
@@ -263,13 +265,19 @@ class copywriter {
             sistema = 'http://pr.sape.ru/' 
             $condition ORDER BY date ASC, id DESC")->GetAll();
 
-        $for_burse = $db->Execute("SELECT z.*, s.cena FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE 
+        $for_burse = $db->Execute("SELECT * FROM zadaniya WHERE 
             tema != '' AND  
             for_copywriter=1 AND 
             etxt=0 AND 
             copywriter=0 
             $condition ORDER BY date ASC, id DESC")->GetAll();
         $all = array_merge($for_sape, $for_burse);
+
+        $sites = array();
+        $sites_model = $db->Execute("SELECT * FROM sayty")->GetAll();
+        foreach ($sites_model as $site) {
+            $sites[$site["id"]] = $site;
+        }
 
         $prohibition_tasks = array();
         $prohibition_taking_tasks = $db->Execute("SELECT * FROM prohibition_taking_tasks WHERE user_id=$uid");
@@ -292,12 +300,12 @@ class copywriter {
                             break;
                         default : $type = "Статья";
                     }
-                    $price = (isset($res["cena"]) ? $res["cena"] : $res["price"]); 
+                    $price = (($res["sid"] != 1 && isset($sites[$res["sid"]]["cena"]) && !empty($sites[$res["sid"]]["cena"])) ? $sites[$res["sid"]]["cena"] : $res["price"]);
                     $tr = "<tr>";
                     $tr .= "<td><a href='/copywriter.php?action=tasks&action2=view&id=" . $res["id"] . (!isset($res["from_sape"]) ? "&burse=1" : "") . "'>" . mb_substr($res["tema"], 0, 35) . "</a></td>";
                     $tr .= "<td>" . $res["nof_chars"] . "</td>";
                     $tr .= "<td>" . $type . "</td>";
-                    $tr .= "<td>" . date("Y-m-d", $res["date"]) . "</td>";
+                    $tr .= "<td>" . Helper::textQuality($price) . "</td>";
                     $tr .= "<td>" . $this->getPriceCopywriter($price, $res["nof_chars"]) . " руб.</td>";
                     $tr .= "<td class='add'><a href='/copywriter.php?action=tasks&action2=add&id=" . $res["id"] . (!isset($res["from_sape"]) ? "&burse=1" : "") . "' class='ico'></a></td>";
                     $tr .= "</tr>";
@@ -356,7 +364,7 @@ class copywriter {
                 }
 
                 $tasks_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='$uid' $condition ORDER BY date DESC, id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit)->GetAll();
-                $tasks_burse = $db->Execute("SELECT z.*, s.cena FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.copywriter='$uid' $condition ORDER BY z.date DESC, z.id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit)->GetAll();
+                $tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='$uid' $condition ORDER BY date DESC, id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit)->GetAll();
                 $tasks = array_merge($tasks_sape, $tasks_burse);
 
                 $all_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='$uid' $condition ORDER BY date DESC, id DESC")->GetAll();
@@ -365,12 +373,18 @@ class copywriter {
             }
         } else {
             $tasks_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='$uid' ORDER BY date DESC, id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit)->GetAll();
-            $tasks_burse = $db->Execute("SELECT z.*, s.cena FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.copywriter='$uid' ORDER BY z.date DESC, z.id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit)->GetAll();
+            $tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='$uid' ORDER BY date DESC, id DESC LIMIT " . ($offset - 1) * $limit . "," . $limit)->GetAll();
             $tasks = array_merge($tasks_sape, $tasks_burse);
 
             $all_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='$uid' ORDER BY date DESC, id DESC")->GetAll();
             $all_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='$uid' ORDER BY date DESC, id DESC")->GetAll();
             $all = array_merge($all_sape, $all_burse);
+        }
+
+        $sites = array();
+        $sites_model = $db->Execute("SELECT * FROM sayty")->GetAll();
+        foreach ($sites_model as $site) {
+            $sites[$site["id"]] = $site;
         }
 
         if (!isset($_GET["status_z"]) || (isset($_GET["status_z"]) && $_GET["status_z"] != "all")) {
@@ -453,13 +467,13 @@ class copywriter {
             }
             $chat = $db->Execute("SELECT * FROM chat_admin_copywriter WHERE status=0 AND uid!=$uid AND zid='" . $res["id"] . "' AND burse='" . (!isset($res["from_sape"]) ? "1" : "0") . "' LIMIT 1")->FetchRow();
 
-            $price = (isset($res["cena"]) ? $res["cena"] : $res["price"]);
+            $price = (($res["sid"] != 1 && isset($sites[$res["sid"]]["cena"]) && !empty($sites[$res["sid"]]["cena"])) ? $sites[$res["sid"]]["cena"] : $res["price"]);
             $tr = "<tr style='background:$bg'>";
             $tr .= "<td>" . mb_substr($res["tema"], 0, 35) . "</td>";
             $tr .= "<td>" . $res["nof_chars"] . "</td>";
             $tr .= "<td>" . $type . "</td>";
             $tr .= "<td>" . $status . "</td>";
-            $tr .= "<td>" . date("Y-m-d", $res["date"]) . "</td>";
+            $tr .= "<td>" . Helper::textQuality($price) . "</td>";
             $tr .= "<td>" . (($res["date"] >= "1456779600") ? $this->getPriceCopywriter($price, $res["nof_chars"]) : ($res["nof_chars"] / 1000 * COPYWRITER_PRICE_FOR_1000_CHAR)) . " руб.</td>";
             if (!empty($chat)) {
                 $tr .= "<td class='state processed' style='padding-top:15px'><span class='ico'></span></td>";
@@ -623,8 +637,9 @@ class copywriter {
             $burse = 0;
         }
         $display = $read = "";
-        $copywriter = $db->Execute("SELECT * FROM admins WHERE id='$uid'")->FetchRow();
         $task = $db->Execute("SELECT * FROM $table WHERE copywriter='$uid' AND id='$id'")->FetchRow();
+        $site = $db->Execute("SELECT * FROM sayty WHERE id='" . $task["sid"] . "'")->FetchRow();
+
         if (empty($id) || empty($task)) {
             $error = "Не верный ID задачи!";
             header('Location: /copywriter.php?action=tasks');
@@ -688,6 +703,7 @@ class copywriter {
             $content = str_replace('[ankor3_url3]', (!empty($task['ankor3'])) ? "<br>" . htmlspecialchars('<a href="' . $task['url3'] . '">' . $task['ankor3'] . '</a>') : '', $content);
             $content = str_replace('[ankor4_url4]', (!empty($task['ankor4'])) ? "<br>" . htmlspecialchars('<a href="' . $task['url4'] . '">' . $task['ankor4'] . '</a>') : '', $content);
             $content = str_replace('[ankor5_url5]', (!empty($task['ankor5'])) ? "<br>" . htmlspecialchars('<a href="' . $task['url5'] . '">' . $task['ankor5'] . '</a>') : '', $content);
+            $content = str_replace('[text_quality]', Helper::textQuality(($site["id"] != 1) ? $site["id"] : $task['price']), $content);
 
             $content = str_replace('[burse]', (($burse == 1) ? "&burse=1" : ""), $content);
             $content = str_replace('[error]', ((isset($_REQUEST['error']) && !empty($_REQUEST['error'])) ? $_REQUEST['error'] : ""), $content);
@@ -832,6 +848,8 @@ class copywriter {
             $burse = 0;
         }
         $task = $db->Execute("SELECT * FROM $table WHERE id='$id'")->FetchRow();
+        $site = $db->Execute("SELECT * FROM sayty WHERE id='" . $task["sid"] . "'")->FetchRow();
+
         if (!empty($id)) {
             //$additional_text = "";
             switch ($task["type_task"]) {
@@ -862,6 +880,8 @@ class copywriter {
             $content = str_replace('[ankor3_url3]', (!empty($task['ankor3'])) ? "<br>" . htmlspecialchars('"<a href=\'' . $task['url3'] . '\'>' . $task['ankor3'] . '</a>"') : '', $content);
             $content = str_replace('[ankor4_url4]', (!empty($task['ankor4'])) ? "<br>" . htmlspecialchars('"<a href=\'' . $task['url4'] . '\'>' . $task['ankor4'] . '</a>"') : '', $content);
             $content = str_replace('[ankor5_url5]', (!empty($task['ankor5'])) ? "<br>" . htmlspecialchars('"<a href=\'' . $task['url5'] . '\'>' . $task['ankor5'] . '</a>"') : '', $content);
+
+            $content = str_replace('[text_quality]', Helper::textQuality(($site["id"] != 1) ? $site["id"] : $task['price']), $content);
 
             $content = str_replace('[burse]', (($burse == 1) ? "&burse=1" : ""), $content);
             $content = str_replace('[error]', ((isset($_REQUEST['error']) && !empty($_REQUEST['error'])) ? $_REQUEST['error'] : ""), $content);
@@ -956,11 +976,18 @@ class copywriter {
             while ($res = $tasks->FetchRow()) {
                 $balance += (($res["date"] >= "1456779600") ? $this->getPriceCopywriter($res["price"], $res["nof_chars"]) : ($res["nof_chars"] / 1000 * COPYWRITER_PRICE_FOR_1000_CHAR));
             }
-            $tasks_burse = $db->Execute("SELECT z.*, s.cena FROM zadaniya z LEFT JOIN sayty s ON s.id=z.sid WHERE z.copywriter='" . $user['id'] . "' AND z.vipolneno=1");
+            $sites = array();
+            $sites_model = $db->Execute("SELECT * FROM sayty")->GetAll();
+            foreach ($sites_model as $site) {
+                $sites[$site["id"]] = $site;
+            }
+
+            $tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='" . $user['id'] . "' AND vipolneno=1");
             while ($res = $tasks_burse->FetchRow()) {
-                $price = (isset($res["cena"]) ? $res["cena"] : $res["price"]); 
+                $price = (($res["sid"] != 1 && isset($sites[$res["sid"]]["cena"]) && !empty($sites[$res["sid"]]["cena"])) ? $sites[$res["sid"]]["cena"] : $res["price"]);
                 $balance += (($res["date"] >= "1456779600") ? $this->getPriceCopywriter($price, $res["nof_chars"]) : ($res["nof_chars"] / 1000 * COPYWRITER_PRICE_FOR_1000_CHAR));
             }
+
             $withdrawal = $db->Execute("SELECT * FROM withdrawal WHERE visible = 1 AND uid='" . $user['id'] . "' ORDER BY date DESC");
             while ($res = $withdrawal->FetchRow()) {
                 $balance -= $res["sum"];
@@ -1269,18 +1296,18 @@ class copywriter {
             case 45:
             case 50:$price = 47.25;
                 break;
-            
+
             case 78:
             case 93: $price = 31.5; //Для задач из биржи (тариф medium).
                 break;
             case 110:
             case 128: $price = 47.25; //Для задач из биржи (тариф expert).
                 break;
-            
+
             default: $price = 21;
                 break;
         }
-        
+
         return $price * ($type / 1000);
     }
 

@@ -1,6 +1,6 @@
 <h1>Копирайтеры - Чёрный список</h1>
 
-<div class="form" style="background: white">
+<div class="form no-shadow no-background">
     <form action="" method="post" id="form">
         <input type="hidden" id="error" value="[error]" />
         <div class="wider">

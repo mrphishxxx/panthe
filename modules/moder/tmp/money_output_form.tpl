@@ -1,4 +1,4 @@
-<div class="form" style="background: white; padding-left: 0">
+<div class="form no-shadow no-background" style="padding-left: 0">
     <form action="" method="post" id="form">
         <input type="hidden" name="send" value="1" />
         <input type="hidden" name="balance" id="balance" value="[balance]" />

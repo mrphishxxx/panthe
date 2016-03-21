@@ -14,6 +14,7 @@ $db->Execute('SET NAMES utf8');
 $smarty = new Smarty_Project();
 $mails = new MailsController($db, $smarty);
 
+$body = "";
 $date_minus_three_days = time() - 259200; // 'сейчас' - 'минус три дня'
 $admins_managers = $answers = $tickets = array();
 

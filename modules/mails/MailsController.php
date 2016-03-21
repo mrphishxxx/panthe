@@ -158,7 +158,7 @@ class MailsController {
             foreach ($users as $user) {
                 $tid = array_search($user["id"], $users_ids);
                 $this->_postman->user->ticketClosed($user["email"], $user["login"], $tid);
-                $log .= "Send -> " . $user["login"] . "(" . $user["email"] . ")" . PHP_EOL;
+                $log .= "Ticket $tid closed. Send mail -> " . $user["login"] . "(" . $user["email"] . ")" . PHP_EOL;
             }
         }
         return $log;

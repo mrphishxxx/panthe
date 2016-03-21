@@ -3,7 +3,7 @@
 
 <a href="/user.php?module=user&action=zadaniya_moder&action2=csv&uid=[viklad_id]">Выгрузить готовые заявки в Excel</a> | <a href="[cur_url]&status_z=all">Показать ВСЕ заявки</a>
 
-<div class="form" style="background: white;">
+<div class="form no-background no-shadow">
     <ul>
         <li>
             <span class="title"><b>Фильтр по домену:</b></span>

@@ -79,7 +79,7 @@
                         <!-- PAGE TITLE / NOTIFICATION AREA 
                         <h1>Мониторинг и управление</h1>
                         -->
-                        <!-- notifications area -->
+                        <!-- notifications area 
 
                         <div class="notification">
                             [main_comment]
@@ -91,8 +91,8 @@
                         <!-- PAGE CONTENT -->
                         <div id="page_content">
                             <!-- ////////////////////////////////////////////////// -->
-                            [search]					<br/><br/>
-
+                            [search]					
+                            
                             [content]
 
                             <!-- ////////////////////////////////////////////////// -->

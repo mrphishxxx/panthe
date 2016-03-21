@@ -27,7 +27,7 @@
                 <th style="width: 30px;">Кол. симв.</th>
                 <th style="width: 30px;">Тип</th>
                 <th style="width: 50px;">Статус</th>
-                <th style="width: 50px;">Дата</th>
+                <th style="width: 50px;">Качество</th>
                 <th style="width: 60px;">Цена статьи</th>
                 <th style="width: 20px;">Коммент.</th>
                 <th style="width: 20px;">&nbsp;</th>

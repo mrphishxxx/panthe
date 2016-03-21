@@ -1,6 +1,5 @@
 <?php
 
-error_reporting(E_ALL ^ E_NOTICE);
 include(dirname(__FILE__) . '/../' . 'config.php');
 include dirname(__FILE__) . '/../' . 'includes/adodb5/adodb.inc.php';
 require_once dirname(__FILE__) . '/../' . 'includes/mandrill/mandrill.php';
@@ -43,7 +42,7 @@ function callback($response, $info, $request) {
             'password' => $post->password,
             'remember' => "");
         $query_p = http_build_query($data);
-
+        
         if ($curl = curl_init()) {
             curl_setopt($curl, CURLOPT_URL, 'http://getgoodlinks.ru/login.php');
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -56,7 +55,7 @@ function callback($response, $info, $request) {
             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
             $rez = curl_exec($curl);
             curl_close($curl);
-        }
+        }    
 
         $error = strpos($rez, "Неверное имя пользователя или пароль. Пожалуйста, попробуйте ещё раз.");
         if ($error !== false && !empty($error) && $error != 0) {

@@ -19,17 +19,16 @@
             За месяц - задачи выполненые с 1 числа текущего месяца.<br />
             За все время - все выполненые задачи копирайтером.<br /></em>
     </p>
-    <p>
+    <p class="hidden-block">
         Столбец "Доверяем" означает, что у данного копирайтера не будет происходить проверка уникальности текста и данное поле он заполняет руками.
     </p>
-    <p>
+    <p class="hidden-block">
         У тех у кого не стоит галка в данном столбце, проверятся текст задачи на кол-во знаков и уникальность текста в сервисе text.ru
     </p>
-    <br />
 </div>
 <h3>[name_stat]</h3>
 
-<div class="form" style="background: white">
+<div class="form no-shadow no-background">
     <form action="" method="post" id="form">
         <input type="hidden" id="error" value="[error]" />
         <div class="wider">

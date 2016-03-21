@@ -1,31 +1,27 @@
-<h1>Редактировать задание #[id]</h1>
-<span class="span-title">Описание задачи</span>
-<p>
-    1) [type] [nof_chars] символов без пробелов, в тексте должн[mn] быть фраз[mn] <br>[ankor_url][ankor2_url2][ankor3_url3][ankor4_url4][ankor5_url5]
-</p>
-<p>
-    2) Фраза должна быть употреблена в точности как написана, разрывать другими словами ее нельзя, склонять так же нельзя. Если указано несколько фраз, то нужно их равномерно распределить по тексту.  
-</p>
-<p>
-    3) Текст без воды, строго по теме, без негатива (см. раздел "<a href="/copywriter.php?action=help&action2=work">Как выполнять задачи?</a>") .
-</p>
-<p>
-    4) Фразу употребить ТОЛЬКО ОДИН раз, в остальном - заменять синонимами.
-</p>
-<p>
-    5) Вставить готовый заказ просто текстом, в поле Статья.
-</p>
-<p>
-    6) Важно! Текст копировать из блокнота, так как иначе не видно ссылок.
-</p>
-<p>
-    7) После того как заказ будет принят и оплачен все авторские права принадлежат аккаунту ifoget.ru 
-    (то есть статьи могут быть опубликованы на сайтах под различным именем, на выбор владельца текста)
-</p>
-<p>  <!-- [trust] -->
-    8) Вручную проверить уникальность текста по Адвего Плагиатус (выше 95%), в поле "Уникальность текста" проставить % уникальности по данной программе.
-    Без этого пункта автоматически задание отправляется на доработку.
-</p>
+<h1>Задание #[id]</h1>
+<div class="colapse copywriter-view-description">
+    <span class="span-title">Описание задачи</span>
+    <div class="content-inside">
+        <ol>
+            <li>[type] [nof_chars] символов без пробелов, в тексте должн[mn] быть фраз[mn] <br>[ankor_url][ankor2_url2][ankor3_url3][ankor4_url4][ankor5_url5]</li>
+            <li>Фраза должна быть употреблена в точности как написана, разрывать другими словами ее нельзя, склонять так же нельзя. Если указано несколько фраз, то нужно их равномерно распределить по тексту</li>
+            <li>Текст без воды, строго по теме, без негатива (см. раздел "<a href="/copywriter.php?action=help&action2=work">Как выполнять задачи?</a>")</li>
+            <li>Фразу употребить ТОЛЬКО ОДИН раз, в остальном - заменять синонимами </li>
+            <li>Вставить готовый заказ просто текстом, в поле Статья</li>
+            <li>Вручную проверить уникальность текста по Адвего Плагиатус (выше 95%), в поле "Уникальность текста" проставить % уникальности по данной программе.<br>Без этого пункта автоматически задание отправляется на доработку.</li>
+            <li>После того как заказ будет принят и оплачен все авторские права принадлежат аккаунту iforget.ru<br>(то есть статьи могут быть опубликованы на сайтах под различным именем, на выбор владельца текста)</li>
+            <li>Вручную проверить уникальность текста по Адвего Плагиатус (выше 95%), в поле "Уникальность текста" проставить % уникальности по данной программе.<br/>Без этого пункта автоматически задание отправляется на доработку.</li>
+        </ol>
+    </div>
+</div>
+
+<div class="notcolapse copywriter-view-description">
+    <span class="span-title">Качество работы</span>
+    <div class="content-inside">
+        <h3>Требуемое качество текста: "[text_quality]".</h3>
+
+    </div>
+</div>
 <form action="" method="post" id="form">
     <input type="hidden" value="[id]" name="id" />
     <div class="form">
@@ -115,7 +111,7 @@
 
         </ul>
     </div>
-    <div style="background: #e7e7e7; padding: 10px 5px;" class="form">
+    <div class="form gray">
         <ul>
             <li style="float:left; margin-right: 20px;">
                 <span class="title">Написать заказчику:</span>
@@ -139,20 +135,33 @@
     </div>
 </form>
 <script>
-                $(document).ready(function() {
-                    $("#send_message").click(function() {
-                        var message = $("#msg").val();
-                        if (message === "") {
-                            alert("Поле 'Написать заказчику пустое'\r\n");
-                        } else {
-                            $("#form").attr("action", "?action=chat&action2=send_message[burse]");
-                            $("#form").submit();
-                        }
-                    });
-
-                    var err = $("#error").val();
-                    if(err !== ""){
-                        alert(err);
-                    }
+    $(document).ready(function () {
+        $("#send_message").click(function () {
+            var message = $("#msg").val();
+            if (message === "") {
+                alert("Поле 'Написать заказчику пустое'\r\n");
+            } else {
+                $("#form").attr("action", "?action=chat&action2=send_message[burse]");
+                $("#form").submit();
+            }
+        });
+        
+        $(".colapse .span-title").click(function () {
+            var block_inside = $(this).parent().find(".content-inside");
+            var span = $(this);
+            if (block_inside.is(':hidden')) {
+                block_inside.show(400);
+                span.css("border-radius", "10px 10px 0px 0");
+            } else {
+                block_inside.hide(400, function () {
+                    span.css("border-radius", "10px");
                 });
+            }
+        });
+
+        var err = $("#error").val();
+        if (err !== "") {
+            alert(err);
+        }
+    });
 </script>

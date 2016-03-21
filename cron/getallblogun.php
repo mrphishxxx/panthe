@@ -57,13 +57,21 @@ function getTask($db, $uid) {
     $host = 'http://127.0.0.1:4444/wd/hub'; // this is the default
     $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => "firefox");
     if (!is_null($proxy)) {
-        /*$proxy_capabilities = array(WebDriverCapabilityType::PROXY => array('proxyType' => 'manual',
-                'httpProxy' => '' . $proxy['proxy_host'] . ':' . $proxy['proxy_port'] . '', 'sslProxy' => '' . $proxy['proxy_host'] . ':' . $proxy['proxy_port'] . '', 'socksUsername' => '' . $proxy['proxy_user'] . '', 'socksPassword' => '' . $proxy['proxy_pass'] . ''));
+        /* $proxy_capabilities = array(WebDriverCapabilityType::PROXY => array('proxyType' => 'manual',
+          'httpProxy' => '' . $proxy['proxy_host'] . ':' . $proxy['proxy_port'] . '', 'sslProxy' => '' . $proxy['proxy_host'] . ':' . $proxy['proxy_port'] . '', 'socksUsername' => '' . $proxy['proxy_user'] . '', 'socksPassword' => '' . $proxy['proxy_pass'] . ''));
 
-        array_push($capabilities, $proxy_capabilities);
-		*/
+          array_push($capabilities, $proxy_capabilities);
+         */
     }
-    $driver = RemoteWebDriver::create($host, $capabilities, 300000);
+    try {
+        $driver = RemoteWebDriver::create($host, $capabilities, 300000);
+    } catch (Exception $e) {
+        echo "ERROR: " . $e->getMessage();
+        if(isset($driver) && !empty($driver)) {
+            $driver->quit();
+        }
+        return null;
+    }
     $driver->manage()->window()->maximize();
     $driver->manage()->timeouts()->implicitlyWait(20);
     $driver->manage()->deleteAllCookies();
@@ -73,19 +81,35 @@ function getTask($db, $uid) {
     $data['login'] = $user['login'];
     $data['pass'] = $user['pass'];
 
+    try {
+        $loginpage = $driver->get('https://blogun.ru/');
+    } catch (Exception $e) {
+        echo "ERROR: " . $e->getMessage();
+        $driver->quit();
+        return null;
+    }
     $loginpage = $driver->get('https://blogun.ru/');
     $driver->wait(15);
-    
-	$logins = $driver->findElements(WebDriverBy::xpath("//input[@name='login']"));
-	if(count($logins)==0) {$driver->quit(); return null;}
+
+    $logins = $driver->findElements(WebDriverBy::xpath("//input[@name='login']"));
+    if (count($logins) == 0) {
+        $driver->quit();
+        return null;
+    }
     $logins[0]->sendKeys($data['login']);
-	
+
     $pass = $driver->findElements(WebDriverBy::xpath("//input[@name='password']"));
-	if(count($pass)==0) {$driver->quit(); return null;}
+    if (count($pass) == 0) {
+        $driver->quit();
+        return null;
+    }
     $pass[0]->sendKeys($data['pass']);
-	
+
     $btns = $driver->findElements(WebDriverBy::xpath("//button[@type='submit']"));
-	if(count($btns)==0) {$driver->quit(); return null;}
+    if (count($btns) == 0) {
+        $driver->quit();
+        return null;
+    }
     $btns[0]->click();
 
     if (count($driver->findElements(WebDriverBy::xpath("//a[@class='amount']"))) === 0) {
@@ -101,10 +125,12 @@ function getTask($db, $uid) {
     $types = array();
     $hrefs = array();
     for ($i = 0; $i < count($rows); $i++) {
-		$hs = $rows[$i]->findElements(WebDriverBy::xpath(".//a[@class='descript_text']"));
-		if(count($hs)==0) continue;
-		$ts = $rows[$i]->findElements(WebDriverBy::xpath(".//td[7]"));
-		if(count($ts)==0) continue;
+        $hs = $rows[$i]->findElements(WebDriverBy::xpath(".//a[@class='descript_text']"));
+        if (count($hs) == 0)
+            continue;
+        $ts = $rows[$i]->findElements(WebDriverBy::xpath(".//td[7]"));
+        if (count($ts) == 0)
+            continue;
         array_push($hrefs, $hs[0]->getAttribute('href'));
         array_push($types, $ts[0]->getText());
     }
@@ -144,8 +170,9 @@ function getTask($db, $uid) {
 
         $driver->get($href);
         $description = $driver->findElements(WebDriverBy::xpath("//p[@class='getcodeText']"));
-		if(count($description)==0) continue;
-		
+        if (count($description) == 0)
+            continue;
+
         $data['comments'] = $description[0]->getText();
         $data['url'] = '*';
         $data['url2'] = '*';
@@ -186,12 +213,14 @@ function getTask($db, $uid) {
             }
         }
 
-        $exists = $db->Execute('SELECT * FROM zadaniya WHERE sistema="https://blogun.ru/" AND b_id=' . $data['id'] . ' AND sid="'.array_search($data['idblog'], $sites_to_user).'" AND uid=' . $data['uid'])->FetchRow();
+        $exists = $db->Execute('SELECT * FROM zadaniya WHERE sistema="https://blogun.ru/" AND b_id=' . $data['id'] . ' AND sid="' . array_search($data['idblog'], $sites_to_user) . '" AND uid=' . $data['uid'])->FetchRow();
         if (empty($exists)) {
             $first = mb_strtoupper(mb_substr($data["ankor"], 0, 1, 'UTF-8'), 'UTF-8'); //первая буква
             $first = str_replace("?", "", $first);
             $last = mb_strtolower(mb_substr($data["ankor"], 1), 'UTF-8'); //все кроме первой буквы
-            $last = ($last[0] == "?") ? mb_substr($last, 1) : $last;
+            if (!empty($last)) {
+                $last = ($last[0] == "?") ? mb_substr($last, 1) : $last;
+            }
             $data["tema"] = mysql_real_escape_string($first . $last);
             $data["keywords"] = implode($keywords, ",");
             $db->Execute("INSERT into zadaniya(sistema, sid, b_id, comments, 
@@ -207,7 +236,7 @@ function getTask($db, $uid) {
                         '" . $data['url3'] . "','" . $data['ankor3'] . "',
                         '" . $data['url4'] . "','" . $data['ankor4'] . "',
                         '" . $data['url5'] . "','" . $data['ankor5'] . "',
-                        '" . $data['uid'] . "',0,0,0,0,0,'" . $data['type_task'] . "', '" . time() . "', '".$data["tema"]."', '".$data["keywords"]."')");
+                        '" . $data['uid'] . "',0,0,0,0,0,'" . $data['type_task'] . "', '" . time() . "', '" . $data["tema"] . "', '" . $data["keywords"] . "')");
         } else {
             echo $data['id'] . " - TASK EXIST\r\n";
             //dont do anything

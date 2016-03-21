@@ -681,7 +681,7 @@ class admins {
                             4)Фразу употребить ТОЛЬКО ОДИН раз, в остальном - заменять синонимами 
                             5)Высылать готовый заказ просто текстом, в формате word не принимаем
                             6)Вручную проверить уникальность текста по Адвего Плагиатус (выше 95%), в Комментариях к заказу проставить % уникальности по данной программе. Без этого пункта автоматически задание отправляется на доработку.
-                            7)После того как заказ будет принят и оплачен все авторские права принадлежат аккаунту ifoget.ru (то есть статьи могут быть опубликованы на сайтах под различным именем, на выбор владельца текста).
+                            7)После того как заказ будет принят и оплачен все авторские права принадлежат аккаунту iforget.ru (то есть статьи могут быть опубликованы на сайтах под различным именем, на выбор владельца текста).
                             8)Тексты писать только на русском языке.';
             $tittle = $db_res2['ankor'];
             $description = str_replace('[ankor]', $tittle, $description);
@@ -3682,8 +3682,8 @@ class admins {
             echo $content;
             exit;
         }
-        $content .= file_get_contents(PATH . 'modules/admins/tmp/admin/add_balance.tpl');
-        $send = $_REQUEST['send'];
+        $content = file_get_contents(PATH . 'modules/admins/tmp/admin/add_balance.tpl');
+        $send = isset($_REQUEST['send'])? $_REQUEST['send'] : null;
 
         if (!$send) {
             $user = "";
@@ -3806,15 +3806,25 @@ class admins {
         }
         $content = str_replace('[name_stat]', $name_chart, $content);
 
-        $moders = $db->Execute("SELECT * FROM admins WHERE type = 'moder' AND active = 1 ORDER BY login ASC");
+        $moders_model = $db->Execute("SELECT * FROM admins WHERE type = 'moder' AND active = 1 ORDER BY login ASC")->GetAll();
+        $count_completed_tasks = array();
+        $tasks = $db->Execute("SELECT who_posted FROM zadaniya WHERE vipolneno = 1" . $condition)->GetAll();
+        foreach ($tasks as $value) {
+            if(!isset($count_completed_tasks[$value["who_posted"]])){
+                $count_completed_tasks[$value["who_posted"]] = 0;
+            }
+            $count_completed_tasks[$value["who_posted"]] += 1;
+        }
+        
         $table = "";
-        while ($moder = $moders->FetchRow()) {
-            $tasks = $db->Execute("SELECT count(id) as num FROM zadaniya WHERE who_posted = " . $moder["id"] . " AND vipolneno = 1" . $condition)->FetchRow();
+        foreach ($moders_model as $moder) {
             //$tasks_other = $db->Execute("SELECT count(id) as num FROM zadaniya WHERE who_posted = " . $moder["id"] . " AND (navyklad = 1 OR vilojeno = 1 OR dorabotka = 1)")->FetchRow();
-
+            if(!isset($count_completed_tasks[$moder["id"]]) || $count_completed_tasks[$moder["id"]] == 0){
+                continue;
+            }
             $tr = "<tr>";
             $tr .= "<td>" . $moder["login"] . "</td>";
-            $tr .= "<td>" . $tasks["num"] . "</td>";
+            $tr .= "<td>" . $count_completed_tasks[$moder["id"]] . "</td>";
             //$tr .= "<td>" . $tasks_other["num"] . "</td>";
             $tr .= "</tr>";
             $table .= $tr;
@@ -3835,21 +3845,55 @@ class admins {
             $content = str_replace('[error]', "", $content);
         }
 
-        $moders = $db->Execute("SELECT * FROM admins WHERE type = 'moder' AND active = 1 ORDER BY login ASC");
+        $moders = array();
+        $moders_model = $db->Execute("SELECT id, login FROM admins WHERE type = 'moder' AND active = 1 ORDER BY login ASC");
+        foreach ($moders_model as $moder) {
+            $moders[] = $moder["id"];
+        }
+        $modes_ids = implode(",", $moders);
+        //echo $modes_ids;
+        $tasks = array();
+        $tasks_model = $db->Execute("SELECT who_posted FROM zadaniya WHERE who_posted IN (" . $modes_ids . ") AND vipolneno = 1")->GetAll();
+        foreach ($tasks_model as $value) {
+            if(!isset($tasks[$value["who_posted"]])){
+                $tasks[$value["who_posted"]] = 0;
+            }
+            $tasks[$value["who_posted"]] += 1;
+        } 
+        
+        $money = array();
+        $moder_money_model = $db->Execute("SELECT moder_id, price FROM moders_money WHERE moder_id IN (" . $modes_ids . ")")->GetAll();
+        foreach ($moder_money_model as $value) {
+            if(!isset($money[$value["moder_id"]])){
+                $money[$value["moder_id"]] = 0;
+            }
+            $money[$value["moder_id"]] += $value["price"];
+        }
+        
+        $withdrawal = array();
+        $withdrawal_model = $db->Execute("SELECT uid, sum FROM withdrawal WHERE visible = 1 AND uid IN (" . $modes_ids . ")")->GetAll();
+        foreach ($withdrawal_model as $value) {
+            if(!isset($withdrawal[$value["uid"]])){
+                $withdrawal[$value["uid"]] = 0;
+            }
+            $withdrawal[$value["uid"]] += $value["sum"];
+        }
+        
         $table = "";
-        while ($moder = $moders->FetchRow()) {
-            $tasks_vipolneno = $db->Execute("SELECT count(z.id) as num FROM zadaniya z WHERE z.who_posted = '" . $moder["id"] . "' AND z.vipolneno = 1")->FetchRow();
-            $moder_money = $db->Execute("SELECT SUM(price) as summ FROM moders_money WHERE moder_id = '" . $moder["id"] . "'")->FetchRow();
-            $withdrawal = $db->Execute("SELECT sum(sum) as summa FROM withdrawal WHERE visible = 1 AND uid = " . $moder["id"])->FetchRow();
-            $summa = (isset($withdrawal["summa"]) && !empty($withdrawal["summa"])) ? $withdrawal["summa"] : 0;
-            $balance = ((int) $moder_money["summ"]) - $summa;
-
+        foreach ($moders_model as $moder) {
+            $minus_money = isset($withdrawal[$moder["id"]]) ? $withdrawal[$moder["id"]] : 0;
+            $plus_money = isset($money[$moder["id"]]) ? $money[$moder["id"]] : 0;
+            $num =  isset($tasks[$moder["id"]]) ? $tasks[$moder["id"]] : 0;
+            if($num == 0 && $plus_money == 0 && $minus_money == 0) {
+                continue;
+            }
+            
             $tr = "<tr>";
             $tr .= "<td>" . $moder["login"] . "</td>";
-            $tr .= "<td>" . $tasks_vipolneno["num"] . "</td>";
-            $tr .= "<td>" . (!empty($moder_money["summ"]) ? $moder_money["summ"] : 0) . "</td>";
-            $tr .= "<td class='withdrawal'>" . $summa . "</td>";
-            $tr .= "<td class='balance'><a href='?module=admins&action=moders&action2=decode_balance&moder=" . $moder["id"] . "'>" . $balance . "</a></td>";
+            $tr .= "<td>" . $num . "</td>";
+            $tr .= "<td>" . $plus_money . "</td>";
+            $tr .= "<td class='withdrawal'>" . $minus_money . "</td>";
+            $tr .= "<td class='balance'><a href='?module=admins&action=moders&action2=decode_balance&moder=" . $moder["id"] . "'>" . ($plus_money - $minus_money) . "</a></td>";
             $tr .= "<td><input type='text' value='' class='mini' id='" . $moder["id"] . "' /></td>";
             $tr .= "<td class='output'><a href='#' class='ico' onclick='return false;'></a></td>";
             $tr .= "</tr>";
@@ -5813,7 +5857,7 @@ class admins {
                                 4)Фразу употребить ТОЛЬКО ОДИН раз, в остальном - заменять синонимами
                                 5)Высылать готовый заказ просто текстом, в формате word не принимаем
                                 6)Вручную проверить уникальность текста по Адвего Плагиатус (выше 95%), в Комментариях к заказу проставить % уникальности по данной программе. Без этого пункта автоматически задание отправляется на доработку.
-                                7)После того как заказ будет принят и оплачен все авторские права принадлежат аккаунту ifoget.ru (то есть статьи могут быть опубликованы на сайтах под различным именем, на выбор владельца текста).
+                                7)После того как заказ будет принят и оплачен все авторские права принадлежат аккаунту iforget.ru (то есть статьи могут быть опубликованы на сайтах под различным именем, на выбор владельца текста).
                                 8)Тексты писать только на русском языке.';
 
                 $description = str_replace('[ankor]', $task['ankor'], $description);

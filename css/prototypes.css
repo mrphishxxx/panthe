@@ -52,7 +52,7 @@ th.right-corner {
     background-image: none;
     background-color: #fff;
 }
-th.left-corner { padding: 0 0 0 10px; }
+//th.left-corner { padding: 0 0 0 10px; }
 th.right-corner { padding: 0 10px 0 0; }
 
 th.left-corner div,
@@ -410,6 +410,17 @@ tbody .edit.row_tt .ico{
 }
 .back_end .form {
     background-color: #dedbc3;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .2);
+}
+.back_end .form.no-shadow {
+    box-shadow: none;
+}
+.back_end .form.gray {
+    background: #e7e7e7;
+}
+.back_end .form.no-background {
+    background: white;
 }
 .form li {
     margin-top: 8px;
@@ -620,17 +631,50 @@ table tbody .yellow1 {
 .navigation .balance a {
     border-bottom: 1px solid #0c0;
 }
-
-
-
 input:read-only,
 textarea:read-only {
     opacity: 0.5;
 }
 
 
+.copywriter-view-description {
+    font-size: small;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .2);
+    border-radius: 10px;
+}
+.content-inside ol, .content-inside ul {
+    margin: 0 20px;
+    font-family: monospace
+}
+.copywriter-view-description .span-title {
+    background: #f0eee1;
+    font-size: medium;
+}
+.content-inside {
+    padding: 10px;
+    //border: 1px solid #f0eee1;
+    border-radius: 0 0 10px 10px;
+}
+.content-inside  {
+    font-family: monospace
+}
 
-
-
-
-
+.colapse .content-inside {
+    display: none;
+}
+.colapse.copywriter-view-description .span-title {
+    border-radius: 10px;
+    background:  url("/images/interface/downarrow.png") no-repeat #f0eee1;
+    background-position: 10px;
+}
+.colapse.copywriter-view-description .span-title:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+.notcolapse .content-inside {
+    display: block;
+}
+.notcolapse.copywriter-view-description .span-title {
+    border-radius: 10px 10px 0 0;
+}

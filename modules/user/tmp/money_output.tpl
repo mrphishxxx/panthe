@@ -14,7 +14,7 @@
 [form]
 <br>
 <h2>История вывода средств</h2>
-<div class="form" style="background: white">
+<div class="form no-shadow no-background">
     <div class="wider">
         <table style="width: 350px;">
             <thead>

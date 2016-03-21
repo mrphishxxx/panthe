@@ -1,6 +1,6 @@
 <h1>Баланс у модератеров</h1>
 
-<div class="form" style="background: white">
+<div class="form no-background no-shadow">
     <form action="" method="post" id="form">
         <input type="hidden" id="error" value="[error]" />
         <div class="wider">
