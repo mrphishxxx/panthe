@@ -25,5 +25,26 @@ class Helper {
             );
         }
     }
+    
+    public static function parserFunctionName($function = null) {
+        if (!empty($function)) {
+            switch ($function) {
+                case "get_tasks_getgoodlinks":
+                    return "Выгрузка задач из GetGoodLinks";
+                case "get_tasks_gogetlinks":
+                    return "Выгрузка задач из Gogetlinks";
+                case "get_tasks_miralinks":
+                    return "Выгрузка задач из Miralinks";
+
+                default: return NULL;
+            }
+        } else {
+            return array(
+                "get_tasks_getgoodlinks" => "Выгрузка задач из GetGoodLinks",
+                "get_tasks_gogetlinks" => "Выгрузка задач из Gogetlinks",
+                "get_tasks_miralinks" => "Выгрузка задач из Miralinks",
+            );
+        }
+    }
 
 }

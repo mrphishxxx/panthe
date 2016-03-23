@@ -1,4 +1,5 @@
 <?php
+include PATH . '/helpers/Helper.php';
 
 class admins {
 
@@ -101,6 +102,22 @@ class admins {
                 break;
             case 'decode_balans':
                 $content = $this->decode_balans($db);
+                break;
+            case 'notify':
+                switch (@$_REQUEST['action2']) {
+                    case 'parser':
+                        $content = $this->notify_parser($db);
+                        break;
+                    case 'parserview':
+                        $content = $this->notify_parser_view($db);
+                        break;
+                    case 'parserviewlog':
+                        $content = $this->notify_parser_viewlog($db);
+                        break;
+                    case 'parserlogfixed':
+                        $content = $this->notify_parser_logfixed($db);
+                        break;
+                }
                 break;
             case 'ticket':
                 switch (@$_REQUEST['action2']) {
@@ -2410,6 +2427,120 @@ class admins {
             header("Location: ?module=admins&action=change_wallet&error=Такой заявки нет");
         }
         exit();
+    }
+    
+    function notify_parser($db) {
+        $content = file_get_contents(PATH . 'modules/admins/tmp/admin/notify.tpl');
+        $function = isset($_REQUEST['function']) ? $_REQUEST['function'] : null;
+        $type = isset($_REQUEST['type']) ? $_REQUEST['type'] : null;
+        $url = "/admin.php?module=admins&action=notify&action2=parser";
+        
+        $condition = "";
+        if(!empty($function)) {
+            $condition = "WHERE function = '" . $function ."'";
+        }
+        if(!empty($type)) {
+            $url .= "&type=" . $type;
+            switch ($type) {
+                case "all":
+                    $content = str_replace('[type_all]', "selected='selected'", $content);
+                    $content = str_replace('[type_with_errors]', "", $content);
+                    $content = str_replace('[type_without_errors]', "", $content);
+                    break;
+                case "with_errors":
+                    $content = str_replace('[type_all]', "", $content);
+                    $content = str_replace('[type_with_errors]', "selected='selected'", $content);
+                    $content = str_replace('[type_without_errors]', "", $content);
+                    $condition .= (($condition != "")? " AND" : " WHERE") . " errors IS NOT NULL";
+                    break;
+                case "without_errors": 
+                    $content = str_replace('[type_all]', "", $content);
+                    $content = str_replace('[type_with_errors]', "", $content);
+                    $content = str_replace('[type_without_errors]', "selected='selected'", $content);
+                    $condition .= (($condition != "")? " AND" : " WHERE") . " errors IS NULL";
+                    break;
+            }
+        }
+        
+        $table = "";
+        $cron_tasks = array();
+        $cron_model = $db->Execute("SELECT * FROM cron " . $condition . " ORDER BY date DESC")->GetAll();
+        foreach ($cron_model as $row) {
+            if(!isset($cron_tasks[date("d", $row["date"])])) {
+                $cron_tasks[date("d", $row["date"])] = array();
+            }
+            $cron_tasks[date("d", $row["date"])][] = $row;
+        }
+        
+        foreach ($cron_tasks as $date => $tasks) {
+            foreach ($tasks as $i => $row) {
+                $table .= "<tr class='" . ((!empty($row["errors"]) && $row["fixed"] == 0) ? "red" : "") . "'>";
+                if($i == 0) {
+                    $table .= "<td rowspan='".count($tasks)."'>" . date("d F Y", $row["date"]) . "</td>";
+                }
+                $table .= "<td>" . date("H:i:s", $row["date"]) . "</td>";
+                $table .= "<td><a class='' href='/admin.php?module=admins&action=notify&action2=parserview&id=" . $row["id"] . "'>" . Helper::parserFunctionName($row["function"]) . "</a></td>";
+                $table .= "<td>" . (!empty($row["errors"]) ? "<span>ДА</span>" : "") . "</td>";
+                $table .= "</tr>";
+            }
+        }
+        
+        $content = str_replace('[table]', $table, $content);
+        $content = str_replace('[cur_url]', $url, $content);
+        return $content;
+    }
+    
+    function notify_parser_view($db) {
+        $content = file_get_contents(PATH . 'modules/admins/tmp/admin/notify_view.tpl');
+        $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
+        $cron_model = $db->Execute("SELECT * FROM cron WHERE id = " . $id)->FetchRow();
+        $content = str_replace('[function_name]', Helper::parserFunctionName($cron_model["function"]), $content);
+        
+        if(!empty($cron_model["errors"])) {
+            $errors_out = "";
+            $admins = array();
+            $errors = json_decode($cron_model["errors"]);
+            $admins_model = $db->Execute("SELECT * FROM admins WHERE id IN (" . implode(",", array_keys((array)$errors)) . ")")->GetAll();
+            foreach ($admins_model as $user) {
+                $admins[$user["id"]] = $user;
+            }
+            
+            foreach ($errors as $id_users => $value) {
+                $errors_out .= "USER " . $admins[$id_users]["login"] . ", ID = " . $id_users . "\r\n";
+                $errors_out .= trim($value) . "\r\n\r\n";                
+            }
+            
+            $content = str_replace('[errors]', $errors_out, $content);
+            $content = str_replace('[output_errors]', "", $content);
+        } else {
+            $content = str_replace('[output_errors]', "style='display:none'", $content);
+        }
+        if(!empty($cron_model["errors"])) {
+            $fixed = ($cron_model["fixed"] == 1) ? "<span class='green'>Исправлено</span>" : "<span class='red'>Ожидает исправления</span>";
+            $content = str_replace('[display]', (($cron_model["fixed"] == 1) ? "style='display:none'" : ""), $content);
+        } else {
+            $fixed = "<span class='green'>Ошибок не обнаружено</span>";
+            $content = str_replace('[display]', "style='display:none'", $content);
+        }
+        
+        $content = str_replace('[date]', date("d F Y H:i:s", $cron_model["date"]), $content);
+        $content = str_replace('[id]', $cron_model["id"], $content);
+        $content = str_replace('[fixed]', $fixed, $content);
+        return $content;
+    }
+    
+    function notify_parser_viewlog($db) {
+        $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
+        $cron_model = $db->Execute("SELECT * FROM cron WHERE id = " . $id)->FetchRow();
+        print_r(nl2br(json_decode($cron_model["logs"])));
+        die();
+    }
+    
+    function notify_parser_logfixed($db) {
+        $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
+        $db->Execute("UPDATE cron SET fixed = 1 WHERE id = " . $id);
+        header("Location: " . $_SERVER["HTTP_REFERER"]);
+        die();
     }
 
     function tickets($db) {

@@ -238,7 +238,7 @@ class ParserController {
                 }
 
                 // уже существующая задача
-                $exists[$task["uid"]][] = $task["b_id"];
+                $exists[$task["uid"]][$task["id"]] = $task["b_id"];
 
                 if ($task["vipolneno"] == 1) {
                     // уже существующая задача в статусе "Выполнено"
@@ -263,7 +263,7 @@ class ParserController {
                 if (!in_array($task_id, $task_exists[$user_id])) {
                     $this->insertRowInZadaniya($user_id, $task_id, $task, $system);
                 } else {
-                    $row_id = array_search($task_id, $task_exists);
+                    $row_id = array_search($task_id, $task_exists[$user_id]);
                     $this->log .= "-> task exist (ID = $row_id) " . PHP_EOL;
                 }
             }
@@ -278,7 +278,15 @@ class ParserController {
                     . "uid, "
                     . "sistema, "
                     . "ankor, "
+                    . "ankor2, "
+                    . "ankor3, "
+                    . "ankor4, "
+                    . "ankor5, "
                     . "url, "
+                    . "url2, "
+                    . "url3, "
+                    . "url4, "
+                    . "url5, "
                     . "tema, "
                     . "comments, "
                     . "vipolneno, "
@@ -292,7 +300,15 @@ class ParserController {
                     . "'" . $user_id . "', "
                     . "'" . $system . "', "
                     . "'" . $this->_db->escape(trim($task["ankor"][0])) . "', "
+                    . "'" . (isset($task["ankor"][1]) ? $this->_db->escape(trim($task["ankor"][1])) : NULL) . "', "
+                    . "'" . (isset($task["ankor"][2]) ? $this->_db->escape(trim($task["ankor"][2])) : NULL) . "', "
+                    . "'" . (isset($task["ankor"][3]) ? $this->_db->escape(trim($task["ankor"][3])) : NULL) . "', "
+                    . "'" . (isset($task["ankor"][4]) ? $this->_db->escape(trim($task["ankor"][4])) : NULL) . "', "
                     . "'" . $this->_db->escape($task["url"][0]) . "', "
+                    . "'" . (isset($task["url"][1]) ? $this->_db->escape($task["url"][1]) : NULL) . "', "
+                    . "'" . (isset($task["url"][2]) ? $this->_db->escape($task["url"][2]) : NULL) . "', "
+                    . "'" . (isset($task["url"][3]) ? $this->_db->escape($task["url"][3]) : NULL) . "', "
+                    . "'" . (isset($task["url"][4]) ? $this->_db->escape($task["url"][4]) : NULL) . "', "
                     . "'" . $task["tema"] . "', "
                     . "'" . $this->_db->escape($task["text"]) . "', "
                     . "'0', '" . $task["date"] . "', "
@@ -311,12 +327,13 @@ class ParserController {
 
     public function saveLogs($param) {
         $function_name = $this->getFunctionName($param);
-        $this->_db->Execute("INSERT INTO cron (function, date, logs, errors)"
+        $this->_db->Execute("INSERT INTO cron (function, date, logs, errors, fixed)"
                 . " VALUES ("
                 . "'" . $function_name . "', "
                 . "'" . time() . "', "
                 . "'" . $this->_db->escape(json_encode($this->log)) . "', "
-                . "'" . (!empty($this->errors) ? $this->_db->escape(json_encode($this->errors)) : NULL) . "'"
+                . "'" . (!empty($this->errors) ? $this->_db->escape(json_encode($this->errors)) : "NULL") . "',"
+                . "'" . (!empty($this->errors) ? "0" : "1") . "'"
                 . ")");
     }
 

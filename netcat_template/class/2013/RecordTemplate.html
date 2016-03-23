@@ -1,0 +1,35 @@
+<?/* Служебная часть */for ($f_RowNum = 0; $f_RowNum < $rowCount; $f_RowNum++) {    if($fetch_row[$f_RowNum] instanceof Iterator) {        extract($fetch_row[$f_RowNum]->to_array(), EXTR_PREFIX_ALL, "f");    } else {        extract($fetch_row[$f_RowNum], EXTR_PREFIX_ALL, "f");    }    foreach($iteration_RecordTemplate[$f_RowNum] as $value) {        extract($value);    }    eval($cc_env["convert2txt"]);    ob_start();/* Конец служебной части */?>
+<? echo $f_AdminButtons; ?>
+<div class="form">
+	<ul style="float:left;margin-right:150px;">
+		<li>
+	  		<span class="title">Размер статьи: </span>
+	  		<select id="lenght" size="1" class="half-length">
+	    			<option value="1500">1500</option>
+	    			<option value="2000">2000</option>
+	 		</select>
+		</li>
+		<li>
+	  		<span class="title">Качество статьи: </span>
+	  		<input checked="checked" name="quality" type="radio" id="econom" value="1" /> <label for="econom">Econom</label>
+		</li>
+		<li>
+	  		<span class="title">&nbsp;</span>
+	  		<input name="quality" type="radio" id="medium" value="2" /> <label for="medium">Medium</label>
+		</li>
+		<li>
+	  		<span class="title">&nbsp;</span>
+	  		<input name="quality" type="radio" id="elit" value="3" /> <label for="elit">Elit</label>
+		</li>
+	</ul>
+	<div class="left" id="output" style="">
+		<font color="#046895" size="5">Цена за одну заявку</font>
+		<div class="price" id="price">
+		<h2 style="color:#5e8808;font-size: 30px;font-weight: bold;">62 руб.</h2>
+	</div>
+</div>
+
+<div class="clear">&nbsp;</div>
+<p><a class="button" href="#" id="calculate" onclick="return false;">Рассчитать</a></p>
+<div class="clear"></div>
+<?/* Служебная часть */    echo nc_finishing_RecordTemplate(ob_get_clean(), $inside_admin, $classID, $f_RowID, $parent_message, $cc, $cc_env["Class_Name"], $no_cache_marks);}/* Конец служебной части */?>

@@ -361,6 +361,27 @@ tbody .edit.row_tt .ico{
     margin-bottom: 8px;
 }
 
+.legend.legend-notify {
+    padding: 0;
+}
+.legend.legend-notify li {
+    display: block;
+}
+.legend.legend-notify .ico {
+    min-width: 21px;
+    top: 4px;
+}
+.legend.legend-notify li.none .ico {
+    background: none;
+}
+
+.notify-table a {
+    border-color: #aaa;
+    border-bottom-style: dotted;
+}
+.notify-filters {
+    display: none;
+}
 
 .gogetlinks,
 .miralinks,
@@ -421,6 +442,9 @@ tbody .edit.row_tt .ico{
 }
 .back_end .form.no-background {
     background: white;
+}
+.back_end .form.no-padding {
+    padding: 0;
 }
 .form li {
     margin-top: 8px;
@@ -677,4 +701,26 @@ textarea:read-only {
 }
 .notcolapse.copywriter-view-description .span-title {
     border-radius: 10px 10px 0 0;
+}
+
+.notify-view .not_error h3{
+    width: 100%;
+    color: green;
+    text-align: center;
+}
+.notify-view .textarea {
+    width: 98%;
+}
+.notify-view .output_error h3 {
+    width: 100%;
+    text-align: center;
+    font-family: monospace;
+    margin-bottom: 10px;
+    color: #6d6d6d;
+}
+.green {
+    color: green;
+}
+.text-bold {
+    font-weight: bold;
 }

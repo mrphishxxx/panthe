@@ -126,6 +126,11 @@
                                     <li><a href="?module=admins&action=ticket&type=archive">Архив</a><span>([old_tickets])</span></li>
                                 </ul>
                                 
+                                <h2>Оповещения</h2>
+                                <ul>
+                                    <li><a href="?module=admins&action=notify&action2=parser">Парсер<span class="red text-bold">[notify_parser]</span></a></li>
+                                </ul>
+                                
                                 <h2>Запросы</h2>
                                 <ul>
                                     <li><a href="?module=admins&action=change_wallet">Смена кошелька<span>([new_wallet]/[all_wallet])</span></a></li>

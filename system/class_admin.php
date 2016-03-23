@@ -53,7 +53,10 @@ class class_index {
         $this->GLOBAL['all_removed'] = $removed['count(*)'];
         $this->auth($db, $auth);
         $this->menu($db);
-
+        
+        $notify = $db->Execute("SELECT count(*) as cnt FROM cron WHERE errors IS NOT NULL AND fixed = 0")->FetchRow();
+        $content = str_replace('[notify_parser]', ($notify["cnt"] == 0) ? "" : $notify["cnt"], $content);
+        
         if (isset($_REQUEST['q']) && !empty($_REQUEST['q'])) {
             $rez = $s->search_admin($db);
             $content = str_replace('[content]', $rez, $content);

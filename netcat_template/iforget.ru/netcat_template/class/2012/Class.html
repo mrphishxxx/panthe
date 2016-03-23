@@ -1,0 +1,15 @@
+<!-- FormPrefix --><? echo $f_AdminCommon; ?>
+<h1><?=$nc_core->page->get_h1() ?></h1>
+<ul class="acc" id="acc"><!-- /FormPrefix -->
+
+<!-- RecordTemplate --><? echo $f_AdminButtons; ?>
+<li>
+	 <h2><?=$f_Message_ID?>. <?=$f_Name?></h2>
+	 <div class="acc-section" style="height: 0px;">
+	 	 <div class="acc-content">
+			 <?=$f_Answer?>
+		</div>
+	</div>
+</li><!-- /RecordTemplate -->
+
+<!-- FormSuffix --></ul><!-- /FormSuffix -->
