@@ -82,6 +82,7 @@
                                 <ul>
                                     <li>Выполнено задач <span>[vipolneno]</span></li>
                                     <li>Задач в работе <span>[vrabote]</span></li>
+                                    <li>Задач на проверке <span>[other]</span></li>
                                 </ul>
 
                                 <h2>Помощь</h2>

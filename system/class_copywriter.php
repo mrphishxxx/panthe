@@ -49,9 +49,21 @@ class class_index {
         $content = str_replace('[vipolneno]', $vipolneno, $content);
         /* ------- */
 
-        $other_tasks_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vipolneno!=1  AND rectificate!=1");
-        $other_tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vipolneno!=1  AND rectificate!=1");
-        $content = str_replace('[vrabote]', ($other_tasks_sape->NumRows()) + ($other_tasks_burse->NumRows()), $content);
+        $other_tasks_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vipolneno!=1  AND rectificate!=1")->GetAll();
+        $other_tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vipolneno!=1  AND rectificate!=1")->GetAll();
+        $other_tasks = array_merge($other_tasks_burse, $other_tasks_sape);
+        $vrabote = $other = 0;
+        if(!empty($other_tasks)){
+            foreach ($other_tasks as $task) {
+                if($task["vrabote"] == 1 || $task["rework"] == 1) {
+                    $vrabote++;
+                } else {
+                    $other++;
+                }
+            }
+        }
+        $content = str_replace('[vrabote]', $vrabote, $content);
+        $content = str_replace('[other]', $other, $content);
 
         $content = str_replace('[auth_block]', $auth_block, $content);
         $content = str_replace('[page_title]', "Index", $content);

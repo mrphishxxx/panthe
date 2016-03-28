@@ -332,7 +332,7 @@ class ParserController {
                 . "'" . $function_name . "', "
                 . "'" . time() . "', "
                 . "'" . $this->_db->escape(json_encode($this->log)) . "', "
-                . "'" . (!empty($this->errors) ? $this->_db->escape(json_encode($this->errors)) : "NULL") . "',"
+                . "'" . (!empty($this->errors) ? $this->_db->escape(json_encode($this->errors)) : NULL) . "',"
                 . "'" . (!empty($this->errors) ? "0" : "1") . "'"
                 . ")");
     }

@@ -317,6 +317,16 @@ class copywriter {
         if ($table == "") {
             $table = "<tr><td colspan='5'>Нет новых задач</td></tr>";
         }
+        
+        $other_tasks_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vrabote=1");
+        $other_tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vrabote=1");
+        $count_tasks = ($other_tasks_sape->NumRows()) + ($other_tasks_burse->NumRows());
+        
+        if($count_tasks >= 5) {
+            $content = str_replace('[count_vrabote]', "1", $content);
+        } else {
+            $content = str_replace('[count_vrabote]', "0", $content);
+        }
 
         if (isset($_REQUEST['error'])) {
             $content = str_replace('[error]', "<p class='error_to_copywrite'>" . $_REQUEST['error'] . "</p>", $content);
@@ -521,7 +531,7 @@ class copywriter {
                         curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_jar);
                         @curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
                         curl_setopt($curl, CURLOPT_POSTFIELDS, xmlrpc_encode_request('performer.login', array(LOGIN_IN_SAPE, PASS_IN_SAPE)));
-                        curl_exec($curl);
+                        $user = curl_exec($curl);
                         curl_close($curl);
                     }
 
@@ -538,13 +548,14 @@ class copywriter {
                         curl_close($curl);
                     }
                     $accept = xmlrpc_decode($out);
-
-                    if (in_array($task["sape_id"], $accept)) {
+                    
+                    if (!empty($accept) && in_array($task["sape_id"], $accept)) {
                         $task = $db->Execute("UPDATE zadaniya_new SET copywriter = '$uid', vrabote='1', date_in_work='$date' WHERE id = '$id'");
                         $this->_postman->admin->copywriterAddedTask($id, $_SESSION['user']['login']);
                     } else {
                         $task = $db->Execute("UPDATE zadaniya_new SET copywriter = '0', from_copywriter='0' WHERE id = '$id'");
-                        header('location: /copywriter.php?error=Задача не подтвердилась в Articles.Sape');
+                        header('location: /copywriter.php?error=Ошибка подтверждения задачи. <br />Пожалуйста создайте тикет и сообщите об этом администрации iForget.');
+                        die();
                     }
                 } elseif ($table == "zadaniya") {
                     // Если задача из БИРЖИ, то снимаем деньги со счета Вебмастера
@@ -882,6 +893,16 @@ class copywriter {
             $content = str_replace('[ankor5_url5]', (!empty($task['ankor5'])) ? "<br>" . htmlspecialchars('"<a href=\'' . $task['url5'] . '\'>' . $task['ankor5'] . '</a>"') : '', $content);
 
             $content = str_replace('[text_quality]', Helper::textQuality(($site["id"] != 1) ? $site["id"] : $task['price']), $content);
+            
+            $other_tasks_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vrabote=1");
+            $other_tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vrabote=1");
+            $count_tasks = ($other_tasks_sape->NumRows()) + ($other_tasks_burse->NumRows());
+
+            if($count_tasks >= 5) {
+                $content = str_replace('[count_vrabote]', "1", $content);
+            } else {
+                $content = str_replace('[count_vrabote]', "0", $content);
+            }
 
             $content = str_replace('[burse]', (($burse == 1) ? "&burse=1" : ""), $content);
             $content = str_replace('[error]', ((isset($_REQUEST['error']) && !empty($_REQUEST['error'])) ? $_REQUEST['error'] : ""), $content);

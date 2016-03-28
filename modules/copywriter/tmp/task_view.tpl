@@ -60,9 +60,11 @@
 <div class="action_bar">
     <input type="hidden" id="error" value="[error]">
     <input type="button" class="button" value="Вернуться" onclick="location.href = '/copywriter.php';" style="width:100px;">
-    <input type="button" class="button" value="Взять задание" onclick="location.href = '/copywriter.php?action=tasks&action2=add&id=[id][burse]';" style="width:150px;">
+    <input type="button" class="button" id="add_task_button" value="Взять задание" onclick="" style="width:150px;">
 </div>
 
+
+<input type="hidden" id="count_vrabote" value="[count_vrabote]" />
 <script type="text/javascript">
     $(document).ready(function () {
         $(".colapse .span-title").click(function () {
@@ -77,5 +79,20 @@
                 });
             }
         });
+        
+        if ($("#count_vrabote").val() === "1") {
+            $("#add_task_button").css("opacity", 0.3);
+            
+            $("#add_task_button").click(function () {
+                if (confirm("Вы уже подтвердили 5 задач. Чтобы взять в работу ещё, выполните какую-нибудь из уже подтверждённых")) {
+                    window.location.href = "/copywriter.php?action=tasks";
+                    return false;
+                } else {
+                    return false;
+                }
+            });
+        } else {
+            window.location.href = '/copywriter.php?action=tasks&action2=add&id=[id][burse]';
+        }
     });
 </script>
