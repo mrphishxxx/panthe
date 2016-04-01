@@ -180,6 +180,9 @@ class admins {
                     case 'edit_comment':
                         $content = $this->editComment($db);
                         break;
+                    case 'activating':
+                        $content = $this->birj_activating($db);
+                        break;
                 }
                 break;
             case 'balance':
@@ -246,6 +249,9 @@ class admins {
                         break;
                     case 'blacklist':
                         $content = $this->copywriters_blacklist($db);
+                        break;
+                    case 'whitelist':
+                        $content = $this->copywriters_whitelist($db);
                         break;
                     case 'statistics':
                         $content = $this->copywriters($db);
@@ -3740,7 +3746,7 @@ class admins {
         $active_users = implode(",", $kluchi);
 
         $birj_access = array();
-        $birjs_model = $db->Execute("SELECT b.uid, b.login, b.pass, b.active, br.name FROM birjs b LEFT JOIN birgi br ON br.id=b.birj WHERE b.uid IN ($active_users) ORDER BY b.birj, b.uid")->GetAll();
+        $birjs_model = $db->Execute("SELECT b.bid, b.uid, b.login, b.pass, b.active, br.name FROM birjs b LEFT JOIN birgi br ON br.id=b.birj WHERE b.uid IN ($active_users) ORDER BY b.birj, b.uid")->GetAll();
         foreach ($birjs_model as $birj) {
             if (!isset($birj_access[$birj["name"]])) {
                 $birj_access[$birj["name"]] = array();
@@ -3764,9 +3770,9 @@ class admins {
                 $birj = str_replace('[loginb]', $value['login'], $birj);
                 $birj = str_replace('[passb]', $value['pass'], $birj);
                 $birj = str_replace('[birja]', $users[$value['uid']], $birj);
-                $birj = str_replace('[comment_viklad]', "", $birj);
+                $birj = str_replace('[comment_viklad]', "<td class='row_tt'><input class='burse-checkbox-active' type='checkbox' id='".$value['bid']."' ".($value['active'] == 1 ? "checked='checked'" : '')." /></td>", $birj);
             }
-            $output = str_replace('[th_comment]', "", $output);
+            $output = str_replace('[th_comment]', "<th width='132px'>Активировать</th>", $output);
             $output = str_replace('[birjs]', $birj, $output);
             $output .= "<br /><br />";
         }
@@ -3803,6 +3809,31 @@ class admins {
 
 
         return $content;
+    }
+    
+    function birj_activating($db) {
+        $ajax = false;
+        if(isset($_POST['id'])){
+            $id = (int) $_POST['id'];
+            $ajax = true;
+        } else if(isset($_GET['id'])) {
+            $id = (int) $_GET['id'];
+        }
+        
+        $burse = $db->Execute("SELECT * FROM birjs WHERE bid = " . $id)->FetchRow();
+        if (!empty($burse)) {
+            if ($burse["active"] == 0) {
+                $db->Execute("UPDATE birjs SET active = 1 WHERE bid = " . $id);
+                echo "Биржа активирована!";
+            } else {
+                $db->Execute("UPDATE birjs SET active = 0 WHERE bid = " . $id);
+                echo "Биржа больше не активна!";
+            }
+        }
+        if($ajax === false){
+            header("Location: " . $_SERVER["HTTP_REFERER"]);
+        }
+        die();
     }
 
     function balance($db) {
@@ -4287,7 +4318,7 @@ class admins {
             $tr .= "<td style='text-align:left'>" . $copywriter["login"] . "</td>";
             $tr .= "<td>" . (isset($statistics[$copywriter["id"]]["vipolneno"]) ? $statistics[$copywriter["id"]]["vipolneno"] : 0) . "</td>";
             $tr .= "<td>" . (isset($statistics[$copywriter["id"]]["vrabote"]) ? $statistics[$copywriter["id"]]["vrabote"] : 0) . "</td>";
-            //$tr .= "<td><input class='trust' type='checkbox' id='" . $copywriter["id"] . "' " . (($copywriter["trust"] == 1) ? 'checked="checked"' : '') . " /></td>";
+            $tr .= "<td><input class='trust' type='checkbox' id='" . $copywriter["id"] . "' " . (($copywriter["trust"] == 1) ? 'checked="checked"' : '') . " /></td>";
             $tr .= "<td class='lock_ok'><a href='/admin.php?module=admins&action=copywriters&action2=banned&id=" . $copywriter["id"] . "' class='ico'></a></td>";
             $tr .= "</tr>";
             $table .= $tr;
@@ -4339,6 +4370,36 @@ class admins {
             $tr .= "<td style='text-align:left'>" . $copywriter["login"] . "</td>";
             $tr .= "<td>" . (isset($statistics[$copywriter["id"]]["vipolneno"]) ? $statistics[$copywriter["id"]]["vipolneno"] : 0) . "</td>";
             $tr .= "<td class='lock_open'><a href='/admin.php?module=admins&action=copywriters&action2=bannedoff&id=" . $copywriter["id"] . "' class='ico'></a></td>";
+            $tr .= "</tr>";
+            $table .= $tr;
+        }
+        $content = str_replace('[table]', $table, $content);
+        return $content;
+    }
+    
+    function copywriters_whitelist($db) {
+        $content = file_get_contents(PATH . 'modules/admins/tmp/admin/copywriters_whitelist.tpl');
+        $statistics = array();
+        $copywriters = $db->Execute("SELECT id, login FROM admins WHERE type = 'copywriter' AND active = 1 AND trust = 1 AND banned = 0 ORDER BY login ASC");
+        if ($copywriters->NumRows() == 0) {
+            $table = "<tr><td colspan='2'>Белый список - пуст!</td></tr>";
+        } else {
+            // Задачи которые выполнили копирайтеры
+            $tasks_vipolneno = $db->Execute("SELECT COUNT(*) AS cnt, `copywriter` FROM `zadaniya_new` WHERE copywriter != 0 AND vipolneno = 1 GROUP BY `copywriter`")->GetAll();
+            foreach ($tasks_vipolneno as $task) {
+                if (!isset($statistics[$task["copywriter"]])) {
+                    $statistics[$task["copywriter"]] = array();
+                }
+                $statistics[$task["copywriter"]]["vipolneno"] = $task["cnt"];
+            }
+        }
+
+        $table = "";
+        while ($copywriter = $copywriters->FetchRow()) {
+            $tr = "<tr>";
+            $tr .= "<td style='text-align:left'>" . $copywriter["login"] . "</td>";
+            $tr .= "<td>" . (isset($statistics[$copywriter["id"]]["vipolneno"]) ? $statistics[$copywriter["id"]]["vipolneno"] : 0) . "</td>";
+            $tr .= "<td class='close'><a href='/admin.php?module=admins&action=copywriters&action2=trust&id=" . $copywriter["id"] . "' class='ico'></a></td>";
             $tr .= "</tr>";
             $table .= $tr;
         }
@@ -4607,16 +4668,25 @@ class admins {
     }
 
     function copywriters_trust($db) {
-        $id = (int) $_POST['id'];
+        $ajax = false;
+        if(isset($_POST['id'])){
+            $id = (int) $_POST['id'];
+            $ajax = true;
+        } else if(isset($_GET['id'])) {
+            $id = (int) $_GET['id'];
+        }
         $copywriter = $db->Execute("SELECT * FROM admins WHERE id = $id")->FetchRow();
         if (!empty($copywriter)) {
             if ($copywriter["trust"] == 0) {
                 $db->Execute("UPDATE admins SET trust = 1 WHERE id = $id");
-                echo "Копирайтер теперь в числе доверенных!";
+                echo "Копирайтер добавлен в белый список!";
             } else {
                 $db->Execute("UPDATE admins SET trust = 0 WHERE id = $id");
-                echo "Копирайтер потерял доверие!";
+                echo "Копирайтер удален из белого списка!";
             }
+        }
+        if($ajax === false){
+            header("Location: " . $_SERVER["HTTP_REFERER"]);
         }
         die();
     }

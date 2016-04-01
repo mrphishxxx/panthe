@@ -16,4 +16,28 @@
 </table>
 
 
+<script type="text/javascript">
+    jQuery(document).ready(function ($) {
+        $(".burse-checkbox-active").click(function () {
+            var input = $(this);
+            var tr = $(input).parent().parent();
+            var color = "";
 
+
+            $.post("/admin.php?module=admins&action=birj&action2=activating", {
+                id: $(this).attr("id")
+            }, function (data) {
+                if (data === "Биржа активирована!") {
+                    if ($(tr).hasClass("odd")) {
+                        color = "#FFF";
+                    } else {
+                        color = "#FFFFF0";
+                    }
+                    $(tr).css("background", color);
+                } else {
+                    $(tr).css("background", "#d7d7d7");
+                }
+            });
+        });
+    });
+</script>

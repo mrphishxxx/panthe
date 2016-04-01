@@ -92,7 +92,9 @@
                 }
             });
         } else {
-            window.location.href = '/copywriter.php?action=tasks&action2=add&id=[id][burse]';
+            $("#add_task_button").click(function () {
+                window.location.href = '/copywriter.php?action=tasks&action2=add&id=[id][burse]';
+            });
         }
     });
 </script>

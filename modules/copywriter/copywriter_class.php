@@ -318,12 +318,16 @@ class copywriter {
             $table = "<tr><td colspan='5'>Нет новых задач</td></tr>";
         }
         
-        $other_tasks_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vrabote=1");
-        $other_tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vrabote=1");
-        $count_tasks = ($other_tasks_sape->NumRows()) + ($other_tasks_burse->NumRows());
-        
-        if($count_tasks >= 5) {
-            $content = str_replace('[count_vrabote]', "1", $content);
+        if($_SESSION['user']['trust'] == 0) {
+            $other_tasks_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vrabote=1");
+            $other_tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vrabote=1");
+            $count_tasks = ($other_tasks_sape->NumRows()) + ($other_tasks_burse->NumRows());
+
+            if($count_tasks >= 5) {
+                $content = str_replace('[count_vrabote]', "1", $content);
+            } else {
+                $content = str_replace('[count_vrabote]', "0", $content);
+            }
         } else {
             $content = str_replace('[count_vrabote]', "0", $content);
         }
@@ -517,6 +521,18 @@ class copywriter {
         if (!empty($id) && !empty($uid)) {
             $task = $db->Execute("SELECT * FROM $table WHERE id = $id")->FetchRow();
             $sinfo = $db->Execute("SELECT * FROM sayty WHERE id = " . $task["sid"])->FetchRow();
+            
+            if($_SESSION['user']['trust'] == 0) {
+                $other_tasks_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vrabote=1");
+                $other_tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vrabote=1");
+                $count_tasks = ($other_tasks_sape->NumRows()) + ($other_tasks_burse->NumRows());
+
+                if($count_tasks >= 5) {
+                    header('location: /copywriter.php?error=Вы уже подтвердили 5 задач. Чтобы взять в работу ещё, выполните какую-нибудь из уже подтверждённых');
+                    die();
+                }
+            }
+            
             if (!empty($task) && $task["etxt"] != 1 && ($task["task_id"] == 0 || $task["task_id"] == NULL) && $task["for_copywriter"] == 1 && $task["copywriter"] == 0) {
                 $date = time();
 
@@ -894,12 +910,16 @@ class copywriter {
 
             $content = str_replace('[text_quality]', Helper::textQuality(($site["id"] != 1) ? $site["id"] : $task['price']), $content);
             
-            $other_tasks_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vrabote=1");
-            $other_tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vrabote=1");
-            $count_tasks = ($other_tasks_sape->NumRows()) + ($other_tasks_burse->NumRows());
+            if($_SESSION['user']['trust'] == 0) {
+                $other_tasks_sape = $db->Execute("SELECT * FROM zadaniya_new WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vrabote=1");
+                $other_tasks_burse = $db->Execute("SELECT * FROM zadaniya WHERE copywriter='" . $_SESSION['user']['id'] . "' AND vrabote=1");
+                $count_tasks = ($other_tasks_sape->NumRows()) + ($other_tasks_burse->NumRows());
 
-            if($count_tasks >= 5) {
-                $content = str_replace('[count_vrabote]', "1", $content);
+                if($count_tasks >= 5) {
+                    $content = str_replace('[count_vrabote]', "1", $content);
+                } else {
+                    $content = str_replace('[count_vrabote]', "0", $content);
+                }
             } else {
                 $content = str_replace('[count_vrabote]', "0", $content);
             }

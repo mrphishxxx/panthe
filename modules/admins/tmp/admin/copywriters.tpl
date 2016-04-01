@@ -38,7 +38,7 @@
                         <th width="100px">Копирайтеры</th>
                         <th width="70px">Выполнено задач</th>
                         <th width="70px">Сейчас в работе</th>
-                        <!--<th width="50px">Доверяем</th>-->
+                        <th width="50px">Белый список</th>
                         <th width="50px">Забанить</th>
                     </tr>
                 </thead>

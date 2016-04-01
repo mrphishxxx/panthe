@@ -142,6 +142,7 @@
                                     <li><a href="?module=admins&action=copywriters&action2=balance">Баланс</a></li>
                                     <li><a href="?module=admins&action=copywriters&action2=withdrawal">Выведено средств</a></li>
                                     <li><a href="?module=admins&action=copywriters&action2=blacklist">Черный список</a></li>
+                                    <li><a href="?module=admins&action=copywriters&action2=whitelist">Белый список</a></li>
                                 </ul>
 
                                 <h2>Модераторы</h2>
