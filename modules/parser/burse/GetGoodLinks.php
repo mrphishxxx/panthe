@@ -58,8 +58,10 @@ class GetGoodLinks {
     public function destroySeleniumWebDriver() {
         if (!empty($this->driver)) {
             $this->driver->quit();
-            $this->log .= "->-> SeleniumWebDriver destroy - done" . PHP_EOL;
+            $this->log .= "-> SeleniumWebDriver destroy - done" . PHP_EOL;
+            return "-> SeleniumWebDriver destroy - done" . PHP_EOL;
         }
+        return "";
     }
 
     private function getPage($link) {
@@ -149,6 +151,7 @@ class GetGoodLinks {
             "href" => "",
             "b_price" => "",
             "date" => "",
+            "type_task" => "0",
             "type" => "",
             "tema" => "",
             "url" => array(),
@@ -156,7 +159,8 @@ class GetGoodLinks {
             "keywords" => "",
             "alt" => "",
             "title" => "",
-            "text" => ""
+            "lay_out" => "0",
+            "comments" => ""
         );
         
     }
@@ -187,7 +191,7 @@ class GetGoodLinks {
             $name = $value = NULL;
             $block_name = $block->findElements(WebDriverBy::xpath(".//div[@class='block_name']"));
             $block_value = $block->findElements(WebDriverBy::xpath(".//div[@class='block_value']"));
-            if (isset($block_name[0]) && $block_value[0]) {
+            if (isset($block_name[0]) && isset($block_value[0])) {
                 $name = $block_name[0]->getText();
                 $value = $block_value[0]->getText();
             }
@@ -218,7 +222,7 @@ class GetGoodLinks {
         }
         $task_text = $this->driver->findElements(WebDriverBy::xpath("//div[@class='params']/div[@id='layer']"));
         if (isset($task_text[0])) {
-            $this->_results[$id]["text"] = $task_text[0]->getText();
+            $this->_results[$id]["comments"] = $task_text[0]->getText();
         }
 
         if (!empty($this->_results[$id]["ankor"][0])) {

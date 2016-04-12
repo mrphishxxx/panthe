@@ -20,10 +20,11 @@
 </div>
 <br />
 <table class="notify-table">
-    <thead>
+    <thead class="small">
         <th>Дата</th>
         <th>Время</th>
         <th>Парсер</th>
+        <th>Выгруженных задач</th>
         <th>Ошибки</th>
     </thead>
     <tbody>

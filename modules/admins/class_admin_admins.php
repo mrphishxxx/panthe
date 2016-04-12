@@ -2480,13 +2480,14 @@ class admins {
         
         foreach ($cron_tasks as $date => $tasks) {
             foreach ($tasks as $i => $row) {
-                $table .= "<tr class='" . ((!empty($row["errors"]) && $row["fixed"] == 0) ? "red" : "") . "'>";
+                $table .= "<tr class='row_tt row_tt_gray " . ((!empty($row["errors"]) && $row["fixed"] == 0) ? "red" : "") . "'>";
                 if($i == 0) {
-                    $table .= "<td rowspan='".count($tasks)."'>" . date("d F Y", $row["date"]) . "</td>";
+                    $table .= "<td class='row_tt row_tt_gray' rowspan='".count($tasks)."'>" . date("d F Y", $row["date"]) . "</td>";
                 }
-                $table .= "<td>" . date("H:i:s", $row["date"]) . "</td>";
-                $table .= "<td><a class='' href='/admin.php?module=admins&action=notify&action2=parserview&id=" . $row["id"] . "'>" . Helper::parserFunctionName($row["function"]) . "</a></td>";
-                $table .= "<td>" . (!empty($row["errors"]) ? "<span>ДА</span>" : "") . "</td>";
+                $table .= "<td class='row_tt row_tt_gray'>" . date("H:i:s", $row["date"]) . "</td>";
+                $table .= "<td class='row_tt row_tt_gray'><a class='' href='/admin.php?module=admins&action=notify&action2=parserview&id=" . $row["id"] . "'>" . Helper::parserFunctionName($row["function"]) . "</a></td>";
+                $table .= "<td class='row_tt row_tt_gray' width='100px'>" . $row["count_task"] . "</td>";
+                $table .= "<td class='row_tt row_tt_gray'>" . (!empty($row["errors"]) ? "<span>ДА</span>" : "-") . "</td>";
                 $table .= "</tr>";
             }
         }
@@ -2511,9 +2512,15 @@ class admins {
                 $admins[$user["id"]] = $user;
             }
             
-            foreach ($errors as $id_users => $value) {
+            foreach ($errors as $id_users => $error) {
                 $errors_out .= "USER " . $admins[$id_users]["login"] . ", ID = " . $id_users . "\r\n";
-                $errors_out .= trim($value) . "\r\n\r\n";                
+                if(is_array($error)){
+                    foreach ($error as $value) {
+                        $errors_out .= trim($value) . "\r\n\r\n";
+                    }
+                } else if(is_string($error)){
+                    $errors_out .= trim($error) . "\r\n\r\n";
+                }
             }
             
             $content = str_replace('[errors]', $errors_out, $content);

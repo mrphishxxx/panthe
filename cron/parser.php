@@ -13,6 +13,7 @@ include_once dirname(__FILE__) . '/../' . 'includes/postman/Postman.php';
 include_once dirname(__FILE__) . '/../' . 'includes/adodb5/adodb.inc.php';
 include_once dirname(__FILE__) . '/../' . 'modules/parser/ParserController.php';
 
+echo date("Y-m-d H:i:s") . PHP_EOL;
 if ((isset($argv) && isset($argv[1]) && !empty($argv[1])) || isset($_GET["param"])) {
     $db = ADONewConnection(DB_TYPE);
     @$db->PConnect(DB_HOST, DB_USER, DB_PASS, DB_BASE) or die('Не удается подключиться к базе данных');
@@ -29,6 +30,10 @@ if ((isset($argv) && isset($argv[1]) && !empty($argv[1])) || isset($_GET["param"
     switch ($argv[1]) {
         case "getgoodlinks":
             $body = $parser->getTasksGetgoodlinksAction();
+            break;
+        
+        case "miralinks":
+            $body = $parser->getTasksMiralinksAction();
             break;
         
         default: $body = "unknown argument";

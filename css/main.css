@@ -1520,10 +1520,13 @@ label {
 .downcomment {
     border: none;
 }
-.row_tt{
+.row_tt {
     text-align:center; 
     border:solid 1px #d8d8ff;
     font-size: 11px;
+}
+.row_tt_gray {
+    border-color: #ccc;
 }
 .comment_viklad {
     max-width: 210px;
